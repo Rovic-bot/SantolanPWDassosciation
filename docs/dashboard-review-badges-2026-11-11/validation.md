@@ -27,7 +27,7 @@ The endpoint is authenticated, staff-only, permission-scoped, GET/HEAD-only and 
 
 The broader first run also included three pre-existing portfolio-capacity expectations that fail against the unchanged deployed implementation: unlimited capacity text, non-EWAF demand and portfolio capacity totals. A separate isolated baseline run loaded the original `HEAD:programs/portfolio.py` and reproduced all three failures. Those business rules were not changed to satisfy stale tests. The full historical suite was not a release gate.
 
-Live browser automation was stopped because its URL safety check could not reliably identify the current browser URL. Hosted verification uses Render status/logs and authenticated HTTP requests instead. Deployment evidence is recorded below after rollout.
+Live browser automation was stopped because its URL safety check could not reliably identify the current browser URL. Hosted verification uses Render status/logs and authenticated HTTP requests instead.
 
 ## Synthetic screenshots
 
@@ -38,3 +38,11 @@ Live browser automation was stopped because its URL safety check could not relia
 ## Release boundary
 
 Only this task's source, tests and documentation are copied to the existing isolated deployment checkout, on `deployment/free-render-supabase` in `Rovic-bot/SantolanPWDassosciation`. The original local branch/index and unrelated unfinished changes remain intact. The original deployment's database, storage and configuration are retained.
+
+## Hosted verification
+
+Render deployment `dep-dbq76f0ae00c73fq6ie0` reached **live** at **2026-11-11 13:54:26 UTC**, running commit `d52bdff46648e575e8a3d7f1459a084f4cf6ab09`, at <https://santolan-pwd-system.onrender.com/>.
+
+Authenticated hosted HTTP checks passed for the dashboard, membership review cards, program portfolio and count endpoint. The age chart's labels and values exactly matched a fresh aggregate query against hosted PostgreSQL. The removed disclosure was absent; navigation/card badge markup was present; returned totals and per-program counts matched the permission-scoped review queues. The new JavaScript and stylesheet contents matched the release files. The health endpoint returned success, and anonymous requests to the dashboard and counters redirected to sign-in.
+
+Verification created one short-lived Django staff session and removed it in a `finally` block, confirming deletion. No real application was submitted or reviewed, no business record was changed and no email was sent. The follow-up documentation commit records this evidence without replacing the live functional commit.
