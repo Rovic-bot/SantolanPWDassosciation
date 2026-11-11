@@ -1,0 +1,70 @@
+/* Scoped to administrator accounts, roles and the two protected audit lists. */
+.workspace-directory #content #changelist { display: grid; grid-template-columns: minmax(0,1fr); gap: 1.75rem; border: 0; box-shadow: none; background: transparent; align-items: start; }
+.workspace-directory #content #changelist.filtered { grid-template-columns: minmax(0,1fr) minmax(260px,300px); }
+.workspace-directory #changelist .changelist-form-container { min-width: 0; padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 1.25rem; }
+.workspace-directory #content #changelist #toolbar { padding: 0; margin: 0 0 1.25rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--paper); box-shadow: none; }
+.workspace-directory #toolbar form > div { display: flex; align-items: center; flex-wrap: nowrap; gap: .65rem; padding: 0 .9rem; }
+.workspace-directory #toolbar label { display: inline-flex; align-items: center; color: var(--muted); }
+.workspace-directory #content #toolbar #searchbar { width: 100%; min-width: 0; flex: 1; padding: .75rem 0; min-height: 44px; background: transparent; border: 0; border-radius: 0; font-size: .88rem; color: var(--ink); box-shadow: none; }
+.workspace-directory #toolbar #searchbar::placeholder { color: var(--muted); opacity: 1; }
+.workspace-directory #toolbar:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.workspace-directory #content #changelist .actions { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; padding: .9rem; margin-bottom: 1.25rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--paper); box-shadow: none; }
+.workspace-directory #changelist .actions label { color: var(--muted); font-size: .85rem; }
+.workspace-directory #content #changelist .actions select { height: 40px; min-height: 40px; max-width: 100%; min-width: 180px; border: 1px solid var(--line); border-radius: .75rem; background: var(--surface); color: var(--ink); }
+.workspace-directory #changelist .actions .action-counter { margin-left: auto; color: var(--muted); font-size: .78rem; }
+.workspace-directory #content #changelist .actions .button { min-height: 38px; padding: .4rem 1.2rem; border-radius: .65rem; }
+.workspace-directory #content #changelist .results { border: 1px solid var(--line); border-radius: 1rem; overflow-x: auto; background: var(--surface); box-shadow: none; }
+.workspace-directory #result_list { width: 100%; min-width: 700px; }
+.workspace-directory #content #changelist table thead th { padding: .9rem 1rem; background: var(--paper); color: var(--muted); font-size: .7rem; letter-spacing: .04em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+.workspace-directory #changelist table thead th .text a { padding: 0; color: inherit; }
+.workspace-directory #content #changelist table tbody :is(td,th) { padding: .85rem 1rem; background: transparent; font-size: .83rem; line-height: 1.5; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: middle; }
+.workspace-directory #content #changelist table tbody tr:last-child > :is(td,th) { border-bottom: 0; }
+.workspace-directory #changelist table tbody th a { min-height: 0; color: var(--cyan); font-weight: 650; }
+.workspace-directory #changelist table tbody .field-user { color: var(--ink); font-weight: 650; }
+.workspace-directory #changelist table tbody .field-user a { color: var(--ink); }
+.workspace-directory #changelist :is(.field-email,.field-address,.field-object_repr) { font-family: ui-monospace,Consolas,monospace; overflow-wrap: anywhere; }
+.workspace-directory #changelist :is(.field-occurred_at,.field-action_time,.field-timestamp) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.workspace-directory #changelist :is(.field-details,.field-object_repr) { max-width: 24rem; overflow-wrap: anywhere; }
+.workspace-directory #changelist .field-details { min-width: 180px; }
+.workspace-directory #changelist .action-checkbox { width: 24px; }
+.workspace-directory #changelist :is(input[type=checkbox],input[type=radio]) { accent-color: var(--brand-primary); }
+.workspace-directory #changelist .field-is_staff { text-align: center; }
+.workspace-directory #changelist .field-is_staff img { width: 18px; height: 18px; }
+.workspace-directory #content #changelist-filter { position: static; width: auto; min-width: 0; padding: 1.5rem; margin: 0; border: 1px solid var(--line); border-radius: 1.25rem; background: var(--surface); box-shadow: none; }
+.workspace-directory #changelist-filter h2 { font-size: .85rem; font-weight: 650; letter-spacing: .03em; text-transform: uppercase; padding: 0 0 1rem; background: transparent; border-bottom: 1px solid var(--line); }
+.workspace-directory #changelist-filter h2::before { content: ''; display: inline-block; width: 14px; height: 14px; margin-right: .6rem; background: var(--cyan); clip-path: polygon(0 0,100% 0,62% 50%,62% 100%,38% 80%,38% 50%); }
+.workspace-directory #changelist-filter details { padding: 1rem 0; border-top: 1px solid var(--line); }
+.workspace-directory #changelist-filter details summary { font-size: .8rem; font-weight: 650; color: var(--muted); min-height: 0; margin-bottom: .6rem; list-style: none; }
+.workspace-directory #changelist-filter details ul { padding: 0; margin: 0; }
+.workspace-directory #changelist-filter li { padding: 0 .5rem; }
+.workspace-directory #changelist-filter li.selected { border-left-color: var(--cyan); }
+.workspace-directory #changelist-filter a { font-size: .82rem; min-height: 32px; color: var(--muted); }
+.workspace-directory #changelist-filter li.selected a { color: var(--cyan); font-weight: 650; }
+.workspace-directory #changelist-filter-extra-actions h3 { padding: 0; }
+.workspace-directory .directory-filter-heading { display: flex; align-items: baseline; gap: .5rem; justify-content: space-between; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+.workspace-directory #changelist-filter .directory-filter-heading h2 { border: 0; margin: 0; }
+.workspace-directory #changelist-filter .directory-filter-heading a { color: var(--cyan); font-size: .75rem; white-space: nowrap; }
+.workspace-directory .audit-filter-form :is(fieldset,.audit-select-filter) { padding: 0; border: 0; margin: 0 0 1.5rem; min-width: 0; }
+.workspace-directory .audit-filter-form :is(legend,.audit-select-filter > label) { display: block; color: var(--muted); font-size: .75rem; font-weight: 650; text-transform: uppercase; margin: 0 0 .8rem; }
+.workspace-directory .audit-radio-choice { display: flex; align-items: center; gap: .65rem; padding: .7rem; margin-bottom: .5rem; border: 1px solid var(--line); border-radius: .8rem; color: var(--ink); background: var(--paper); cursor: pointer; font-size: .82rem; }
+.workspace-directory .audit-radio-choice:has(input:checked) { border-color: var(--cyan); color: var(--cyan); }
+.workspace-directory .audit-radio-choice input { margin: 0; }
+.workspace-directory #content .audit-filter-form :is(select,input[type=date]) { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--line); border-radius: .8rem; background: var(--paper); color: var(--ink); font-size: .85rem; min-height: 44px; }
+.workspace-directory .audit-date-range input + label, .workspace-directory .audit-date-range input { margin-bottom: .5rem; }
+.workspace-directory #content .audit-filter-form .button { width: 100%; color: #fff; background: var(--brand-primary); border-color: var(--brand-primary); border-radius: .8rem; min-height: 44px; }
+.workspace-directory .directory-badge { --badge-color: var(--cyan); display: inline-block; border: 1px solid color-mix(in srgb,var(--badge-color) 30%,transparent); background: color-mix(in srgb,var(--badge-color) 10%,transparent); border-radius: 2rem; padding: .1rem .6rem; color: var(--badge-color); font-size: .72rem; font-weight: 650; white-space: nowrap; }
+.workspace-directory .directory-badge:is([data-state=login],[data-state=action-1]) { --badge-color: var(--green); }
+.workspace-directory .directory-badge:is([data-state=login_failed],[data-state=login_blocked],[data-state=action-3]) { --badge-color: var(--danger); }
+.workspace-directory .directory-badge[data-state=action-2] { --badge-color: var(--orange); }
+.workspace-directory .directory-pagination { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1.5rem; color: var(--muted); font-size: .8rem; }
+.workspace-directory .directory-pagination nav { display: flex; flex-wrap: wrap; gap: .35rem; }
+.workspace-directory .directory-pagination nav > * { display: inline-block; padding: .3rem .65rem; border: 1px solid var(--line); border-radius: .6rem; color: var(--muted); }
+.workspace-directory .directory-pagination [aria-current=page] { background: var(--brand-primary); border-color: var(--brand-primary); color: #fff; }
+.workspace-directory .directory-pagination [aria-disabled=true] { opacity: .5; }
+.workspace-directory #content .workspace-empty { margin: 0; padding: 2rem 1.5rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--paper); }
+.workspace-directory .workspace-empty h2 { margin: 0 0 .5rem; font-size: 1rem; }
+.workspace-directory .workspace-empty p { margin: 0; color: var(--muted); font-size: .88rem; }
+@media(max-width:1100px) { .workspace-directory #content #changelist.filtered { grid-template-columns: minmax(0,1fr); } .workspace-directory #content #changelist-filter { width: auto; } }
+@media(max-width:600px) { .workspace-directory #changelist .changelist-form-container,.workspace-directory #content #changelist-filter { padding: 1rem; } }
+
+.workspace-directory .directory-detail-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

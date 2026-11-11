@@ -1,0 +1,16 @@
+{% extends 'admin/change_list.html' %}
+{% load static workspace_admin %}
+{% block responsive %}{{ block.super }}{% if opts.label_lower == 'auth.user' or opts.label_lower == 'auth.group' or opts.label_lower == 'audit.securityevent' or opts.label_lower == 'admin.logentry' %}<link rel="stylesheet" href="{% static 'css/admin-directories.css' %}?v=20261106">{% endif %}{% endblock %}
+{% block bodyclass %}{{ block.super }}{% if opts.label_lower == 'auth.user' or opts.label_lower == 'auth.group' or opts.label_lower == 'audit.securityevent' or opts.label_lower == 'admin.logentry' %} workspace-directory{% endif %}{% endblock %}
+{% block search %}{% if opts.label_lower == 'auth.user' or opts.label_lower == 'auth.group' or opts.label_lower == 'audit.securityevent' or opts.label_lower == 'admin.logentry' %}{% include 'admin/directory_search.html' %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block filters %}{% if audit_filters %}{% include 'admin/audit_filters.html' %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block pagination %}{% if opts.label_lower == 'auth.user' or opts.label_lower == 'auth.group' or opts.label_lower == 'audit.securityevent' or opts.label_lower == 'admin.logentry' %}{% directory_pagination cl %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block result_list %}
+  {{ block.super }}
+  {% if not cl.result_count %}
+    <section class="workspace-empty" aria-label="No matching records">
+      <h2>No records found</h2>
+      {% if cl.has_active_filters or cl.query %}<p>Try another search or adjust the filters.</p>{% else %}<p>Records will appear here when available.</p>{% endif %}
+    </section>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} event &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} program-builder-workspace event-builder-workspace{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True event_builder=True %}{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-builder.css' %}?v=20261102-edit"><link rel="stylesheet" href="{% static 'css/event-builder.css' %}?v=20261102-calendar">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/schedule-calendar.js' %}?v=20261111-annual" defer></script><script src="{% static 'js/event-builder.js' %}?v=20261105-editor" defer></script>{% endblock %}
+{% block content %}
+<div class="container builder-container" data-event-builder data-editing="{{ editing|yesno:'true,false' }}" data-image-limit="{{ image_limit_mb }}">
+  <header class="builder-header">
+    <div><h1>{% if editing %}Edit event{% else %}Create event{% endif %}</h1><p class="builder-record-name">{% if editing %}{{ event.title }}{% else %}New events are general community events.{% endif %}</p></div>
+    <section class="builder-draft-card builder-glass" aria-label="Event status"><p class="builder-eyebrow">{% if editing %}{{ event.get_status_display }} event{% else %}Draft status{% endif %}</p><strong data-event-status role="status">{% if editing and not form.is_bound %}Saved event{% else %}Unsaved changes{% endif %}</strong><p>{% if editing %}Updated {{ event.updated_at|date:'M j, Y, g:i A' }}{% else %}Not saved yet{% endif %}</p><span class="builder-private">{% if event.status == 'published' or event.status == 'cancelled' %}Public{% else %}Private &middot; Staff only{% endif %}</span></section>
+  </header>
+  {% include 'partials/workspace_messages.html' %}
+  {% if event.status == 'published' or event.status == 'cancelled' %}<p class="alert alert-warning">Saving updates the public event immediately. Withdraw to draft to prepare changes privately.</p>{% endif %}
+  <div class="builder-layout">
+    <nav class="builder-steps" aria-label="Event setup sections"><p class="builder-eyebrow">Event setup</p>
+      <a href="#event-details" aria-current="step"><span>01</span><div>Details<small>Title &amp; location</small></div></a>
+      <a href="#event-schedule"><span>02</span><div>Schedule<small>Dates &amp; times</small></div></a>
+      <a href="#event-image"><span>03</span><div>Image<small>Optional upload</small></div></a>
+    </nav>
+    <form class="builder-form" method="post" enctype="multipart/form-data" action="{% if editing %}{% url 'events:edit' event.pk %}{% else %}{% url 'events:create' %}{% endif %}" data-event-form>
+      {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+      <div class="builder-validation builder-glass" data-event-validation tabindex="-1"{% if not form.errors %} hidden{% endif %}><h2>Check your event details</h2><div data-validation-content>{{ form.non_field_errors }}{% if form.errors %}<ul>{% for field in form.visible_fields %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul>{% endif %}</div></div>
+      <section class="builder-section builder-glass" id="event-details" aria-labelledby="event-details-heading">
+        <header><span>01</span><div><h2 id="event-details-heading">Event details</h2><p>Give the activity a clear title, description, and location.</p></div></header>
+        <div class="builder-fields">
+          {% include 'programs/builder/field.html' with field=form.title %}
+          {% include 'programs/builder/field.html' with field=form.location %}
+          {% include 'programs/builder/field.html' with field=form.description wide=True %}
+        </div>
+      </section>
+      <section class="builder-section builder-glass builder-schedule" id="event-schedule" aria-labelledby="event-schedule-heading">
+        <header><span>02</span><div><h2 id="event-schedule-heading">Event schedule</h2><p>Choose the start and end dates and times in Philippine Standard Time (UTC+8).</p></div></header>
+        <div class="builder-range" data-event-calendar data-accent="blue">
+          <div class="builder-native-dates" data-native-dates="event" data-start-name="{{ form.starts_at.name }}" data-end-name="{{ form.ends_at.name }}" data-range-label="Event schedule" data-range-accent="blue">
+            {% include 'programs/builder/field.html' with field=form.starts_at %}{% include 'programs/builder/field.html' with field=form.ends_at %}
+          </div>
+          {% include 'partials/range_calendar.html' with program_ranges=False compact_event=True %}
+        </div>
+      </section>
+      <section class="builder-section builder-glass" id="event-image" aria-labelledby="event-image-heading">
+        <header><span>03</span><div><h2 id="event-image-heading">Event image</h2><p>Add an image approved for public display.</p></div></header>
+        {% if editing and event.image %}<div class="event-image-preview" data-current-image><img src="{% url 'events:preview_image' event.pk %}" alt="{{ event.image_description }}"><div><p>Current event image</p><a href="{% url 'events:preview_image' event.pk %}" target="_blank" rel="noopener">View current image</a></div></div>{% if form.remove_image %}<label class="builder-help">{{ form.remove_image }} {{ form.remove_image.label }}</label>{{ form.remove_image.errors }}{% endif %}{% endif %}
+        <div class="event-image-upload">{% include 'programs/builder/field.html' with field=form.image %}<p class="builder-help" id="event-image-help">PNG or JPEG, up to {{ image_limit_mb }} MB. {% if editing %}Leave this empty to keep the current image.{% else %}The image stays private until the event is published.{% endif %}</p>{% if form.is_bound %}<p class="builder-help">If you selected a new image, choose it again before saving.</p>{% endif %}</div>
+        <div class="event-image-preview" data-image-preview hidden><img data-image-thumbnail alt="Selected event image preview"><div><p data-image-name></p><p class="builder-help" data-image-size></p><button type="button" class="btn btn-outline-secondary" data-remove-image>Remove image</button></div></div>
+        <p class="builder-help" data-image-feedback role="status"></p>
+      </section>
+      <footer class="builder-action-bar builder-glass"><p data-event-save-feedback role="status">{% if editing %}Save changes to update this event.{% else %}Save a private draft, then review it before publishing.{% endif %}</p><div><a class="btn btn-outline-secondary" href="{% if editing %}{% url 'events:manage_detail' event.pk %}{% else %}{% url 'event_workspace' %}{% endif %}">Cancel</a><button class="btn btn-primary" type="submit" data-save-event>{% if editing %}Save changes{% else %}Save draft{% endif %}</button></div></footer>
+    </form>
+    <aside class="builder-summary" aria-label="Live event summary">
+      <section class="builder-glass builder-preview"><div class="builder-preview-top"><span class="builder-badge">{% if editing %}{{ event.get_status_display }}{% else %}Draft{% endif %}</span><span>Live preview</span></div><h2 data-event-title>{{ form.title.value|default:'Untitled event' }}</h2><p>General event</p><dl>
+        <div><dt>Location</dt><dd data-event-location>{{ form.location.value|default:'Location not set' }}</dd></div>
+        <div><dt>Starts at</dt><dd data-event-start>Choose a date and time</dd></div>
+        <div><dt>Ends at</dt><dd data-event-end>Choose a date and time</dd></div>
+        <div><dt>Visibility</dt><dd class="builder-private">{% if event.status == 'published' or event.status == 'cancelled' %}Public{% else %}Private{% endif %}</dd></div>
+      </dl></section>
+      <section class="builder-guidance"><h2>{% if editing %}Before saving{% else %}Before publishing{% endif %}</h2><p>Check the schedule, venue, and image.{% if not editing %} Saving creates a private draft that you can review before making the event public.{% endif %}</p><a href="{% url 'event_workspace' %}">Back to events calendar &#8599;</a></section>
+    </aside>
+  </div>
+</div>
+{% endblock %}

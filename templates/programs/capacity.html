@@ -1,0 +1,5 @@
+<div class="capacity-panel">
+<div class="capacity-heading"><span>Capacity &amp; Slot Usage</span><strong>{% if program.can_view_capacity %}{{ program.allocated_slots }} / {{ program.capacity_label }}{% else %}Restricted{% endif %}<span class="capacity-percent">{% if program.usage_percent != None %} ({{ program.usage_percent }}%){% endif %}</span></strong></div>
+{% if program.usage_percent != None %}<progress max="100" value="{{ program.usage_percent }}" aria-label="Allocated beneficiary slots">{{ program.usage_percent }}%</progress>{% else %}<div class="capacity-track" aria-hidden="true"></div>{% endif %}
+<div class="capacity-foot">{% if not hide_applicant_count %}<span>Applicants: {{ program.applicant_count|default_if_none:0 }}</span>{% endif %}<span>{% if program.available_slots != None %}{{ program.available_slots }} Available{% elif not program.can_view_capacity %}Usage restricted{% else %}Capacity not set{% endif %}</span></div>
+</div>

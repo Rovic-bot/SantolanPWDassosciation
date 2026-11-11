@@ -1,0 +1,16 @@
+<article class="selection-panel selection-glass" data-release-panel="{{ program.pk }}"{% if not summary.selected %} hidden{% endif %}>
+  <header><span class="selection-state" data-state="{{ summary.state }}">{{ summary.label }}</span><span class="selection-kicker">Selected program</span></header>
+  <h2>{{ program.name }}</h2><p class="selection-meta">{{ program.public_code|default:'Code not assigned' }} &middot; {{ program.assistance_type }}</p>
+  <div class="selection-gauge" role="img" aria-label="{{ summary.received_count }} recorded receipts; {{ summary.pending_count }} selected applicants pending receipt.">
+    <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="selection-gauge-track" cx="60" cy="60" r="51"/>{% if summary.percent %}<circle cx="60" cy="60" r="51" pathLength="100" stroke-dasharray="{{ summary.percent }} 100"/>{% endif %}</svg><div><strong>{{ summary.percent }}%</strong><span>Receipts recorded</span></div>
+  </div>
+  <p class="release-progress-caption">{% if summary.beneficiary_count %}<strong>{{ summary.received_count }} of {{ summary.beneficiary_count }}</strong> beneficiaries received assistance{% else %}No beneficiaries selected yet{% endif %}</p>
+  <dl class="release-overview-counts"><div><dt>Applicants</dt><dd>{{ summary.applicant_count }}</dd></div><div><dt>Selected</dt><dd>{{ summary.selected_count }}</dd></div><div><dt>Received</dt><dd>{{ summary.received_count }}</dd></div><div><dt>Pending receipt</dt><dd>{{ summary.pending_count }}</dd></div></dl>
+  <section class="selection-note release-program-facts" aria-label="Program details">
+    <h3>Program overview</h3>
+    <dl><div><dt>Schedule</dt><dd>{% if program.starts_at %}{{ program.starts_at|date:'M j, Y' }}{% if program.ends_at %} &ndash; {{ program.ends_at|date:'M j, Y' }}{% endif %}{% else %}Not scheduled{% endif %}</dd></div><div><dt>Beneficiary slots</dt><dd>{% if program.slot_limit != None %}{{ program.slot_limit }} total &middot; {{ summary.available_slots }} available{% else %}{{ program.capacity_label }}{% endif %}</dd></div>{% if program.amount != None %}<div><dt>Amount per beneficiary</dt><dd>PHP {{ program.amount|floatformat:2 }}</dd></div>{% endif %}</dl>
+    {% if program.benefit %}<p class="release-benefit">{{ program.benefit|truncatewords:35 }}</p>{% endif %}
+  </section>
+  <a class="selection-button selection-primary" href="{% url 'assistance:program_releases' program.pk %}" data-release-dialog aria-haspopup="dialog" aria-controls="assistance-releases-dialog">View Releases <span aria-hidden="true">&rarr;</span></a>
+  <p class="selection-meta release-receipt-hint">Record actual receipt after assistance is delivered.</p>
+</article>

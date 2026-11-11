@@ -1,0 +1,18 @@
+.receipt-details-dialog { width: min(640px, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 1rem; box-shadow: 0 24px 70px #0005; }
+[data-receipt-popups] [data-receipt-details] > summary { display: inline-flex; align-items: center; min-height: 44px; padding: .35rem .7rem; border: 1px solid var(--line); border-radius: .6rem; list-style: none; cursor: pointer; }
+[data-receipt-popups] [data-receipt-details] > summary::-webkit-details-marker { display: none; }
+.receipt-details-dialog[open] { display: flex; flex-direction: column; }
+.receipt-details-dialog::backdrop { background: #0008; }
+.receipt-details-dialog > header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--line); }
+.receipt-details-dialog h2 { margin: 0; font-size: 1.15rem; }
+.receipt-details-dialog [data-close-receipt] { width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--surface); font-size: 1.4rem; }
+.receipt-details-body { overflow-y: auto; padding: 1rem 1.25rem; overscroll-behavior: contain; }
+.receipt-details-body dl { margin: 0 0 1rem !important; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: .5rem 1rem; }
+.receipt-details-body :is(dt,dd) { margin: 0; overflow-wrap: anywhere; }
+.receipt-details-body dd p { margin: 0; }
+.receipt-details-dialog :is(button, a):focus-visible, [data-receipt-details] > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.receipt-undo-help { color: var(--muted); font-size: .875rem; margin-top: 1rem; }
+.receipt-undo-button { min-height: 44px; padding: .6rem 1.2rem; border: 1px solid var(--line); border-radius: .65rem; background: var(--ink); color: var(--surface); font-weight: 600; }
+.receipt-undo-button:disabled { opacity: .6; }
+[data-receipt-undo-status]:empty { display: none; }
+@media(max-width: 480px) { .receipt-details-body dl { grid-template-columns: 1fr; gap: .25rem; } .receipt-details-body dd { margin-bottom: .6rem; } }

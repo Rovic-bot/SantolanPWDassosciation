@@ -1,0 +1,8 @@
+<dl class="event-schedule">
+<dt>Assistance type</dt><dd>{{ program.assistance_type }}</dd>
+<dt>Application period</dt><dd>{{ program.registration_opens_at|date:'M j, Y, g:i A' }} to {{ program.registration_closes_at|date:'M j, Y, g:i A' }}</dd>
+<dt>Program period</dt><dd>{% if program.starts_at %}{{ program.starts_at|date:'M j, Y, g:i A' }}{% else %}Start to be announced{% endif %} — {% if program.ends_at %}{{ program.ends_at|date:'M j, Y, g:i A' }}{% else %}End to be announced{% endif %}<br><span class="small text-secondary">Philippine time (Asia/Manila)</span></dd>
+<dt>Planned beneficiary slots</dt><dd>{{ program.capacity_label }}</dd>
+{% if program.amount != None %}<dt>Amount per beneficiary</dt><dd>PHP {{ program.amount|floatformat:2 }}</dd>{% endif %}
+{% if program.benefit %}<dt>Benefit</dt><dd>{{ program.benefit }}</dd>{% endif %}
+</dl>

@@ -1,0 +1,60 @@
+EWAF calculation details presentation - 2026-11-06
+
+Owner request
+Match the supplied calculation-table layout, display the score-summary total as
+a percentage, and remove its Applicant inputs link.
+
+Changes
+- Calculation details now uses a rounded table with criterion icons and short
+  descriptions, accepted inputs, employment badges, percentage weight bars,
+  aligned contribution points, and an inset formula footer.
+- Highlighting follows the existing largest_contribution flag in the saved
+  trace. It is not hardcoded to an applicant, criterion, sample weight or score.
+- The summary displays the existing 0-100 score with a percent sign. Its
+  Applicant inputs link is removed.
+- Household members remain distinct from dependents. Historical/missing
+  criteria, retained 4Ps labels and detailed normalization remain intact.
+- Styling uses shared theme tokens, retains horizontal overflow for narrow
+  tables, and avoids an inner vertical scrollbar or duplicate glass panel.
+- No service, model, scoring formula, saved calculation, ranking, selection or
+  database schema was changed.
+
+Checks
+Read-only RequestFactory renders of retained calculations 23, 37 and 38 passed:
+percentage output, removed link, four headings, one weight bar per included
+criterion, and leading-row flags matching retained traces. Run payloads remained
+identical. CaptureQueriesContext confirmed no data-changing SQL in the probes.
+manage.py check --settings=config.current_development_settings --database default
+reported no issues. git diff --check passed.
+
+Collected updated static assets and restarted only the retained local web
+process on port 8013; the existing MySQL connection remained usable.
+Native Brave verification showed the updated 21.24% summary, criterion table,
+accepted inputs, weight bars and highlighted household contribution on run 23.
+The layout was inspected at desktop and the user's narrower browser window.
+The separate floating call window obscured part of the right edge; no browser
+screenshot containing that call was saved to the repository. No live decision
+or other application record was changed during verification.
+
+Follow-up: centered percentage chart
+The owner requested a larger centered score surrounded by a circular chart.
+The summary now uses a responsive SVG ring driven by the existing saved 0-100
+score, with a larger percentage and its label centered inside. The chart fills
+the card's available content width (up to 340px) and its flexible middle area;
+rank comparison counts are centered beneath it. Zero scores omit the colored
+arc. The SVG is decorative to assistive technology and its containing graphic
+has a readable score label. No chart library or additional request was added.
+The retained 97.94%, 63.65% and 65.04% runs rendered matching ring percentages,
+with identical saved payloads and no data-changing SQL. Django checks and diff
+checks passed. Updated assets and the web process were loaded locally without
+restarting MySQL. Native browser inspection confirmed the centered 97.94% ring
+and clear inner label at the user's narrow window size.
+
+Size correction
+The owner clarified that the original card height was sufficient. Capped the
+ring at 180px instead of 340px, reduced vertical padding, and scaled the centered
+percentage to the smaller ring. Native browser verification of Marco's 17.57%
+card showed the full compact summary aligned with the adjacent contributions
+card, with its label and comparison counts visible. Static assets and the web
+process were refreshed; diff checks passed. This is a CSS-only presentation
+correction with a stylesheet cache-version update.

@@ -1,0 +1,53 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}PDAO application · Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/member-record.css' %}?v=20261106-activity-disclosures"><link rel="stylesheet" href="{% static 'css/pdao-record.css' %}?v=20261109-review"><link rel="stylesheet" href="{% static 'css/pdao-claim.css' %}?v=20261109"><link rel="stylesheet" href="{% static 'css/membership-review-dialogs.css' %}?v=20261108-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/member-record.js' %}?v=20261106-registration-tabs" defer></script><script src="{% static 'js/prpwd-review.js' %}?v=20261105" defer></script><script src="{% static 'js/pdao-review.js' %}?v=20261109-review" defer></script>{% endblock %}
+{% block content %}
+<div class="container content-section member-record pdao-record" data-record-content>
+  <div class="member-record-breadcrumbs">
+    {% include 'partials/member_navigation.html' %}
+    <a class="workspace-back" href="{% url 'membership:pdao_inbox' %}">← PDAO applications</a>
+  </div>
+  {% include 'partials/workspace_messages.html' %}
+  <div class="member-record-shell">
+    <header class="member-record-topbar">
+      <div class="member-record-brand">{% include 'members/record/icon.html' with name='document' %}<span>PDAO application</span></div>
+      <nav class="member-record-nav" aria-label="PDAO application sections"><a href="#pdao-overview">Overview</a><a href="#pdao-details">Application details</a><a href="#pdao-history">History</a></nav>
+      {% if perms.membership.print_pdaoregistration %}<a class="pdao-print-link" data-pdao-preview-open href="{% url 'membership:pdao_print' registration.pk %}">{% include 'members/record/icon.html' with name='print' %}Print or save PDF</a>{% endif %}
+    </header>
+    <div class="member-record-grid">
+      <div class="member-record-primary">
+      <aside class="member-record-profile-column" aria-label="Applicant and contact information">
+        <section class="member-identity-card">
+          <div class="member-record-avatar" aria-hidden="true">{{ pdao_summary.initials }}</div>
+          <div class="member-identity-caption"><h1>{{ submitted.full_name }}</h1><p>Application reference · {{ registration.short_reference }}</p></div>
+        </section>
+        <div class="member-record-stats">
+          <section class="member-record-stat"><h2>Received</h2><p>{{ registration.received_at|date:'M j' }}</p><span>{{ registration.received_at|date:'Y · g:i A' }}</span></section>
+          <section class="member-record-stat"><h2>Application status</h2><p class="pdao-status" data-state="{{ registration.status }}">{{ registration.get_status_display }}</p><span>{{ pdao_summary.channel }}</span></section>
+        </div>
+        <section class="member-record-card member-contact-card"><h2>Contact details</h2><dl><div><dt>Mobile number</dt><dd>{{ submitted.contact_number|default:'Not recorded' }}</dd></div><div><dt>Email address</dt><dd>{{ submitted.email|default:'Not recorded' }}</dd></div><div><dt>Landline</dt><dd>{{ submitted.landline|default:'Not recorded' }}</dd></div><div><dt>Residential address</dt><dd>{{ submitted.address|default:'Not recorded'|linebreaksbr }}</dd></div></dl></section>
+        <section class="member-record-card member-links-card"><h2>Submission details</h2><dl><div><dt>Application type</dt><dd>{{ submitted.application_type|default:'Not recorded' }}</dd></div><div><dt>Accomplished by</dt><dd>{{ submitted.accomplished_by|default:'Not recorded' }}</dd></div></dl></section>
+      </aside>
+      <div class="member-record-main-column">
+        <section class="member-record-card" id="pdao-overview"><div class="member-card-heading"><h2>Application overview</h2><span class="member-record-tag">PWD ID application</span></div>
+          <dl class="member-overview-grid"><div><dt>Date of birth</dt><dd>{% if pdao_summary.birthdate %}{{ pdao_summary.birthdate|date:'M j, Y' }}{% else %}{{ submitted.birthdate|default:'Not recorded' }}{% endif %}</dd></div><div><dt>Sex</dt><dd>{{ submitted.sex|default:'Not recorded' }}</dd></div><div><dt>Civil status</dt><dd>{{ submitted.civil_status|default:'Not recorded' }}</dd></div><div class="pdao-wide"><dt>Disability classification</dt><dd>{{ submitted.disability_types|join:', '|default:'Not recorded' }}</dd></div><div><dt>Employment</dt><dd>{{ submitted.employment_status|default:'Not recorded' }}</dd></div><div><dt>Existing PWD number</dt><dd>{{ submitted.pwd_number|default:'Not recorded' }}</dd></div></dl>
+          <p class="pdao-boundary-note">PDAO makes the final PWD ID decision. This record does not create an Association member.</p>
+        </section>
+        {% include 'membership/pdao/record_tabs.html' %}
+      </div>
+      </div>
+      <aside class="member-record-support-column" aria-label="Processing and history">
+        <section class="member-record-card pdao-processing" id="pdao-processing"><h2>Application progress</h2>
+          <ol class="pdao-progress"><li data-complete="true"><span aria-hidden="true">1</span><div>Received<small>Application saved</small></div></li><li data-complete="{% if registration.status == 'ready' or registration.status == 'forwarded' %}true{% else %}false{% endif %}"><span aria-hidden="true">2</span><div>Ready to forward<small>Review and preparation</small></div></li><li data-complete="{% if registration.status == 'forwarded' %}true{% else %}false{% endif %}"><span aria-hidden="true">3</span><div>Forwarded to PDAO<small>Manual forwarding recorded</small></div></li></ol>
+          <p class="pdao-status-help">{{ pdao_summary.status_help }}</p>
+          {% include 'membership/pdao/review_actions.html' %}
+        </section>
+        {% include 'membership/pdao/email_status.html' %}
+        <section class="member-record-card member-history-card" id="pdao-history"><h2>Processing history</h2><p>Latest activity first</p>{% for event in processing_history %}<article class="member-timeline-item"><p>{{ event.get_action_display }}</p><p class="small"><time datetime="{{ event.occurred_at|date:'c' }}">{{ event.occurred_at|date:'M j, Y · g:i A' }}</time>{% if event.actor_label %}<br>{{ event.actor_label }}{% endif %}</p></article>{% empty %}<p>No processing history recorded.</p>{% endfor %}</section>
+      </aside>
+    </div>
+  </div>
+</div>
+{% if perms.membership.print_pdaoregistration %}{% include 'membership/pdao/preview_dialog.html' %}{% endif %}
+{% endblock %}

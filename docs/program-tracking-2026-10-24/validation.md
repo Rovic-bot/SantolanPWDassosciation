@@ -1,0 +1,33 @@
+# Program Application Tracking — 24 October 2026
+
+## Authorized scope
+
+The owner requested account-free tracking of submitted program applications using the issued reference, with QR access where enabled, limited processing information, protected documents and personal assessments, and Association Help Desk support. This authorizes the new verification-based workflow below. Existing references are preserved. The retired bearer-token status and QR endpoints remain HTTP 410; possessing a reference or QR code never authorizes access.
+
+The implementation uses the existing Association identity-verification convention: application reference, PWD control number, full name, birthdate, and registered contact number. These details must match the applicant linked to that particular application. No account is created. This is separate from applying for a program, Association membership registration, PDAO form preparation, and assistance/referral tickets.
+
+## Behavior and privacy
+
+- Public entry points are in Programs, program details, the Home shortcut, Resources & Help, and the submission receipt. The receipt includes a link and optional locally generated QR image. Both open the same verification form with only the reference prefilled. The ordinary link remains available when QR display is disabled.
+- Successful verification rotates the browser session key and grants access to one application for 15 minutes by default. Only its reference, program name, submission date, broad progress, and Help Desk/Results guidance are shown. Documents, application answers, source snapshots, disability details, household/income information, scores, ranks, internal notes, and detailed assessments are not loaded by the tracking service or passed to its template.
+- Received covers pending initial photo verification. Clarification needed covers `NEEDS_INFORMATION`. Under review covers the photo-verified, eligibility-review, eligible, EWAF, ranked, and waitlisted states. Decision available covers verification failure, ineligibility, selected/not selected, completed, and closed. It directs the applicant to the Help Desk for their outcome and next steps; no exact selection outcome or reason is disclosed. Existing authorized Results publication remains separate. Unknown future states get Help Desk guidance, never an inferred decision. Cancelled programs display an additional cancellation notice.
+- Tracking continues after the application period closes or the program is archived. An inactive member can verify ownership of a prior application; this does not activate membership or authorize a new application. Archived member records require Help Desk assistance. Identity/version/status changes, reassignment to another member, expired or malformed grants, unsuccessful verification retries, and Finish tracking invalidate the relevant access.
+- Application processing updates do not invalidate a verified session; Refresh progress reads the current broad status. Staff workflow, eligibility, ranking, selection, actual release, publication and audit operations are unchanged.
+- Verification failures do not identify a mismatched field or disclose whether a reference exists. Fixed-window counters are shared across sessions, keyed by HMAC hashes of reference, control number and direct client address. Tracking uses separate namespaces in the existing verification-counter table. It ignores untrusted forwarded headers and fails closed if the counter store is unavailable.
+- All tracking responses use private/no-store caching and noindex/nofollow/noarchive. Forms preserve `Referrer-Policy: same-origin` for valid CSRF-protected POSTs. Finish tracking requires POST and CSRF. No CSRF exemptions or trusted `null` origins were added. Disabled tracking explicitly saves grant removal before its HTTP 503 response, because Django skips automatic session saving on 5xx responses.
+- Receipt QR retrieval requires the original receipt session and matching program. QR rendering uses the pinned `qrcode==8.2` library locally, never a third-party service. QR content contains a verification-page URL and reference only. It contains no bearer token, member identity or status. QR URLs use the current site origin; this development instance is local to the computer.
+
+Configuration: `PROGRAM_TRACKING_ENABLED=True`, `PROGRAM_TRACKING_QR_ENABLED=True`, and `PROGRAM_TRACKING_GRANT_SECONDS=900` are documented in `.env.example`. QR access can be disabled independently. The existing program-verification attempt limits and window duration are reused. No migration or new status values were required.
+
+## Verification and preservation
+
+- **64 source tests passed:** tracking security and behavior, existing public receipts, and existing program application workflows. This includes every processing state, incorrect/foreign identity, reference-only denial, session rotation/revocation/expiry, record changes, deadlines and inactivity, rate limits, actual CSRF enforcement, feature switches, locally rendered PNG QR payloads, and retired routes.
+- **65 runtime tests passed:** the same tracking and receipt checks plus the runtime-only secure program-intake integration. Both runs used fresh disposable MySQL databases, separate from application data.
+- Live HTTP checks passed for verified progress using an existing fictional application, rejection of incorrect details and reference-only requests, Finish tracking, real same-origin CSRF POSTs, cache/privacy headers, retired bearer routes, public shortcuts and existing public pages. Live checks changed only temporary browser sessions and verification counters.
+- Configuration/database checks and source/runtime migration checks passed. Python syntax and `git diff --check` passed. Browser visual inspection was not performed.
+- Exactly **18 scoped runtime files** were installed using before/staged hashes. Original copies and fingerprints remain private under `.local/program-tracking-20261024/`. The runtime Home template received only the tracking shortcut, preserving its independent content. No unrelated runtime files were replaced.
+- Before/after fingerprints confirmed **81,262 business rows across 107 tables** were unchanged, including applications, members, scores, selections, releases and audit history. Temporary session, login-counter and program-verification-counter tables were excluded from that comparison. No schema migration, record rewrite, reference change, publication or email sending occurred.
+
+Evidence: `source-tests.log`, `runtime-tests.log`, `migration-check.log`, `http-checks.json`, and `preservation-summary.json` in this directory.
+
+Running page: `http://127.0.0.1:8003/programs/tracking/`.

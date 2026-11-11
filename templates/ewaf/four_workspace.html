@@ -1,0 +1,45 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Fictional four-criterion workflow · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:development_lab' %}">Fictional EWAF development</a>
+<h1>Four-criterion development workflow</h1><h2 class="h5">{{ program.name }}</h2>
+<p role="status"><strong>Fictional disposable applications only. Operational EWAF remains disabled.</strong></p>
+<p>Association policy readiness: {{ readiness.state }}. Test parameters below are not approved Association rules.</p>
+<ul>{% for item in readiness.pending %}<li>{{ item }}</li>{% endfor %}</ul>
+<h2 class="h5">Complete application inventory</h2>
+<p>All {{ inventory|length }} retained applications are listed. The development ceiling is 128; larger pools are rejected without truncation. Pending, incomplete and disputed cases require review.</p>
+<p>PR is mandatory program-specific eligibility, with documented functional need, consent and an accessible assessment alternative under the explicit fictional rubric. A disability classification alone is insufficient.</p>
+<div class="table-responsive"><table class="table"><caption>Verified fictional application evidence; these are not live beneficiary results.</caption><thead><tr><th scope="col">Application</th><th scope="col">Status</th><th scope="col">Membership and eligibility</th><th scope="col">Current evidence</th><th scope="col">PR eligibility</th></tr></thead><tbody>
+{% for row in inventory %}<tr><th scope="row">{{ row.id }}</th><td>{{ row.status }}</td><td>{{ row.membership_and_eligibility|yesno:'Verified,Needs review' }}</td><td>{{ row.verified_evidence|yesno:'Verified,Needs review' }}</td><td>{{ row.program_relevance|yesno:'Supported,Needs review' }}</td></tr>{% endfor %}</tbody></table></div>
+{% for row in inventory %}<details><summary>Application {{ row.id }} readiness findings</summary><ul>{% for group, reasons in row.reasons.items %}{% for item in reasons %}<li>{{ group }}: {{ item.code }}</li>{% endfor %}{% endfor %}</ul></details>{% endfor %}
+<h2 class="h5">Four-criterion AHP and test configuration</h2>
+<p>Column-normalized row averages derive the weights. Consistency checks how well the comparisons agree; it does not approve scoring policy. PR has no numerical contribution.</p>
+<dl>{% for code, weight in mathematical.weights.items %}<dt>{{ code }}</dt><dd class="text-break">{{ weight }}</dd>{% endfor %}<dt>Consistency ratio</dt><dd class="text-break">{{ mathematical.CR }} · {{ mathematical.reference_consistency }}</dd></dl>
+<details><summary>Explicit fictional measurement parameters</summary><div class="text-break">{% for code, rule in policy.proposal.criteria.items %}<h3 class="h6">{{ code }}</h3><p>{{ rule.measure }}. {{ rule.unit }}. Direction: {{ rule.direction }}. Bounds: {{ rule.bounds.lower }} to {{ rule.bounds.upper }}. {{ rule.observation_period }}. {{ rule.edge_cases }}.</p>{% endfor %}</div></details>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="configuration">
+<fieldset><legend class="h6">Guided fictional pairwise comparisons</legend>{{ configuration_form.non_field_errors }}
+{% for field in configuration_form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% for field in configuration_form.visible_fields %}<div class="mb-3">{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<p class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}</div>{% endfor %}
+<p>A retained revision invalidates the prior development result. This cannot authorize operational use.</p>
+<button class="btn btn-primary" type="submit">Retain fictional four-criterion configuration</button></fieldset></form>
+<h2 class="h5 mt-4">Calculation, explanation and history</h2>
+<a href="{% url 'ewaf:development_program' program.pk %}">Open complete-pool calculation and immutable history</a>
+{% for finding in findings %}<p role="status">{{ finding }}</p>{% endfor %}
+<h2 class="h5 mt-4">Reasoned human decision demonstration</h2>
+<p>Eligible, numerically comparable, selected and actually assisted are distinct. There is no business ranking or automatic tie-break. Preview a transient choice or record a fictional decision with immutable revision and audit history. Recording does not allocate a beneficiary slot, authorize assistance or publish a result.</p>
+{{ choice_form.non_field_errors }}
+{% if current and can_decide %}<form method="post">{% csrf_token %}
+{% for field in choice_form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% for field in choice_form.visible_fields %}<div class="mb-3">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+<button class="btn btn-primary" type="submit" name="action" value="record">Record fictional human decision</button>
+<button class="btn btn-outline-secondary" type="submit" name="action" value="choice">Demonstrate reasoned human decision</button></form>{% endif %}
+{% if choice %}<section aria-label="Transient fictional decision"><p role="status">Fictional choice: {{ choice.decision }}. Application {{ choice.application_id }}. Run {{ choice.run_id }}.</p><p>Reason: {{ choice.reason }}</p><p>Eligible: yes. Comparable: yes. Selected in demonstration: {{ choice.selected_in_demonstration|yesno:'yes,no' }}. Actually assisted: no. Saved: no.</p><p class="text-break">Decision preview digest: {{ choice.digest }}</p></section>{% endif %}
+{% if decision_history %}<section aria-label="Saved fictional human decisions"><h2 class="h5 mt-4">Saved fictional decision history</h2>
+<p>Showing {{ decision_history.rows|length }} of {{ decision_history.total }} decisions, page {{ decision_history.page }} of {{ decision_history.pages }}. Every entry is historical evidence of a human choice at its recorded time, not authority to release assistance. A replacement calculation or source change requires fresh review.</p>
+{% for row in decision_history.rows %}<article class="mb-3"><h3 class="h6">{{ row.decision }} · Revision {{ row.revision }}</h3>
+<p>Application {{ row.application_id }} · Run {{ row.run_binding_id }} · Predecessor {{ row.previous_id|default:'none' }}</p>
+<p>Reason: {{ row.reason }}</p><p>Recorded by {{ row.actor_label }} at {{ row.recorded_at }}. Saved: yes. Actually assisted: no.</p>
+<details><summary>Decision audit and calculation provenance</summary><p class="text-break">Decision {{ row.digest }}. Audit {{ row.audit.digest }}. Source generation {{ row.source_generation }}; authority generation {{ row.authority_generation }}; state revision {{ row.state_revision }}.</p><p class="text-break">Original calculation {{ row.run_digest }}. Graph {{ row.graph_digest }}.</p></details>
+</article>{% empty %}<p>No saved fictional decisions.</p>{% endfor %}
+<nav aria-label="Fictional decision history pages">{% if decision_history.previous_page %}<a href="?decision_page={{ decision_history.previous_page }}">Newer decisions</a>{% endif %} {% if decision_history.next_page %}<a href="?decision_page={{ decision_history.next_page }}">Older decisions</a>{% endif %}</nav></section>{% endif %}
+</div>{% endblock %}

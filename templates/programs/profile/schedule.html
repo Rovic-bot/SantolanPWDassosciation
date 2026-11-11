@@ -1,0 +1,14 @@
+<section class="profile-section profile-glass profile-schedule-section" aria-labelledby="program-schedule-title">
+  <header><span aria-hidden="true">02</span><div><h2 id="program-schedule-title">Schedule &amp; capacity</h2><p>All dates use Philippine Standard Time (UTC+8)</p></div></header>
+  <div class="profile-section-body">
+    <dl class="profile-schedule-facts">
+      {% include 'programs/profile/date_range.html' with label='Registration' start=program.registration_opens_at end=program.registration_closes_at start_label='Opens' end_label='Closes' %}
+      {% include 'programs/profile/date_range.html' with label='Program dates' start=program.starts_at end=program.ends_at start_label='Starts' end_label='Ends' %}
+    </dl>
+    {% include 'programs/profile/capacity.html' %}
+    <dl class="profile-schedule-options">
+      <div><dt>Assessment</dt><dd>EWAF required</dd></div>
+      <div><dt>Correction deadline</dt><dd>{% if program.resubmission_closes_at %}<time datetime="{{ program.resubmission_closes_at|date:'c' }}">{{ program.resubmission_closes_at|date:'M j, Y, g:i A' }}</time>{% else %}Not specified{% endif %}</dd></div>
+    </dl>
+  </div>
+</section>

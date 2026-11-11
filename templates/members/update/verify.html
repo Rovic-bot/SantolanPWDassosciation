@@ -1,0 +1,7 @@
+{% extends 'members/update/base.html' %}
+{% block update_content %}
+<h2 class="h4">Verify your member record</h2><p>Enter your PWD number and full name as saved in your record. Your information will open after email verification.</p>
+<form method="post" autocomplete="off" class="record-editor">{% csrf_token %}
+{% include 'membership/registration/fields.html' %}
+<button class="btn btn-primary" type="submit">Send verification code</button></form>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% if program_tracking_enabled %}
+<div class="program-receipt-tracking-content">
+  <h2 id="tracking-heading">Track your application</h2>
+  <p>Enter your application reference number to check its status. No member account is needed.</p>
+  <a class="program-receipt-track-button" href="{{ tracking_url }}" data-tracking-open>Track this application</a>
+  {% if program_tracking_qr_enabled %}<figure class="program-receipt-qr"><img src="{% url 'programs:tracking_receipt_qr' program.pk %}" alt="QR code opening the application tracking form" width="240" height="240"><figcaption class="visually-hidden">Scan to open the tracking form. You can also use the tracking link above.</figcaption></figure>{% endif %}
+</div>
+{% endif %}

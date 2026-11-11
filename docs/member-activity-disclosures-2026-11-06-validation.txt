@@ -1,0 +1,27 @@
+Member record card heights and expandable activity — 6 November 2026
+
+Owner-requested follow-up
+- Contact details and Association record share the available height so the left
+  column reaches the bottom of Registration information.
+- Program applications and Assistance history are native details/summary panels,
+  closed initially and independently expandable by mouse or keyboard.
+- Both panels span the identity and information columns, ending at Registration
+  information's right edge. Record management/history remains its own sidebar.
+- A shared primary grid keeps the same alignment in the full page and dialog;
+  the narrow layout returns to a single column with natural card heights.
+- Pagination retains the relevant panel open and targets its section anchor.
+  Existing record permissions, links, release records, and nested receipt details
+  remain unchanged. No data/model/business-rule changes were made.
+
+Validation
+- members.test_record_layout and members.test_original_registration: 3 passed
+  using a fresh disposable MySQL instance; no application database used for tests.
+- Django database check and git diff --check passed.
+- Collected assets and restarted only the retained local web process. The MySQL
+  process stayed running; no schema or member data changes were performed.
+- Native browser on the existing fictional member record: Association record and
+  Registration information bottoms align; both activity panels stop at the same
+  right edge as Registration information. Both begin collapsed. Clicked Program
+  applications to reveal its entries, collapsed it, and independently expanded
+  Assistance history to reveal the existing release entries, then collapsed it.
+- CSS cache version: 20261106-activity-disclosures on full page and directory.

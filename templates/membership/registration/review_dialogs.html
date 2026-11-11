@@ -1,0 +1,17 @@
+{% if registration_pending and can_decide %}
+<dialog class="membership-review-dialog" id="membership-pending-dialog" aria-labelledby="pending-dialog-title"{% if pending_email_form.errors %} data-open-on-load{% endif %}>
+  <header><h2 id="pending-dialog-title">Leave application pending</h2><button type="button" class="membership-dialog-close" data-dialog-close aria-label="Close pending message">×</button></header>
+  <form method="post" class="membership-pending-form">
+    {% csrf_token %}<input type="hidden" name="action" value="send_pending_email">
+    {% for field in pending_email_form.hidden_fields %}{{ field }}{% endfor %}
+    <p>The application will stay pending. Send the applicant the reason and next steps.</p>
+    <p class="pending-recipient"><strong>To:</strong> {{ pending_email_recipient|default:'No saved email address' }}</p>
+    <p class="form-text">Uses the email address saved on this application.</p>
+    {% if pending_email_form.errors %}<div role="alert">{{ pending_email_form.non_field_errors }}{% for field in pending_email_form.hidden_fields %}{{ field.errors }}{% endfor %}</div>{% endif %}
+    <label for="{{ pending_email_form.reason.id_for_label }}">{{ pending_email_form.reason.label }} *</label>
+    {{ pending_email_form.reason }}{{ pending_email_form.reason.errors }}
+    <footer><button type="button" class="btn btn-outline-secondary" data-dialog-close>Cancel</button><button type="submit" class="btn btn-primary"{% if not pending_email_recipient %} disabled{% endif %}>Send email and keep pending</button></footer>
+  </form>
+</dialog>
+{% endif %}
+{% include 'membership/registration/form_preview_dialog.html' %}

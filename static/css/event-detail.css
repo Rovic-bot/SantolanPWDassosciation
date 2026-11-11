@@ -1,0 +1,19 @@
+/* Event-specific content inside the shared Program Details card layout. */
+.event-profile .profile-operation { padding-bottom: .9rem; }
+.event-profile .profile-overview .profile-prose { min-height: 5rem; }
+.event-profile .event-location { display: flex; align-items: start; gap: .8rem; }
+.event-location-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: 0 0 2.5rem; color: var(--cyan); border: 1px solid color-mix(in srgb, var(--cyan) 25%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--cyan) 8%, transparent); }
+.event-location p { font-size: .8rem; line-height: 1.7; font-weight: 600; margin: .25rem 0 0; overflow-wrap: anywhere; }
+.event-image-preview { padding: 1.15rem; }
+.event-image-preview img { display: block; max-width: 100%; width: auto; height: auto; max-height: 360px; object-fit: contain; margin-inline: auto; border-radius: .5rem; }
+.event-image-empty { color: var(--muted); font-size: .76rem; margin: 0; }
+.event-publication-facts { border-top: 1px solid var(--glass-line); border-bottom: 1px solid var(--glass-line); padding: .65rem 0; margin: .8rem 0 .2rem; font-size: .7rem; }
+.event-publication-facts > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .35rem .75rem; }
+.event-publication-facts dt { color: var(--muted); font-weight: 400; }
+.event-publication-facts dd { margin: 0; }
+.event-status-guidance { color: var(--muted); font-size: .72rem; line-height: 1.6; }
+@container program-profile (max-width: 599px) {
+  .event-profile .profile-header-side { justify-content: stretch; }
+  .event-profile .profile-actions > .btn { width: 100%; }
+  .event-image-preview { padding: 1rem; }
+}

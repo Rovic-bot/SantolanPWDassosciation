@@ -1,0 +1,9 @@
+<div>
+  <dt>{{ label }}</dt>
+  <dd class="profile-date-range">
+    {% if start or end %}
+      <strong>{% if start %}<time datetime="{{ start|date:'c' }}" title="{{ start_label }} {{ start|date:'M j, Y, g:i A' }}">{% if end and start|date:'Y' == end|date:'Y' %}{{ start|date:'M j' }}{% else %}{{ start|date:'M j, Y' }}{% endif %}</time>{% else %}<span>Not specified</span>{% endif %} &ndash; {% if end %}<time datetime="{{ end|date:'c' }}" title="{{ end_label }} {{ end|date:'M j, Y, g:i A' }}">{{ end|date:'M j, Y' }}</time>{% else %}<span>Not specified</span>{% endif %}</strong>
+      <small>{% if start %}<span>{{ start_label }} {{ start|date:'g:i A' }}</span>{% endif %}{% if end %}<span>{{ end_label }} {{ end|date:'g:i A' }}</span>{% endif %}</small>
+    {% else %}<span class="profile-unspecified">Not scheduled</span>{% endif %}
+  </dd>
+</div>

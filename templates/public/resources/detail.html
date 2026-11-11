@@ -1,0 +1,8 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}{{ resource.title }} · Resources & Help{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}<section class="page-hero"><div class="container"><p class="eyebrow">RESOURCES &amp; HELP</p><h1 translate="no">{{ resource.title }}</h1></div></section>
+<article class="container content-section resident-columns"><section class="resident-panel"><p><a href="{% url 'core:resources' %}#{{ resource_key }}">All resource topics</a></p>
+<div translate="no">{{ resource.body|linebreaks }}</div>
+</section><aside class="resident-aside"><h2>Source information</h2><dl><dt>Responsible office or provider</dt><dd>{{ resource.provider }}</dd><dt>Source review date</dt><dd><time datetime="{{ resource.reviewed_on }}">{{ resource.reviewed_on }}</time></dd><dt>Official source</dt><dd><a href="{{ resource.source_url }}" rel="noopener noreferrer">Read the source on the external website</a></dd></dl>
+<p><a href="{% url 'core:contact' %}">Request assistance or report outdated information to the Help Desk</a></p></aside></article>{% endblock %}

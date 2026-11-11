@@ -1,0 +1,60 @@
+Dashboard reference themes — November 1, 2026
+
+Implemented the supplied dark/light visual direction on the existing dashboard:
+large blue-accent heading, navy and pale-blue backgrounds, gradient panels,
+rounded cards, blue/cyan charts, event heatmap, and saved theme preference.
+The theme is scoped to the dashboard; existing navigation, permissions, all six
+metrics, ten visualizations, date filters, source definitions and data tables remain.
+No sample numbers, new business metrics, schema changes or data mutations.
+
+Changed: templates/admin_portal/dashboard.html, static/css/dashboard.css,
+static/js/dashboard.js; added static/js/dashboard-theme.js and
+scripts/dashboard_themes_browser.cjs (adapted from the existing chart harness).
+Pre-existing untracked Assets/ and dashboard-reference evidence preserved.
+
+Validation actually run:
+- 22 analytics tests passed in 1.258s on a fresh native MySQL disposable database,
+  using scripts/g12_test_runner.py and RegistrationIntakeTestRunner.
+- node scripts/dashboard_themes_browser.cjs passed. Synthetic rendered fixtures;
+  GET-only local requests; nine SVGs plus heatmap and all ten data tables reconcile.
+- 1440, 1024, 768, 390, 320px: no page overflow or clipped chart labels.
+- Light/dark switch and reload persistence, filters and keyboard disclosures pass.
+- High contrast, 200% text at 320px, forced colors, reduced motion, no-JS fallbacks.
+- Minimum tested high-contrast legend ratio 8.47:1. No JavaScript errors.
+- Django check --database default --settings=config.current_development_settings:
+  no issues. JS syntax checks and git diff --check passed.
+- Dark desktop and light desktop screenshots visually inspected.
+
+Images here contain synthetic test data only. Actual screen reader and user
+acceptance testing were not performed. Full repository suite was not run.
+No application migrations, release/ranking/publication changes or deployment.
+
+Follow-up: Display preferences visibility fix (November 1, 2026)
+The widget inherited dark-mode light text but retained its original pale surfaces.
+Scoped dashboard overrides now use opaque theme-aware backgrounds for the Display
+button and panel, with visible borders. The text-size select changes theme without
+a background-only transition that briefly mismatched its foreground color.
+Dashboard CSS cache version bumped to 20261101-display-fix.
+
+Focused read-only Chrome checks used existing synthetic HTML and current assets:
+- Dark/light at 1440px and 390px, high contrast both off and on: all sampled button,
+  title, close, label, hint, dropdown and reset text contrast ratios >= 4.5:1.
+  Minimum: dark 8.46:1, light 5.01:1, high contrast 7.77:1.
+- No page or panel horizontal overflow; Escape closes and restores visible focus.
+- At 320px/200% text, Reset remains reachable by scrolling/focus; forced-colors
+  screenshot captured. No JavaScript errors or non-GET/external requests.
+- Dark and light mobile screenshots visually inspected.
+No backend changes; analytics suite was not rerun for this CSS-only follow-up.
+
+Follow-up: missing live theme toggle (November 1, 2026)
+The retained development web process ran with use_reloader=False and continued
+serving the old cached dashboard template, while static CSS updates were live.
+The old template omitted dashboard-theme.js, so the toggle could not initialize.
+Restarted only the verified web process, matching its health response against
+server.json and the retained instance manifest. The same native MySQL process and
+an existing SELECT connection remained alive throughout. No migrations or data
+changes were performed. No further source change was needed.
+Verified the actual authenticated dashboard in the user's Brave window at
+http://127.0.0.1:8013/dashboard/: updated two-line heading, Apply filters button,
+and visible DARK MODE toggle immediately before Public website (currently light).
+This verification used the live page, not intercepted fixture HTML.

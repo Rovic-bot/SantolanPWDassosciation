@@ -1,0 +1,15 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Event attendance · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container content-section text-break">
+<a class="workspace-back" href="{% url 'events:manage_detail' event.pk %}">← Event review</a>
+<p class="eyebrow mt-4">OPEN PARTICIPATION</p><h1>Event attendance</h1><h2 class="h4">{{ event.title }}</h2>
+<p>Record selected Verified Members from the linked Program Application. Historical attendance remains available for audited corrections.</p>
+<p><strong>{{ attended_count }}</strong> attended in this roster. Legacy registrations are kept separately and are not included in this count.</p>
+{% include 'partials/workspace_messages.html' %}
+<div class="workspace-actions mb-4">{% if perms.events.add_eventattendance %}<a class="btn btn-primary" href="{% url 'events:attendance_create' event.pk %}">Record attendee</a>{% endif %}{% if perms.events.view_eventregistration %}<a href="{% url 'events:registrations' event.pk %}">Legacy registrations and attendance</a>{% endif %}</div>
+<p class="form-text">Search by the full reference (for example, ATT-000123) or just its digits. Original references also work.</p>
+<form method="get" data-auto-filter class="application-filters row g-3 align-items-end mb-4"><div class="col-md-6"><label class="form-label" for="attendance-query">Attendee name or reference</label><input class="form-control" id="attendance-query" name="q" value="{{ query }}" maxlength="200"></div><div class="col-md-3"><label class="form-label" for="attendance-status">Status</label><select class="form-select" id="attendance-status" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><div class="col-md-3"><button class="btn btn-primary" type="submit">Filter attendance</button></div></form>
+<div class="table-responsive application-table" tabindex="0" role="region" aria-label="Event attendance roster"><table class="table align-middle"><caption class="visually-hidden">Administrative attendance for {{ event.title }}</caption><thead><tr><th scope="col">Attendee</th><th scope="col">Reference</th><th scope="col">Status</th><th scope="col">Recorded</th></tr></thead><tbody>{% for item in page_obj %}<tr><th scope="row"><a href="{% url 'events:attendance_detail' event.pk item.pk %}">{{ item.attendee_name }}</a></th><td>{{ item.short_reference }}</td><td>{{ item.get_status_display }}</td><td>{{ item.recorded_at|date:'M j, Y, g:i A' }}</td></tr>{% empty %}<tr><td colspan="4" class="table-empty">No attendance records match.</td></tr>{% endfor %}</tbody></table></div>
+{% include 'partials/page_links.html' with pagination_label='Attendance pages' %}
+</div>{% endblock %}

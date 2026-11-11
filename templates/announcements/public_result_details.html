@@ -1,0 +1,96 @@
+<section class="public-result" data-public-result aria-label="Official program results">
+    {% if show_heading %}<h2 class="result-program-title" translate="no">{{ results.program_name }}</h2>{% endif %}
+    <div class="result-intro-grid">
+        <div class="result-intro-copy">
+        <section class="result-overview" aria-label="Program overview">
+            <h3>{% include 'public/icon.html' with name='info' %}Program overview</h3>
+            <div class="result-prose" translate="no">{% if results.description %}{{ results.description|linebreaks }}{% else %}<p>No overview was included in this published result.</p>{% endif %}</div>
+        </section>
+
+        {% if results.selection_reason or results.selection_method %}
+        <section class="result-criteria" aria-label="Selection criteria">
+            <span class="result-criteria-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18m-5 0h10M4 6h16M6 6l-4 8h8L6 6Zm12 0-4 8h8l-4-8ZM2 14a4 4 0 0 0 8 0m4 0a4 4 0 0 0 8 0"/></svg></span>
+            <div><h3>Selection criteria</h3>
+                <div class="result-prose" translate="no">{% if results.selection_reason %}{{ results.selection_reason|linebreaks }}{% else %}{{ results.selection_method|linebreaks }}{% endif %}</div>
+            </div>
+        </section>
+        {% endif %}
+        {% if results.eligibility_explanation or results.ewaf_explanation %}
+        <details class="result-method"><summary>How applications were considered</summary>
+            {% if results.eligibility_explanation %}<p>{{ results.eligibility_explanation }}</p>{% endif %}
+            {% if results.selection_reason and results.selection_method %}<div translate="no">{{ results.selection_method|linebreaks }}</div>{% endif %}
+            {% if results.ewaf_explanation %}<p>{{ results.ewaf_explanation }}</p>{% endif %}
+        </details>
+        {% endif %}
+
+        <p class="result-privacy">{% include 'public/icon.html' with name='info' %}<span><strong>Privacy notice:</strong> Member names are masked. Match your application reference with the published entry. If a match is unclear, <a href="{% url 'core:contact' %}">contact the Help Desk privately</a>.</span></p>
+
+        </div>
+        <aside class="result-details-sidebar" aria-label="Program details">
+            <h3>Program details</h3>
+            <p class="result-timezone">Philippine time (UTC+8)</p>
+            <dl class="result-facts">
+                {% if schedule %}<div><dt>{% include 'public/icon.html' with name='clock' %}Registration window</dt><dd>{% include 'announcements/public_result_schedule.html' with start=schedule.registration_opens_at end=schedule.registration_closes_at start_label='Opens' end_label='Closes' hide_timezone=True %}</dd></div>{% endif %}
+                <div><dt>{% include 'public/icon.html' with name='calendar' %}Program schedule</dt><dd>{% if schedule %}{% include 'announcements/public_result_schedule.html' with start=schedule.starts_at end=schedule.ends_at start_label='Starts' end_label='Ends' hide_timezone=True %}{% else %}<span translate="no">{{ results.program_date|default:'See program schedule' }}</span>{% endif %}</dd></div>
+                <div><dt>{% include 'public/icon.html' with name='members' %}Available allocation</dt><dd class="result-allocation">{% if results.slots %}{{ results.slots }} beneficiary slot{{ results.slots|pluralize }}{% else %}Not specified in this result{% endif %}</dd></div>
+                <div class="result-organizer"><dt>{% include 'public/icon.html' with name='pin' %}Organizing body</dt><dd>{{ source_office }}</dd></div>
+            </dl>
+        </aside>
+    </div>
+
+    <section class="result-records" aria-label="Application and selection records">
+        <div class="result-records-heading">
+            <div class="result-records-title"><h3>Application &amp; selection records</h3><p>Search and compare submitted applications with the published beneficiary list.</p></div>
+            <div class="result-records-tools" data-result-tools hidden>
+                <label class="result-reference-search">
+                    <span class="visually-hidden">Search both tables by full application reference number or ending digits</span>
+                    <span class="result-search-control">{% include 'public/icon.html' with name='search' %}<input type="search" data-result-search maxlength="100" autocomplete="off" placeholder="Search reference ID"></span>
+                </label>
+                {% if applicants_available %}<div class="result-filters" role="group" aria-label="Filter submitted applications">
+                    <button type="button" data-result-filter="all" aria-pressed="true">Show All</button>
+                    <button type="button" data-result-filter="selected" aria-pressed="false">Selected ({{ recipients|length }})</button>
+                </div>{% endif %}
+            </div>
+        </div>
+
+        <div class="result-records-grid">
+            <section class="result-records-panel" aria-label="Submitted applications">
+                <header class="result-panel-heading"><h4><span class="result-heading-dot" aria-hidden="true"></span>Submitted applications</h4>{% if applicants_available %}<span class="result-count">{{ applicants|length }} applied</span>{% endif %}</header>
+                <div class="table-responsive result-table-scroll" role="region" tabindex="0" aria-label="Submitted application records">
+                    <table class="result-table"><caption class="visually-hidden">Published applications and selection status</caption><thead><tr><th scope="col">Masked name</th><th scope="col">Program reference</th><th scope="col">Status</th></tr></thead><tbody>
+                    {% for row in applicants %}
+                    <tr data-result-applicant data-result-selected="{{ row.selected|yesno:'true,false' }}">
+                        <td><div class="result-person"><span class="result-avatar" aria-hidden="true">{{ row.name|first }}</span><span translate="no">{{ row.name }}</span></div>{% if row.ambiguous %}<small>Similar entry. Confirm privately with the Help Desk.</small>{% endif %}</td>
+                        <td data-result-label="Program reference"><span class="result-reference" translate="no" data-result-reference>{{ row.reference }}</span></td>
+                        <td data-result-label="Status"><span class="result-status{% if row.selected %} result-status-selected{% endif %}">{{ row.display_status }}</span></td>
+                    </tr>
+                    {% empty %}<tr><td colspan="3" class="result-empty">{% if applicants_available %}No applications were included in this result.{% else %}The applicant list was not included in this published result.{% endif %}</td></tr>{% endfor %}
+                    {% if applicants %}<tr data-result-filter-empty hidden><td colspan="3" class="result-empty">No applications match your search and filter.</td></tr>{% endif %}
+                    </tbody></table>
+                </div>
+
+            </section>
+
+            <section class="result-records-panel result-recipients" aria-label="{% if receipts_only %}Confirmed recipients{% else %}Selected recipients{% endif %}">
+                <header class="result-panel-heading"><h4><span class="result-heading-dot" aria-hidden="true"></span>{% if receipts_only %}Confirmed recipients list{% else %}Selected recipients list{% endif %}</h4><span class="result-count">{{ recipients|length }} {% if receipts_only %}received{% else %}selected{% endif %}</span></header>
+                <div class="table-responsive result-table-scroll" role="region" tabindex="0" aria-label="Published recipient records">
+                    <table class="result-table"><caption class="visually-hidden">Published recipients and reported assistance receipt</caption><thead><tr><th scope="col">Recipient</th><th scope="col">Reference ID</th><th scope="col">Claim status</th></tr></thead><tbody>
+                    {% for row in recipients %}
+                    <tr data-result-recipient><td><div class="result-person"><span class="result-recipient-check">{% include 'programs/ui_icon.html' with name='check' %}</span><span translate="no">{{ row.name }}</span></div>{% if row.ambiguous %}<small>Similar entry. Confirm privately with the Help Desk.</small>{% endif %}</td>
+                        <td data-result-label="Reference ID"><div class="result-reference-with-copy"><span class="result-reference" translate="no" data-result-reference>{{ row.reference }}</span><button class="result-copy" type="button" data-result-copy data-result-tools hidden aria-label="Copy published reference for {{ row.name }}">{% include 'programs/ui_icon.html' with name='copy' %}</button></div></td>
+                        <td data-result-label="Claim status"><span class="result-status{% if row.received %} result-status-selected{% else %} result-status-pending{% endif %}">{% if row.received %}Received{% elif results.claim_status_current %}Not recorded{% else %}Not reported{% endif %}</span></td>
+                    </tr>
+                    {% empty %}<tr><td colspan="3" class="result-empty">No {% if receipts_only %}recipients{% else %}selected members{% endif %} in this published result.</td></tr>{% endfor %}
+                    {% if recipients %}<tr data-result-recipient-empty hidden><td colspan="3" class="result-empty">No selected recipients match your reference.</td></tr>{% endif %}
+                    </tbody></table>
+                </div>
+
+            </section>
+        </div>
+        <footer class="result-records-footer">
+            <div><p data-result-applicant-count>{% if applicants_available %}Showing {{ applicants|length }} published application{{ applicants|length|pluralize }}.{% else %}Only information included in this publication is shown.{% endif %}</p><p data-result-recipient-count hidden></p></div>
+            <p class="result-claim-note">{% if results.claim_status_current %}Claim status reflects current recorded assistance releases. Selection alone does not confirm receipt.{% elif receipts_only %}Only confirmed assistance receipts included in this result are shown.{% else %}Selection does not confirm release. Claim status is shown only when reported in the published result.{% endif %}</p>
+        </footer>
+        <p class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-result-status></p>
+    </section>
+</section>

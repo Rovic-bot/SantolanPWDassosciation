@@ -1,0 +1,14 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Community Assistance Desk · Santolan PWD{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Resources & Help' label='Member assistance' title='Community Assistance Desk' intro='Verified Association members can ask for financial, educational, medical or other assistance and referral guidance.' icon='help' only %}
+<div class="container content-section resident-columns"><section class="resident-panel"><p class="alert alert-info">{{ notice }}</p>
+<h2 class="h4">How it works</h2><ol><li>Verify your membership using your registered details. No member account is needed.</li><li>Provide your email address, subject, assistance type and concern. Select Add supporting evidence to attach one file if available; you may provide it later by email or onsite.</li><li>Keep the unique reference number shown after submission. An acknowledgment containing your request details and reference is sent from the Association email address.</li><li>Authorized personnel review your ticket and provide updates or further instructions by email or at the Help Desk.</li></ol>
+<p>Choose Continue a conversation and enter your private conversation reference to return. Keep it private. No member account is needed.</p>
+{% if enabled %}<a class="btn btn-primary" href="{% url 'assistance:referral_verify' %}">Verify membership and start a request</a>{% else %}<p>Online requests are not currently available. Please contact the Help Desk.</p>{% endif %}
+</section><aside class="resident-aside"><h2 class="h4">Your information</h2><p>Your request, contact details and supporting evidence are kept private for authorized Association personnel to process and follow up. Request details and updates are sent to the email address you provide. Supporting files are kept in the private system and are not attached to acknowledgment emails. Share only evidence relevant to your concern. Contact the Association Help Desk about corrections or privacy requests.</p>
+
+<h2 class="h4 mt-4">Not an Association member?</h2><p>Visit <a href="{% url 'core:resources' %}#resources-help">Resources &amp; Help → Where Can I Get Help?</a> for service information. You can also <a href="{% url 'core:membership' %}">read the membership guide</a>.</p>
+</aside></div>{% endblock %}

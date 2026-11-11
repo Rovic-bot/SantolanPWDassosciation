@@ -1,0 +1,100 @@
+Program application fields and registration record placement - 5 November 2026
+
+Owner authorization
+The owner explicitly requested PWD control number and full name only for the
+program membership check, reported a stale CSRF form after another-tab activity,
+removed the duplicate PWD ID and unconditional calendar-photo application inputs,
+and moved original membership registration information to the Member Directory.
+The quoted four-field form is program membership checking, not the Association
+onsite registration form. The complete onsite registration form is preserved.
+
+This request amends the previous four-field checking/universal-photo requirements
+for the enabled confirmed program application workflow. It does not change event
+registration, private tracking verification, disability eligibility, scoring,
+beneficiary selection, or release rules. No public tracker was added or enabled.
+The repository specification, Open Decisions and current validation records were
+reviewed. Unfinished work is retained; before-copies for changed existing files
+are under .local/program-application-20261105/before/.
+
+Implementation
+- Program checking collects only control number and full name. Exact normalized
+  matching, active/approved membership, current disability screening, throttling,
+  signed expiring grants, version checks and live member-change invalidation stay.
+  The applicant's stored contact/profile is not exposed or prefilled publicly.
+- The confirmed application form no longer asks for a duplicate PWD ID number or
+  a universal calendar photo. Admin can add a photo through Create Program,
+  Requirements, Document upload, with its required/optional setting and instructions.
+  Existing file validation, limits, private routes, correction history and human
+  eligibility review apply to those configured uploads.
+- New submissions retain the configured_program_requirements_v1 evidence policy
+  in their server-written source snapshot and start in Eligibility Review (or
+  Needs Information for reported changes). They are never labelled Photo Verified
+  merely because no calendar photo is required. Readiness diagnostics distinguish
+  Not required from Verified, while every configured required item still must pass.
+- Older applications without that policy marker keep their existing calendar-photo
+  gate, evidence, correction workflow, private files and manual review history.
+  The photo queue excludes only new not-required cases; legacy missing-photo cases
+  remain visible. Existing source context hashes retain their previous shape.
+- Default photo guidance for new unauthorised drafts describes configured evidence.
+  Existing published/custom text and historic application snapshots are not rewritten.
+- Shared POST-form handling refreshes existing CSRF inputs from Django's current
+  same-origin cookie immediately before submit/FormData creation and on return to
+  the tab. It supports the configured cookie name. It does not reload the form,
+  erase entered values, exempt CSRF, or replay a rejected write. If the cookie is
+  inaccessible, the original server-rendered token remains intact.
+- Member Directory shows all original registration profile/digital sections inline,
+  separately labelled from current member information. Original membership and
+  linked-intake permissions still apply, with the existing protected access audit.
+- View Applicant displays its submitted declarations, answers, configured documents,
+  applicable historical application photo, eligibility action and application history.
+  Original registration details, household/profile cards, membership portrait and
+  unrelated membership documents are absent. Member record opens the directory.
+
+Validation approach
+All test writes use scripts/g12_test_runner.py and RegistrationIntakeTestRunner
+against a fresh verified native-MySQL test_g12_disposable database and temporary
+private media. No test uses retained application data or sends email.
+
+The browser harness performs actual rejected disability screening, a real staff
+login in a second tab (confirming token rotation), an intentionally stale POST
+(still 403), successful resubmission of the already-open form without refresh,
+configured document upload, human eligibility review, and Member Directory review.
+Desktop/mobile captures assert no overflow and no JavaScript errors.
+
+The initial integration run passed 72 tests (santolan-g12-tests-c_4wcrhh). Subsequent
+checks found an old public-photo-text expectation and a browser fixture relying on
+eligibility statuses left by earlier tests. The assertion now matches the requested
+configured-evidence UI; the fixture seeds its own disposable lookup statuses.
+Three older Program Details text assertions were also aligned with the previously
+requested reference layout, retaining their draft, permission and publication checks.
+
+Final combined verification and local refresh results are recorded below.
+
+Final results
+- 131 distinct checks are validated. The combined run in
+  santolan-g12-tests-gnl3z93w passed 130 of 131 in 79.993 seconds. Its only failure
+  was another obsolete EWAF navigation-link assertion in the same older draft
+  creation test. That assertion now tests the actual authorized settings/evidence
+  pages and confirms the draft remains unauthorised; the final targeted rerun
+  passed in 0.832 seconds (santolan-g12-tests-pnky0b6o). No product code changed
+  between those runs. The combined command covered:
+  programs.test_application_workflow, programs.test_creation_builder,
+  programs.test_one_click_publication, programs.test_configured_application,
+  programs.test_direct_review, programs.test_information_update,
+  programs.test_revised_workflow, members.test_record_layout,
+  members.test_original_registration, ewaf.test_readiness,
+  scripts.program_application_browser_qa.
+- Chrome completed the actual cross-tab token-rotation retry, uploaded configured
+  evidence, and recorded Eligible with no fabricated PhotoVerification and no
+  beneficiary selection/release. Original registration was shown only in the
+  member record. Six synthetic desktop/mobile screenshots and results.json are
+  retained alongside this record. Layouts were visually inspected.
+- Django application/database checks report no issues. Migration drift reports
+  no changes. JavaScript syntax checks and git diff --check passed.
+- Collected the new CSRF helper (1 file, 241 unchanged). Refreshed only the
+  identity-checked web process at http://127.0.0.1:8013/. The running website's
+  helper bytes match the source, and its public verification form contains only
+  the two visible identity fields. Retained MySQL stayed running.
+- No migration, retained member/application edit, external deployment, email,
+  commit or push was needed. Refresh a browser page opened before this update
+  once to load the new shared form handler.

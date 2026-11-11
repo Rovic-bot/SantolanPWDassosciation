@@ -1,0 +1,122 @@
+Persistent EWAF twelve-member demo — 27 October 2026
+
+Owner scope: create a separate database containing the previously tested twelve
+fictional members and a program for manual testing. The original temporary test
+database was not retained. This is a newly created, persistent synthetic workspace.
+
+ACCESS
+Start EWAF Demo.cmd starts its own MySQL and web server. It preserves existing
+fixture data on subsequent starts. Stop EWAF Demo.cmd stops only this demo.
+Current URL: http://127.0.0.1:8012/ewaf-demo/
+Username: ewaf_demo
+The generated password is stored only in .local/ewaf-twelve-demo/LOGIN.txt.
+Start with Balanced -> Open ranking -> enter a reason -> Generate EWAF Ranking.
+The other four scenarios have their own bound versions. Changing the central
+Vault does not overwrite these historical program configurations.
+
+DATABASE AND SAFETY
+Database: santolan_ewaf_twelve_demo
+Native MySQL: 8.4.11, loopback port 3309; web: loopback port 8012.
+Dedicated datadir: .local/ewaf-twelve-demo/mysql-data
+Dedicated private storage: .local/ewaf-twelve-demo/private-media
+Independent credentials, Django secret, session/CSRF cookies and process metadata.
+The launcher does not load .env. It checks database name, datadir, server UUID
+and port. The application database account has privileges only on its own schema.
+No normal-system database connection, migration, member read or modification.
+No email delivery (in-memory mail backend), SMS integration or remote verification.
+Synthetic program publication for intake exists only on this loopback demo.
+No target-program beneficiary selection, assistance delivery or public result
+publication was performed. The 27 historical deliveries are synthetic fixtures.
+The eight Admin groups and existing Public Portal source are unchanged.
+The owner-defined 70% milestone remains unchanged. No commit, push or deployment.
+
+SCHEMA AND FIXTURE SETUP
+Created and verified a fresh dedicated MySQL instance, then created the fixture
+schema from current models with migrate --run-syncdb under demo-only settings.
+Historical migrations were neither applied nor faked. This setup validates current
+services and persisted workflow behavior, not a production migration/upgrade path.
+The ordinary startup migration guard is unchanged.
+
+Reused the already validated service preparation helpers in ewaf/test_synthetic_twelve.py,
+without invoking or bypassing the disposable test-runner capability. The persistent
+launcher has its own database identity checks. Existing registration validation,
+onsite handoff, synthetic manual membership verification, membership approval,
+program policy/terms approval, eligibility review, confirmed assistance release,
+evidence review, AHP projection and operational ranking services all executed.
+
+All 12 requested names and numerical inputs were retained. Official fixture control
+numbers are SYNTH-EWAF-20261027-001 through -012; T01–T12 are labels only.
+PA counts from actual non-voided synthetic releases:
+T01 3; T02 3; T03 0; T04 4; T05 2; T06 2; T07 1; T08 4;
+T09 2; T10 2; T11 1; T12 3. Total 27.
+T03 has an accepted synthetic history-coverage finding. Every applicant has accepted
+synthetic income, reviewed 4Ps, employment and household inputs. Employment = 1
+for Employed and 4 for Unemployed is restricted to the authorized fixture assumption.
+
+Four historical programs support the 27 release records. Five comparison programs
+each contain all twelve eligible applicants (60 target applications). Total:
+12 members, 9 programs, 87 applications, 27 releases, 60 accepted scoring reviews.
+Each comparison program is past its frozen application close and assessment cutoff.
+Assessment cutoff: 2026-10-11 01:00 UTC. Real runtime time is not frozen.
+Evidence-age and policy-validity rules continue to apply during future manual use.
+
+SCENARIOS
+Balanced: SES/ES/PA/HM = 25/25/25/25%; first Gia Testgolf.
+SES Focus: 62.5/12.5/12.5/12.5%; first Ana Testalpha.
+ES Focus: 12.5/62.5/12.5/12.5%; first Ben Testbravo.
+PA Focus: 12.5/12.5/62.5/12.5%; first Cora Testcharlie.
+HM Focus: 12.5/12.5/12.5/62.5%; first Dan Testdelta.
+Actual approved AHP projections for these vectors equal their requested weights.
+All initial 60 full-precision scores and competition ranks matched the independent
+rational oracle. The complete prior comparison report remains in
+docs/ewaf-synthetic-twelve-2026-10-27/test-report.html.
+
+VALIDATION EXECUTED
+1. Fresh MySQL identity and empty-schema checks: passed.
+2. Service fixture creation and 60 exact-score/rank assertions: passed.
+3. Django system check against the separate database: passed, no issues.
+4. Chrome/Playwright real login, anonymous redirect, five programs, 60 displayed
+   scores/ranks and enabled Generate controls: passed.
+5. Balanced generation through a real browser POST: passed. A sixth calculation
+   now remains saved alongside the initial five. Earlier calculations are retained.
+6. Mobile 390px width and JavaScript-error checks: passed.
+7. Three full stop/start cycles: passed after correcting the new Windows launcher
+   to record the child interpreter PID reported by its own server health response.
+8. Restart checks: every retained business-model row hash and every private file
+   hash matched. Authentication sessions and login-rate counters are excluded;
+   a concurrent login attempt updated LoginWindow during the final check, with
+   no change to business records. Six stored calculations passed integrity and exact-score
+   verification. Evidence: ewaf-twelve-demo-2026-10-27/persistence-results.json.
+9. SHA-256 comparison of 1,331 pre-existing project files: zero changed.
+10. Python AST syntax, Node syntax, git diff --check: passed. Git emitted only
+    pre-existing CRLF normalization notices.
+
+Validation harness corrections: tied-rank cells include explanatory text, so the
+browser harness was corrected to parse the leading integer. The persistence probe
+was corrected to select the latest versioned program configuration instead of
+assuming one record. These were harness errors; no scoring rules were changed.
+The first stop attempt refused a mismatched PID; inspection confirmed the venv
+launcher and its child Python process. The launcher was fixed and both subsequent
+stop/start cycles succeeded, followed by a successful final restart. No unrelated process was stopped.
+
+The broad historical/security suites were not rerun in this persistence follow-up;
+their actual results and remaining pre-existing test mismatches are documented in
+the previous twelve-member report. This follow-up does not claim production-policy
+activation or production migration readiness.
+
+NEW PROJECT FILES (no pre-existing files modified)
+Start EWAF Demo.cmd
+Stop EWAF Demo.cmd
+config/ewaf_twelve_demo_settings.py
+scripts/ewaf_twelve_demo.py
+scripts/ewaf_twelve_demo_seed.py
+scripts/ewaf_twelve_demo_web.py
+scripts/ewaf_twelve_demo_browser.cjs
+templates/ewaf/twelve_demo.html
+docs/ewaf-twelve-demo-2026-10-27-validation.txt
+docs/ewaf-twelve-demo-2026-10-27/ contains browser-results.json,
+persistence-results.json, source-preservation.json, demo-programs.png,
+demo-programs-mobile.png, balanced-ranking.png, ses-ranking.png,
+es-ranking.png, pa-ranking.png and hm-ranking.png.
+All generated database files, private media, credentials, logs and temporary
+persistence probes remain under the ignored .local/ewaf-twelve-demo directory.

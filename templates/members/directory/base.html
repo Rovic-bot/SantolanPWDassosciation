@@ -1,0 +1,6 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Member directory · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} member-directory-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-directory.css' %}?v=20261110-updates"><link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/record-dialog.css' %}?v=20261103"><link rel="stylesheet" href="{% static 'css/member-record.css' %}?v=20261106-activity-disclosures">{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True member_directory=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/member-directory.js' %}?v=20261110-updates" defer></script><script src="{% static 'js/record-dialog.js' %}?v=20261111-processing" defer></script><script src="{% static 'js/member-record.js' %}?v=20261106-registration-tabs" defer></script>{% endblock %}

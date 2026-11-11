@@ -1,0 +1,22 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><script src="{% static 'js/member-profile.js' %}" defer></script><script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script>{% endblock %}
+{% block title %}Update applicant information &middot; Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section membership-record">
+<p><a href="{% url 'programs:application_detail' application.program_id application.pk %}">Return to application review</a></p>
+<h1>Update applicant information</h1><p>{{ application.short_reference }} &middot; {{ application.member.full_name }}</p>
+{% if declaration.current_information == 'changed' or declaration.current_information == 'uncertain' %}
+<section class="ui-panel mb-4" aria-labelledby="reported-change-heading"><h2 id="reported-change-heading" class="h4">Reported change</h2><p>Applicant declaration: <strong>{{ declaration.current_information|capfirst }}</strong></p>{{ declaration.change_details|linebreaks }}
+{% if confirmation_status.resolved %}<p class="text-success">This report has been reviewed against the current member information.</p>{% endif %}</section>
+{% if can_update_information %}
+<p>Use this editor to confirm information with the member at the barangay office. Update the fields if needed, or save your review if the record is already correct. You can also return to the application and mark eligibility without changing this record.</p>
+<p class="small text-secondary">The original submitted report and previous member details remain in the history.</p>
+<form method="post" class="membership-form record-editor" id="reported-information-form">{% csrf_token %}
+{% if form.member_profile_format %}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% include 'membership/registration/fields.html' with public_profile_layout=True %}
+<div class="profile-section">{% include 'membership/field.html' with field=form.notes %}</div>
+{% else %}{{ form.non_field_errors }}{% include 'members/profile_form.html' %}{% endif %}
+<div class="workspace-actions"><button class="btn btn-primary" type="submit">Save reviewed information</button><a href="{% url 'programs:application_detail' application.program_id application.pk %}">Cancel</a></div></form>
+{% else %}<p>This application has a final or closed decision. Return it for review before updating its information.</p>{% endif %}
+{% else %}<p>No change report needs review for this application.</p>{% endif %}
+</div>{% endblock %}

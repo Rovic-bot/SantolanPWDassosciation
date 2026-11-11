@@ -1,0 +1,5 @@
+{% extends 'public/base.html' %}{% load static %}
+{% block public_class %}section-page {% block section_class %}{% endblock %}{% endblock %}
+{% block final_styles %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/public-sections.css' %}?v=20261103-blue">
+{% endblock %}

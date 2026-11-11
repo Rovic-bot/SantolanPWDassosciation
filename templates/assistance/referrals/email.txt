@@ -1,0 +1,24 @@
+{% autoescape off %}Hello {{ ticket.full_name }},
+
+{% if acknowledgment %}The Santolan PWD Association has received your assistance or referral request.{% else %}The Santolan PWD Association has updated your assistance or referral request.{% endif %}
+
+Reference number: {{ ticket.short_reference }}
+Private conversation reference: {{ ticket.reference }}
+{% if ticket.subject %}Subject: {{ ticket.subject }}
+{% endif %}Assistance type: {{ ticket.get_assistance_type_display }}
+Processing status: {{ ticket.get_status_display }}
+{% if acknowledgment %}
+Your concern:
+{{ ticket.concern }}
+{% else %}
+Instructions:
+{{ action.member_message }}
+{% endif %}
+To continue online, open Community Assistance Desk on the public website and choose Continue a conversation. Enter only the private conversation reference above. Keep it private: anyone with this reference can open the conversation while it remains active. No member account is needed.
+
+You may also reply to {{ sender }} or visit the Barangay Santolan PWD Association Help Desk. Replies sent from your email app are not automatically added to the website conversation. Supporting evidence may be provided later by email or onsite.
+
+{{ notice }}
+
+Santolan PWD Association
+{% endautoescape %}

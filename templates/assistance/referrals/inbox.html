@@ -1,0 +1,21 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Community Assistance Desk Inbox · Santolan PWD{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-workspace.css' %}">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-live.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}<div class="container content-section referral-page" data-referral-inbox data-inbox-url="{% url 'assistance:referral_inbox' %}"{% if ticket_closed %} data-record-content data-referral-closed{% endif %}>
+  <h1 class="visually-hidden">Community Assistance Desk Inbox</h1>
+  {% include 'partials/workspace_messages.html' %}
+  <div class="referral-stats" aria-label="Request totals">
+    <div class="referral-card referral-stat"><span class="referral-symbol">{% include 'assistance/referrals/icon.html' with name='document' %}</span><div><strong data-referral-total="total">{{ totals.total }}</strong><span>Total requests</span></div></div>
+    <div class="referral-card referral-stat"><span class="referral-symbol referral-symbol--amber">{% include 'assistance/referrals/icon.html' with name='inbox' %}</span><div><strong data-referral-total="received">{{ totals.received }}</strong><span>Received</span></div></div>
+    <div class="referral-card referral-stat"><span class="referral-symbol">{% include 'assistance/referrals/icon.html' with name='check' %}</span><div><strong data-referral-total="closed">{{ totals.closed }}</strong><span>Closed</span></div></div>
+  </div>
+  <form method="get" data-auto-filter class="referral-card referral-filters" role="search" aria-label="Filter referral requests">
+    <div class="referral-search"><label for="ticket-query" class="visually-hidden">Search reference, subject, or member</label>{% include 'assistance/referrals/icon.html' with name='search' %}<input type="search" class="form-control" id="ticket-query" name="q" value="{{ query }}" maxlength="100" placeholder="Search reference, subject, or member"></div>
+    <div><label for="ticket-status" class="visually-hidden">Status</label><select class="form-select" id="ticket-status" name="status"><option value="open"{% if selected_status == 'open' %} selected{% endif %}>Open conversations</option><option value="all"{% if selected_status == 'all' %} selected{% endif %}>All statuses</option>{% for code,label in statuses %}<option value="{{ code }}"{% if selected_status == code %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div><label for="ticket-type" class="visually-hidden">Assistance type</label><select class="form-select" id="ticket-type" name="type"><option value="">All assistance types</option>{% for code,label in kinds %}<option value="{{ code }}"{% if selected_kind == code %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <button class="btn btn-primary">Apply filters</button>
+  </form>
+  {% if perms.assistance.configure_referrals %}<p><a class="btn btn-outline-primary" href="{% url 'assistance:referral_email_settings' %}">Association email settings</a></p>{% endif %}
+  {% include "assistance/referrals/inbox_results.html" %}
+</div>{% endblock %}

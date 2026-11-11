@@ -1,0 +1,37 @@
+Announcements review-and-publish popup layout - 6 November 2026
+
+Owner request
+- Use the supplied review-and-selection pool layout for the existing popup.
+
+Changes
+- Added program identity, capacity and selected-count badges, applicant search,
+  All applicants / Selected only filters, and separate Submitted applications
+  and Recorded selections cards with counts and remaining capacity.
+- Applicant rows show the submission date and whether their reference occurs
+  in the already-authorized selection roster. A private presentation helper
+  makes one date query without modifying the publication payload or snapshots.
+- Search filters names or complete program references in both tables. Selected
+  only restricts the applicant display. Filtering never changes publication data.
+- The popup is capped at 1160px with surrounding viewport space, stacks its cards
+  below 1100px, and keeps its header and publication footer visible while the
+  content scrolls. Short tables do not have inner vertical scrollbars.
+- Back to program, X and Escape retain the existing dismissal behavior.
+- Publication retains the existing permissions, CSRF, reviewed-source tokens,
+  atomic audits and stale/replay protections. Publishing shares recorded results;
+  it does not change selections, finalize assistance receipts or send emails.
+- Selection management links to its existing workspace. The screenshot's sample
+  rank, priority, vault number and release/notification claim were not fabricated.
+  Shared public participation tables and public disclosure remain unchanged.
+
+Validation
+- 28 focused tests passed in disposable MySQL in 27.807 seconds:
+  announcements.test_catalog, announcements.test_generation and
+  announcements.test_recorded_results.
+- Updated the existing Admin/private-name assertion for the new table headings;
+  full names remain private and stored/public payloads retain their masking.
+- Django database check, node --check and git diff --check passed.
+- Native browser verified the desktop layout, correct 3-applicant / 1-selected /
+  6-slot presentation, selected-only filtering, name search and the no-match state.
+- Verified stacked cards and reachable footer/close actions in a narrow window.
+- Collected assets and restarted only the retained local web process. No live
+  results were published and no selection or assistance receipt was changed.

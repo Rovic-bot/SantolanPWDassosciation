@@ -1,0 +1,3 @@
+/* Compiled locally with npm run build:guidance; no runtime CDN dependency. */
+@tailwind base;
+@tailwind utilities;

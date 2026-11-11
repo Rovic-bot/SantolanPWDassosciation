@@ -1,0 +1,23 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Program application &middot; Santolan PWD{% endblock %}
+{% block resident_class %}section-programs program-receipt-host{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-receipt.css' %}?v=20261108-2">{% endblock %}
+{% block extra_scripts %}{{ block.super }}{% include 'programs/receipt/scripts.html' %}<script src="{% static 'js/program-application.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container resident-mast"><div><div class="page-location"><a href="{% url 'programs:detail' program.pk %}">&larr; Program details</a></div><p class="eyebrow">STEP 2 / REQUIREMENTS</p><h1>Complete your application</h1><p class="page-intro">{{ program.name }}</p></div><div class="resident-mark" aria-hidden="true">{% include 'public/icon.html' with name='document' %}</div></div></section>
+<div class="container content-section"><div class="resident-application"><div class="resident-panel">
+{% if cancelled %}
+  <h2>Your application was cancelled</h2><p>Contact the association to request restoration. Your earlier submission is retained.</p>
+{% elif program.registration_available %}
+  <h2>Application details</h2>
+  {% if program.requirements %}{{ program.requirements|linebreaks }}{% endif %}
+  {% if form.calendar_photo %}<h3 class="h5">Required calendar photo</h3>{{ program.photo_instructions|linebreaks }}{% endif %}
+  <form method="post" enctype="multipart/form-data" class="membership-form" data-program-application data-verify-url="{% url 'programs:verify' program.pk %}" data-receipt-url="{% url 'programs:submitted' program.pk %}" novalidate>
+    {% csrf_token %}
+    <div class="alert alert-danger" data-application-errors role="alert" tabindex="-1" hidden><h2 class="h5">Check your application</h2><ul></ul><p class="mb-0">Your selected files remain attached to this form.</p><p data-application-reverify hidden><a href="{% url 'programs:verify' program.pk %}" target="_blank" rel="noopener">Verify membership again in a new tab</a></p></div>
+    {% include 'programs/fields.html' %}
+    <button class="btn btn-primary" type="submit">Submit application</button>
+  </form>
+{% else %}<h2>Applications are closed</h2>{% endif %}
+</div></div></div>
+{% endblock %}

@@ -1,0 +1,49 @@
+Simple event publishing — 28 October 2026
+
+The owner requested a Publish event button with no required reason, for a simple
+publishing flow. The scheduled-event review now offers one dedicated Publish event
+button. Its form contains only CSRF and version fields; no reason, action dropdown,
+or confirmation checkbox is required. The existing other event actions are in a
+collapsed section and retain their reason and confirmation requirements.
+
+The new publish_event service supplies automatic audit text before calling the
+existing guarded change_publication writer. The generic writer and its protected
+event/source audit validation are unchanged. Publication still records the actor,
+time and status change, validates content and photos, enforces permissions, checks
+the current version, locks the record and rolls back if audit recording fails.
+No schema migration or permission grant is needed. No real event was published
+by the assistant; the browser only viewed the existing draft.
+
+Files
+events/forms.py: dedicated version-only PublishEventForm.
+events/views.py: separate publish POST handling and visible publication errors.
+events/services.py: publish_event wrapper with automatic audit text.
+templates/events/manage_detail.html: Publish event button; collapsed other actions.
+events/test_simple_publication.py: publication, permissions, CSRF, validation,
+duplicate/concurrent submission and audit rollback checks.
+
+Tests
+Initial scoped run: 21 tests passed in 4.296 seconds.
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_simple_publication events.test_participation events.tests.EventWorkflowTests.test_publication_withdrawal_cancellation_archive_and_images events.tests.EventWorkflowTests.test_image_validation_alt_text_reencoding_and_missing_image events.tests.EventWorkflowTests.test_publication_rolls_back_if_audit_fails events.tests.EventWorkflowTests.test_csrf_confirmation_and_get_do_not_change_state --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+
+The automatic audit text was subsequently moved into a dedicated wrapper so the
+pre-existing guarded writer receives and verifies the same reason it records.
+All 9 publication tests passed again after that compatibility refinement:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_simple_publication --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+Final focused result: 9 tests, OK, 0.767 seconds. Tests used fresh disposable
+native MySQL instances with isolated grants and .env disabled, never app data.
+
+Browser and runtime checks
+The retained development site at http://127.0.0.1:8013/ was restarted to load the
+change. Chrome checks passed on desktop (1560x1100) and mobile (390x844): one Publish
+event button, no reason/confirmation/dropdown in its form, native form validity,
+collapsed other actions, no horizontal overflow and no JavaScript errors.
+No event POST requests were sent by the browser harness. An existing draft was
+used for the visual check; its missing audience/participation details remain
+subject to the established publication validation rather than guessed content.
+Screenshots: publish-desktop.png, publish-mobile.png.
+Private harness: .local/annual-calendar-20261028/verify-publish.cjs.
+Django system checks and git diff --check passed.
+
+Earlier unfinished changes were preserved. No commit, push, remote deployment,
+application-content write, membership/RSVP change or score change was performed.

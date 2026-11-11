@@ -1,0 +1,46 @@
+{% load onsite_registration %}{% onsite_sections form as registration_sections %}
+<div class="container onsite-container">
+  <header class="onsite-header">
+    <h1 class="visually-hidden">Onsite member registration</h1>
+  </header>
+
+  <section class="onsite-lookup" aria-labelledby="load-online-heading">
+    <div class="onsite-lookup-heading"><span class="onsite-id-mark" aria-hidden="true">ID</span><div><h2 id="load-online-heading">Already applied online?</h2><p>Load the existing application using its AMR reference.</p></div></div>
+    {% if policy or registration_retrieval_available %}
+    <form method="get" action="{% url 'membership:registration_lookup' %}" role="search" aria-label="Load online membership application" data-onsite-lookup>
+      <div><label class="form-label" for="load-registration-reference">Reference number</label><input class="form-control" id="load-registration-reference" name="reference" type="search" required maxlength="40" autocomplete="off" spellcheck="false" placeholder="Enter the receipt’s AMR reference or digits" aria-describedby="onsite-lookup-help"></div>
+      <button class="btn btn-primary" type="submit" data-lookup-button>Load online application</button>
+      <p class="form-text" id="onsite-lookup-help">Approved applications open the full member record. Pending applications open for review.</p><p class="visually-hidden" role="status" data-lookup-status></p>
+    </form>
+    {% else %}<p class="onsite-lookup-unavailable" role="status">Online retrieval is unavailable for this account or while the registration service is closed.</p>{% endif %}
+  </section>
+
+  <div class="onsite-workspace-grid">
+    <div class="onsite-form-column">
+      <p class="onsite-privacy"><span aria-hidden="true">●</span><strong>Private staff workspace</strong><span>Required fields are marked *. Submission creates a pending record.</span></p>
+      <form id="onsite-registration-form" method="post" enctype="multipart/form-data" autocomplete="off" class="onsite-form registration-editor" data-onsite-form data-prpwd-url="{{ prpwd_lookup_url }}"{% if policy %} data-file-limit="{{ policy.file_max_bytes }}" data-total-limit="{{ policy.total_max_bytes }}"{% endif %}>
+        {% csrf_token %}{% if context_id %}<input type="hidden" name="context_id" value="{{ context_id }}">{% endif %}
+        {% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+        {% if form.errors %}<div class="onsite-validation" role="alert" id="registration-errors" tabindex="-1"><h2>Check your application</h2>{{ form.non_field_errors }}<ul>{% for field in form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+        <div class="onsite-validation" role="alert" tabindex="-1" data-onsite-validation hidden><h2>Check your application</h2><p>Complete or correct the following fields before reviewing.</p><ul></ul></div>
+        {% for section in registration_sections %}{% include 'membership/onsite/section.html' with number=forloop.counter %}{% endfor %}
+        <div class="onsite-form-actions">
+          <div class="onsite-action-note"><span data-save-feedback role="status">Ready when you are.</span></div>
+          <div class="onsite-action-buttons"><button type="submit" class="btn btn-primary" data-review-application hidden>Review application <span aria-hidden="true">→</span></button><button type="submit" class="btn btn-primary" data-save-registration>Save onsite registration for review</button></div>
+        </div>
+      </form>
+    </div>
+
+    <aside class="onsite-guide" aria-labelledby="onsite-guide-heading">
+      <section class="onsite-record-status" aria-label="Application status"><span>Application status</span><strong data-record-status>{% if form.errors %}Review required{% else %}New record{% endif %}</strong><small data-record-updated>Not yet submitted</small></section>
+      <div class="onsite-guide-card"><p class="onsite-eyebrow">Application guide</p><h2 id="onsite-guide-heading">Before you submit</h2><ol><li>Confirm the applicant’s identity.</li><li>Complete the required fields.</li><li>Check documents for onsite verification.</li><li>Review the applicant’s privacy acknowledgement.</li></ol><p class="onsite-guide-note">Membership approval happens after staff review.</p></div>
+      <div class="onsite-help-card"><span class="onsite-help-mark" aria-hidden="true">?</span><h2>Need assistance?</h2><p>Get help with registration and document requirements.</p><a href="{% url 'core:contact' %}" target="_blank" rel="noopener">Contact membership desk <span aria-hidden="true">↗</span></a></div>
+    </aside>
+  </div>
+
+  <dialog class="onsite-review-dialog" data-onsite-review-dialog aria-labelledby="onsite-review-title" aria-describedby="onsite-review-description">
+    <header><div><p class="onsite-eyebrow">One final check</p><h2 id="onsite-review-title">Review application</h2><p id="onsite-review-description">Confirm these details before saving the pending registration for staff review.</p></div><button type="button" class="onsite-dialog-close" data-close-review aria-label="Close application review">×</button></header>
+    <div class="onsite-review-body" data-review-content tabindex="0" aria-label="Application details"></div>
+    <footer><button type="button" class="btn btn-outline-secondary" data-close-review>Continue editing</button><button type="button" class="btn btn-primary" data-confirm-registration>Save and open PRPWD</button></footer>
+  </dialog>
+</div>

@@ -1,0 +1,9 @@
+{% if item.target_audience or item.who_may_participate or not optional %}<dl class="event-schedule">
+  {% if item.target_audience or not optional %}
+  <dt>Target Audience</dt>
+  <dd>{{ item.target_audience|default:'The organizer has not yet published the target audience.'|linebreaksbr }}</dd>
+  {% endif %}{% if item.who_may_participate or not optional %}
+  <dt>Who May Participate</dt>
+  <dd>{{ item.who_may_participate|default:'Participation rules have not yet been published. Confirm with the organizer before making arrangements.'|linebreaksbr }}</dd>
+  {% endif %}
+</dl>{% endif %}

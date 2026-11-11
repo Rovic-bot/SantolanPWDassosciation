@@ -1,0 +1,35 @@
+Program Details reference layout - 5 November 2026
+
+Owner scope
+Match the two supplied Program Details screenshots in the existing protected Admin page and popup. This replaces the earlier compact, full-width lower-section layout. Existing unfinished changes are preserved; pre-edit copies are under .local/program-layout-reference-20261105/before/.
+
+Implementation
+- Program heading, description preview, status and update time; edit/download/review actions on the right with real application, availability and registration-close values.
+- Two-column desktop grid: overview beside publication, then schedule/capacity beside eligibility. Description and purpose/benefit have separate columns inside the overview.
+- Requirements span the full width with three desktop columns, two tablet columns and one mobile column. Original instructions, requirement types, required/optional and inactive states, and permission-checked edit/add links remain.
+- Full-width collapsible Program history with its original protected records and pagination.
+- Compact blue cards, icons, dividers, status badges and publication progress. Counts use the existing saved program data and publication checks; no screenshot example numbers are hardcoded.
+- The publication card only says it is accepting applications when the existing registration_available predicate permits it. Published programs outside that window retain neutral schedule guidance.
+- The schedule shows registration open/close, program start/end, beneficiary capacity, correction deadline and Use EWAF in Philippine time. Missing optional values are explicit. Slot availability uses existing selection reservations and visibility permissions, not application demand.
+- Details respond to their actual container width, including the wider popup. Light/dark themes, keyboard access, native history disclosure, and no-JavaScript full-page fallback remain supported.
+- Removed selection/photo prose remains removed from the visible detail cards. Original policy values and audit history are preserved. Existing publication, withdrawal, EWAF, capacity and permission rules are unchanged.
+
+Files changed
+templates/programs/manage_detail.html
+templates/programs/profile/{overview,operations,configuration,schedule,dialog_styles}.html
+templates/programs/profile/{icon,date_row}.html (new presentation partials)
+static/css/{program-detail,program-dialog}.css
+programs/test_detail_workspace.py
+scripts/program_detail_browser_qa.cjs
+This validation directory and synthetic screenshots.
+
+Validation
+26 tests passed: programs.test_detail_workspace, programs.test_one_click_publication, and scripts.program_detail_browser_qa. Artifacts: santolan-g12-tests-x400x3el; test runtime 29.354 seconds.
+
+After visual inspection, corrected shared-theme specificity, card corners and backgrounds. The final browser run passed again in 9.770 seconds: santolan-g12-tests-fheo3uxi. It covers 14 full-page and 12 popup layouts in both themes, 320-1600 px widths, two-column placement and alignment, full-width requirements/history, responsive requirement tiles, no overflow, accessible publication actions, history pagination, focus containment/restoration, Escape/backdrop, both popup entry points, failed/aborted loads, retry and no-JavaScript fallback. Synthetic publish/withdraw and blocked EWAF forms passed, with exactly three intended test writes and no JavaScript errors. Final desktop and mobile screenshots were inspected and copied here.
+
+All test writes used scripts/g12_test_runner.py and RegistrationIntakeTestRunner against a verified fresh disposable MySQL instance, test_g12_disposable. No tests ran against retained application data.
+
+Django system/database check: no issues. Migration drift check: no changes. JavaScript syntax and git diff --check passed. No new dependency, database migration or application-data modification is required by this layout change.
+
+Collected two updated static files (238 unchanged). Refreshed only the identity-checked local website process at http://127.0.0.1:8013/; retained MySQL stayed running. Both served stylesheet responses match the source files.

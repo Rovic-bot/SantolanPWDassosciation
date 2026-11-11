@@ -1,0 +1,69 @@
+Program editing, incomplete drafts and archive workflow — November 7, 2026
+
+Owner-authorized changes
+- Published programs can update title, description, assistance type, purpose,
+  capacity and dates through the existing permission-checked, versioned service.
+  The publication timestamp/authorization, applications and their snapshots stay
+  intact. EWAF bindings append a revision with the same approved policy/weights.
+  Detail changes require renewed eligibility review; the established date-only
+  review witness remains limited to date-only revisions.
+- New, never-authorized drafts can save missing core details and registration
+  dates, including a completely empty draft. Missing titles display as Untitled
+  program. Partial calendar dates persist. Invalid supplied values still fail.
+  Draft update reasons are optional; the audit supplies a draft-save reason.
+- Publication checks missing details before policy/configuration mutation.
+  Migration 0008 makes registration dates nullable and adds a database check
+  requiring complete core details/dates for public program states.
+- Unpublish and archive removes a published program from public listings and
+  moves it to Archived with its original publication history retained. The old
+  published-to-draft service action also maps to archive. Permission, reason,
+  confirmation, stale-version and audit rollback controls remain enforced.
+- Cancelled is removed from program-status and registration-status filters,
+  including the shared application program list. Historical cancelled records
+  and status codes remain intact.
+
+Preserved limits
+Approved eligibility, requirement and EWAF rules remain protected. Published
+detail revisions remain subject to external approval, accepted scoring inputs,
+scoring/final-outcome and existing-submission guards. This is not authorization
+to change scores, selected beneficiaries, historical results or assessed rules.
+No reference, evidence, membership, calculation method or result disclosure
+policy was changed. No external deployment or commit was made.
+
+Verification
+66 server-side and migration tests passed in the second run, covering lifecycle,
+builder, schedule updates, one-click publication, program details, portfolio,
+and execution of migration 0008 against the prior date schema with original
+row values retained. The browser test in that run stopped at a test-selector
+ambiguity (meta description versus description textarea); its selector was
+corrected without changing application code.
+
+Final run: 19 tests passed, including 18 public-availability regressions and the
+complete Chrome lifecycle test at desktop 1440px and mobile 390px. It saved an
+empty draft and a partial date, rejected incomplete publication, edited a
+published title/description, unpublished into archive and verified filtering.
+No JavaScript errors or mobile horizontal overflow. Screenshots were inspected.
+
+Commands, using fresh isolated native MySQL with project .env disabled:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test programs.test_program_lifecycle programs.test_creation_builder programs.test_schedule_updates programs.test_one_click_publication programs.test_detail_workspace programs.test_portfolio programs.test_draft_migration scripts.program_lifecycle_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test scripts.program_lifecycle_browser_qa programs.test_public_availability --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+
+Artifacts: %TEMP%/santolan-g12-tests-ky6c5vz4 and
+%TEMP%/santolan-g12-tests-6bb4jeai. Initial run x82ykaqh had two obsolete UI
+expectations, both updated to match the requested behavior. This is focused
+regression evidence, not a full-suite pass or a historical-migration replay.
+
+JavaScript syntax, current-development database system checks and git diff
+--check passed. makemigrations --check --dry-run found no missing migration;
+the ordinary .env database was offline, so that command could not verify its
+migration history. The active retained runtime uses separate verified settings.
+
+Local activation
+Applied only tested migration 0008 operations to the identity-checked retained
+model-synchronized database; no historical migration replay or fake records.
+First created a 10,826,770-byte full SQL backup at
+.local/program-lifecycle-20261107/before-program-lifecycle.sql.
+Before/after row fingerprints verified all 3,041 rows across 127 tables unchanged.
+Private activation.json records the backup checksum and preservation evidence.
+The recognized local process restarted and its health check passed on port 8013.
+All behavioral tests used disposable synthetic records, not retained records.

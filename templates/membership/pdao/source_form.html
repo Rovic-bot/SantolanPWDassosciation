@@ -1,0 +1,73 @@
+{% load static %}
+<section class="pdao-sheet" aria-label="PDAO application page 1">
+  <div class="pdao-letterhead">
+    <img src="{% static 'images/pdao-form/doh.png' %}" alt="Department of Health seal">
+    <div>CITY GOVERNMENT OF PASIG<br>PERSONS WITH DISABILITY AFFAIRS OFFICE<br>DEPARTMENT OF HEALTH<br><strong>PHILIPPINE REGISTRY FOR PERSONS WITH DISABILITY VER. 4.0</strong></div>
+    <img src="{% static 'images/pdao-form/pasig.jpeg' %}" alt="City of Pasig seal">
+  </div>
+  <div class="pdao-identity">
+    <div class="pdao-cell pdao-application-type">{% include 'membership/pdao/print_options.html' with choices=options.application_type field='application_type' layout='inline' %}<span>DATE APPLIED: <b>{{ pdao.date_applied }}</b></span></div>
+    <div class="pdao-photo">PLACE 1×1<br>PHOTO HERE</div>
+    <div class="pdao-cell"><strong>1. PWD NUMBER (RR-PPMM-BBB-NNNNNNN):</strong> <span class="pdao-value">{{ pdao.pwd_number }}</span></div>
+    <div class="pdao-names">
+      <div class="pdao-cell"><strong>2. LAST NAME:</strong><span class="pdao-value">{{ pdao.last_name }}</span></div>
+      <div class="pdao-cell"><strong>FIRST NAME:</strong><span class="pdao-value">{{ pdao.first_name }}</span></div>
+      <div class="pdao-cell"><strong>MIDDLE NAME:</strong><span class="pdao-value">{{ pdao.middle_name }}</span></div>
+      <div class="pdao-cell"><strong>SUFFIX:</strong><span class="pdao-value">{{ pdao.suffix }}</span></div>
+    </div>
+  </div>
+  <div class="pdao-row disability-row">
+    <div class="pdao-cell"><strong>3. TYPE OF DISABILITY: (check all that apply)</strong>{% include 'membership/pdao/print_options.html' with choices=options.disability_types field='disability_types' layout='two-columns' %}</div>
+    <div class="pdao-cell"><strong>4. CAUSE OF DISABILITY:</strong>{% include 'membership/pdao/print_options.html' with choices=options.disability_cause field='disability_cause' layout='inline' %}{% include 'membership/pdao/print_options.html' with choices=options.disability_cause_details field='disability_cause_details' layout='two-columns' %}</div>
+  </div>
+  <div class="pdao-row address-row">
+    <div class="pdao-cell"><strong>5. ADDRESS: HOUSE NO. AND STREET NAME:</strong><span class="pdao-value">{{ pdao.house_street }}</span></div>
+    <div class="pdao-cell"><strong>BARANGAY:</strong><span class="pdao-value">{{ pdao.barangay }}</span></div>
+  </div>
+  <div class="pdao-row three-columns">
+    <div class="pdao-cell"><strong>CITY/MUNICIPALITY:</strong><span class="pdao-value">{{ pdao.city }}</span></div>
+    <div class="pdao-cell"><strong>PROVINCE:</strong><span class="pdao-value">{{ pdao.province }}</span></div>
+    <div class="pdao-cell"><strong>REGION:</strong><span class="pdao-value">{{ pdao.region }}</span></div>
+  </div>
+  <div class="pdao-row three-columns">
+    <div class="pdao-cell"><strong>6. CONTACT DETAILS: LANDLINE:</strong><span class="pdao-value">{{ pdao.landline }}</span></div>
+    <div class="pdao-cell"><strong>MOBILE NUMBER:</strong><span class="pdao-value">{{ pdao.contact_number }}</span></div>
+    <div class="pdao-cell"><strong>EMAIL ADDRESS:</strong><span class="pdao-value">{{ pdao.email }}</span></div>
+  </div>
+  <div class="pdao-row demographics-row">
+    <div class="pdao-cell"><strong>7. DATE OF BIRTH (mm/dd/yyyy)</strong><span class="pdao-value">{{ pdao.birthdate }}</span><strong>AGE:</strong> {{ pdao.age }}</div>
+    <div class="pdao-cell"><strong>8. SEX:</strong>{% include 'membership/pdao/print_options.html' with choices=options.sex field='sex' %}</div>
+    <div class="pdao-cell"><strong>9. CIVIL STATUS:</strong>{% include 'membership/pdao/print_options.html' with choices=options.civil_status field='civil_status' layout='two-columns' %}</div>
+  </div>
+  <div class="pdao-row employment-row">
+    <div class="pdao-cell"><strong>10. EDUCATIONAL ATTAINMENT:</strong>{% include 'membership/pdao/print_options.html' with choices=options.education field='education' %}</div>
+    <div class="pdao-cell"><strong>11. EMPLOYMENT STATUS:</strong>{% include 'membership/pdao/print_options.html' with choices=options.employment_status field='employment_status' %}<strong>11.1. CATEGORY OF EMPLOYMENT:</strong>{% include 'membership/pdao/print_options.html' with choices=options.employment_category field='employment_category' %}<strong>11.2. NATURE OF EMPLOYMENT:</strong>{% include 'membership/pdao/print_options.html' with choices=options.employment_nature field='employment_nature' %}</div>
+    <div class="pdao-cell"><strong>12. OCCUPATION:</strong>{% include 'membership/pdao/print_options.html' with choices=options.occupation field='occupation' %}<span>Other, specify: <span class="pdao-value">{{ pdao.occupation_other }}</span></span></div>
+  </div>
+  <div class="pdao-row identification-row">
+    <div class="pdao-cell"><strong>13. BLOOD TYPE:</strong>{% include 'membership/pdao/print_options.html' with choices=options.blood_type field='blood_type' layout='two-columns' %}</div>
+    <div class="pdao-cell"><strong>14. ORGANIZATION AFFILIATED:</strong><div>Organization affiliated: <span class="pdao-value">{{ pdao.organization }}</span></div><div>Contact person: <span class="pdao-value">{{ pdao.organization_contact }}</span></div><div>Office address: <span class="pdao-value">{{ pdao.organization_address }}</span></div><div>Tel no.: <span class="pdao-value">{{ pdao.organization_phone }}</span></div></div>
+    <div class="pdao-cell"><strong>15. ID REFERENCE NO.</strong>{% include 'membership/pdao/print_identifier.html' with label='SSS NO.' value=pdao.sss_number %}{% include 'membership/pdao/print_identifier.html' with label='GSIS NO.' value=pdao.gsis_number %}{% include 'membership/pdao/print_identifier.html' with label='PSN NO.' value=pdao.psn_number %}{% include 'membership/pdao/print_identifier.html' with label='PHILHEALTH NO.' value=pdao.philhealth_number %}{% include 'membership/pdao/print_options.html' with choices=options.philhealth_membership field='philhealth_membership' %}</div>
+  </div>
+  {% include 'membership/pdao/source_footer.html' %}
+</section>
+<section class="pdao-sheet" aria-label="PDAO application page 2">
+  <div class="pdao-cell pdao-section-title"><strong>16. FAMILY BACKGROUND:</strong></div>
+  <table class="pdao-family"><thead><tr><th scope="col"></th><th scope="col">FAMILY NAME</th><th scope="col">GIVEN NAME</th><th scope="col">MIDDLE NAME</th></tr></thead><tbody><tr><th scope="row">FATHER’S NAME:</th><td>{{ pdao.father_last_name }}</td><td>{{ pdao.father_first_name }}</td><td>{{ pdao.father_middle_name }}</td></tr><tr><th scope="row">MOTHER’S NAME:</th><td>{{ pdao.mother_last_name }}</td><td>{{ pdao.mother_first_name }}</td><td>{{ pdao.mother_middle_name }}</td></tr></tbody></table>
+  <div class="pdao-cell pdao-separated"><strong>17. ACCOMPLISHED BY:</strong>{% include 'membership/pdao/print_options.html' with choices=options.accomplished_by field='accomplished_by' layout='inline' %}</div>
+  <div class="pdao-cell pdao-separated"><strong>18. IN CASE OF EMERGENCY, PLEASE NOTIFY:</strong></div>
+  <div class="pdao-row three-columns"><div class="pdao-cell">NAME: <span class="pdao-value">{{ pdao.emergency_name }}</span></div><div class="pdao-cell">RELATIONSHIP: <span class="pdao-value">{{ pdao.emergency_relationship }}</span></div><div class="pdao-cell">CONTACT NUMBER: <span class="pdao-value">{{ pdao.emergency_phone }}</span></div></div>
+  <div class="pdao-cell"><strong>19. SUBMISSION CHANNEL:</strong>{% include 'membership/pdao/print_options.html' with choices=options.submission_channel field='submission_channel' layout='inline' %}</div>
+  <div class="pdao-cell pdao-consent" aria-label="PDAO consent statement">
+    <p>I <b>{{ pdao.full_name }}</b> resident of Barangay <b>{{ pdao.barangay }}</b> Pasig City agreed to consent by submitting this reply form; consent to the collection, generation, use, processing, storage and retention of my personal data by PDAO for the purpose(s) described in this document. Please ensure that you have completely read and understood the terms before signing. Any change will not be applied and will not alter how PDAO handles previously collected personal data without obtaining your consent, unless required by law.</p>
+    <div class="pdao-signatures"><span>DATE: _______________________</span><span>SIGNATURE: ______________________________</span></div>
+  </div>
+  <p class="pdao-privacy">The Republic Act No. 10173, or the Data Privacy Act of 2012 (DPA), with the National Privacy Commission (NPC) overseeing its proper implementation.</p>
+  <div class="pdao-cell pdao-section-title"><strong>REQUIREMENTS:</strong></div>
+  <div class="pdao-row two-columns pdao-requirements">
+    <div class="pdao-cell"><strong>NEW:</strong>{% include 'membership/pdao/source_requirements.html' %}</div>
+    <div class="pdao-cell"><strong>RENEWAL:</strong>{% include 'membership/pdao/source_requirements.html' %}<p>➢ Surrender original old / expired PWD ID.</p></div>
+  </div>
+  <div class="pdao-cell pdao-inquiries"><strong>FOR INQUIRIES, CONTACT US:</strong><dl><dt>FACEBOOK PAGE:</dt><dd>https://web.facebook.com/PDAOPasigCityOfficial/</dd><dt>PWD ID APPLICATION (ONLINE):</dt><dd>pcpdaoonlineapplication@gmail.com</dd><dt>LANDLINE:</dt><dd>(02)8643-1111 Local 1162</dd><dt>MOBILE PHONE:</dt><dd>(+63)9283435576</dd><dt>GENERAL CONCERN (E-MAIL):</dt><dd>pdao@pasigcity.gov.ph</dd></dl></div>
+  {% include 'membership/pdao/source_footer.html' %}
+</section>

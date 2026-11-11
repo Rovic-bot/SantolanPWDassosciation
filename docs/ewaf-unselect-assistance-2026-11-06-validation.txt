@@ -1,0 +1,47 @@
+EWAF selection undo validation - 2026-11-06
+
+Authorized scope
+The owner requested replacing the Review selection form after selection with an
+Unselect for assistance button, to reverse an accidental or unwanted selection.
+
+Behavior
+- Selected applicants show Unselect for assistance in the existing right panel.
+  The Outcome/Reason/tie-procedure review form is hidden after selection.
+- Undo appends an audited DEFERRED decision revision marked selection_action =
+  unselected, linked to the original selection. The UI shows Awaiting decision,
+  releases the reserved slot, and offers Select for assistance again.
+- Original selections, ranking scores, run snapshots and audit history remain
+  intact. This change does not modify eligibility or record actual assistance.
+- Withdrawing an existing selection does not require a fresh ranking. Selecting
+  again still applies the existing current-ranking, capacity and tie controls.
+- Existing permission checks and program/source transaction locks apply. Revision
+  checks reject stale forms; repeated requests for the same undo are idempotent.
+- An application with an unvoided assistance release cannot be unselected here.
+- No database schema changes or migration were needed.
+
+Verification
+24 focused Django tests passed in 90.107 seconds:
+  ewaf.test_unselect_assistance.UnselectAssistanceTests
+  ewaf.test_applicant_panel.ApplicantPanelTests
+  ewaf.test_ranking_freshness.RankingFreshnessTests
+  ewaf.test_workspace_read_cache
+Tests used the isolated g12 disposable MySQL runner and RegistrationIntakeTestRunner.
+Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-4vx5n6qd/django.log
+The six new tests cover undo/reselection and capacity, unchanged issued data,
+duplicate retries, stale revisions, changed scoring inputs, release protection,
+permissions/program boundaries, and audit-failure rollback.
+
+manage.py check --settings=config.current_development_settings --database default:
+  No issues.
+git -c core.safecrlf=false diff --check:
+  Passed.
+
+Local activation and UI
+Restarted only the retained web process on port 8013; the existing MySQL connection
+remained open and usable. No application data was changed for verification.
+Read-only rendering of an existing selected applicant showed the undo button and
+no Review selection form, with no data-changing SQL.
+Native Brave verification of the refreshed run 38 selected applicant panel showed
+Selected for assistance and button Unselect for assistance; no Review selection
+disclosure was present. The live undo button was not clicked. Behavioral mutations
+were exercised only on synthetic records in the disposable test database.

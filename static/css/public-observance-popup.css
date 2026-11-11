@@ -1,0 +1,40 @@
+.public-portal .observance-card-link { color: var(--ink); text-decoration: none; cursor: pointer; }
+.public-portal .observance-card-link:focus-visible { outline: 3px solid var(--ink); outline-offset: -4px; }
+html body.public-portal dialog.public-event-dialog.observance-poster-dialog {
+  width: min(760px, calc(100vw - 24px)); max-width: none; max-height: 90dvh;
+  padding: 12px; border: 0; border-radius: 36px; background: var(--surface) !important;
+  color: var(--ink); overflow-y: auto;
+}
+html body.public-portal .observance-poster-dialog .event-dialog-heading {
+  position: sticky; top: 0; z-index: 4; height: 0; min-height: 0; padding: 0; border: 0; background: transparent !important;
+}
+.observance-poster-dialog .event-dialog-heading h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.observance-poster-dialog .event-dialog-heading form { position: absolute; top: 14px; right: 14px; margin: 0; }
+html body.public-portal .observance-poster-dialog .event-dialog-heading button {
+  width: 44px; height: 44px; border: 0; border-radius: 50%; background: #101b2bd9 !important; color: #fff !important;
+}
+html body.public-portal .observance-poster-dialog .event-dialog-body { padding: 0; overflow: visible; background: transparent; }
+.observance-poster-hero { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 240px; overflow: hidden; border-radius: 27px; padding: 80px 28px 24px; background: linear-gradient(150deg, #15334c, #111d2b 55%, #191919); }
+.observance-poster-hero > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.observance-poster-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent, #101418ed); }
+.observance-poster-heading { width: 100%; }
+html body.public-portal .observance-poster-heading h3 { margin: 0 0 8px; color: #fff !important; font-size: 1.55rem; line-height: 1.2; letter-spacing: -.035em; }
+html body.public-portal .observance-poster-heading p { margin: 0; color: #c6cbd2 !important; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+.observance-poster-body { padding: 20px 28px; }
+html body.public-portal .observance-poster-date h4 { margin: 0 0 6px; font-size: 1rem; color: var(--ink); }
+html body.public-portal .observance-poster-date p { margin: 0; color: var(--muted); font-size: .85rem; font-weight: 600; }
+.observance-poster-description { margin: 16px 0; }
+html body.public-portal .observance-poster-description p { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+.observance-poster-footer { display: flex; gap: 16px; align-items: start; border-top: 1px solid var(--line); padding-top: 18px; }
+.observance-poster-footer dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0; flex: 1; }
+.observance-poster-footer dt { font-size: .6rem; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.observance-poster-footer dd { margin: 0; font-size: .75rem; line-height: 1.5; color: var(--ink); overflow-wrap: anywhere; }
+.observance-poster-calendar { display: grid; place-items: center; width: 58px; height: 58px; flex: 0 0 58px; background: var(--stone); color: var(--muted); border-radius: 20px; }
+.observance-poster-calendar svg { width: 32px; height: 32px; }
+@media (max-width: 450px) {
+  .observance-poster-body { padding: 18px 16px; }
+  .observance-poster-hero { padding-inline: 20px; min-height: 220px; }
+  .observance-poster-footer dl { grid-template-columns: minmax(0, 1fr); }
+}
+html[data-contrast=true] body.public-portal .observance-poster-hero { background: #111; }
+html[data-contrast=true] .observance-poster-hero > img { display: none; }

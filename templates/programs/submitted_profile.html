@@ -1,0 +1,12 @@
+<header class="profile-header ui-panel member-reference-header applicant-review-summary">
+<div class="member-identity">
+{% if can_view_photo and application.current_photo_id %}<img class="profile-avatar" src="{% url 'programs:photo' application.pk application.current_photo_id %}" alt="Submitted photograph of {{ application.member.full_name }}">{% endif %}
+<div class="member-identity-text"><div class="member-title"><h2>{{ application_confirmation.applicant_name|default:application.member.full_name }}</h2><span class="program-status status-{{ review_code }}">{{ review_result }}</span></div>
+<div class="member-identifiers"><span>PWD control number: <strong>{{ application.member.control_number }}</strong></span><span>Application No: <strong>{{ application.short_reference }}</strong><button type="button" class="copy-icon" aria-label="Copy application reference" data-copy-value="{{ application.short_reference }}" data-copy-status="member-copy-status" data-copy-message="Application reference copied.">{% include 'programs/ui_icon.html' with name='copy' %}</button></span></div>
+<p class="member-program">Program: <strong>{{ program.name }}</strong></p><span id="member-copy-status" class="copy-status" role="status" aria-live="polite"></span>
+</div></div>
+<div class="review-verification" data-status="{{ review_code }}">{% if review_code == 'eligible' %}{% include 'programs/ui_icon.html' with name='check' %}{% else %}{% include 'programs/review_icon.html' with icon='info' %}{% endif %}<div><strong>Verification status</strong><p>{{ review_explanation }}</p></div></div>
+</header>
+<nav class="member-section-nav" aria-label="Application sections" data-default-section="{% if application_confirmation %}#current-information{% else %}#documents{% endif %}">
+{% if application_confirmation %}<a href="#current-information" data-review-target="current-information">{% include 'programs/review_icon.html' with icon='identity' %} Application details</a>{% endif %}<a href="#documents" data-review-target="documents">{% include 'programs/review_icon.html' with icon='folder' %} Submitted requirements</a><a href="#eligibility" data-review-target="eligibility">{% include 'programs/review_icon.html' with icon='decision' %} Eligibility decision</a>
+</nav>

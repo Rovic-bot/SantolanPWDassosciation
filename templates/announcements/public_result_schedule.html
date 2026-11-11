@@ -1,0 +1,7 @@
+{% load tz %}{% timezone 'Asia/Manila' %}
+<div class="result-schedule">
+    <strong>{% if start %}<time datetime="{{ start|date:'c' }}">{% if end and start|date:'Y' == end|date:'Y' %}{{ start|date:'M j' }}{% else %}{{ start|date:'M j, Y' }}{% endif %}</time>{% else %}Not specified{% endif %} &ndash; {% if end %}<time datetime="{{ end|date:'c' }}">{{ end|date:'M j, Y' }}</time>{% else %}Not specified{% endif %}</strong>
+    <small>{% if start %}<span>{{ start_label }} {{ start|date:'g:i A' }}</span>{% endif %}{% if end %}<span>{{ end_label }} {{ end|date:'g:i A' }}</span>{% endif %}</small>
+    {% if not hide_timezone %}<small>Philippine time (UTC+8)</small>{% endif %}
+</div>
+{% endtimezone %}

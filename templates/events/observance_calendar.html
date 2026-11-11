@@ -1,0 +1,28 @@
+<nav class="observance-month-links" aria-label="Observance months">
+  {% for month in observance_months %}<a href="#observance-month-{{ month.number }}">{{ month.name }}</a>{% endfor %}
+</nav>
+<div class="observance-calendar">
+  {% for month in observance_months %}
+  <section class="observance-month" aria-labelledby="observance-month-{{ month.number }}">
+    <h3 id="observance-month-{{ month.number }}" tabindex="-1">{{ month.name }}</h3>
+    {% for item in month.observances %}
+    <article class="observance-card" aria-labelledby="observance-title-{{ month.number }}-{{ forloop.counter }}">
+      {% if item.image_url %}<img class="observance-photo" src="{{ item.image_url }}" alt="{{ item.image_alt }}" loading="lazy">{% endif %}
+      <p class="observance-category">{{ item.category_label }}</p>
+      <h4 id="observance-title-{{ month.number }}-{{ forloop.counter }}">{{ item.title }}</h4>
+      <p><strong>{{ item.recurrence_rule }}</strong> · Every year</p>
+      <p>{{ item.description }}</p>
+      {% if not reference_preview %}
+      <p class="small text-secondary">Annual observance</p>
+      {% include 'events/participation.html' %}
+      {% if item.detail_url %}<p><a class="text-link" href="{{ item.detail_url }}">View observance details<span class="visually-hidden"> for {{ item.title }}</span></a></p>{% endif %}
+      {% endif %}
+      <p class="observance-source">Legal basis / official reference: {{ item.legal_basis }}<br><a href="{{ item.source_url }}" rel="external">Official source<span class="visually-hidden"> for {{ item.title }}</span>{% if '.pdf' in item.source_url %} (PDF){% endif %}</a></p>
+      {% if reference_preview and storage_ready and perms.events.add_annualobservance %}<a class="btn btn-outline-primary mt-3" href="{% url 'events:observance_create' %}?reference={{ month.number }}">Use this reference<span class="visually-hidden"> for {{ item.title }}</span></a>{% endif %}
+    </article>
+    {% empty %}
+    <p class="observance-empty">{% if reference_preview and month.number == 5 %}No selected observance for May.{% elif reference_preview %}No selected observance for this month.{% else %}No published observances for this month.{% endif %}</p>
+    {% endfor %}
+  </section>
+  {% endfor %}
+</div>

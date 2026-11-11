@@ -1,0 +1,6 @@
+<ol id="{{ list_id }}" class="membership-preparation-list">
+  {% for item in items %}<li>
+    <input type="checkbox" id="{{ list_id }}-{{ forloop.counter }}">
+    <label for="{{ list_id }}-{{ forloop.counter }}"><strong>{{ item.label }}</strong>{% if item.note %}<span class="membership-item-note">{{ item.note }}</span>{% endif %}{% if item.details %}<span class="membership-item-note">{{ item.details|join:', ' }}.</span>{% endif %}</label>
+  </li>{% endfor %}
+</ol>

@@ -1,0 +1,49 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{{ event.title }} &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} event-detail-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-detail.css' %}?v=20261105-reference"><link rel="stylesheet" href="{% static 'css/event-detail.css' %}?v=20261105">{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True event_detail_workspace=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/program-detail.js' %}?v=20261105-records" defer></script>{% endblock %}
+{% block content %}
+<div class="container program-profile event-profile" data-event-profile>
+  <a class="profile-back" href="{% url 'events:manage_list' %}"><span aria-hidden="true">&#8592;</span> All events</a>
+  {% include 'partials/workspace_messages.html' %}
+  <header class="profile-header">
+    <div><p class="profile-eyebrow">Community event &middot; Event details</p>
+      <h1>{{ event.title }}</h1>
+      <p class="profile-intro">{{ event.description|striptags|truncatechars:160 }}</p>
+      <div class="profile-meta"><span class="profile-status" data-status="{{ event.status }}">{{ event.get_status_display }}</span><span class="profile-updated">{% include 'programs/profile/icon.html' with name='clock' %}<span>Updated <time datetime="{{ event.updated_at|date:'c' }}">{{ event.updated_at|date:'M j, Y' }} at {{ event.updated_at|date:'g:i A' }}</time></span></span></div>
+    </div>
+    <div class="profile-header-side">
+      {% if can_edit %}<div class="profile-actions"><a class="btn btn-primary" href="{% url 'events:edit' event.pk %}">{% include 'programs/profile/icon.html' with name='edit' %}Edit event</a></div>{% endif %}
+      <ul class="profile-quick-facts" aria-label="Event summary"><li>starts <strong>{{ event.starts_at|date:'M j, Y' }}</strong></li><li>ends <strong>{{ event.ends_at|date:'M j, Y' }}</strong></li></ul>
+    </div>
+  </header>
+  <div class="profile-layout">
+    <section class="profile-section profile-glass profile-overview" aria-labelledby="event-overview-title">
+      <header><span aria-hidden="true">01</span><div><h2 id="event-overview-title">Event overview</h2><p>Public-facing description</p></div></header>
+      <div class="profile-section-body profile-prose"><h3>Description</h3>{{ event.description|linebreaks }}</div>
+    </section>
+    {% include 'events/profile/publication.html' %}
+    <section class="profile-section profile-glass profile-schedule-section" aria-labelledby="event-schedule-title">
+      <header><span aria-hidden="true">02</span><div><h2 id="event-schedule-title">Event schedule</h2><p>All dates use Philippine Standard Time (UTC+8)</p></div></header>
+      <div class="profile-section-body"><dl class="profile-schedule-facts">
+        {% include 'programs/profile/date_row.html' with label='Event starts' value=event.starts_at %}
+        {% include 'programs/profile/date_row.html' with label='Event ends' value=event.ends_at %}
+      </dl></div>
+    </section>
+    <section class="profile-section profile-glass profile-eligibility-section event-location-section" aria-labelledby="event-location-title">
+      <header><span aria-hidden="true">03</span><div><h2 id="event-location-title">Venue</h2><p>Where the event takes place</p></div></header>
+      <div class="profile-section-body event-location"><span class="event-location-icon"><svg class="profile-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><p>{{ event.location|linebreaksbr }}</p></div>
+    </section>
+    <section class="profile-section profile-glass profile-requirements-section event-image-section" aria-labelledby="event-image-title">
+      <header><span aria-hidden="true">04</span><div><h2 id="event-image-title">Event image</h2><p>Image saved with this event</p></div></header>
+      {% if event.image %}<div class="event-image-preview"><img src="{% url 'events:preview_image' event.pk %}" alt="{{ event.image_description }}"></div>{% else %}<div class="profile-section-body"><p class="event-image-empty">No event image uploaded.</p></div>{% endif %}
+    </section>
+    <details class="profile-history profile-glass" id="event-history"{% if request.GET.page %} open{% endif %}>
+      <summary aria-expanded="{% if request.GET.page %}true{% else %}false{% endif %}" aria-controls="event-history-content"><span class="profile-history-heading"><span class="profile-history-icon">{% include 'programs/profile/icon.html' with name='history' %}</span><span><strong>Event history</strong><small>Creation, edits and publication activity</small></span></span><span class="profile-expand">{% include 'programs/profile/icon.html' with name='chevron' %}</span></summary>
+      <div id="event-history-content" class="profile-history-content">{% include 'events/history.html' %}</div>
+    </details>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{{ heading }} report · Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-report.css' %}?v=20261106-reports">{% endblock %}
+{% block content %}<div class="member-report report-layout report-layout-{{ kind }}">
+<p class="eyebrow">REPORTS &amp; EXPORTS</p><h1>{{ heading }} report</h1>
+{% if kind == 'assistance' %}<p>The default report counts confirmed, non-voided assistance receipts. Voided records are available through the status filter.</p>{% endif %}
+<form method="get" data-auto-filter class="member-report-filters">{{ form.non_field_errors }}{% for field in form %}<div>{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}<div class="form-wide"><button class="btn btn-primary">Apply filters</button></div></form>
+{% if columns %}
+<div class="member-report-exports"><span>{{ page_obj.paginator.count }} matching records</span>
+<a href="?{{ filter_query }}&amp;format=csv">Export CSV</a><a href="?{{ filter_query }}&amp;format=xlsx">Export Excel</a><a href="?{{ filter_query }}&amp;format=pdf">Export PDF</a></div>
+{% if kind == 'members' %}{% include 'reports/member_table.html' %}{% else %}
+{% include 'reports/detail_table.html' %}
+{% endif %}
+{% elif not form.errors %}<p>No records match these filters.</p>{% endif %}
+</div>{% endblock %}

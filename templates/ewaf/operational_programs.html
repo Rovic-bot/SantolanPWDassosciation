@@ -1,0 +1,22 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}EWAF Ranking &amp; Selection · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} ewaf-selection-workspace{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-selection.css' %}?v=20261104-spacing">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/ewaf-selection.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}
+<div class="ewaf-selection" data-ewaf-selection>
+  <header class="selection-toolbar">
+    <h1 class="visually-hidden">EWAF Ranking and Selection</h1>
+  </header>
+  {% include 'ewaf/operational_banner.html' %}
+  <form method="get" class="selection-filters selection-glass" data-selection-filters role="search" aria-label="Filter EWAF programs" action="{{ request.path }}">
+    <div><label for="ewaf-program-search">Search programs</label><input id="ewaf-program-search" name="q" type="search" value="{{ query }}" maxlength="200" placeholder="Program title or code" autocomplete="off"></div>
+    <div><label for="ewaf-configuration">Ranking status</label><select id="ewaf-configuration" name="configuration"><option value="">All</option>{% for value,label in configuration_options %}<option value="{{ value }}"{% if configuration_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <p class="selection-count" role="status"><strong data-selection-count>{{ page_obj.paginator.count }}</strong> <span>program{{ page_obj.paginator.count|pluralize }}</span></p>
+    <button class="selection-button" data-filter-submit type="submit">Filter programs</button><a href="{{ request.path }}" data-selection-reset>Clear filters</a>
+  </form>
+  <div class="selection-toolbar selection-vault-toolbar"><a class="selection-button" href="{% url 'ewaf:vault' %}">Configuration Vault <span aria-hidden="true">↗</span></a></div>
+  <p class="selection-feedback" data-selection-feedback role="status" aria-live="polite"></p>
+  {% include 'ewaf/selection/results.html' %}
+</div>
+{% endblock %}

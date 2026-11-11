@@ -1,0 +1,32 @@
+<aside class="profile-operations" aria-label="Program operations">
+  {% if pdao_enforcement_enabled %}<section class="profile-operation profile-glass"><h2>PDAO approval</h2><p>{{ pdao_status }}</p>{% if perms.programs.view_programtermsrevision and perms.programs.view_programapprovalbinding and perms.programs.view_pdaoapprovalrecord %}<a class="profile-inline-action" href="{% url 'programs:terms_review' program.pk %}">Review approval</a>{% endif %}{% if perms.programs.view_pdaoapprovalrecord %}<a class="profile-inline-action" href="{% url 'programs:pdao_history' program.pk %}">Approval history</a>{% endif %}</section>{% endif %}
+  <section class="profile-operation profile-glass profile-publication" id="publication-setup" aria-labelledby="program-publication-title">
+    <div class="profile-publication-heading"><span class="profile-publication-icon" data-status="{{ program.status }}">{% if program.status == 'published' %}{% include 'programs/profile/icon.html' with name='check' %}{% else %}{% include 'programs/profile/icon.html' with name='clock' %}{% endif %}</span><div><p class="profile-eyebrow">Publication</p>
+      <h2 id="program-publication-title">{% if program.status == 'published' %}{% if program.registration_available %}Program is live{% else %}Program published{% endif %}{% elif program.status == 'cancelled' %}Program cancelled{% elif program.status == 'archived' %}Program archived{% elif detail_ready %}Ready for final approval{% else %}Complete program setup{% endif %}</h2>
+    </div></div>
+    {% if program.status == 'published' %}<p>{% if program.registration_available %}Visible to the public and accepting applications.{% else %}Applications follow the registration schedule and the approved program requirements.{% endif %}</p>
+    {% elif program.status == 'cancelled' %}<p>Applications are closed. Existing records and history are retained.</p>
+    {% elif program.status == 'archived' %}<p>This program is private. Existing records and history are retained.</p>
+    {% else %}<p>This draft is private. Publishing records program authorization and makes it available on the public website.</p>{% endif %}
+    <progress class="profile-publication-progress" max="{{ detail_total }}" value="{{ detail_completed }}" aria-label="Program setup checks complete">{{ detail_completed }} of {{ detail_total }}</progress>
+    <div class="profile-progress-label"><span>{% if detail_completed == detail_total %}All details complete{% else %}{{ detail_readiness_label }}{% endif %}</span><span>{{ detail_completed }}/{{ detail_total }}</span></div>
+    {% if can_publish or publish_form.is_bound %}<form method="post" id="publish-program-form">{% csrf_token %}{% if publish_form.errors %}<div class="alert alert-danger" role="alert">{{ publish_form.non_field_errors }}{{ publish_form.version.errors }}</div>{% endif %}{{ publish_form.version }}{% if can_publish %}<button class="btn btn-primary profile-publish-button" name="action" value="published">Approve and publish</button>{% endif %}</form>{% endif %}
+    {% if not can_publish and program.status != 'published' %}<p class="profile-notice">Publication requires an administrator with publishing permission.</p>{% endif %}
+    {% if archive_action and not archiving %}<a class="btn btn-outline-secondary profile-archive-button" href="{% url 'programs:manage_detail' program.pk %}?action={{ archive_action }}#program-status-form" data-program-status-review>{{ archive_label }}</a>{% endif %}
+    <div class="profile-publication-links">
+      {% if program.status == 'published' or program.status == 'cancelled' %}<a class="profile-inline-action" href="{% url 'programs:detail' program.pk %}">View public program {% include 'programs/profile/icon.html' with name='external' %}</a>{% endif %}
+      {% if actions %}{% if program.status != 'archived' or form.errors %}
+        <details class="profile-status-controls"{% if form.is_bound or archiving %} open{% endif %}>
+          <summary aria-expanded="{% if form.is_bound or archiving %}true{% else %}false{% endif %}" aria-controls="program-status-form">{% if archiving %}{{ archive_label }}{% else %}Review status change{% endif %}</summary>
+          <form method="post" id="program-status-form"{% if archiving %} data-program-archive-review{% endif %}>
+            {% csrf_token %}
+            {% if archiving %}<p class="profile-status-guidance">{% if archive_action == 'unpublish' %}This returns the program to an editable draft, removes it from the public website and stops new applications. Publish it again when ready.{% else %}This moves the draft to the archive and keeps it private.{% endif %} Existing applications and history are kept. Enter a reason to record this change.</p>{% endif %}
+            {% include 'programs/fields.html' with error_guidance='Your saved program is retained. Review the details and try the status change again.' %}
+            <button class="btn btn-outline-secondary" type="submit">{% if archiving %}{{ archive_label }}{% else %}Apply program change{% endif %}</button>
+            {% if archiving %}<a class="profile-inline-action" href="{% url 'programs:manage_detail' program.pk %}" data-program-status-review>Cancel</a>{% endif %}
+          </form>
+        </details>
+      {% endif %}{% endif %}
+    </div>
+  </section>
+</aside>

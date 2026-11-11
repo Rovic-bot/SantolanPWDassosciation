@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_class %}admin-workspace{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261111-concern-badge"><link rel="stylesheet" href="{% static 'css/admin-ui.css' %}?v=20261010-cleanup"><link rel="stylesheet" href="{% static 'css/program-workflow.css' %}?v=20261021-checklist"><link rel="stylesheet" href="{% static 'css/reference-ui.css' %}?v=20261021">{% endblock %}
+{% block final_styles %}<script src="{% static 'js/dashboard-theme.js' %}?v=20261110-panel-only"></script><link rel="stylesheet" href="{% static 'css/admin-theme.css' %}?v=20261103-blue"><link rel="stylesheet" href="{% static 'css/admin-filters.css' %}?v=20261101"><script src="{% static 'js/admin-filters.js' %}?v=20261104-tabs" defer></script><script src="{% static 'js/admin-input-examples.js' %}?v=20261110" defer></script>{% endblock %}
+{% block accessibility_styles %}<script src="{% static 'js/workspace-shortcuts.js' %}?v=20261111" defer></script><link rel="stylesheet" href="{% static 'css/receipt-details.css' %}?v=20261111"><script src="{% static 'js/receipt-details.js' %}?v=20261111-processing" defer></script><script src="{% static 'js/admin-motion.js' %}?v=20261111" defer></script><link rel="stylesheet" href="{% static 'css/admin-motion.css' %}?v=20261111"><link rel="stylesheet" href="{% static 'css/admin-palette.css' %}?v=20261110-1"><link rel="stylesheet" href="{% static 'css/admin-accessibility.css' %}?v=20261110-display">{% endblock %}
+{% block footer %}{{ block.super }}<script src="{% static 'js/admin-language.js' %}?v=20261110-display" defer></script><script src="{% static 'js/selection-reader.js' %}?v=20261110-admin" defer></script>{% endblock %}
+{% block header %}
+{% include 'partials/workspace_header.html' with compact_workspace_navigation=True %}
+{% endblock %}

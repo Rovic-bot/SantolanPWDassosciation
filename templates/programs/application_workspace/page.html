@@ -1,0 +1,15 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Applications &amp; Eligibility &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} application-review-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/application-workspace.css' %}?v=20261102-cleanup">{% include 'programs/profile/dialog_styles.html' %}{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True application_workspace=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/application-workspace.js' %}?v=20261104-tabs" defer></script>{% include 'programs/profile/dialog_scripts.html' %}{% endblock %}
+{% block content %}
+<div class="container chooser-container" data-application-workspace>
+  <header class="chooser-header"><h1 class="visually-hidden">Program Applications &amp; Eligibility</h1><a class="btn btn-outline-secondary" href="{% url 'program_portfolio' %}">Open program portfolio</a></header>
+  {% include 'partials/workspace_messages.html' %}
+  <section class="chooser-metrics" data-review-metrics aria-label="Applications overview">{% for metric in review_metrics %}<article class="chooser-metric chooser-glass" data-accent="{{ metric.accent }}"><span class="chooser-index" aria-hidden="true">0{{ forloop.counter }}</span><strong>{% if metric.value != None %}{{ metric.value }}{{ metric.suffix }}{% else %}&mdash;{% endif %}</strong><h2>{{ metric.label }}</h2><p>{{ metric.detail }}</p></article>{% endfor %}</section>
+  {% include 'programs/application_workspace/filters.html' %}
+  {% include 'programs/application_workspace/results.html' %}
+</div>
+{% endblock %}

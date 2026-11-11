@@ -1,0 +1,66 @@
+{% extends 'admin_portal/base.html' %}
+{% load static %}
+{% block title %}Association email settings{% endblock %}
+{% block surface_styles %}<link rel="stylesheet" href="{% static 'css/association-email.css' %}?v=20261111-eye"><link rel="stylesheet" href="{% static 'css/password-input.css' %}?v=20261111">{% endblock %}
+{% block content %}
+<div class="association-email-settings">
+  <header class="email-settings-heading">
+    <a href="{% url 'assistance:referral_inbox' %}">Community Assistance Desk Inbox</a>
+    <h1>Association email settings</h1>
+  </header>
+  {% include 'partials/workspace_messages.html' %}
+  <section class="email-settings-card" aria-labelledby="email-configuration-title">
+    <h2 id="email-configuration-title">Account Configuration</h2>
+    <p>Used for membership, PDAO, program, member-update and Assistance Desk emails, and certificates when Gmail is selected.</p>
+    <form method="post" data-processing-label="Checking connection and saving…" data-processing-message="Checking the email connection. This may take a moment.">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for hidden in form.hidden_fields %}{{ hidden }}{{ hidden.errors }}{% endfor %}
+      <div class="email-settings-field">
+        <label for="{{ form.sender_email.id_for_label }}">{{ form.sender_email.label }} <span aria-hidden="true">*</span></label>
+        {{ form.sender_email }}
+        {{ form.sender_email.errors }}
+      </div>
+      <div class="email-settings-field">
+        <label for="{{ form.gmail_app_password.id_for_label }}">{{ form.gmail_app_password.label }}</label>
+        {% include 'partials/password_input.html' with field=form.gmail_app_password %}
+        <p class="form-text" id="{{ form.gmail_app_password.auto_id }}_helptext">{{ form.gmail_app_password.help_text }}</p>
+        {{ form.gmail_app_password.errors }}
+      </div>
+      <p class="form-text">An email address alone cannot send mail. Saving an app password checks the Gmail connection without sending a message. The password is stored encrypted and is never displayed again.</p>
+      <div class="email-settings-actions">
+        <p class="email-connection-status" role="status">{{ mail_connection.label }}</p>
+        <button class="btn btn-primary" type="submit">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a2 2 0 0 1 2-2Z"/><path d="M7 3v6h10V3M7 21v-8h10v8"/></svg>
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </section>
+  <section class="email-settings-card" aria-labelledby="email-history-title">
+    <div class="email-history-heading">
+      <h2 id="email-history-title">Change History</h2>
+      <span>{{ history|length }} Log{{ history|length|pluralize }}</span>
+    </div>
+    <ol class="email-history-list">
+      {% for item in history %}
+      <li class="email-history-entry{% if not item.before %} email-history-initial{% endif %}">
+        <span class="email-history-dot" aria-hidden="true"></span>
+        <div class="email-history-addresses">
+          <span>{{ item.before|default:'Not configured' }}</span>
+          <span class="email-history-arrow" aria-hidden="true">&rarr;</span><span class="visually-hidden">changed to</span>
+          <strong>{{ item.after }}</strong>
+        </div>
+        <div class="email-history-meta">
+          <time datetime="{{ item.recorded_at|date:'c' }}">{{ item.recorded_at|date:'M j, Y' }} &middot; {{ item.recorded_at|date:'h:i A' }}</time>
+          <span class="email-history-actor">{{ item.actor }}</span>
+        </div>
+      </li>
+      {% empty %}<li class="email-history-empty">No recorded changes.</li>{% endfor %}
+    </ol>
+    {% if history|length == 20 %}<p class="email-history-limit">Showing the latest 20 changes.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}<script src="{% static 'js/password-input.js' %}?v=20261111" defer></script>{% endblock %}

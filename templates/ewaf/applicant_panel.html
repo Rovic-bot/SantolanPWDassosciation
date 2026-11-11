@@ -1,0 +1,12 @@
+<aside class="ewaf-applicant-panel" id="readiness" data-application="{{ selected_input.application }}" aria-label="Applicant inputs" tabindex="-1">
+  {% if selected_input %}
+    {% include 'ewaf/input_card.html' with row=selected_input %}
+    {% if selected_input.input_state == 'excluded' and not panel_row.is_selected %}<p class="ewaf-panel-empty">This applicant is outside the eligible pool and cannot be selected for assistance.</p>
+    {% elif panel_row %}
+    <div class="ewaf-panel-selection">
+      <div class="ewaf-panel-score"><span>Rank {{ panel_row.rank }}{% if panel_row.comparison.equal > 1 %} · Shared rank{% endif %}</span><strong>{{ panel_row.display_score|floatformat:2 }} <small>/ 100</small></strong></div>
+      {% include 'ewaf/selection_decision.html' with row=panel_row run=result.run active=result.active can_decide=result.can_decide selection_waiting=result.selection_waiting %}
+    </div>
+    {% elif result.run %}<p class="ewaf-panel-empty">This applicant is not included in this saved ranking.</p>{% endif %}
+  {% else %}<p class="ewaf-panel-empty">{% if applicant_count %}Select an applicant on the left to view their inputs.{% else %}Applicant inputs will appear here when applications are received.{% endif %}</p>{% endif %}
+</aside>

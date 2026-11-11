@@ -1,0 +1,6 @@
+{% if problem %}
+<div class="email-delivery-help" role="status">
+  <p>{{ problem }}</p>
+  {% if perms.assistance.view_referralticket and perms.assistance.configure_referrals %}<p><a href="{% url 'assistance:referral_email_settings' %}">Association email settings</a></p>{% endif %}
+</div>
+{% endif %}

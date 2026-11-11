@@ -1,0 +1,90 @@
+Admin full names and explicit recorded-result publication — October 28, 2026
+
+Authority and behavior
+The owner requested full names on the Admin side, removal of Saved announcements,
+and explicitly clarified: "Publish recorded results despite review blockers."
+This authorizes the new publication path independently of review readiness.
+It does not authorize changing eligibility, scores, rankings, selections or receipts.
+
+Announcements now shows all program cards, including draft/cancelled programs.
+The results dialog displays full names and its Publish results action publishes
+the displayed applicant roster and recorded selections even with pending reviews,
+missing policy authorization, an open application period, stale rankings or
+deferred decisions. Pending applicants remain unchanged. The old finalization
+service remains available for retained clients and keeps its original checks.
+Saved announcements is removed from the landing page. Existing notices, direct
+management routes, ordinary announcement editing and publication history remain.
+
+Admin names are projected separately from stored/public result payloads, behind
+the existing private result-review permissions. The popup, review page and
+revision history show full names. Legacy masked-reference snapshots resolve
+only unique matches; ambiguous historical identities display an unavailable
+message rather than guessing. The stored historical snapshots stay unchanged.
+Public names remain masked and the previously authorized full program application
+references remain visible. No private scores, evidence or member fields are added.
+
+Publication integrity
+Recorded publication uses a distinct publication_mode in an immutable revision.
+It has publication permissions, CSRF, a version and digest for the reviewed list,
+transaction locks, atomic revision/publication audit entries and rollback.
+An audit reason explicitly records publication independently of review readiness.
+It performs no selection/finalization, scoring, review or release writes.
+Malformed references and corrupted decision artifacts remain rejected.
+Subsequent readiness/weight changes do not withdraw these recorded publications.
+Changes to the published lists or recorded decision provenance require a new
+reviewed publication. Existing historical revisions keep their original validation.
+Withdrawal, archive, deletion protection and retained history remain in place.
+
+Validation executed
+All mutation tests used a fresh verified loopback MySQL 8.4.11 instance, isolated
+database grants, test_g12_disposable, private test media and .env disabled.
+No application data was used for publication tests. Model synchronization was
+used by the existing test runner; historical migrations were not applied/tested.
+
+Final announcements suite: 97 passed in 28.675 seconds, no skips.
+Includes recorded publication with unfinished/open/missing-policy/noncurrent
+ranking/deferred decisions; public privacy; Admin permissions and full names;
+CSRF; stale-page rejection; concurrent/legacy publication coverage; audit failure
+rollback; immutable history; corrupt source/payload rejection; withdrawal; and
+publication after actual EWAF and non-EWAF delivery without changing receipts.
+Final log: admin-recorded-results-2026-10-28/announcements-tests.log.
+
+Earlier runs: 95/96 passed; one new corruption fixture hit the intentionally
+append-only ORM guard. The fixture now simulates corruption through SQL only in
+the disposable database. The next run passed all 96 announcement tests and two
+current-weight/authorization regressions. Its third integration test stopped
+before the browser because its model timestamp default used real time while
+the receipt fixture used frozen time. The test now pins the decision default to
+the fixture clock. Its browser journey was not rerun: Playwright launch was
+denied (spawn EPERM) for both configured Brave and Chrome. The final new EWAF
+delivery test verifies the corresponding HTTP publication and preserved records.
+Earlier log: admin-recorded-results-2026-10-28/earlier-regression.log.
+
+Windows Python 3.14 temporary-directory ACL behavior initially denied writes
+inside freshly created test folders. A task-local launcher uses inherited ACLs
+only for fresh directories under .local/recorded-results-20261028/tmp and passes
+that adaptation to the existing fresh-instance runner. Sandbox permissions were
+not changed. The helper and disposable data remain local and ignored by Git.
+
+Main development verification and runtime limitation
+The existing retained MySQL instance was identity-verified before read-only
+checks. Django checks and makemigrations --check --dry-run passed; no migrations
+were required or applied. JavaScript syntax checks and git diff --check passed.
+Windows denied stopping the existing website process on port 8012. That process
+was left running and needs a user restart to load the new Python views.
+A separate verified preview of the same source/database runs on port 8013.
+Direct HTTP checks after login verified Admin full names, the removed button,
+enabled publication for HM Focus despite its earlier-ranking blocker, and
+unchanged public visibility. HTTP report: admin-recorded-results-2026-10-28/http-results.json.
+No visual browser checks or screenshots are claimed for this task.
+
+Before/after counts AND row SHA-256 digests match for all 14 checked business
+models: Program 9; ProgramApplication 87; AssistanceLog 143; Member 12;
+AssistanceRelease 29; OperationalConfiguration 10; OperationalRun 15;
+OperationalDecision 13; Announcement 1; ProgramResultRevision 1;
+AnnouncementEvent 3; DatasetInputReview 60; SharedDatasetPolicy 10;
+VaultRevision 26. Authentication/session metadata may change after login.
+Evidence: admin-recorded-results-2026-10-28/database-preservation.json.
+No main-system result was published. Existing unfinished Git changes and Assets/
+were preserved. No commit, push, merge or deployment was performed. The owner’s
+70% milestone is unchanged.

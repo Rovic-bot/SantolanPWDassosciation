@@ -1,0 +1,31 @@
+Onsite membership approval destination — November 5, 2026
+
+Owner request
+After approving onsite membership, open the official member record automatically
+instead of remaining on the completed registration summary.
+
+Change
+The successful approve_registration POST in membership/registration_views.py
+redirects directly to members:detail for the member created by the existing
+decision service. An identical approval retry returns to the same member.
+The existing members.view_member permission is required for this destination;
+decision staff without it retain the permitted registration confirmation.
+Declines and invalid submissions retain their existing destinations. Existing
+registration URLs, originals, printing and history remain available. No approval
+criteria, PRPWD behavior, service transaction, models or migrations changed.
+
+Validation
+30 focused tests passed with exit code 0 in fresh disposable native MySQL:
+.venv/Scripts/python.exe scripts/g12_test_runner.py test membership.test_registration_decisions.RegistrationDecisionTests membership.test_prpwd_registration membership.test_onsite_registration_alignment --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput
+
+The approval test follows the redirect and verifies members/detail.html, the
+correct member, the success message, saved corrections and retained source and
+attachments. Retry coverage verifies a single member and approval audit. Added
+checks cover no member-view permission and a decline returning to registration.
+Existing validation, stale edits, duplicate numbers, PRPWD and onsite checks pass.
+The model-synchronized disposable baseline does not validate migration history.
+Log: %TEMP%/santolan-g12-tests-ez9xknel/django.log
+
+git diff --check passed. The identity-checked local web process on port 8013 was
+refreshed and is healthy; its MySQL process, database, uploads and sessions were
+retained. No live membership was approved or edited during validation.

@@ -1,0 +1,26 @@
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% for title, fields in form.sections %}
+<fieldset class="profile-section">
+  <legend>{{ title }}</legend>
+  <div class="profile-grid">
+    {% for field in fields %}
+    {% if field.name != 'no_middle_name' %}
+    <div class="profile-field{% if field.name == 'disability_types' or field.name == 'disability_information' or field.name == 'address' or field.name == 'full_name' %} profile-wide{% endif %}" data-profile-field="{{ field.name }}">
+      {% if field.name == 'disability_types' %}<fieldset><legend class="form-label">Disability type{% if field.field.required %} *{% endif %} (select all that apply)</legend>{{ field }}</fieldset>
+      {% if form.legacy_disability_types %}<p class="form-text">Earlier classifications retained: {% for item in form.legacy_disability_types %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %}. These are not automatically converted to the current choices.</p>{% endif %}
+      {% else %}<label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span><span class="visually-hidden"> (required)</span>{% endif %}</label>{{ field }}{% endif %}
+      {% if field.name == 'middle_name' %}<label class="profile-check" for="{{ form.no_middle_name.id_for_label }}">{{ form.no_middle_name }} {{ form.no_middle_name.label }}</label>{{ form.no_middle_name.errors }}{% endif %}
+      {% if field.help_text and field.name != 'disability_types' %}<p class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+      {{ field.errors }}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</fieldset>
+{% endfor %}
+<fieldset class="profile-section">
+  <legend>Supporting Documents</legend>
+  <p class="form-text">Uploads are private. The 1×1 photo does not replace the Association 2×2 photo. Only marked fields are required; existing files are retained.</p>
+  <div class="profile-grid">{% for field in form.document_fields %}<div>{% include 'membership/field.html' %}</div>{% endfor %}</div>
+</fieldset>
+{% if form.notes %}<div class="profile-section">{% include 'membership/field.html' with field=form.notes %}</div>{% endif %}

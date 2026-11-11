@@ -1,0 +1,32 @@
+Assistance release popup — 6 November 2026
+
+Requested behavior
+- View Releases opens a popup over the selected program overview.
+
+Implementation
+- A centered, width-limited native dialog loads the existing permission-checked
+  program receipt table. Long tables scroll inside the popup; narrow screens
+  retain horizontal table scrolling. Background scrolling is locked while open.
+- The native dialog supports keyboard focus, Escape, an explicit close button
+  and backdrop dismissal. Closing returns focus to View Releases and preserves
+  the list URL, selected program, filters and underlying scroll position.
+- Receipt form POSTs and table pagination stay in the popup. Server messages and
+  the refreshed table appear there; receipts keep the original service validation,
+  CSRF, version checks, audit and duplicate protections.
+- While recording, duplicate submissions are blocked. Uncertain responses offer
+  a read-only reload and never automatically repeat the POST. Receipt attempts
+  refresh overview counts, including when the popup was closed during the request.
+- The original full-page route remains as the native link fallback and source of
+  the protected HTML; normal View Releases clicks use the popup. No model, service,
+  permission or schema changes.
+
+Validation
+- 12 focused tests passed in fresh disposable MySQL:
+  assistance.test_receipt_button and assistance.test_release_portfolio.
+- Django database check, node --check for both scripts and git diff --check passed.
+- Native browser verified View Releases opening the centered popup, unchanged
+  portfolio URL, rendered receipt table, Escape returning to the selected overview,
+  focus restored to View Releases, keyboard reopening, and the narrow-window layout.
+- Collected static assets and restarted only the retained local web process.
+- No live receipt was recorded during browser verification. Synthetic receipt
+  writes and concurrency checks ran only in the disposable test database.

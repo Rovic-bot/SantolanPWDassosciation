@@ -1,0 +1,149 @@
+/* Resident pages opt in through resident_base; shared staff forms and print layouts stay independent. */
+@media screen {
+  .resident-page { --ink-soft: var(--muted); --task-padding: clamp(1.15rem,2.4vw,2.1rem); }
+  .resident-page .page-hero {
+    border-bottom: 1px solid var(--line); padding-block: clamp(1.8rem,3.4vw,3.2rem);
+    background: radial-gradient(ellipse at 84% 42%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 51%),
+      linear-gradient(100deg,var(--surface),var(--paper));
+  }
+  .resident-page .resident-mast { display: grid; grid-template-columns: minmax(0,1fr) 9rem; gap: 2rem; align-items: center; }
+  .resident-page .page-hero h1 { max-width: 28ch; margin: 0 0 .75rem; font-size: clamp(2.15rem,3.5vw,2.75rem); letter-spacing: -.048em; line-height: 1.09; }
+  .resident-page .page-hero .eyebrow { display: flex; align-items: center; gap: .65rem; margin-bottom: .75rem; }
+  .resident-page .page-hero .eyebrow::before { content: ""; height: 2px; width: 1.5rem; background: var(--accent); }
+  .resident-page .page-location { margin-bottom: 1rem; }
+  .resident-mark { position: relative; isolation: isolate; width: 6rem; aspect-ratio: 1; display: grid; place-items: center; color: var(--accent); justify-self: center; }
+  .resident-mark::before, .resident-mark::after {
+    content: ""; position: absolute; inset: .3rem; border: 1px solid var(--rim); border-radius: 1.5rem;
+    background: linear-gradient(145deg,color-mix(in srgb,var(--accent) 20%,transparent),color-mix(in srgb,var(--surface) 83%,transparent));
+  }
+  .resident-mark::before { z-index: -2; transform: translate(.8rem,-.5rem) rotate(10deg); }
+  .resident-mark::after { z-index: -1; transform: rotate(-7deg); backdrop-filter: blur(6px); }
+  .resident-page .resident-mark .portal-icon { width: 2.5rem; height: 2.5rem; stroke-width: 1.35; }
+  .resident-page .content-section { padding-block: clamp(1.65rem,3.8vw,3.25rem); }
+  .resident-page :is(.resident-columns,.event-detail-grid,.resident-form-layout,.resident-application) {
+    display: grid; grid-template-columns: minmax(0,1.65fr) minmax(16rem,.85fr);
+    gap: clamp(1rem,2.2vw,2rem); align-items: start;
+  }
+  .resident-page :is(.resident-columns,.event-detail-grid,.resident-form-layout,.resident-application) > * { min-width: 0; }
+  .resident-page :is(.resident-panel,.resident-aside,.resident-form-rail,.profile-section,.receipt-card,.resident-message-card,.account-card,.information-aside,.record-editor:not(.registration-editor)) {
+    min-width: 0; border: 1px solid var(--line); border-radius: var(--portal-radius);
+    background: var(--glass); box-shadow: inset 0 1px 0 #ffffff09; padding: var(--task-padding);
+  }
+  .resident-page :is(.resident-aside,.resident-form-rail) {
+    border-color: var(--rim); background: linear-gradient(145deg,color-mix(in srgb,var(--accent) 9%,transparent),transparent 72%),color-mix(in srgb,var(--surface) 90%,transparent);
+    backdrop-filter: blur(12px);
+  }
+  .resident-page :is(.resident-panel,.resident-aside) > :first-child { margin-top: 0; }
+  .resident-page :is(.resident-panel,.resident-aside,.resident-message-card) > :last-child { margin-bottom: 0; }
+  .resident-page .resident-panel > p, .resident-page .announcement-copy > p { max-width: 72ch; }
+  .resident-page .resident-aside { font-size: 1rem; line-height: 1.6; }
+  .resident-page .resident-aside h2, .resident-page .resident-panel h2, .resident-page .registration-content h2 { font-size: clamp(1.25rem,2vw,1.65rem); }
+  .resident-page .resident-aside :is(p,li,dd), .resident-page .page-intro { color: var(--muted); }
+  .resident-page .resident-aside > .eyebrow { color: var(--accent); font-size: .76rem; }
+  .resident-page .resident-aside :is(strong,dd > strong) { color: var(--ink); }
+  .resident-page .resident-aside dl { margin-block: 1.2rem; }
+  .resident-page :is(.resident-panel,.resident-aside) dl > dt { color: var(--muted); font-size: .93rem; border-top: 1px solid var(--line); padding-top: .6rem; }
+  .resident-page :is(.resident-panel,.resident-aside) dl > dd { margin: .1rem 0 .7rem; color: var(--ink); }
+  .resident-page .resident-result { width: 100%; max-width: none; }
+  .resident-page .resident-result > section > :is(p,dl) { max-width: 77ch; }
+  .resident-page .resident-followup { margin-block: 1.5rem .6rem; }
+  .resident-page .table-responsive { border: 1px solid var(--line); border-radius: .75rem; }
+  .resident-page .table { margin-bottom: 0; --bs-table-bg: var(--surface); --bs-table-color: var(--ink); }
+  .resident-page .table thead { --bs-table-bg: var(--stone); }
+  .resident-page .table caption { padding-inline: .85rem; }
+  .resident-page .announcement-image { display: block; max-height: 34rem; width: auto; margin: 0 auto 1.4rem; }
+  .resident-page .resident-application { grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); }
+  .resident-page .resident-application:has(> :only-child) { grid-template-columns: minmax(0,49rem); }
+  .resident-page .resident-form-layout { grid-template-columns: minmax(16rem,.6fr) minmax(0,1.4fr); }
+  .resident-page .resident-form-rail { padding: clamp(1rem,1.8vw,1.45rem); }
+  .resident-page .resident-form-rail :is(p,li) { font-size: 1rem; }
+  .resident-page .resident-form-rail h2 { font-size: 1.25rem; }
+  .resident-page .resident-index ol { list-style: none; padding: 0; margin: 0; }
+  .resident-page .resident-index summary { min-height: 44px; padding-block: .55rem; color: var(--accent); font-size: 1rem; font-weight: 650; }
+  .resident-page .resident-index a { display: flex; gap: .8rem; align-items: baseline; min-height: 44px; padding-block: .55rem; border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 1rem; }
+  .resident-page .resident-index a:hover { color: var(--teal); text-decoration: underline; }
+  .resident-page .resident-index a span { color: var(--accent); flex: 0 0 2ch; white-space: nowrap; font-variant-numeric: tabular-nums; font-size: .85rem; }
+  .resident-page .resident-prep { border-bottom: 1px solid var(--line); margin-bottom: 1.1rem; }
+  .resident-page .resident-prep summary { padding-block: .45rem; min-height: 44px; font-weight: 650; color: var(--ink); }
+  .resident-page .registration-editor { margin: 0; padding: 0; border: 0; background: transparent; max-width: none; }
+  .resident-page .profile-section { position: relative; margin: .65rem 0 1.4rem; }
+  .resident-page .profile-section > legend {
+    float: left; width: 100%; margin-bottom: 1.1rem; padding-bottom: .85rem; border-bottom: 1px solid var(--line);
+    color: var(--ink); font-size: 1.3rem; font-weight: 650;
+  }
+  .resident-page .profile-grid { clear: both; gap: 1.1rem 1.25rem; }
+  .resident-page .resident-form-body form > .btn { margin-top: .25rem; }
+  .resident-page .registration-privacy-dialog { background: var(--surface); border-color: var(--rim); border-radius: var(--portal-radius); }
+  .resident-page .registration-privacy-dialog::backdrop { background: #020810b8; backdrop-filter: blur(4px); }
+  .resident-page form:not(.registration-editor) .form-control, .resident-page .form-select { width: 100%; }
+  .public-portal.resident-page form :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea) {
+    border-radius: .65rem; border: 1px solid var(--control-edge); background-color: var(--surface); color: var(--ink); color-scheme: inherit;
+  }
+  .resident-page select.form-select { appearance: auto; background-image: none; }
+  .resident-page :is(input[type=checkbox],input[type=radio]) { accent-color: var(--teal); }
+  .resident-page input[type=file]::file-selector-button { background: var(--stone); color: var(--ink); border-color: var(--line); }
+  .resident-page .errorlist { color: var(--danger); }
+  .resident-page .alert { background: var(--stone); border: 1px solid var(--rim); border-inline-start: .25rem solid var(--teal); color: var(--ink); }
+  .resident-page .alert-danger { border-inline-start-color: var(--danger); }
+  .resident-page .alert-warning { border-inline-start-color: var(--peach); }
+  .resident-page :is(.btn-outline-secondary,.receipt-view,.receipt-copy) { color: var(--teal); background: var(--surface); border: 1px solid var(--rim); }
+  .resident-page :is(.btn-outline-secondary,.receipt-view,.receipt-copy):hover { background: var(--stone); color: var(--ink); }
+  .resident-page .registration-receipt { font-size: 1rem; line-height: 1.6; }
+  .resident-page .receipt-heading { padding-inline: 0; }
+  .resident-page .receipt-success { background: var(--stone); color: var(--mint); box-shadow: inset 0 0 0 1px var(--rim); }
+  .resident-page .receipt-reference-box, .resident-page .receipt-checklist, .resident-page .receipt-print-note,
+  .resident-page .receipt-section[open] > summary, .resident-page .receipt-section > summary:hover {
+    background: var(--stone); border-color: var(--line);
+  }
+  .resident-page :is(.receipt-section,.receipt-section-body dt,.receipt-section-body dd,.receipt-bring,.receipt-heading-status,.receipt-visit-details > div) { border-color: var(--line); }
+  .resident-page :is(.receipt-step-number,.receipt-steps li:first-child .receipt-step-number) { background: var(--stone); color: var(--accent); border-color: var(--rim); }
+  .resident-page .receipt-steps li:not(:last-child)::after { background: var(--line); }
+  .resident-page .registration-receipt :is(.receipt-finish p,.receipt-reference-hint,.receipt-steps p,.receipt-steps h3,.receipt-section-heading p,.receipt-section-preview,.receipt-checklist li,.receipt-instructions,.receipt-print-note p,.receipt-visit-details dd,.receipt-visit-details dt,.receipt-section-body dt,.receipt-section-body dd,.receipt-section-title,.receipt-acknowledgement) { font-size: .95rem; }
+  .resident-page .registration-receipt .btn { font-size: 1rem; min-height: 48px; }
+  .resident-page .receipt-qr img { border-radius: .3rem; padding: .2rem; }
+  .resident-page .receipt-reference-copy h2 { margin-bottom: .25rem; font-size: .83rem; letter-spacing: .09em; }
+  .resident-page .receipt-reference-copy .registration-reference { font-size: clamp(1.22rem,2vw,1.65rem); margin-bottom: .3rem; }
+  .resident-page .event-reference, .resident-page .registration-reference { color: var(--accent); }
+  .resident-page .printable-application { max-width: 64rem; }
+  .resident-page .printable-application .registration-controls { padding: var(--task-padding); background: var(--glass); border: 1px solid var(--rim); border-radius: var(--portal-radius); margin-bottom: 2rem; }
+  .resident-page .printable-application .registration-controls .btn { margin: .25rem .25rem .25rem 0; }
+  .resident-page .registration-data { display: grid; grid-template-columns: minmax(0,.72fr) minmax(0,1.28fr); }
+  .resident-page .registration-data :is(dt,dd) { margin: 0; border-bottom: 1px solid var(--line); padding: .55rem .45rem; }
+  .resident-message main > .content-section { max-width: 50rem; }
+  .resident-message main > .content-section:not(:has(.card,.resident-message-card)) {
+    width: calc(100% - 2.5rem); margin-block: var(--portal-space); padding: var(--task-padding);
+    border-radius: var(--portal-radius); border: 1px solid var(--rim); background: var(--glass);
+  }
+  .resident-page .resident-message-card { margin: 0 auto; }
+  .resident-page .page-hero .text-link { color: var(--teal); }
+  html[data-contrast=true] .resident-page :is(.page-hero,.resident-aside,.resident-form-rail) { background: var(--surface); backdrop-filter: none; }
+  html[data-contrast=true] .resident-page .errorlist { color: #861f30; }
+}
+@media screen and (min-width: 901px) and (min-height: 42rem) {
+  .resident-page .resident-form-rail { position: sticky; top: 1rem; max-height: calc(100dvh - 2rem); overflow: auto; }
+}
+@media screen and (max-width: 900px) {
+  .resident-page :is(.resident-columns,.resident-application,.event-detail-grid,.resident-form-layout) { grid-template-columns: minmax(0,1fr); }
+  .resident-page .resident-index ol { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,13rem),1fr)); gap: 0 1.1rem; }
+}
+@media screen and (max-width: 600px) {
+  .resident-page .resident-mark { display: none; }
+  .resident-page .resident-mast,.resident-page .registration-data { grid-template-columns: minmax(0,1fr); }
+  .resident-page .registration-data dt { border-bottom: 0; }
+  .resident-page .registration-data dd { padding-top: 0; }
+  .resident-page .receipt-visit-details { min-width: 0; }
+  .resident-page .receipt-heading { display: grid; grid-template-columns: minmax(0,1fr); align-items: start; }
+  .resident-page .receipt-heading h1 { max-width: 100%; font-size: clamp(1.7rem,7vw,2.1rem); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .resident-page :is(.resident-aside,.resident-form-rail), .resident-page .resident-mark::after { background: var(--surface); backdrop-filter: none; }
+  .resident-page .registration-privacy-dialog::backdrop { backdrop-filter: none; }
+}
+@media print {
+  html body.public-portal.section-page.resident-page {
+    --ink: #111; --ink-soft: #222; --muted: #333; --surface: white; --paper: white; --stone: white; --teal: #123b55; --line: #888; --glass: white; --accent: #123b55;
+    color: #111; background: white; color-scheme: light;
+  }
+  .resident-page :is(.resident-mark,.resident-index,.resident-form-rail .registration-privacy-controls,.page-location) { display: none; }
+  .resident-page :is(.resident-columns,.resident-application,.event-detail-grid,.resident-form-layout) { display: block; }
+}

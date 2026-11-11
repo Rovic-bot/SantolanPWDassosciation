@@ -1,0 +1,8 @@
+<p>{{ program.assistance_type }} <span class="quiet-badge">{{ program.get_status_display }}</span></p>
+<dl>
+  <dt>Created</dt><dd><time datetime="{{ program.created_at|date:'c' }}">{{ program.created_at|date:'M j, Y' }}</time></dd>
+  <dt>Registration</dt><dd>{{ program.registration_opens_at|date:'M j, Y' }} – {{ program.registration_closes_at|date:'M j, Y' }}</dd>
+  <dt>Program dates</dt><dd>{{ program.starts_at|date:'M j, Y'|default:'Not specified' }} – {{ program.ends_at|date:'M j, Y'|default:'Not specified' }}</dd>
+  <dt>Applicants</dt><dd>{{ program.applicant_count|default_if_none:0 }}</dd>
+  <dt>Beneficiary slots</dt><dd>{{ program.capacity_label }}</dd>
+</dl>

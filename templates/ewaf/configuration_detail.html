@@ -1,0 +1,21 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Configuration diagnostics · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:configuration_list' %}">Configuration programs</a>
+<h1>Configuration diagnostics</h1><h2 class="h5">{{ program.name }}</h2>
+<p role="status">Effective Association authorization unavailable. Operational scoring and ranking unavailable.</p>
+<p><a href="{% url 'ewaf:policy_review' program.pk %}">Review computation references and pending policies</a></p>
+<dl><dt>Draft</dt><dd>{% if current %}Revision {{ current.revision }} · Recorded{% else %}Not recorded{% endif %}</dd>
+<dt>Mathematical completeness</dt><dd>{{ result.mathematically_complete|yesno:'Complete,Incomplete,Not evaluated' }}</dd>
+<dt>Mathematical structure valid</dt><dd>{{ result.structurally_valid|yesno:'Yes,No,Not evaluated' }}</dd>
+<dt>Workbook reference consistency</dt><dd>{{ result.reference_consistency }}</dd>
+<dt>Review</dt><dd>{{ result.review }}</dd><dt>Documentary authorization evidence</dt><dd>{{ result.authority_evidence }}</dd></dl>
+<p>RI = 1.12 and CR below 0.10 describe the workbook reference check. Passing it does not approve any weights or establish Association authorization.</p>
+{% if validation.result.calculation %}<h2 class="h5">Derived diagnostic weights</h2>
+<p>Full calculated decimal values are retained. No applicant scores are calculated.</p>
+<dl data-diagnostic-weights>{% for criterion, weight in derived_weights %}<dt>{{ criterion }}</dt><dd class="text-break">{{ weight }}</dd>{% endfor %}</dl>
+<p class="text-break">CI: {{ validation.result.calculation.CI }} · CR: {{ validation.result.calculation.CR }}</p>{% endif %}
+<h2 class="h5">Outstanding diagnostics and policies</h2><ul>{% for reason in result.reasons %}<li class="text-break">{{ reason.code }}{% if reason.source %} · {{ reason.source }}{% endif %}{% if reason.cell %} · {{ reason.cell }}{% endif %}</li>{% endfor %}</ul>
+{% for action in actions %}<p><a href="{% url 'ewaf:configuration_action' program.pk action.name %}">{{ action.label }}</a></p>{% endfor %}
+<p><a href="{% url 'ewaf:configuration_history' program.pk %}">Configuration and review history</a></p>
+</div>{% endblock %}

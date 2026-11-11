@@ -1,0 +1,3 @@
+{% if resident_support_layout == 'public/resident_base.html' %}{% include 'public/service_message.html' with heading='Page unavailable' description='This page is not available at this link. Open the service from the public homepage, or contact the Association Help Desk for guidance.' %}{% else %}<!doctype html>
+<html lang="en"><head><title>Not Found</title></head>
+<body><h1>Not Found</h1><p>The requested resource was not found on this server.</p></body></html>{% endif %}

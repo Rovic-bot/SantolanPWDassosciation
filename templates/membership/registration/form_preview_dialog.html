@@ -1,0 +1,5 @@
+<dialog class="membership-review-dialog membership-form-dialog" id="membership-form-dialog" aria-labelledby="membership-form-title">
+  <header><h2 id="membership-form-title">{{ preview_title|default:'Submitted membership form' }}</h2><div><button type="button" class="btn btn-primary" data-membership-preview-print disabled>Print / Save PDF</button><button type="button" class="membership-dialog-close" data-dialog-close aria-label="Close form preview">×</button></div></header>
+  <p class="membership-preview-status" data-membership-preview-status role="status">Loading form preview…</p>
+  <iframe title="{{ preview_frame_title|default:'Submitted membership application preview' }}" data-membership-preview-frame></iframe>
+</dialog>

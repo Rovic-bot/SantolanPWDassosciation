@@ -1,0 +1,20 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Update member information · Santolan PWD{% endblock %}
+{% block public_class %}registration-page membership-application-page{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/registration.css' %}?v=20261027-privacy">{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-membership-application.css' %}?v=20261108-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/member-profile.js' %}" defer></script><script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script>{% endblock %}
+{% block content %}
+{% url 'core:home' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Home' label='Association membership' title='Update member information' intro='Review your saved details and request a correction. Staff will verify your changes before updating your official record.' icon='members' only %}
+<div class="container content-section resident-form-layout">
+  <aside class="resident-form-rail">
+    <section><h2 class="h4">Your information stays private</h2><p>Verify your identity using a code sent to the email address already saved in your member record.</p><p>If you cannot access that email, visit the Association Help Desk for an assisted update.</p></section>
+    <section><h2 class="h4">What happens next</h2><p>An admin compares your changes and emails you to visit the barangay office for an interview or screening. Bring documents supporting your changes and your Association membership reference, if available.</p><p>Your current approved information remains in use while the request is pending. If staff mark your record Needs verification, you must be approved again before applying for a program.</p></section>
+    <p><a href="{% url 'core:contact' %}">Contact the Help Desk</a></p>
+    {% if form.privacy_notice %}{% include 'membership/registration/privacy_notice.html' with privacy_notice=form.privacy_notice association_privacy=True %}{% endif %}
+  </aside>
+  <div class="resident-form-body">{% block update_content %}{% endblock %}</div>
+</div>
+{% endblock %}

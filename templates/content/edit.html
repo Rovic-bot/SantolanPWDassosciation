@@ -1,0 +1,11 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{{ title }} — Content Management{% endblock %}
+{% block content %}{% include 'partials/workspace_messages.html' %}
+<div class="container py-4"><h1>{{ title }}</h1><p><a href="{% url 'core:content_list' %}">All public information</a></p>
+{% if content_key == 'membership' %}
+{% include 'membership/association_requirements.html' %}
+<p>The confirmed checklist is shared with Public Membership and Admin onsite registration/review. This editor manages additional membership instructions. Review existing content for conflicting lists before explicitly publishing an update; no published content has been replaced automatically. Keep any PDAO guidance separate and confirm current requirements with the issuing office.</p>
+{% endif %}
+<form method="post" novalidate>{% csrf_token %}{% include 'programs/fields.html' %}<button class="btn btn-primary" type="submit">Save content action</button></form>
+{% if history %}<h2>Audit history</h2><ol>{% for revision in history %}<li>{{ revision.occurred_at }} — {{ revision.actor_label }} — {{ revision.action }}: {{ revision.reason }}</li>{% endfor %}</ol>{% endif %}</div>
+{% endblock %}

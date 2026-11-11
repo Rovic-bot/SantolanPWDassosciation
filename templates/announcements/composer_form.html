@@ -1,0 +1,33 @@
+<section class="announcement-composer" data-composer-content aria-labelledby="announcement-composer-title">
+    <header class="composer-heading">
+        <div><p class="composer-eyebrow">Community updates · Private draft</p><h1 id="announcement-composer-title">{% if editing %}Edit{% else %}Create{% endif %} announcement</h1><p>Share an update with your community.</p></div>
+        <a class="composer-close" data-composer-close href="{% if editing %}{% url 'announcements:manage_detail' announcement.pk %}{% else %}{% url 'announcements:manage_list' %}{% endif %}" aria-label="Close announcement editor">&times;</a>
+    </header>
+    <form method="post" enctype="multipart/form-data" action="{% if editing %}{% url 'announcements:edit' announcement.pk %}{% else %}{% url 'announcements:create' %}{% endif %}" data-composer-form>
+        {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+        {% if announcement.status == 'published' %}<p class="composer-warning">Saving returns this announcement to a private draft. Review and publish it again when ready.</p>{% endif %}
+        <div class="composer-errors" data-composer-errors tabindex="-1" role="alert"{% if not form.errors %} hidden{% endif %}>
+            <h2>Check your announcement</h2>{{ form.non_field_errors }}
+            {% if form.errors %}<ul>{% for field in form.visible_fields %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul>{% endif %}
+        </div>
+        <section class="composer-section" aria-labelledby="composer-details-heading">
+            <header><span>01</span><div><h2 id="composer-details-heading">Announcement details</h2><p>A clear title and the complete message for members.</p></div></header>
+            <div class="composer-fields">
+                {% include 'programs/builder/field.html' with field=form.title %}
+                {% include 'programs/builder/field.html' with field=form.content %}
+            </div>
+        </section>
+        <section class="composer-section" aria-labelledby="composer-image-heading">
+            <header><span>02</span><div><h2 id="composer-image-heading">Announcement image</h2><p>Add an image approved for public display.</p></div></header>
+            <div class="composer-fields">
+                {% if editing and announcement.image %}<div class="composer-image-preview"><img src="{% url 'announcements:preview_image' announcement.pk %}" alt="{{ announcement.image_alt }}"><div><p>Current image</p><label>{{ form.remove_image }} {{ form.remove_image.label }}</label>{{ form.remove_image.errors }}</div></div>{% endif %}
+                {% include 'programs/builder/field.html' with field=form.image %}
+                <p class="builder-help" id="composer-image-help">PNG or JPEG, up to {{ image_limit_mb }} MB. {% if editing %}Leave this empty to keep the current image.{% else %}Without an image, the public card uses the title initials.{% endif %}</p>
+                {% if form.is_bound %}<p class="builder-help">If you selected an image, choose it again before saving.</p>{% endif %}
+                <div class="composer-image-preview" data-composer-preview hidden><img alt="Selected announcement image preview"><div><p data-composer-filename></p><button type="button" class="btn btn-outline-secondary" data-composer-remove>Remove selected image</button></div></div>
+            </div>
+        </section>
+        <footer class="composer-actions"><p>Save a private draft, then review it before publishing.</p><div><a class="btn btn-outline-secondary" data-composer-close href="{% if editing %}{% url 'announcements:manage_detail' announcement.pk %}{% else %}{% url 'announcements:manage_list' %}{% endif %}">Cancel</a><button class="btn btn-primary" type="submit">{% if editing %}Save changes{% else %}Save draft{% endif %}</button></div></footer>
+        <p class="composer-feedback" data-composer-feedback role="status" aria-live="polite"></p>
+    </form>
+</section>

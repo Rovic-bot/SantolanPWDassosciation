@@ -1,0 +1,14 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Application submitted &middot; Santolan PWD{% endblock %}
+{% block resident_class %}section-programs program-receipt-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-receipt.css' %}?v=20261108-2">{% endblock %}
+{% block extra_scripts %}{{ block.super }}{% include 'programs/receipt/scripts.html' %}{% endblock %}
+{% block content %}
+<section class="program-receipt-return" data-receipt-return hidden>
+  <h1>Application submitted</h1><p>{{ program.name }}</p>
+  <p>Your receipt is ready. Save it as an image or print a copy for your records.</p>
+  <button type="button" class="btn btn-primary" data-receipt-reopen>View receipt</button>
+  <a href="{% url 'programs:detail' program.pk %}">Return to program details</a>
+</section>
+{% include 'programs/receipt/content.html' %}
+{% endblock %}

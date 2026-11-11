@@ -1,0 +1,13 @@
+{% autoescape off %}Hello {{ applicant_name }},
+
+Please come to the barangay office / Santolan PWD Association Help Desk so our staff can verify your information in person.
+
+Bring your PWD ID, application reference {{ reference }}, and the required Association membership documents.
+
+Your application is still pending. You are not yet a member of the Association. After your office verification and final Admin approval, we will send a separate email confirming that you are now a member.
+
+For questions about your visit, please reply to this email or contact the Association Help Desk.
+
+Thank you,
+Santolan PWD Association
+{% endautoescape %}

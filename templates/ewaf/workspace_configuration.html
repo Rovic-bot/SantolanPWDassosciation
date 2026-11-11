@@ -1,0 +1,22 @@
+{% load static %}
+<section id="configuration" class="workflow-section">
+<h2 class="h4">EWAF configuration</h2>
+{% if upgrading_criteria %}<p class="alert alert-info">Prepare the five household criteria below. Review and authorize a new set of weights and scoring rules. Earlier configurations and results remain in the history.</p>{% endif %}
+{% if configuration %}<p>Version {{ configuration.revision }} &middot; {{ configuration.get_status_display }}</p>{% endif %}
+{% if missing %}<p class="alert alert-info" role="status">Scoring settings are incomplete or need approval.</p>{% endif %}
+{% if can_configure %}<p>{% if editing_settings %}<a href="?">Back to weight controls</a>{% else %}<a href="?settings=1#configuration">{% if missing %}Complete Settings{% else %}Review approved settings{% endif %}</a>{% endif %}</p>{% endif %}
+{% if math_rows %}<h3 class="h5">Calculated Weights</h3><div class="metric-grid mb-3" aria-label="Saved calculated AHP weights">{% for row in math_rows %}<article><h2>{{ row.name }}</h2><p>{{ row.percent }}%</p></article>{% endfor %}</div>{% endif %}
+{% if can_configure or can_authorize %}
+<form method="post" id="ewaf-configuration-form">{% csrf_token %}{{ form.non_field_errors }}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% if editing_settings %}<p class="form-text">Enter only documented, approved values. Saving a draft does not authorize calculations.</p>{% for title, fields in form.sections %}<fieldset class="ui-panel workflow-section"><legend class="h5">{{ title }}</legend><div class="workflow-form">{% for field in fields %}<div{% if field.name == 'classifications' or '_encoding' in field.name %} class="form-wide"{% endif %}>{{ field.label_tag }}{{ field }}{{ field.errors }}{% if field.help_text %}<p class="form-text">{{ field.help_text }}</p>{% endif %}</div>{% endfor %}</div></fieldset>{% endfor %}{% endif %}
+{% include 'ewaf/weight_editor.html' %}
+<noscript><p>JavaScript is required to adjust and review weight proposals.</p></noscript>
+<div class="mt-3">{{ form.reason.label_tag }}{{ form.reason }}{{ form.reason.errors }}</div>
+<div class="form-check my-3">{{ form.attested }}{{ form.attested.label_tag }}{{ form.attested.errors }}</div>
+{% if can_configure %}<button name="action" value="DRAFT" class="btn btn-outline-secondary" data-save-configuration>Save configuration</button>{% endif %}
+{% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration>Lock configuration</button>{% endif %}
+</form>
+{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261111-processing" defer></script>
+{% endif %}
+</section>

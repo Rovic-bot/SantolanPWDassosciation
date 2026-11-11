@@ -1,0 +1,24 @@
+{% autoescape off %}Hello {{ application.member.full_name }},
+
+Your application for {{ application.program.name }} has been reviewed.
+
+Eligibility decision: {{ label }}
+Application reference: {{ application.public_reference }}
+{% if outcome == 'eligible' and not application.program.ewaf_applicable %}
+You are eligible and have been automatically selected for this program. Please wait for the Association's published results and assistance schedule. This email does not confirm receipt of assistance.
+{% elif outcome == 'eligible' %}
+You are eligible for this program. Beneficiary selection and the release of assistance are separate decisions; this email does not confirm selection or receipt of assistance.
+{% elif outcome == 'review' %}
+Your application needs more information. Please provide the information requested below to the Association so your eligibility can be reviewed.
+{% else %}
+Your application is ineligible for this program. The administrator's reason is provided below.
+{% endif %}{% if application.status == 'COMPLETED' %}
+This review concerns your updated information. Your previously recorded assistance remains on file; this is not a new selection or entitlement to another release.
+{% endif %}{% if remarks %}
+Administrator's remarks:
+{{ remarks }}
+{% endif %}
+For questions or help, reply to this email or visit the Association office.
+
+Santolan PWD Association
+{% endautoescape %}

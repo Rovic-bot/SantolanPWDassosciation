@@ -1,0 +1,4 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Application tracking · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs resident-message{% endblock %}
+{% block content %}<div class="container content-section information-body"><h1>Application tracking is currently unavailable</h1><p>Keep your application reference number and <a href="{% url 'core:contact' %}">contact the Association Help Desk</a> for a processing update.</p><p><a href="{% url 'core:programs' %}">Browse programs</a></p></div>{% endblock %}

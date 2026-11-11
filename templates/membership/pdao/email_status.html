@@ -1,0 +1,17 @@
+{% if pdao_emails %}
+<section class="member-record-card pdao-email-status" aria-labelledby="pdao-email-title">
+  <h2 id="pdao-email-title">Applicant emails</h2>
+  {% for email in pdao_emails %}
+    <article>
+      <h3>{{ email.get_outcome_display }}</h3>
+      <p>{{ email.recipient }}</p>
+      <p role="status">{{ email.delivery_label }}</p>
+      {% include 'partials/email_delivery_help.html' with problem=email.delivery_help %}
+      <small>{{ email.created_at|date:'M j, Y · g:i A' }}</small>
+      <details><summary>View saved message</summary><div class="pdao-email-body">{{ email.body|linebreaksbr }}</div></details>
+      {% if email.can_retry %}<form method="post" action="{% url 'membership:pdao_email_retry' registration.pk email.pk %}">{% csrf_token %}<button class="btn btn-outline-primary" type="submit">Retry saved email</button></form>{% endif %}
+      {% if email.state == 'uncertain' or email.state == 'sending' %}<p class="form-text">Check the sender mailbox before taking further action. This notice will not automatically resend.</p>{% endif %}
+    </article>
+  {% endfor %}
+</section>
+{% endif %}

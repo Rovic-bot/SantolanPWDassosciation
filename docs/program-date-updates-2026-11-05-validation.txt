@@ -1,0 +1,76 @@
+Program date updates — November 5, 2026
+
+Owner scope: the owner identified Programa and its dates after reporting that
+the published-program guard prevented updates. No replacement dates were supplied.
+This change enables date-only corrections through Edit program. It does not
+authorize changes to requirements, eligibility, weights, or selection policies.
+
+Implementation
+- ProgramForm allows a date-only preflight; direct ModelForm saves remain guarded.
+- save_program delegates supported corrections to the schedule service under the
+  existing terms lock and an atomic transaction, checking the version and reason.
+- Existing applications must remain within the registration interval. External
+  approvals, accepted scoring inputs, calculations and final outcomes keep their
+  schedules protected. Mixed edits to other protected terms remain rejected.
+- Existing application snapshots/references and historical configurations stay
+  unchanged. The update appends a configuration with the same approved policy.
+  A cutoff equal to the former registration close follows the new close; a
+  separately scheduled cutoff stays fixed. Policy validity remains enforced.
+- Weights-only intake retains its exact inherited weight version and appends a
+  new source binding. Non-scored programs do not acquire scoring configuration.
+- The program audit and appended configuration roll back together on failure.
+
+Validation
+22 targeted tests passed on fresh disposable native MySQL via:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test programs.test_schedule_updates programs.test_creation_builder programs.test_approved_terms.ApprovedTermsTests.test_protected_fields_and_disability_set_are_frozen_before_any_application --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+
+Coverage includes date updates, immutable applications/history, following and
+fixed cutoffs, policy expiry, existing submission bounds, protected other terms,
+direct-save rejection, stale edits, audit rollback, final outcomes, external
+approval enforcement, non-scored and weights-only programs, HTTP permissions,
+CSRF enforcement and the existing program builder flows.
+Final log: %TEMP%/santolan-g12-tests-938f6ap3/django.log
+
+A broader 46-test attempt also exercised ApprovedTermsTests. Two historical
+linked-event tests still expect the event form's removed application_program
+field and fail in the pre-existing event flow. Those event paths were unchanged
+by this work. Two new fixture omissions (required benefit text) in that attempt
+were fixed, and all date tests passed in the final focused run. The broader suite
+is not claimed as passing. Earlier fixture issues with the publication action
+name and initial configuration count were also corrected before the final run.
+
+Read-only validation against Programa confirmed that a proposed closing-date
+edit passes and its original configuration still validates. No proposed date was
+saved. No application, member record, scoring rule, score or rank was changed.
+Django check --database default passed; makemigrations --check --dry-run detected
+no changes; git diff --check passed. No migration or external deployment ran.
+The recognized local web process was refreshed and its health check passed.
+
+Follow-up: hidden date error and requested closure
+The owner still saw only the generic error summary. Inspection of the open edit
+form showed November 4 at 5 PM, before existing November 5 submissions (latest
+06:07:05 Philippine time). Read-only reproduction returned the correct field
+error, but the enhanced calendar hid its native field and inline error together.
+
+The top summary now renders every field error with its label; calendar errors
+link to and focus the visible calendar. Requirement errors also appear in the
+summary. Invalid closing dates show the earliest usable minute in Philippine
+time, rounded up so the suggestion itself cannot precede the latest submission.
+
+22 focused tests passed (programs.test_schedule_updates and
+programs.test_creation_builder) on fresh disposable MySQL, including an AJAX
+regression verifying that the exact date error and valid boundary appear above
+the hidden native inputs. Log: %TEMP%/santolan-g12-tests-0ijkc9ot/django.log.
+JavaScript syntax, Django database checks and git diff --check passed.
+
+The owner explicitly answered "Yes—close registration now". Programa was saved
+through the authorized schedule service with a reason at November 5, 2026,
+07:09 AM Philippine time. Its cutoff follows that closing time. The previous
+program/configuration values were backed up privately under .local. Within the
+same transaction, all application values and historical configurations were
+compared unchanged, the current binding validated, and registration confirmed
+closed. Only the requested close and normal version/update metadata changed.
+No eligibility, input review, calculation, rank or selection was fabricated.
+The recognized local web process was refreshed and passed its health check.
+The refreshed owner browser displayed Up to date, last updated 07:09 AM,
+registration end November 5, end time 07:09, and Your changes are saved.

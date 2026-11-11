@@ -1,0 +1,36 @@
+<section class="member-report-card" aria-label="{{ heading }} report results">
+  <div class="member-report-table-wrap" role="region" aria-label="{{ heading }} table" tabindex="0">
+    <table class="member-report-table detail-report-table">
+      <caption class="visually-hidden">{{ heading }} matching the selected filters</caption>
+      {% if kind == 'applications' %}
+      <colgroup><col style="width:24%"><col style="width:13%"><col style="width:14%"><col style="width:14%"><col style="width:10%"><col style="width:10%"><col style="width:15%"></colgroup>
+      <thead><tr><th scope="col">Reference</th><th scope="col">Member</th><th scope="col">Program</th><th scope="col">Submitted</th><th scope="col">Status</th><th scope="col">Selection</th><th scope="col">Release &amp; assistance</th></tr></thead>
+      <tbody>{% for row in report_rows %}<tr{% if row.selected %} class="report-selected-row"{% endif %}>
+        <td class="member-report-control">{{ row.reference }}</td><th scope="row" class="report-name">{{ row.member }}{% if row.selected %}<span class="report-selected-dot" aria-hidden="true"></span>{% endif %}</th>
+        <td class="report-program-name">{{ row.program }}</td><td class="member-report-joined">{{ row.submitted }}</td>
+        <td><span class="report-badge" data-status="{{ row.status_code }}">{{ row.status }}</span>{% if row.show_eligibility %}<small class="report-secondary">Eligibility: {{ row.eligibility }}</small>{% endif %}</td>
+        <td><span class="report-badge" data-status="{{ row.selection_code }}">{% if row.selected %}<span aria-hidden="true">✓ </span>{% endif %}{{ row.selection }}</span></td>
+        <td class="report-release"><span>{{ row.approval }}</span><small class="report-secondary">{{ row.received }}</small></td>
+      </tr>{% empty %}<tr><td colspan="7" class="member-report-empty">No applications match these filters.</td></tr>{% endfor %}</tbody>
+      {% elif kind == 'programs' %}
+      <colgroup><col style="width:31%"><col style="width:20%"><col style="width:14%"><col style="width:17%"><col style="width:7%"><col style="width:11%"></colgroup>
+      <thead><tr>{% for name in columns %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for row in report_rows %}<tr>
+        <th scope="row" class="report-name">{{ row.program }}</th><td>{% include 'reports/assistance_type.html' %}</td>
+        <td class="member-report-joined">{{ row.created }}</td><td class="member-report-joined">{{ row.closes }}</td>
+        <td class="report-slots">{{ row.slots }}</td><td><span class="report-badge" data-status="{{ row.status_code }}">{{ row.status }}</span></td>
+      </tr>{% empty %}<tr><td colspan="6" class="member-report-empty">No programs match these filters.</td></tr>{% endfor %}</tbody>
+      {% else %}
+      <colgroup><col style="width:16%"><col style="width:31%"><col style="width:15%"><col style="width:12%"><col style="width:17%"><col style="width:9%"></colgroup>
+      <thead><tr>{% for name in columns %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for row in report_rows %}<tr>
+        <th scope="row"><div class="member-report-identity"><span class="member-report-avatar" data-tone="{{ row.tone }}" aria-hidden="true">{{ row.initials }}</span><span>{{ row.member }}</span></div></th>
+        <td class="report-program-name">{{ row.program }}</td><td>{% include 'reports/assistance_type.html' %}</td>
+        <td class="member-report-joined">{{ row.received_on }}</td><td class="member-report-control">{{ row.reference|default:'–' }}</td>
+        <td><span class="report-badge" data-status="{{ row.status_code }}">{{ row.status }}</span></td>
+      </tr>{% empty %}<tr><td colspan="6" class="member-report-empty">No assistance records match these filters.</td></tr>{% endfor %}</tbody>
+      {% endif %}
+    </table>
+  </div>
+  {% include 'reports/pagination.html' %}
+</section>

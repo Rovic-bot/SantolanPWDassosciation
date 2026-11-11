@@ -1,0 +1,29 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+{% block extrahead %}<script src="{% static 'js/workspace-page.js' %}?v=20261104"></script><link rel="stylesheet" href="{% static 'css/action-feedback.css' %}?v=20261111"><script src="{% static 'js/action-feedback.js' %}?v=20261111" defer></script>{{ block.super }}<link rel="icon" type="image/png" href="{% static 'images/association-logo.png' %}"><link rel="stylesheet" href="{% static 'css/branding.css' %}">{% if has_permission %}<script src="{% static 'js/admin-input-examples.js' %}?v=20261110" defer></script>{% endif %}{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=20261103-blue">{% if not has_permission or is_popup %}<link rel="stylesheet" href="{% static 'css/django-admin.css' %}?v=20261103-blue">{% endif %}{% endblock %}
+{% block dark-mode-vars %}{% if not has_permission %}{{ block.super }}{% endif %}{% endblock %}
+{% block responsive %}{{ block.super }}{% if has_permission and not is_popup %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261104-tabs">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261111-concern-badge">
+  <link rel="stylesheet" href="{% static 'css/admin-workspace.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin-ui.css' %}?v=20261010-cleanup">
+  <noscript><style>.workspace-navigation.collapse{display:block!important}.workspace-menu{display:none!important}</style></noscript>
+{% endif %}{% if has_permission %}<link rel="stylesheet" href="{% static 'css/admin-motion.css' %}?v=20261111"><script src="{% static 'js/admin-motion.js' %}?v=20261111" defer></script><script src="{% static 'js/dashboard-theme.js' %}?v=20261110-panel-only"></script><link rel="stylesheet" href="{% static 'css/admin-theme.css' %}?v=20261103-blue"><link rel="stylesheet" href="{% static 'css/admin-filters.css' %}?v=20261101"><link rel="stylesheet" href="{% static 'css/admin-palette.css' %}?v=20261110-1"><link rel="stylesheet" href="{% static 'css/admin-accessibility.css' %}?v=20261110-display"><script src="{% static 'js/admin-filters.js' %}?v=20261104-tabs" defer></script>{% endif %}{% endblock %}
+{% block bodyclass %}{{ block.super }}{% if has_permission %} admin-workspace native-admin-workspace{% endif %}{% endblock %}
+{% block header %}{% if has_permission %}{% include 'partials/workspace_header.html' with native_admin=True compact_workspace_navigation=True %}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% if title %}<p class="eyebrow">{% if opts %}ADMINISTRATION / {{ opts.verbose_name_plural }}{% else %}ADMINISTRATION{% endif %}</p><h1>{% if cl %}{% include 'admin/workspace_title.html' %}{% else %}{{ title }}{% endif %}</h1>{% endif %}
+{% if not is_popup %}{% if opts.label_lower == 'documents.documenttype' or opts.label_lower == 'documents.membershipdocumentrequirement' %}{% include 'partials/document_configuration_navigation.html' %}{% endif %}{% endif %}
+{% endblock %}
+{% block branding %}{% if request.resolver_match.url_name == 'login' %}<h1 id="site-name"><a class="admin-brand" href="{% url 'admin:index' %}">{% include 'partials/association_logo.html' %}<span>{{ site_header }}</span></a></h1>{% else %}<div id="site-name"><a class="admin-brand" href="{% url 'admin:index' %}">{% include 'partials/association_logo.html' %}<span>{{ site_header }}</span></a></div>{% endif %}{% endblock %}
+{% block nav-global %}<div class="santolan-admin-links">{% if perms.accounts.access_dashboard %}<a href="{% url 'core:dashboard' %}">Workspace</a>{% endif %}<a href="{% url 'core:home' %}" class="public-site-link">Public website ↗</a></div>{% endblock %}
+{% block extrabody %}{{ block.super }}{% if has_permission and not is_popup %}
+  {% include 'partials/accessibility.html' %}
+  <script src="{% static 'js/admin-language.js' %}?v=20261110-display" defer></script>
+  <script src="{% static 'js/selection-reader.js' %}?v=20261110-admin" defer></script>
+  <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}" defer></script>
+  <script src="{% static 'js/accessibility.js' %}?v=20261110-admin-display" defer></script>
+  <script src="{% static 'js/site.js' %}?v=20261104-tabs" defer></script>
+  <script src="{% static 'js/admin-workspace.js' %}" defer></script>
+{% endif %}{% endblock %}

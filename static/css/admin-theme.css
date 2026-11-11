@@ -1,0 +1,329 @@
+/* Shared admin glass theme. Loaded only by authenticated workspace templates. */
+.admin-workspace {
+  --ink: #f2f6ff; --muted: #c0cfe6; --teal: #a9cbff; --focus: var(--brand-ice);
+  --line: #34435d; --surface: #102142; --stone: #192f54; --teal-wash: #203e70;
+  --dashboard-bg: #071329; --glass: rgb(15 31 62 / .95); --glass-line: rgb(186 207 255 / .12);
+  --glass-highlight: rgb(255 255 255 / .13); --glass-shadow: rgb(0 4 16 / .28);
+  --cyan: #99c6ff; --blue: #a6b8ff; --violet: #ab94ff; --magenta: #ef8cfa;
+  --orange: #ffac79; --green: #67e1b0; --glow-blue: rgb(46 100 247 / .035);
+  --glow-violet: rgb(129 68 223 / .025); --glow-orange: rgb(222 103 47 / .02);
+  --chart-track: #28364e; --chart-axis: #61728d; --chart-label: #081322;
+  color: var(--ink); color-scheme: dark;
+  background: radial-gradient(ellipse at 15% 8%, var(--glow-blue), transparent 40%),
+    radial-gradient(ellipse at 90% 30%, var(--glow-violet), transparent 45%),
+    radial-gradient(ellipse at 20% 80%, var(--glow-orange), transparent 35%), var(--dashboard-bg);
+}
+html[data-dashboard-theme=light] .admin-workspace {
+  --ink: var(--brand-navy); --muted: var(--secondary-text); --teal: var(--brand-royal); --focus: var(--brand-royal);
+  --line: #bdcce3; --surface: #fff; --stone: #eaf2ff; --teal-wash: #e3efff;
+  --dashboard-bg: var(--canvas); --glass: rgb(255 255 255 / .95); --glass-line: rgb(143 163 200 / .32);
+  --glass-highlight: rgb(255 255 255 / .85); --glass-shadow: rgb(53 76 120 / .08);
+  --cyan: var(--brand-royal); --blue: var(--brand-primary); --violet: #6948c4; --magenta: #a032b2;
+  --orange: #a94b16; --green: #147247; --glow-blue: rgb(84 151 255 / .1);
+  --glow-violet: rgb(161 132 240 / .08); --glow-orange: rgb(241 164 93 / .05);
+  --chart-track: #d7e2f3; --chart-axis: #8da3c5; --chart-label: #fff;
+  color-scheme: light;
+}
+.admin-workspace .workspace-topbar {
+  position: sticky; top: 0; z-index: 110; min-height: 76px; padding: .8rem 2rem;
+  background: var(--glass); border-bottom: 1px solid var(--glass-line);
+  backdrop-filter: blur(28px) saturate(150%); -webkit-backdrop-filter: blur(28px) saturate(150%);
+  box-shadow: 0 1px 0 var(--glass-highlight) inset;
+}
+.admin-workspace .workspace-topbar .dashboard-location { display: grid; gap: .1rem; color: var(--ink); }
+.dashboard-breadcrumb { color: var(--muted); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; }
+.dashboard-breadcrumb span { padding-inline: .35rem; }
+.dashboard-location strong { font-size: .85rem; font-weight: 600; }
+.admin-workspace .workspace-topbar .dashboard-topbar-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: .75rem; margin: 0; }
+.overview-theme-toggle, .dashboard-public-link {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 44px;
+  padding: .65rem 1rem; border-radius: 2rem; border: 1px solid var(--glass-line);
+  font: inherit; font-size: .75rem; font-weight: 650; text-decoration: none;
+}
+.overview-theme-toggle { background: var(--glass); color: var(--ink); box-shadow: 0 1px 0 var(--glass-highlight) inset; }
+.overview-theme-toggle:hover { background: var(--teal-wash); border-color: var(--teal); }
+.overview-theme-toggle svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.overview-theme-toggle .theme-moon { display: none; }
+html[data-dashboard-theme=light] .overview-theme-toggle .theme-sun { display: none; }
+html[data-dashboard-theme=light] .overview-theme-toggle .theme-moon { display: block; }
+.admin-workspace .workspace-topbar .dashboard-public-link { background: var(--brand-primary); color: var(--brand-on-action); border-color: var(--brand-primary); box-shadow: 0 4px 20px rgb(37 151 255 / .15); }
+.admin-workspace .workspace-topbar .dashboard-public-link:hover { background: var(--brand-royal); color: var(--brand-on-action); }
+.admin-workspace .workspace-sidebar {
+  --nav-surface: var(--glass); --nav-hover: var(--teal-wash); --nav-selected: var(--stone);
+  background: var(--glass); border-color: var(--glass-line); backdrop-filter: blur(24px) saturate(150%);
+}
+.admin-workspace .workspace-brand { min-height: 96px; }
+.admin-workspace .workspace-navigation { scrollbar-color: var(--line) transparent; }
+.admin-workspace .workspace-module { margin-block: .4rem; }
+.admin-workspace .workspace-module > summary { border-radius: .8rem; min-height: 48px; }
+.admin-workspace .workspace-module-links a { border-radius: .65rem; }
+.admin-workspace .workspace-sidebar .workspace-module.current-module .workspace-module-links a[aria-current=page] {
+  background: linear-gradient(120deg, var(--glass-highlight), transparent), var(--teal-wash);
+  color: var(--teal); border: 1px solid var(--glass-line); box-shadow: 0 1px 0 var(--glass-highlight) inset, 0 0 22px var(--glow-blue);
+}
+.admin-workspace .workspace-account { border-color: var(--glass-line); padding: 1rem .75rem; margin-top: 2rem; }
+.admin-workspace .workspace-account strong::before { content: ''; display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .5rem; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+/* Display preferences always pair readable foregrounds with opaque backgrounds. */
+.admin-workspace .display-trigger { background: var(--stone); color: var(--ink); border-color: var(--muted); }
+.admin-workspace .display-trigger:hover { background: var(--teal-wash); }
+.admin-workspace .display-panel { background: var(--surface); color: var(--ink); border-color: var(--muted); }
+.admin-workspace .display-panel select { border-color: var(--muted); transition: none; }
+
+/* One token set for Bootstrap, feature templates, and Django's native widgets. */
+.admin-workspace {
+  --paper: var(--dashboard-bg); --ink-deep: var(--ink); --ink-soft: var(--muted);
+  --success: var(--green); --warning: var(--orange); --danger: #ff9b9b;
+  --primary: var(--teal); --secondary: var(--stone); --accent: var(--cyan);
+  --surface-alt: var(--teal-wash); --primary-fg: var(--ink);
+  --body-fg: var(--ink); --body-bg: var(--surface); --body-quiet-color: var(--muted);
+  --body-medium-color: var(--muted); --body-loud-color: var(--ink);
+  --header-color: var(--ink); --header-link-color: var(--teal); --header-bg: var(--stone);
+  --link-fg: var(--teal); --link-hover-color: var(--cyan); --link-selected-fg: var(--cyan);
+  --hairline-color: var(--line); --border-color: var(--line); --darkened-bg: var(--stone);
+  --selected-bg: var(--teal-wash); --selected-row: var(--teal-wash);
+  --button-fg: var(--brand-on-action); --button-bg: var(--brand-primary); --button-hover-bg: var(--brand-royal);
+  --default-button-bg: var(--brand-primary); --default-button-hover-bg: var(--brand-royal);
+  --close-button-bg: var(--stone); --close-button-hover-bg: var(--teal-wash);
+  --delete-button-bg: #a92e43; --delete-button-hover-bg: #8f2035; --error-fg: var(--danger);
+  --message-success-bg: var(--stone); --message-warning-bg: var(--stone); --message-error-bg: var(--stone);
+  --font-family-primary: var(--font-sans);
+  --radius-sm: .7rem; --radius: 1.25rem;
+  --bs-body-color: var(--ink); --bs-body-bg: var(--surface); --bs-secondary-color: var(--muted);
+  --bs-border-color: var(--line); --bs-tertiary-bg: var(--stone); --bs-secondary-bg: var(--stone);
+  --bs-heading-color: var(--ink); --bs-emphasis-color: var(--ink); --bs-link-color: var(--teal);
+  --bs-link-hover-color: var(--cyan); --bs-body-color-rgb: 240,244,255; --bs-body-bg-rgb: 16,25,41;
+  --bs-secondary-color-rgb: 168,181,206; --bs-emphasis-color-rgb: 240,244,255;
+  font-family: var(--font-sans); font-size: .875rem; line-height: 1.6;
+  accent-color: var(--teal); scrollbar-color: var(--line) var(--dashboard-bg);
+}
+html[data-dashboard-theme=light] .admin-workspace {
+  --danger: #a8324b; --bs-body-color-rgb: 20,35,62; --bs-body-bg-rgb: 255,255,255;
+  --bs-secondary-color-rgb: 75,94,117; --bs-emphasis-color-rgb: 3,25,91;
+}
+.admin-workspace :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.admin-workspace [hidden] { display: none !important; }
+.admin-workspace :is(.workspace-brand,.workspace-brand:hover,.workspace-brand:visited) { color: var(--ink); }
+.admin-workspace .workspace-brand small { color: var(--muted); letter-spacing: .025em; }
+.admin-workspace .workspace-sidebar .workspace-module > summary { border-radius: .8rem; background: transparent; }
+.admin-workspace .workspace-sidebar .workspace-module.current-module > summary {
+  background: linear-gradient(120deg,var(--glass-highlight),transparent),var(--stone);
+  color: var(--teal); box-shadow: inset 0 1px var(--glass-highlight); border: 1px solid var(--glass-line); border-radius: .8rem;
+}
+.admin-workspace .workspace-module-links a:hover { background: var(--teal-wash); color: var(--teal); }
+.admin-workspace :is(.workspace-sidebar-toggle,.workspace-menu) { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.admin-workspace .workspace-sidebar-toggle:hover { background: var(--teal-wash); color: var(--teal); }
+.admin-workspace .workspace-topbar :is(a,button) { flex-shrink: 0; }
+.admin-workspace .dashboard-location { min-width: 0; }
+.admin-workspace .dashboard-breadcrumb { overflow-wrap: anywhere; }
+
+/* Shared page rhythm; dashboard charts keep their own measured grid. */
+.admin-workspace:not(.dashboard-workspace) .container,
+.admin-workspace.native-admin-workspace #content {
+  max-width: 1550px; padding: clamp(1.25rem,2.4vw,2rem) clamp(1.25rem,2.4vw,3rem) 5rem;
+  margin-inline: auto; min-width: 0;
+}
+.admin-workspace:not(.dashboard-workspace) :is(h1,h2,h3,h4,p,dd) { overflow-wrap: anywhere; }
+.admin-workspace:not(.dashboard-workspace) h1 { color: var(--ink); font-size: clamp(1.65rem,2.3vw,2.15rem); font-weight: 700; line-height: 1.2; letter-spacing: -.045em; }
+.admin-workspace:not(.dashboard-workspace) :is(h2,h3,h4) { color: var(--ink); letter-spacing: -.018em; }
+.admin-workspace:not(.dashboard-workspace) .eyebrow { color: var(--muted); font-size: .65rem; letter-spacing: .13em; margin-bottom: .65rem; }
+.admin-workspace:not(.dashboard-workspace) .workspace-page-heading { gap: 1rem; margin-bottom: 1.5rem; }
+.admin-workspace .workspace-heading-actions { flex-wrap: wrap; }
+.admin-workspace :is(.record-columns,.record-columns > *,.workflow-form > *,.program-detail-grid > *,.information-column) { min-width: 0; }
+.admin-workspace :is(.program-grid,.admin-event-grid,.metric-grid,.verification-summary) { gap: 1rem; }
+
+/* Frosted panels share the same reflection and edge as the overview cards. */
+.admin-workspace :is(.application-filters,.program-filter-panel,.registration-inbox-filters,.registration-inbox-results,
+  .application-table,.table-responsive,.record-editor,.profile-section,.member-info-card,.verification-card,
+  .reference-applicants,.card,.ui-panel,.program-card,.admin-event-card,.observance-month,.admin-event-empty,
+  .referral-card,.ewaf-card,.weight-editor,.empty-board,.workflow-form),
+.admin-workspace .metric-grid > article,
+.admin-workspace .reference-program-detail .information-column > section {
+  background: linear-gradient(135deg,var(--glass-highlight),transparent 45%),var(--glass);
+  border: 1px solid var(--glass-line); border-radius: 1.25rem;
+  box-shadow: inset 0 1px var(--glass-highlight),0 4px 20px var(--glass-shadow);
+  backdrop-filter: blur(22px) saturate(145%); -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+.admin-workspace :is(.application-filters,.program-filter-panel,.registration-inbox-filters) { margin: 0 0 1rem; padding: 1.25rem; }
+.admin-workspace .application-filters.row { --bs-gutter-x: 1rem; row-gap: .75rem; }
+.admin-workspace .application-filters.row > * { margin-top: 0; }
+.admin-workspace .workflow-form { padding: 1.5rem; }
+.admin-workspace :is(.record-editor,.ui-panel) .workflow-form { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
+.admin-workspace :is(.ewaf-card,.referral-card,.ui-panel,.registration-inbox-results) > .table-responsive { border: 0; border-radius: inherit; box-shadow: none; background: transparent; backdrop-filter: none; }
+.admin-workspace :is(.program-reference-card footer,.admin-event-card-actions) { background: transparent; border-color: var(--line); border-radius: 0 0 1.25rem 1.25rem; }
+.admin-workspace .admin-event-card-media { border-radius: 1.25rem 1.25rem 0 0; }
+.admin-workspace :is(.capacity-panel,.referral-concern,.referral-empty-evidence,.avatar-empty,.member-identifiers > span,.matching-count,.ewaf-search) { background: var(--surface); color: var(--ink); border-color: var(--line); border-radius: .8rem; }
+.admin-workspace :is(.program-filter-bottom,.program-card-dates,.member-section-nav,.member-header-facts > div + div,.member-info-card h2,.member-info-card .section-heading,.profile-information h2,.compact-record,.review-summary > div,.review-checklist fieldset,.review-check,.qualification-matches li,.requirement-inventory article,.ewaf-card-weights,.ewaf-card-applicants,.ewaf-card-applicants > div + div,.referral-card-heading,.referral-subject-detail,.referral-attachment + .referral-attachment,.referral-email-entry) { border-color: var(--line); }
+.admin-workspace :is(.program-category,.program-card-dates dt,.capacity-percent,.capacity-foot,.program-configuration-status,.program-reference-card footer > span,.review-breadcrumbs,.member-program,.member-header-facts dt,.verification-card h2,.verification-card p,.information-pairs dt,.reference-applicants small,.ewaf-card-applicants dt,.metric-grid h2) { color: var(--muted); }
+.admin-workspace :is(.program-configuration-status strong,.member-identifiers strong,.referral-subject,.registration-inbox-name,.registration-inbox-empty strong) { color: var(--ink); }
+.admin-workspace :is(.summary-icon,.referral-symbol) { background: var(--teal-wash); color: var(--cyan); border-color: var(--line); }
+.admin-workspace :is(.copy-icon,.copy-status,.referral-back,.referral-document-art,.review-chevron) { color: var(--teal); }
+.admin-workspace :is(.copy-icon:hover,.review-check:hover,.review-check[aria-current]) { color: var(--teal); background: var(--teal-wash); }
+.admin-workspace .review-check { color: var(--ink); }
+.admin-workspace .review-highlight { outline-color: var(--focus); }
+
+/* Inputs remain opaque and legible over glass. Keep native field/widget sizing. */
+.admin-workspace:not(.dashboard-workspace) :is(.form-control,.form-select,:where(.account-form) input:not([type=hidden]),input[type=text],input[type=email],input[type=password],input[type=number],input[type=search],input[type=url],input[type=date],input[type=datetime-local],input[type=time],textarea,select) {
+  color: var(--ink); background-color: var(--surface); border: 1px solid var(--muted);
+  border-radius: .7rem; min-height: 44px; max-width: 100%; font: inherit; padding: .6rem .8rem;
+  box-shadow: none; transition: border-color 160ms ease;
+}
+.admin-workspace :is(input,textarea)::placeholder { color: var(--muted); opacity: 1; }
+.admin-workspace :is(input,textarea,select):focus { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb,var(--focus) 18%,transparent); }
+.admin-workspace :is(input,textarea,select):disabled { color: var(--muted); background-color: var(--stone); opacity: .85; }
+.admin-workspace :is(input,textarea,select)[aria-invalid=true] { border-color: var(--danger); }
+.admin-workspace :is(input[type=checkbox],input[type=radio],input[type=range]) { accent-color: var(--teal); }
+.admin-workspace input[type=file] { max-width: 100%; color: var(--ink); }
+.admin-workspace input::file-selector-button { background: var(--stone); color: var(--ink); border: 1px solid var(--line); padding: .55rem .8rem; border-radius: .5rem; }
+.admin-workspace .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a8b5ce' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); padding-right: 2.5rem; }
+.admin-workspace:not(.dashboard-workspace) select.form-select { padding-right: 2.5rem; }
+html[data-dashboard-theme=light] .admin-workspace .form-select, html[data-contrast=true] .admin-workspace .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2353657f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+.admin-workspace :is(.form-label,.registration-inbox-filters .form-label) { color: var(--muted); font-size: .75rem; font-weight: 600; }
+.admin-workspace :is(.form-text,.helptext,.help,.readonly) { color: var(--muted); }
+.admin-workspace:not(.dashboard-workspace) .btn { border-radius: 2rem; min-height: 44px; padding: .6rem 1.1rem; gap: .6rem; font-size: .8rem; }
+.admin-workspace:not(.dashboard-workspace) .btn-primary {
+  background: var(--brand-primary); border-color: var(--brand-primary); color: var(--brand-on-action); font-weight: 650;
+  box-shadow: inset 0 1px rgb(255 255 255 / .2),0 4px 16px var(--glow-blue);
+}
+.admin-workspace:not(.dashboard-workspace) .btn-primary:hover { background: var(--brand-royal); border-color: var(--brand-royal); color: var(--brand-on-action); }
+.admin-workspace:not(.dashboard-workspace) :is(.btn-outline-primary,.btn-outline-secondary,.btn-outline-dark,.btn-secondary,.btn-light,.ewaf-secondary-button) { color: var(--ink); background: var(--glass); border: 1px solid var(--muted); }
+.admin-workspace:not(.dashboard-workspace) :is(.btn-outline-primary,.btn-outline-secondary,.btn-outline-dark,.btn-secondary,.btn-light,.ewaf-secondary-button):hover { color: var(--teal); background: var(--teal-wash); border-color: var(--teal); }
+.admin-workspace .btn-outline-danger { color: var(--danger); border-color: var(--danger); }
+.admin-workspace :is(.btn-danger,.btn-outline-danger:hover) { background: #a92e43; border-color: #a92e43; color: #fff; }
+.admin-workspace:not(.dashboard-workspace) .btn-success { background: #176342; color: white; border-color: #176342; }
+.admin-workspace:not(.dashboard-workspace) .btn-success:hover { background: #10472e; }
+.admin-workspace .btn-warning { background: var(--orange); color: var(--dashboard-bg); border-color: var(--orange); }
+.admin-workspace .btn:disabled { opacity: .55; }
+
+/* Tables, segmented navigation and semantic status accents. */
+.admin-workspace .table { --bs-table-bg: transparent; --bs-table-color: var(--ink); --bs-table-border-color: var(--line); --bs-table-striped-bg: var(--glass-highlight); --bs-table-hover-bg: var(--teal-wash); --bs-table-hover-color: var(--ink); color: var(--ink); }
+.admin-workspace .table > :not(caption) > * > * { background: transparent; color: inherit; border-color: var(--line); }
+.admin-workspace .table thead th { background: var(--stone); color: var(--muted); font-size: .7rem; font-weight: 600; letter-spacing: .04em; }
+.admin-workspace .table tbody tr:hover { background: var(--teal-wash); }
+.admin-workspace .table caption { color: var(--muted); padding-inline: 1rem; }
+.admin-workspace .table-responsive { scrollbar-color: var(--line) transparent; }
+.admin-workspace .application-table { overflow: auto; }
+.admin-workspace :is(.quiet-badge,.program-status,.ewaf-status,.ewaf-verified,.registration-inbox-status,.referral-status) { --status-color: var(--muted); }
+.admin-workspace:not(.public-site) :is(.quiet-badge,.program-status,.ewaf-status,.ewaf-verified,.registration-inbox-status,.referral-status) { color: var(--status-color); background: color-mix(in srgb,var(--status-color) 10%,var(--surface)); border: 1px solid color-mix(in srgb,var(--status-color) 28%,var(--line)); border-radius: 2rem; }
+.admin-workspace :is(.status-published,.status-active,.status-eligible,.status-approved,.ewaf-state-ready,.ewaf-verified,.registration-inbox-status--approved,.referral-status--referred,.quiet-badge[data-status=active],.quiet-badge[data-status=approved],.quiet-badge[data-status=eligible],.quiet-badge[data-status=received],.quiet-badge[data-status=completed],.quiet-badge[data-status=published]) { --status-color: var(--green); }
+.admin-workspace :is(.status-draft,.status-review,.status-pending,.ewaf-state-draft,.ewaf-state-review,.referral-status--received,.referral-status--needs_information,.registration-inbox-status:not(.registration-inbox-status--approved):not(.registration-inbox-status--rejected),.quiet-badge[data-status=pending],.quiet-badge[data-status=draft],.quiet-badge[data-status=needs_information]) { --status-color: var(--orange); }
+.admin-workspace :is(.status-cancelled,.status-ineligible,.status-rejected,.registration-inbox-status--rejected,.quiet-badge[data-status=rejected],.quiet-badge[data-status=cancelled],.quiet-badge[data-status=ineligible]) { --status-color: var(--danger); }
+.admin-workspace .referral-status--in_review { --status-color: var(--blue); }
+.admin-workspace :is(.alert,.registration-inbox-notice) { --notice-color: var(--blue); color: var(--ink); border: 1px solid var(--line); border-left: 3px solid var(--notice-color); background: color-mix(in srgb,var(--notice-color) 10%,var(--surface)); border-radius: .9rem; }
+.admin-workspace .alert-warning { --notice-color: var(--orange); }
+.admin-workspace .alert-danger { --notice-color: var(--danger); }
+.admin-workspace .alert-success { --notice-color: var(--green); }
+.admin-workspace :is(.alert a,.registration-inbox-notice p,.registration-inbox-notice > svg) { color: inherit; }
+.admin-workspace :is(.errorlist,.registration-inbox-error) { color: var(--danger); }
+.admin-workspace :is(.text-danger,.invalid-feedback) { color: var(--danger) !important; }
+.admin-workspace .text-success { color: var(--green) !important; }
+.admin-workspace .text-warning { color: var(--orange) !important; }
+.admin-workspace .text-primary { color: var(--teal) !important; }
+.admin-workspace .text-info { color: var(--cyan) !important; }
+.admin-workspace :is(.ewaf-decision-review,.ewaf-decision-deferred,.ewaf-draft-note,.ewaf-review-warning) { color: var(--orange); }
+.admin-workspace :is(.workspace-actions,.pagination-bar) { border-color: var(--line); }
+.admin-workspace :is(.member-management-nav,.member-section-nav,.ewaf-tabs) { border-color: var(--line); gap: .5rem 1rem; }
+.admin-workspace :is(.member-section-nav a,.ewaf-tab) { color: var(--muted); }
+.admin-workspace :is(.member-management-nav .btn[aria-current],.member-section-nav a[aria-current],.ewaf-tab.is-active) { color: var(--teal); border-color: var(--teal); }
+.admin-workspace :is(.member-section-nav a,.ewaf-tab):hover { color: var(--teal); }
+.admin-workspace :is(.page-link,.referral-page-link,.registration-inbox-table-footer nav > *) { background: var(--surface); color: var(--teal); border-color: var(--line); border-radius: .6rem; min-height: 44px; }
+.admin-workspace :is(.referral-page-link.is-current,.registration-inbox-table-footer nav > .is-current,.page-item.active .page-link) { background: var(--teal-wash); color: var(--ink); border-color: var(--teal); }
+.admin-workspace :is(.referral-page-link.is-disabled,.registration-inbox-table-footer nav > [aria-disabled]) { background: var(--stone); color: var(--muted); }
+
+/* Specialized inboxes and EWAF use the same palette without changing their workflows. */
+.admin-workspace .registration-inbox { --inbox-muted: var(--muted); --inbox-border: var(--line); --inbox-teal: var(--teal); color: var(--ink); }
+.admin-workspace .referral-page { --referral-border: var(--line); --referral-muted: var(--muted); color: var(--ink); }
+.admin-workspace :is(.registration-inbox-steps li > span,.registration-inbox-tabs a > span,.registration-inbox-tabs a[aria-current=page] > span) { color: var(--teal); background: var(--teal-wash); border-color: var(--line); }
+.admin-workspace .registration-inbox-tabs a:hover { background: var(--teal-wash); }
+.admin-workspace :is(.registration-inbox-search > svg,.referral-search > .referral-icon,.program-search-control > svg) { color: var(--muted); }
+.admin-workspace:not(.dashboard-workspace) :is(.registration-inbox-search input,.referral-search input,.program-search-control input) { padding-left: 2.7rem; }
+.admin-workspace :is(.referral-symbol--amber,.referral-close-button) { color: var(--orange); background: color-mix(in srgb,var(--orange) 10%,var(--surface)); border-color: var(--orange); }
+.admin-workspace .referral-close-button:hover { color: var(--orange); background: var(--stone); }
+.admin-workspace .referral-timeline-dot { background: var(--teal); }
+.admin-workspace .referral-timeline > li:not(:last-child)::after { background: var(--line); }
+.admin-workspace .referral-preview { background: var(--stone); }
+.admin-workspace .referral-file-type { color: var(--brand-on-action); background: var(--brand-primary); }
+.admin-workspace .referral-preview:hover .referral-preview-label { background: #193b60; }
+.admin-workspace :is(.ewaf-score-track,.ewaf-point-track,.ewaf-weight-empty,.capacity-track) { background: var(--chart-track); }
+.admin-workspace :is(.ewaf-score-track span,.ewaf-point-track > span) { background: linear-gradient(90deg,var(--blue),var(--violet)); }
+.admin-workspace .ewaf-point-track > span.ewaf-leading-bar { background: linear-gradient(90deg,var(--cyan),var(--blue)); }
+.admin-workspace :is(.capacity-panel,.ewaf-card-weight) progress { background: var(--chart-track); }
+.admin-workspace :is(.capacity-panel,.ewaf-card-weight) progress::-webkit-progress-bar { background: var(--chart-track); }
+.admin-workspace :is(.capacity-panel,.ewaf-card-weight) progress::-webkit-progress-value { background: linear-gradient(90deg,var(--blue),var(--violet)); }
+.admin-workspace :is(.capacity-panel,.ewaf-card-weight) progress::-moz-progress-bar { background: linear-gradient(90deg,var(--blue),var(--violet)); }
+.admin-workspace:not(.dashboard-workspace) .ewaf-search input { border: 0; background: transparent; }
+.admin-workspace .ewaf-page .ewaf-detail-table thead th { background: var(--stone); color: var(--muted); }
+.admin-workspace .ewaf-page .ewaf-ranking-table th small { color: var(--muted); }
+.admin-workspace :is(.review-dialog,.results-dialog,.ewaf-drawer,.modal-content) { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 1.25rem; box-shadow: inset 0 1px var(--glass-highlight),0 24px 80px rgb(0 4 16 / .4); }
+.admin-workspace dialog::backdrop { background: rgb(0 4 16 / .6); backdrop-filter: blur(8px); }
+
+/* Django administration: lists, filters, edit forms and related-object popups. */
+.admin-workspace.native-admin-workspace :is(#container,#main,#content-main,#changelist) { background: transparent; }
+.admin-workspace.native-admin-workspace #content :is(.module,#changelist .results,#changelist #toolbar,#changelist .actions,#changelist-filter,.submit-row) { background: linear-gradient(135deg,var(--glass-highlight),transparent 45%),var(--glass); border: 1px solid var(--glass-line); border-radius: 1rem; box-shadow: inset 0 1px var(--glass-highlight),0 4px 20px var(--glass-shadow); }
+.admin-workspace.native-admin-workspace .module { overflow: hidden; }
+.admin-workspace.native-admin-workspace :is(.module h2,.module caption,.inline-group h2,#changelist-filter h2,.selector-available h2,.selector-chosen h2) { background: var(--stone); color: var(--ink); border-color: var(--line); padding: .9rem 1.1rem; }
+.admin-workspace.native-admin-workspace :is(.module caption a,.module caption a:visited) { color: var(--ink); }
+.admin-workspace.native-admin-workspace :is(#changelist thead th,table thead th) { background: var(--stone); color: var(--muted); border-color: var(--line); }
+.admin-workspace.native-admin-workspace :is(#changelist tbody tr,.row1,.row2,.inline-group .tabular tr.has_original td) { background: transparent; }
+.admin-workspace.native-admin-workspace :is(#changelist tbody tr:hover,#changelist tbody tr.selected) { background: var(--teal-wash); }
+.admin-workspace.native-admin-workspace :is(.object-tools a,.button,input[type=submit],input[type=button],.submit-row input,.submit-row a.closelink) { background: var(--brand-primary); color: var(--brand-on-action); border: 1px solid var(--brand-primary); border-radius: 2rem; min-height: 44px; padding: .65rem 1.1rem; line-height: 1.5; font: inherit; text-transform: none; box-sizing: border-box; }
+.admin-workspace.native-admin-workspace :is(.object-tools a,.button,input[type=submit],input[type=button]):hover { background-color: var(--brand-royal); color: var(--brand-on-action); }
+.admin-workspace.native-admin-workspace .submit-row a.deletelink { background: #a92e43; color: #fff; border-radius: 2rem; min-height: 44px; box-sizing: border-box; padding: .65rem 1.1rem; }
+.admin-workspace.native-admin-workspace :is(#changelist-filter a,#changelist-filter li.selected a,.selector-filter label,.selector .selector-filter,.selector-available h2,.selector-chosen h2) { color: var(--ink); }
+.admin-workspace.native-admin-workspace #changelist-filter li.selected a { color: var(--teal); }
+.admin-workspace.native-admin-workspace :is(.selector .selector-filter,.selector ul.selector-chooser,.related-widget-wrapper,.calendarbox,.clockbox,.calendar,.calendar caption,.calendar table,.calendar td,.calendar-cancel,.timelist,.clockbox h2,.select2-dropdown,.select2-selection) { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
+.admin-workspace.native-admin-workspace :is(.calendar td a,.calendar-shortcuts a,.calendar-cancel a,.timelist a,.select2-container--admin-autocomplete .select2-selection__rendered) { color: var(--ink); }
+.admin-workspace.native-admin-workspace :is(.calendar-shortcuts,.calendar th,.select2-results__option--highlighted,.select2-selection__choice) { background: var(--stone); color: var(--ink); border-color: var(--line); }
+.admin-workspace.native-admin-workspace .calendar td.selected a { background: var(--teal-wash); color: var(--teal); }
+.admin-workspace.native-admin-workspace .selector select { border-radius: 0 0 .7rem .7rem; }
+.admin-workspace.native-admin-workspace #changelist .actions { width: auto; }
+.admin-workspace.native-admin-workspace #changelist :is(.actions .button,#toolbar form input[type=submit]) { color: var(--brand-on-action); background: var(--brand-primary); border-color: var(--brand-primary); border-radius: 2rem; font: inherit; min-height: 44px; padding-inline: 1.1rem; }
+.admin-workspace.native-admin-workspace #changelist :is(.actions .button,#toolbar form input[type=submit]):hover { background: var(--brand-royal); }
+.admin-workspace.native-admin-workspace #content :is(input[type=submit],input[type=button],.button,.submit-row a.closelink) { color: var(--brand-on-action); background: var(--brand-primary); border-color: var(--brand-primary); border-radius: 2rem; }
+.admin-workspace.native-admin-workspace #content :is(input[type=submit],input[type=button],.button):hover { color: var(--brand-on-action); background: var(--brand-royal); border-color: var(--brand-royal); }
+.admin-workspace.native-admin-workspace #content :is(input[type=text],input[type=password],input[type=email],input[type=url],input[type=number],input[type=search],textarea,select) { border-color: var(--muted); border-radius: .7rem; font-size: .875rem; min-height: 44px; }
+.admin-workspace.native-admin-workspace #content h1 { font-size: clamp(1.65rem,2.3vw,2.15rem); font-weight: 700; line-height: 1.2; letter-spacing: -.045em; }
+.admin-workspace.native-admin-workspace ul.messagelist li { color: var(--ink); border: 1px solid var(--line); border-radius: .8rem; }
+.admin-workspace.native-admin-workspace .errornote { color: var(--danger); background: var(--surface); border-color: var(--danger); }
+.admin-workspace.native-admin-workspace.popup :is(#main,#content-start) { margin: 0; }
+.admin-workspace.native-admin-workspace.popup #content { padding: 1.5rem; width: auto; }
+
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  html:not([data-motion=reduce]) .admin-workspace :is(.program-card,.admin-event-card) { transition: transform 180ms ease,border-color 180ms ease; }
+  html:not([data-motion=reduce]) .admin-workspace :is(.program-card,.admin-event-card):hover { transform: translateY(-2px); border-color: var(--teal); }
+}
+@media (max-width:1099px) {
+  .admin-workspace .workspace-topbar { padding-inline: 1.25rem; }
+  .admin-workspace .workspace-brand { min-height: 0; padding-block: .75rem; }
+  .admin-workspace .workspace-sidebar { backdrop-filter: none; }
+}
+@media (max-width:767px) {
+  .admin-workspace .workspace-topbar { position: relative; }
+  .admin-workspace:not(.dashboard-workspace) :is(.workspace-page-heading,.workspace-heading-actions) { flex-wrap: wrap; }
+  .admin-workspace .ewaf-header-actions { flex-wrap: wrap; }
+  .admin-workspace:not(.dashboard-workspace) :is(.record-editor,.workflow-form,.program-filter-panel,.application-filters) { padding: 1rem; }
+  .admin-workspace.native-admin-workspace :is(#changelist .actions,#changelist #toolbar form) { display: flex; flex-wrap: wrap; gap: .65rem; }
+  .admin-workspace.native-admin-workspace .submit-row { gap: .5rem; }
+}
+@media (max-width:575px) {
+  .admin-workspace .workspace-topbar { flex-wrap: wrap; gap: .75rem; }
+  .admin-workspace .dashboard-location { flex-basis: 100%; }
+  .admin-workspace .workspace-topbar .dashboard-topbar-actions { justify-content: start; }
+  .admin-workspace .workspace-topbar :is(a,button) { flex-shrink: 1; }
+}
+html[data-contrast=true] .admin-workspace {
+  --ink: #101e2b; --muted: #263b50; --teal: var(--brand-royal); --focus: var(--brand-royal); --danger: #9c2039;
+  --dashboard-bg: #fff; --surface: #fff; --stone: #fff; --glass: #fff;
+  --line: #405469; --glass-line: #405469; --glass-highlight: transparent; --glass-shadow: transparent;
+  --glow-blue: transparent; --glow-violet: transparent; --glow-orange: transparent;
+  --cyan: var(--brand-royal); --blue: #224467; --violet: #5b3d65; --magenta: #762b75; --orange: #843324; --green: #005749;
+  --chart-track: #d2dce7; --chart-label: #fff; color-scheme: light;
+}
+@media (forced-colors:active) {
+  html .admin-workspace { background: Canvas; --ink: CanvasText; --muted: CanvasText; --surface: Canvas; --stone: Canvas; --glass: Canvas; --glass-line: CanvasText; --line: CanvasText; --focus: Highlight; --teal: LinkText; --glass-highlight: transparent; --glass-shadow: transparent; }
+  .admin-workspace :is(.btn,.dashboard-public-link,.overview-theme-toggle) { border: 1px solid ButtonText; }
+}
+@media print {
+  .admin-workspace { --ink: #101e2b; --muted: #263b50; --surface: #fff; --stone: #fff; --glass: #fff; --glass-highlight: transparent; --glass-shadow: transparent; background: #fff; color: #101e2b; color-scheme: light; }
+  .admin-workspace :is(.workspace-topbar,.workspace-sidebar,.workspace-sidebar-toggle,.accessibility-widget) { display: none !important; }
+  .admin-workspace :is(#main-content,#main) { margin-left: 0; }
+}

@@ -1,0 +1,4 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Application submitted · Santolan PWD{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}<div class="container content-section"><section class="card p-4 mx-auto account-card"><p class="eyebrow">THANK YOU FOR CONNECTING</p><h1 class="h2">Application submitted</h1><p>Your application has been received for administrator review. Membership is confirmed only after verification and approval.</p><p>If you have a question, contact the association through its existing official channels.</p><a href="{% url 'core:home' %}">Return to the homepage</a></section></div>{% endblock %}

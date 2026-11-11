@@ -1,0 +1,16 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Scoring-policy proposals · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section" style="overflow-wrap:anywhere">
+<a class="workspace-back" href="{% url 'ewaf:scoring_list' %}">Scoring-policy diagnostics</a>
+<h1>Scoring-policy proposals</h1><p>{{ program.name }}</p>
+<p>DIAGNOSTIC ONLY — NOT AUTHORIZED FOR BENEFICIARY PROCESSING</p>
+<p>Recording a proposal does not authorize its definitions, weights or use. No applicant scores are calculated.</p>
+<h2>Outstanding decisions</h2><ul>{% for entry in pending %}<li>{{ entry.code }} {{ entry.source }}</li>{% endfor %}{% for code in barriers %}<li>{{ code }}</li>{% endfor %}</ul>
+{% if can_record %}<h2>Record a proposal</h2>{% include 'ewaf/evidence_form.html' with submit_label='Record policy proposal' %}{% endif %}
+<h2>Proposal history</h2>
+{% for row in page %}<article><h3>Revision {{ row.revision }}</h3><p>{{ row.recorded_at }} · {{ row.actor_label }}</p><p>{{ row.reason }}</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{{ row.proposal }}</pre><p style="overflow-wrap:anywhere">Digest: {{ row.digest }}</p></article>{% empty %}<p>No proposals recorded.</p>{% endfor %}
+{% include 'ewaf/scoring_pages.html' %}
+{% if applications %}<h2>Applicant readiness</h2><ul>{% for application in applications %}<li><a href="{% url 'ewaf:scoring_diagnostics' application.pk %}">{{ application.public_reference }}</a></li>{% endfor %}</ul>
+{% if applications.has_previous %}<a href="?applications={{ applications.previous_page_number }}">Previous applicants</a>{% endif %}
+{% if applications.has_next %}<a href="?applications={{ applications.next_page_number }}">Next applicants</a>{% endif %}{% endif %}
+</div>{% endblock %}

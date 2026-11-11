@@ -1,0 +1,76 @@
+/* Shared photo headers; the shaded copy area keeps every title readable. */
+body.public-portal.portal-redesign header.section-hero.section-photo-banner {
+    --section-banner-rgb: 232 229 223;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 270px !important;
+    padding: 40px !important;
+    border-radius: 30px !important;
+    background: rgb(var(--section-banner-rgb)) !important;
+    box-shadow: 0 2px 3px #302b2220 !important;
+}
+body.public-portal.portal-redesign .section-hero.section-photo-banner::before,
+body.public-portal.portal-redesign .section-hero.section-photo-banner::after { display: none !important; }
+.public-portal .section-banner-art { position: absolute; inset: 0; pointer-events: none; }
+.public-portal .section-banner-art > img,
+.public-portal .section-banner-art > .portal-edit-picture,
+.public-portal .section-banner-art > .portal-edit-picture > img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.public-portal .section-banner-art img { object-fit: cover; object-position: center 45%; z-index: 0; }
+.public-portal .section-banner-shade {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    /* One continuous photo and a matching surface avoid a hard vertical seam. */
+    background: linear-gradient(90deg,
+        rgb(var(--section-banner-rgb)) 0%,
+        rgb(var(--section-banner-rgb)) 23%,
+        rgb(var(--section-banner-rgb) / .98) 40%,
+        rgb(var(--section-banner-rgb) / .92) 58%,
+        rgb(var(--section-banner-rgb) / .8) 70%,
+        rgb(var(--section-banner-rgb) / .36) 84%,
+        rgb(var(--section-banner-rgb) / .1) 100%);
+}
+.public-portal .section-photo-banner > :is(.section-hero-grid, .section-banner-copy, .catalog-tabs) { position: relative; z-index: 2; }
+body.public-portal.portal-redesign .section-photo-banner .section-intro,
+body.public-portal.portal-redesign .section-photo-banner .section-banner-copy { width: 67%; max-width: 760px !important; }
+body.public-portal.portal-redesign .section-photo-banner h1 {
+    font-size: clamp(1.85rem, 2.8vw, 3rem) !important;
+    line-height: 1.15 !important;
+    max-width: 27ch;
+    margin-bottom: 14px;
+    color: #1c1a18 !important;
+}
+body.public-portal.portal-redesign .section-photo-banner .section-lead { margin: 0; color: #454039 !important; }
+body.public-portal.portal-redesign .section-photo-banner .section-overline { margin-bottom: 16px; }
+.public-portal .section-photo-banner .portal-picture-action { pointer-events: auto; }
+@media (max-width: 991px) {
+    body.public-portal.portal-redesign header.section-hero.section-photo-banner { padding: 30px !important; }
+    .public-portal .section-banner-shade {
+        background: linear-gradient(90deg,
+            rgb(var(--section-banner-rgb)) 0%,
+            rgb(var(--section-banner-rgb) / .98) 35%,
+            rgb(var(--section-banner-rgb) / .9) 62%,
+            rgb(var(--section-banner-rgb) / .82) 78%,
+            rgb(var(--section-banner-rgb) / .35) 100%);
+    }
+    body.public-portal.portal-redesign .section-photo-banner .section-intro,
+    body.public-portal.portal-redesign .section-photo-banner .section-banner-copy { width: 76%; }
+}
+@media (max-width: 575px) {
+    body.public-portal.portal-redesign header.section-hero.section-photo-banner { padding: 28px 24px !important; min-height: 250px !important; }
+    .public-portal .section-banner-shade {
+        background: linear-gradient(105deg,
+            rgb(var(--section-banner-rgb) / .97),
+            rgb(var(--section-banner-rgb) / .94) 55%,
+            rgb(var(--section-banner-rgb) / .88));
+    }
+    body.public-portal.portal-redesign .section-photo-banner .section-intro,
+    body.public-portal.portal-redesign .section-photo-banner .section-banner-copy { width: 100%; }
+}
+html[data-contrast=true] .public-portal .section-banner-shade { background: #f4f2ecf5; }
+@media (forced-colors: active) {
+    .public-portal .section-banner-art { display: none; }
+    .public-portal .section-banner-shade { background: Canvas; }
+}

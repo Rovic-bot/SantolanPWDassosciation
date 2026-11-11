@@ -1,0 +1,4 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Please try again later · Santolan PWD{% endblock %}
+{% block resident_class %}section-events resident-message{% endblock %}
+{% block content %}<section class="page-hero"><div class="container"><p class="eyebrow">EVENT REGISTRATION</p><h1>Please try again later.</h1><p class="page-intro">Too many verification attempts were made. Wait before trying again, or contact the association for help.</p><a class="text-link" href="{% url 'core:events' %}">Return to events</a></div></section>{% endblock %}

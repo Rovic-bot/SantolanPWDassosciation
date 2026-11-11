@@ -1,0 +1,17 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Content Management · Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/portal-editor.css' %}?v=20261109-clean">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/portal-editor.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}
+<div class="portal-editor" data-portal-editor>
+  <h1 class="visually-hidden">Public portal editor</h1>
+  <div class="portal-editor-toolbar"><div class="portal-editor-mode" role="group" aria-label="Page editor mode"><button type="button" data-editor-mode="edit" aria-pressed="true"{% if not can_edit %} disabled{% endif %}>Edit page</button><button type="button" data-editor-mode="preview" aria-pressed="false">Preview</button></div><span data-editor-status role="status" aria-live="polite">Loading page…</span><div class="portal-editor-actions"><button type="button" class="btn btn-outline-primary" data-editor-discard disabled>Discard changes</button><button type="button" class="btn btn-primary" data-editor-save disabled>{% if can_publish %}Save{% else %}Save draft{% endif %}</button></div></div>
+  <p class="portal-editor-save-note">{% if can_edit %}{% if can_publish %}Save updates this page on the public portal.{% else %}Your changes stay private until an authorized publisher saves them to the public portal.{% endif %}{% else %}You can preview these pages. Content editing permission is required to make changes.{% endif %}</p>
+  <div class="portal-editor-error" data-editor-error role="alert" hidden></div>
+  <div class="portal-editor-frame-wrap"><iframe title="Editable public portal page" data-editor-frame sandbox="allow-scripts allow-same-origin" referrerpolicy="same-origin"></iframe><div class="portal-editor-loading" data-editor-loading>Loading public page…</div></div>
+  <dialog class="portal-picture-dialog" data-editor-picture-dialog aria-labelledby="portal-picture-title"><form method="dialog"><header><h2 id="portal-picture-title">Change picture</h2><button type="submit" value="cancel" aria-label="Close picture editor">×</button></header><p data-picture-label></p><label>Picture<input type="file" accept=".png,.jpg,.jpeg" data-picture-file></label><p class="small">PNG or JPEG, up to 5 MB. Choose an image approved for public display.</p><label>Picture description<input type="text" maxlength="500" data-picture-alt></label><p class="small">Describe the picture for visitors using a screen reader.</p><p data-picture-error role="alert"></p><footer><button type="button" class="btn btn-outline-primary" data-picture-reset>Use original picture</button><button type="button" class="btn btn-primary" data-picture-apply>Apply to preview</button></footer></form></dialog>
+  <noscript><p>This visual editor needs JavaScript. <a href="{% url 'core:content_edit' 'home' %}">Open the text editor</a>.</p></noscript>
+  {{ editor_config|json_script:'portal-editor-config' }}
+  <form hidden data-editor-csrf>{% csrf_token %}</form>
+</div>
+{% endblock %}

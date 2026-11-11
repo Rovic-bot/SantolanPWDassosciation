@@ -1,0 +1,31 @@
+{% load portal_content %}
+{% if has_observances %}
+<section class="observance-card-section" id="annual-observances" aria-labelledby="annual-observances-heading">
+    <h2 id="annual-observances-heading">Annual observances</h2>
+    <div class="public-swipe-carousel notice-swipe-carousel observance-notice-carousel" data-swipe-carousel data-swipe-compact data-swipe-linked-cards data-swipe-rows="1" data-swipe-min-width="220" data-swipe-max-columns="4" role="region" aria-label="Annual observance cards">
+        <div class="public-swipe-controls notice-carousel-toolbar" data-swipe-controls hidden>
+            <div><p class="notice-carousel-label">Every year</p><p class="public-swipe-hint">Swipe or drag to browse</p><p class="visually-hidden" data-swipe-status role="status" aria-live="polite" aria-atomic="true"></p></div>
+            <div class="public-swipe-arrows"><button type="button" data-swipe-previous aria-label="Previous observances"><span aria-hidden="true">&lsaquo;</span></button><button type="button" data-swipe-next aria-label="Next observances"><span aria-hidden="true">&rsaquo;</span></button></div>
+        </div>
+        <div class="notice-list public-swipe-viewport" data-swipe-viewport id="observance-cards" tabindex="0" aria-label="Annual observances. Use left and right arrow keys to browse.">
+            {% for month in observance_months %}{% for item in month.observances %}
+            <a class="notice-row observance-card-link" data-swipe-card href="{{ item.detail_url }}" data-public-popup data-popup-label="Observance details" aria-label="View {{ item.title }}">
+                <div class="notice-card-artwork">
+                    <span class="notice-card-initials" aria-hidden="true">{{ item.title|title_initials }}</span>
+                    {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.image_alt }}" loading="lazy" data-notice-image>{% endif %}
+                </div>
+                <div class="notice-metadata"><span class="notice-card-icon" aria-hidden="true">{% include 'public/icon.html' with name='calendar' %}</span><span class="notice-category">{{ month.name }}</span></div>
+                <div class="notice-copy">
+                    <h3 translate="no">{{ item.title }}</h3>
+                    <p class="notice-excerpt" translate="no">{{ item.description|truncatechars:100 }}</p>
+                </div>
+                <div class="notice-card-footer">
+                    <span class="notice-date">{% include 'public/icon.html' with name='calendar' %}<span>{{ item.recurrence_rule }} &middot; Every year</span></span>
+                </div>
+            </a>
+            {% endfor %}{% endfor %}
+        </div>
+        <div class="notice-carousel-dots" data-swipe-dots role="group" aria-label="Annual observance card groups" hidden></div>
+    </div>
+</section>
+{% endif %}

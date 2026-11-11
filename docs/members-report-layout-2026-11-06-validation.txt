@@ -1,0 +1,35 @@
+Members report layout - 2026-11-06
+
+Scope
+Matched the supplied compact Members report reference: rounded table, thin row
+dividers, control numbers, colored initials beside names, monospaced joined dates,
+status pills, and a footer with page count and Previous/current/Next navigation.
+Uses existing theme tokens and supports horizontal scrolling on narrow screens.
+Rows use the page's vertical scrolling rather than an inner vertical scrollbar.
+
+Implementation
+- reports/presentation.py decorates existing permission-scoped member report rows.
+- reports/views.py supplies screen-only initials/status styling and page numbers.
+- templates/reports/member_table.html contains the accessible table and footer.
+- templates/reports/report.html selects the Members-specific layout and stylesheet.
+- static/css/member-report.css scopes the presentation to the Members report.
+
+Preserved behavior
+Existing filters, record ordering, 30-row pagination, permission checks, private
+response headers, report-access audits and CSV/Excel/PDF exports are unchanged.
+Other report tables retain their existing presentation. No schema changes or
+membership record edits were required.
+
+Validation
+- Django check with config.current_development_settings and database default passed.
+- Three existing report regression tests passed on a separate disposable native
+  MySQL database: filters/privacy/exports/permissions, CSV formula injection and
+  invalid filters, and filtered Excel output with formulas treated as text.
+- Test run: 3 tests in 1.475 seconds, OK.
+- Artifacts: C:\Users\rovic\AppData\Local\Temp\santolan-g12-tests-co_dvutt
+- Native browser inspection confirmed 18 matching records, filters, export links,
+  column alignment, initials, status pills and the pagination controls. Checked at
+  wide and narrower window sizes. The final CSS removes an inner vertical scrollbar.
+- Static assets were collected and only the web process restarted. The existing
+  MySQL process and connection were preserved.
+- git diff --check passed.

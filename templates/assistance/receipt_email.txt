@@ -1,0 +1,12 @@
+Hello {{ claimant.beneficiary_name }},
+
+The Barangay Santolan PWD Association has recorded that your assistance was collected by your authorized representative.
+
+Program: {{ release.approval_snapshot.program_name }}
+Assistance: {{ release.benefit }}
+Collected by: {{ claimant.claimant_name }}
+Date received: {{ release.released_on|date:'F j, Y' }}
+
+The assistance remains recorded under your name. If you did not authorize this collection or any detail is incorrect, please contact the Association office.
+
+Barangay Santolan PWD Association

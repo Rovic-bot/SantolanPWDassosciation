@@ -1,0 +1,52 @@
+<dialog class="results-dialog" id="program-results-dialog" aria-labelledby="results-dialog-title">
+  <header class="results-dialog-header">
+    <div class="results-dialog-identity">
+      <span class="results-pool-icon">{% include 'ewaf/ui_icon.html' with icon='document' %}</span>
+      <div><div class="results-pool-label"><span>Review &amp; selection pool</span>{% if program.public_code %}<small>{{ program.public_code }}</small>{% endif %}</div><h2 id="results-dialog-title" tabindex="-1">{{ program.name }}</h2></div>
+    </div>
+    <div class="results-dialog-summary">
+      <span class="results-capacity-chip">Total slot capacity: <strong>{{ program.capacity_label }}{% if program.slot_limit != None %} slots{% endif %}</strong></span>
+      {% if review_pool %}<span class="results-capacity-chip results-selected-chip">Selected count: <strong>{{ review_pool.selected_count }}{% if program.slot_limit != None %} / {{ program.slot_limit }}{% endif %}</strong></span>{% endif %}
+      <button type="button" class="results-dialog-close" data-results-close aria-label="Close results preview" title="Close results preview">{% include 'ewaf/ui_icon.html' with icon='close' %}</button>
+    </div>
+  </header>
+  {% if review_pool %}
+  <div class="results-pool-toolbar" data-results-toolbar hidden>
+    <label class="results-pool-search">{% include 'ewaf/ui_icon.html' with icon='search' %}<span class="visually-hidden">Search applicants by name or program reference</span><input type="search" data-results-search placeholder="Search applicant by name or ID..." autocomplete="off" aria-controls="results-applicant-table results-selection-table"></label>
+    <div class="results-pool-filters" role="group" aria-label="Filter applicants"><button type="button" data-results-filter="all" aria-pressed="true">All applicants ({{ review_pool.applicant_count }})</button><button type="button" data-results-filter="selected" aria-pressed="false">Selected only ({{ review_pool.selected_count }})</button></div>
+  </div>
+  {% endif %}
+  <div class="results-dialog-body" id="program-results">
+    {% include 'partials/workspace_messages.html' %}
+    {% if form.errors %}<div class="alert alert-danger" role="alert">{{ form.errors }}</div>{% endif %}
+    {% if preview_errors %}<div class="alert alert-warning" role="alert">{% for error in preview_errors %}<p class="mb-1">{{ error }}</p>{% endfor %}</div><p><a href="{% url 'programs:manage_detail' program.pk %}">Review program policy and authorization</a>{% if program.ewaf_applicable %} &middot; <a href="{% url 'ewaf:operational_workspace' program.pk %}#results">Review ranking and selections</a>{% endif %}</p>{% endif %}
+    {% if review_pool %}{% include 'announcements/review_pool.html' %}{% endif %}
+    {% if preview %}
+    <section class="results-selection-reason" aria-labelledby="selection-reason-label">
+      {% if generation_form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ generation_form.non_field_errors }}</div>{% endif %}
+      <label id="selection-reason-label" for="{{ generation_form.selection_reason.id_for_label }}">{{ generation_form.selection_reason.label }} <span>(required)</span></label>
+      <p id="selection-reason-help">{{ generation_form.selection_reason.help_text }}</p>
+      {{ generation_form.selection_reason }}
+      {{ generation_form.selection_reason.errors }}
+      <p class="results-reason-count" data-selection-reason-count aria-live="polite"></p>
+    </section>
+    {% endif %}
+    {% if preview %}{% include 'announcements/certificate_status.html' %}{% endif %}
+  </div>
+  <footer class="results-dialog-footer">
+    <p class="results-publication-note">Publishing shares results with names masked. Certificate emails are queued for selected members. Previously sent certificates are not resent.</p>
+    {% if preview %}
+    <form method="post" action="{% url 'announcements:prepare_results' program.pk %}" id="generate-results-form">{% csrf_token %}
+      {% for field in generation_form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+      <div class="results-dialog-actions"><button type="button" class="btn btn-outline-primary" data-results-close>{% include 'ewaf/ui_icon.html' with icon='arrow-left' %} Back to program</button><button type="submit" name="action" value="PUBLISH_RECORDED_RESULTS" class="btn btn-primary" data-publish-results>{% include 'ewaf/ui_icon.html' with icon='check' %} Publish results</button></div>
+    </form>
+    {% else %}
+    <div>
+      {% if generation_form.errors %}<div class="alert alert-danger" role="alert">{{ generation_form.errors }}</div>
+      {% elif not preview_errors %}<p class="small">Publication permission is required. You can prepare a private preview for an authorized publisher.</p><form method="post" action="{% url 'announcements:prepare_results' program.pk %}">{% csrf_token %}{{ form.version }}{{ form.program.as_hidden }}<button class="btn btn-outline-primary">Prepare public preview</button></form>{% endif %}
+      <div class="results-dialog-actions"><button type="button" class="btn btn-outline-primary" data-results-close>Back to program</button><button class="btn btn-primary" disabled>Publish results</button></div>
+    </div>
+    {% endif %}
+    <noscript><a href="{% url 'announcements:choose_results' %}">Back to programs</a></noscript>
+  </footer>
+</dialog>

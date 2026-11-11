@@ -1,0 +1,34 @@
+{% if perms.assistance.view_assistancerelease %}
+<details class="assistance-receipt-details" data-receipt-details>
+  <summary>Receipt details{% if release.voided_at %} &middot; Voided{% endif %}</summary>
+  <div data-receipt-detail-content>
+  <dl class="mt-3">
+    <dt>Cash amount</dt><dd>{{ release.amount|default_if_none:'Not applicable' }}</dd>
+    <dt>Estimated non-cash value</dt><dd>{{ release.estimated_value|default_if_none:'Not applicable' }}</dd>
+    <dt>Reference</dt><dd>{{ release.reference|default:'Not supplied' }}</dd>
+    {% with claimant=release.approval_snapshot.claimant %}
+    {% if claimant %}
+      <dt>Received by</dt><dd>{{ claimant.claimant_name }} — {% if claimant.claimant_type == 'representative' %}Guardian / authorized representative{% else %}Beneficiary personally{% endif %}</dd>
+      {% if claimant.claimant_type == 'representative' %}
+      <dt>Relationship</dt><dd>{{ claimant.representative_relationship }}</dd>
+      <dt>Beneficiary absence</dt><dd>{{ claimant.absence_reason|linebreaksbr }}</dd>
+      {% if claimant.authorization_basis %}<dt>Authorization / guardianship basis</dt><dd>{{ claimant.authorization_basis|linebreaksbr }}</dd>{% endif %}
+      {% if claimant.representative_identity_verified and claimant.authorization_verified %}<dt>Representative checks</dt><dd>Identity and authority verified onsite</dd>{% endif %}
+      {% endif %}
+      <dt>Verified by</dt><dd>{{ claimant.verified_by_label }} · {{ release.recorded_at|date:'M j, Y, g:i A' }}</dd>
+    {% else %}<dt>Claimant information</dt><dd>Not recorded on this earlier receipt</dd>{% endif %}
+    {% endwith %}
+  </dl>
+  {{ release.notes|linebreaks }}
+  {% if release.voided_at %}<p>Voided {{ release.voided_at|date:'M j, Y, g:i A' }}: {{ release.void_reason }}</p>
+  {% elif perms.assistance.void_release %}
+    <form method="post" action="{% url 'assistance:undo_receipt' release.application_id release.pk %}" data-receipt-undo>
+      {% csrf_token %}<input type="hidden" name="version" value="{{ release.application.version }}"><input type="hidden" name="confirm" value="1">
+      <p class="receipt-undo-help">Recorded by mistake? Undo this receipt. Review and approval are required before recording a replacement.</p>
+      <button type="submit" class="receipt-undo-button">Undo receipt</button>
+    </form>
+  {% endif %}
+  <p data-receipt-undo-status role="status"></p>
+  </div>
+</details>
+{% endif %}

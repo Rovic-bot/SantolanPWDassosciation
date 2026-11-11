@@ -1,0 +1,8 @@
+{% extends 'public/section_base.html' %}{% load static %}
+{% block body_class %}public-site public-portal section-page resident-page {% if public_redesign_enabled %}portal-redesign{% endif %} {% block resident_class %}{% endblock %} {% block public_class %}{% endblock %}{% endblock %}
+{% block final_styles %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/public-resident.css' %}?v=20261103-blue">
+{% endblock %}
+{% block extra_scripts %}{{ block.super }}
+<script src="{% static 'js/public-form-directory.js' %}" defer></script>
+{% endblock %}

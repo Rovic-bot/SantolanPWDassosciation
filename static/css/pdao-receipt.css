@@ -1,0 +1,59 @@
+/* Portal receipt surfaces; the PDAO source form prints separately. */
+.public-portal .pdao-receipt-shell { max-width:1220px; margin-inline:auto; }
+.public-portal .pdao-back { display:inline-flex; align-items:center; gap:10px; min-height:44px; margin-bottom:12px; color:var(--muted); text-decoration:none; font-size:.875rem; }
+.public-portal .pdao-back svg { width:18px; transform:rotate(180deg); }
+.public-portal .pdao-confirmation { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:36px; padding:clamp(24px,4vw,48px); border:1px solid var(--portal-border); border-radius:34px; background:var(--portal-card); box-shadow:var(--portal-shadow); }
+.public-portal .pdao-confirmation-copy { align-self:center; }
+.public-portal .pdao-received-label { display:inline-flex; align-items:center; gap:9px; border-radius:99px; background:var(--stone); padding:8px 14px; font-size:.75rem; font-weight:600; }
+.public-portal .pdao-received-label svg { width:17px; height:17px; }
+.public-portal #pdao-received-title { font-size:clamp(2.25rem,3.6vw,3.6rem) !important; line-height:1.08 !important; font-weight:700; letter-spacing:-.045em; margin:24px 0 20px; }
+.public-portal .pdao-confirmation-copy p { max-width:48ch; color:var(--muted); font-size:.95rem; line-height:1.65; }
+.public-portal .pdao-confirmation-copy .pdao-receipt-lead { color:var(--ink); font-weight:600; }
+.public-portal .pdao-applicant { margin:24px 0 0; }
+.public-portal .pdao-reference-card { align-self:center; min-width:0; padding:28px; border-radius:26px; background:#2a2826; color:#f4f2ec; }
+.public-portal .pdao-reference-caption { font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:#d3cec7; }
+.public-portal .pdao-reference-number { font-size:clamp(1.2rem,2.3vw,2rem); line-height:1.35; letter-spacing:-.02em; font-weight:600; margin:12px 0 24px; overflow-wrap:anywhere; color:#f4f2ec; }
+.public-portal .pdao-reference-card dl { display:grid; gap:16px; margin:0 0 24px; }
+.public-portal .pdao-reference-card dt { color:#d3cec7; font-size:.75rem; font-weight:400; }
+.public-portal .pdao-reference-card dd { font-size:.9rem; line-height:1.5; margin:4px 0 0; color:#f4f2ec; overflow-wrap:anywhere; }
+.public-portal .pdao-reference-card .btn { width:100%; background:#f4f2ec !important; border-color:#f4f2ec !important; color:#1c1a18 !important; font-size:.85rem; }
+.public-portal .pdao-reference-card .pdao-reference-note { margin:12px 0 0; color:#d3cec7; font-size:.75rem; line-height:1.6; }
+.public-portal #main-content .pdao-reference-card :is(.pdao-reference-number,dd) { color:#f4f2ec !important; }
+.public-portal #main-content .pdao-reference-card :is(.pdao-reference-caption,.pdao-reference-note,dt) { color:#d3cec7 !important; }
+.public-portal #main-content .pdao-reference-card .btn:hover { background:#ded8cc !important; border-color:#ded8cc !important; color:#1c1a18 !important; }
+.public-portal .pdao-receipt-shell .btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:44px; white-space:normal; }
+.public-portal .pdao-receipt-shell .btn svg { flex:0 0 18px; width:18px; height:18px; color:inherit; }
+.public-portal .pdao-next { margin-top:24px; padding:28px 32px; background:var(--portal-card); border:1px solid var(--portal-border); border-radius:30px; }
+.public-portal .pdao-receipt-caption { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+.public-portal .pdao-next h2 { font-size:1.5rem; margin:8px 0 24px; font-weight:700; }
+.public-portal .pdao-next ol { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; list-style:none; padding:0; margin:0; }
+.public-portal .pdao-next li { display:flex; align-items:flex-start; gap:14px; min-width:0; }
+.public-portal .pdao-step-number { display:grid; place-items:center; flex:0 0 32px; width:32px; height:32px; border-radius:50%; background:var(--stone); font-size:.8rem; font-weight:600; }
+.public-portal .pdao-next h3 { font-size:1rem; font-weight:600; line-height:1.4; margin:4px 0 8px; }
+.public-portal .pdao-next p { color:var(--muted); font-size:.875rem; line-height:1.6; margin:0; }
+.public-portal .pdao-next .pdao-boundary { margin-top:24px; padding-top:18px; border-top:1px solid var(--line); font-size:.8rem; }
+.public-portal .pdao-copy-preview { margin-top:20px; padding:20px 28px; border:1px solid var(--portal-border); border-radius:26px; background:var(--portal-card); }
+.public-portal .pdao-copy-preview summary { display:flex; align-items:center; justify-content:space-between; gap:20px; cursor:pointer; min-height:44px; font-weight:600; list-style:none; }
+.public-portal .pdao-copy-preview summary::-webkit-details-marker { display:none; }
+.public-portal .pdao-copy-preview summary svg { width:20px; transform:rotate(90deg); }
+.public-portal .pdao-copy-preview[open] summary svg { transform:rotate(-90deg); }
+.public-portal .pdao-copy-preview > p { font-size:.85rem; color:var(--muted); margin:16px 0; }
+.public-portal .pdao-copy-preview iframe { display:block; width:100%; height:640px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.public-portal .pdao-view-form { display:inline-flex; align-items:center; gap:10px; min-height:44px; margin-top:12px; font-size:.875rem; }
+.public-portal .pdao-view-form svg { width:18px; }
+.public-portal .pdao-finish { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:28px 4px 16px; }
+.public-portal .pdao-finish h2 { margin:0 0 8px; font-size:1rem; font-weight:600; }
+.public-portal .pdao-finish p { max-width:52ch; font-size:.85rem; color:var(--muted); line-height:1.6; margin:0; }
+.public-portal .pdao-finish form { flex:0 0 auto; }
+@media (max-width:1000px) {
+ .public-portal .pdao-confirmation { grid-template-columns:1fr; gap:28px; }
+ .public-portal .pdao-next ol { grid-template-columns:1fr; gap:22px; }
+ .public-portal .pdao-finish { align-items:flex-start; flex-direction:column; }
+}
+@media (max-width:480px) {
+ .public-portal .pdao-confirmation { padding:24px 20px; border-radius:28px; }
+ .public-portal .pdao-reference-card { padding:22px 18px; }
+ .public-portal .pdao-next, .public-portal .pdao-copy-preview { padding:22px 20px; }
+ .public-portal .pdao-finish form, .public-portal .pdao-finish .btn { width:100%; }
+}
+@media print { .public-portal.pdao-receipt-page .pdao-copy-preview { display:none; } }

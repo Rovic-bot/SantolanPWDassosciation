@@ -1,0 +1,59 @@
+Existing ranking selection freshness - 2026-11-06
+
+Authorized correction
+The owner reported that selecting an applicant required another ranking despite
+an existing saved ranking. Live diagnosis of PRG000012 revision 6 (run 37) found
+only a program picture audit and a repeated Eligible review with unchanged
+eligibility facts and scoring inputs. The old comparison treated both as changes
+requiring recalculation.
+
+Behavior
+- Ignore program-level picture_updated events only when comparing a saved
+  ranking with current sources. Picture audits remain stored and the original
+  ranking payload remains immutable.
+- For automatic member-record inputs, accept an Eligible-to-Eligible recheck
+  only when all source facts are identical and a complete assistance audit chain
+  explains every application version increment. Only review remarks, timestamp
+  and reviewer may differ. Record the matching review IDs and snapshot digests
+  in the new beneficiary decision audit.
+- Continue capturing and validating current evidence. Actual eligibility,
+  member/input, applicant-pool, program, weight or calculation-rule changes,
+  expiry, unexplained version changes and broken audit chains still block use.
+- Preserve permission checks, final ranking window, capacity, tie handling,
+  optimistic revisions and atomic decision/audit writes. Selection stays a
+  separate administrator action; eligibility and ranking do not approve aid.
+- An audited release following an unchanged eligibility recheck retains the
+  original cutoff inputs and scores. No ranking is automatically regenerated.
+- No schema change, data migration, score/rank edit or public endpoint change.
+
+Validation in fresh disposable MySQL
+1. ewaf.test_ranking_freshness.RankingFreshnessTests: 8/8 passed (33.659 s).
+   Tests cover picture edits before/after ranking, repeated Eligible reviews,
+   enabled drawer and real selection POST, unchanged saved run, audited release,
+   actual input changes, a reversed eligibility decision, unexplained versions,
+   broken review history and rollback when selection auditing fails.
+   Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-94bmvy2f/django.log
+2. Existing automatic member-input and operational workflow classes, plus the
+   rolling-pool new-applicant and final-ranking tests: 23/23 passed.
+   The same invocation also included one older workspace UI test, which failed
+   in fixture setup before exercising the page: test_synthetic_twelve.py:314
+   calls verify(..., birthdate=...), but verify no longer accepts birthdate.
+   That unrelated fixture was not changed. Invocation total: 23 passes, 1 setup
+   error (86.379 s), not an entirely passing suite.
+   Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-rb8jagjj/django.log
+All tests used scripts/g12_test_runner.py and
+scripts.registration_intake_test_runner.RegistrationIntakeTestRunner.
+manage.py check --settings=config.current_development_settings --database default
+passed. git diff --check passed.
+
+Local activation and read-only verification
+- Reloaded only the existing 127.0.0.1:8013 web process, validating its recorded
+  identity before restart and retaining a live MySQL connection across restart.
+- PRG000012 run 37 is now current with one proven unchanged eligibility recheck.
+  Server-rendered applicant drawer has an enabled Select for assistance button
+  and no regeneration warning. PRG000008 run 35 remains current.
+- Other existing programs with changed approved weights or evidence/eligibility
+  problems remain blocked by their original safeguards.
+- No live ranking, beneficiary decision, release or notification was created.
+  Browser interaction was unnecessary for this backend correction; live checks
+  used the current source validator and server-rendered drawer.

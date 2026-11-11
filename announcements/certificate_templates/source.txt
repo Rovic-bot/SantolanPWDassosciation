@@ -1,0 +1,7 @@
+Owner-supplied template: Santolan_PWD_Association_Certificate_Google_Docs_Editable.docx
+SHA-256: 0c69d25ca8159d57fe25919fa625564962f604d90d761fef682fbbdd852efaf8
+The original template is unchanged. certificates.py personalizes copies only.
+Editable slots: member name, program heading/body, publication date.
+Generated copies fix the unmatched sentence parenthesis and padded date label.
+Long variable paragraphs adapt type size/leading to retain a one-page certificate.
+The issuer, logo, page geometry and other OOXML package parts remain intact.

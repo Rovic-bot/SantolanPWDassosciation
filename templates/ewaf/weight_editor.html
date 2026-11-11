@@ -1,0 +1,13 @@
+<section id="weight-editor" class="weight-editor" aria-labelledby="weight-heading" hidden>
+<div class="weight-heading"><div><h2 id="weight-heading" class="h5">Your Proposed Weights</h2><p class="form-text">The relative importance chosen using the sliders. Earlier weights stay fixed as you adjust those below.</p></div><strong class="weight-total">Total <output id="weight-total">100.00%</output></strong></div>
+<p id="weight-origin" class="small text-secondary"></p><p id="weight-rules" class="form-text">Adjust the sliders; use the arrows to change priority. Total: 100%.</p>
+<div id="weight-bars"></div><p id="weight-summary" class="weight-summary" aria-live="polite" aria-atomic="true"></p>
+<div class="workspace-actions"><button type="button" id="reset-weights" class="btn btn-outline-secondary">Reset proposal</button><button type="button" id="preview-weights" class="btn btn-outline-primary">Calculate AHP weights</button></div>
+<p class="form-text mt-3">AHP uses a 1&ndash;9 comparison scale, so calculated weights can differ from your proposal.</p>
+<p id="weight-status" role="status" class="mt-3"></p>
+<section id="weight-preview" aria-labelledby="weight-preview-heading" hidden><h3 id="weight-preview-heading" class="h5">Calculated Weights</h3>
+<p class="form-text">These weights are used for ranking after configuration approval.</p>
+<p id="weight-adjustment" class="form-text" hidden>The calculation adjusted your selected percentages to follow the AHP comparison method.</p>
+<p id="weight-consistency" class="form-text text-break"></p>
+<div class="table-responsive"><table class="table"><thead><tr><th>Criterion</th><th>Your proposal</th><th>Calculated weight</th></tr></thead><tbody id="weight-preview-rows"></tbody><tfoot><tr><th>Total</th><td>100.00%</td><td>100.00%</td></tr></tfoot></table></div>
+{% if not one_click %}<div class="form-check">{{ form.accept_derived_weights }}{{ form.accept_derived_weights.label_tag }}</div>{{ form.accept_derived_weights.errors }}{% endif %}</section></section>

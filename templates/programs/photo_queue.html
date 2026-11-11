@@ -1,0 +1,19 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Photo Verification Queue{% endblock %}
+{% block content %}
+<div class="container content-section">
+  <div class="workspace-page-heading"><div><p class="eyebrow">APPLICATIONS &amp; VERIFICATION</p><h1>Photo Verification Queue</h1><p class="text-secondary">Manually verify the current calendar photo before final Eligibility Verification.</p></div></div>
+  <form method="get" data-auto-filter class="application-filters workspace-search"><div><label class="form-label" for="photo-search">Application reference or member/control number</label><input class="form-control" id="photo-search" name="q" value="{{ query }}"></div><button class="btn btn-primary" type="submit">Search applications</button></form>
+  <ul class="workspace-link-list mt-4">
+    {% for application in page_obj %}
+    <li><strong class="record-code">{{ application.short_reference }}</strong><p>{{ application.program.name }}</p><span class="quiet-badge">{{ application.get_status_display }}</span>
+      <div class="workspace-actions">
+        {% if perms.programs.review_applicationphoto %}<a href="{% url 'programs:photo_review' application.pk %}">Review photo</a>{% endif %}
+        {% if perms.programs.resubmit_applicationphoto %}<a href="{% url 'programs:correction' application.pk %}">Help Desk correction</a>{% endif %}
+      </div>
+    </li>
+    {% empty %}<li>No applications awaiting photo/information processing.</li>{% endfor %}
+  </ul>
+  {% include 'partials/page_links.html' %}
+</div>
+{% endblock %}

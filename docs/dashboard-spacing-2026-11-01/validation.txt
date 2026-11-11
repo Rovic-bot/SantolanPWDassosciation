@@ -1,0 +1,58 @@
+Dashboard spacing refinement — 1 November 2026
+
+Scope
+The existing live-data /dashboard/ was simplified to follow the supplied layout.
+The public landing page and native /admin/ tools were not changed.
+Existing uncommitted work, permissions, queries and business rules were preserved.
+
+Presentation changes
+- Four primary metrics share one desktop row. Four secondary metrics and the
+  reporting definitions remain under More metrics & reporting details.
+- Short chart titles and a single headline replace repeated prose. Full date
+  scopes, definitions, legends and source tables remain under View data.
+- Custom date controls appear when Custom range is selected; without JavaScript
+  the date fields and all twelve source tables remain available.
+- Paired cards share their top/bottom edges and plot alignment, with consistent
+  padding, gaps and chart heights. Long program lists scroll within their plots
+  and support keyboard navigation. Wide charts grow to fit their data.
+- Compact radial, progress and stacked graphics retain the original aggregates.
+  Disability shares retain a member denominator; categories may overlap.
+- Dark/light theme controls and the readable Display preferences remain intact.
+
+Files updated for this refinement
+analytics/visualizations.py
+static/css/dashboard.css
+static/js/dashboard.js
+templates/admin_portal/dashboard.html
+templates/analytics/chart.html
+templates/analytics/metric.html (new reusable metric markup)
+scripts/dashboard_themes_browser.cjs
+docs/dashboard-spacing-2026-11-01/ (synthetic screenshots and this record)
+
+Verification
+- 25 analytics tests passed using g12_test_runner.py and the isolated
+  RegistrationIntakeTestRunner, with a fresh disposable MySQL database.
+  Fixture aggregate/render used 22 SELECT queries; application data was untouched.
+- Django check --database default --settings=config.current_development_settings
+  passed with no issues.
+- collectstatic --noinput passed with STATIC_ROOT redirected to the isolated
+  .local/dashboard-spacing-static-build directory. This project has no Vite or
+  TypeScript production build.
+- JavaScript syntax check and git diff --check passed.
+- Browser checks passed at 1440, 1024, 768, 390 and 320 pixels: four initially
+  visible metrics, twelve charts/tables, exact chart-to-table aggregates, aligned
+  card pairs and chart plots, no clipped SVG text or page overflow.
+- Both themes, persisted/system theme preference, blocked browser storage,
+  keyboard disclosures/custom dates/filter focus, reduced motion, high contrast,
+  forced colors, 200% text and JavaScript-disabled fallbacks passed.
+- Display trigger/panel text contrast: minimum 8.52:1 dark, 5.31:1 light,
+  7.77:1 high contrast. Escape and focus restoration passed.
+- Current live dashboard rendered through a read-only database guard: no clipped
+  labels or page overflow at 1440/1024/390/320. All paired card/plot alignments and
+  keyboard scrolling of the complete live program list passed.
+- Refreshed only the identified local web process. The database process and an
+  existing database connection remained running. Public / excludes dashboard
+  assets; native /admin/ continues to redirect to its own login as expected.
+
+Evidence screenshots here use synthetic fixtures only. Live captures stay in
+ignored .local/. Accessibility-tree checks passed; no manual screen-reader test.

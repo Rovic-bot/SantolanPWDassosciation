@@ -1,0 +1,6 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Load online membership application · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">{% include 'partials/member_navigation.html' %}
+<h1>Load online membership application</h1><p>Approved applications open the full member record. Pending applications open for authorized review. A reference does not approve membership or verify identity.</p>
+{% include 'membership/registration/reference_lookup.html' %}
+<p><a href="{% url 'membership:registration_inbox' %}">View pending registration inbox</a></p></div>{% endblock %}

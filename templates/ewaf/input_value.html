@@ -1,0 +1,5 @@
+<div data-criterion="{{ item.code }}">
+  <dt>{{ item.label|default:item.code }}{% if registered %} <small>({{ item.code }})</small>{% endif %}:</dt>
+  <dd>{{ item.value }}{% if item.unit %} <span>{{ item.unit }}</span>{% endif %}</dd>
+  {% if item.four_ps_value %}<dd class="ewaf-input-detail"><span>{{ item.supporting_label }}</span><span>{{ item.four_ps_label }}: <strong>{{ item.four_ps_value }}</strong></span></dd>{% elif item.detail %}<dd class="ewaf-input-detail">{{ item.detail }}</dd>{% endif %}
+</div>

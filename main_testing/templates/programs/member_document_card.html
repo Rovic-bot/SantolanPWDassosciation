@@ -1,0 +1,7 @@
+<article data-member-document="{{ document.pk }}" tabindex="-1"><h3>{{ document.label }}</h3>
+{% with verification=document.verifications.first %}<p><span class="quiet-badge">{{ document.review_status }}</span>{% if verification.expires_on %}<small> Valid through {{ verification.expires_on|date:'M j, Y' }}</small>{% endif %}</p>{% endwith %}
+<div class="d-flex flex-wrap align-items-center gap-3">
+<a href="{% url 'members:document' application.member_id document.pk %}?preview=1" target="_blank" rel="noopener">Preview</a>
+<a href="{% url 'members:document' application.member_id document.pk %}">Download</a>
+{% if can_review_documents %}<a id="review-document-{{ document.pk }}" class="btn btn-sm btn-outline-primary" href="{% url 'documents:review' document.pk %}?application={{ application.pk }}">Review</a>{% endif %}
+</div></article>

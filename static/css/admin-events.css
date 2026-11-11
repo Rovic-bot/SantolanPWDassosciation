@@ -1,0 +1,25 @@
+/* Scoped to scheduled-event cards in the admin workspace. */
+.admin-workspace .admin-event-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.admin-workspace .admin-event-card { min-width: 0; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: .625rem; background: var(--surface); overflow-wrap: anywhere; }
+.admin-workspace .admin-event-card-media { aspect-ratio: 4 / 3; overflow: hidden; border-radius: .625rem .625rem 0 0; border-bottom: 1px solid var(--line); background: var(--stone); }
+.admin-workspace .admin-event-card-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.admin-workspace .admin-event-card-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75rem; height: 100%; color: var(--teal); }
+.admin-workspace .admin-event-card-placeholder svg { width: 3rem; height: 3rem; }
+.admin-workspace .admin-event-card-placeholder span { font-size: .875rem; }
+.admin-workspace .admin-event-card-body { flex: 1; min-width: 0; padding: 1.25rem; }
+.admin-workspace .admin-event-card-labels { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.admin-workspace .admin-event-card-labels p { margin: 0; color: var(--muted); font-size: .8125rem; }
+.admin-workspace .admin-event-card h3 { font-size: 1.125rem; line-height: 1.4; margin-bottom: 1rem; }
+.admin-workspace .admin-event-card h3 a { color: var(--ink); text-decoration: none; }
+.admin-workspace .admin-event-card h3 a:hover { text-decoration: underline; }
+.admin-workspace .admin-event-card-meta { margin: 0; }
+.admin-workspace .admin-event-card-meta dt { color: var(--muted); font-size: .75rem; font-weight: 500; }
+.admin-workspace .admin-event-card-meta dd { margin: .25rem 0 .75rem; }
+.admin-workspace .admin-event-card-description { color: var(--muted); margin-bottom: 0; }
+.admin-workspace .admin-event-card-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line); }
+.admin-workspace .admin-event-card-actions :is(form, .btn) { max-width: 100%; }
+.admin-workspace .admin-event-card-actions .btn { white-space: normal; }
+.admin-workspace .admin-event-empty { grid-column: 1 / -1; padding: 2rem; border: 1px solid var(--line); border-radius: .625rem; background: var(--surface); }
+.admin-workspace .admin-event-empty p { margin-bottom: 0; }
+@media (max-width: 1199px) { .admin-workspace .admin-event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .admin-workspace .admin-event-grid { grid-template-columns: minmax(0, 1fr); } }

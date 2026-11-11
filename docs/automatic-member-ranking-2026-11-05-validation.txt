@@ -1,0 +1,113 @@
+Automatic ranking from approved member records
+5 November 2026
+
+Owner instruction
+
+After the synthetic-document requirement was removed, the owner confirmed:
+"Yes, use current member records automatically" in response to using current
+approved member values, including current household monthly income, without a
+separate Accept ranking inputs step. This supersedes the separate input-review
+step for the newly versioned automatic source only. Earlier document-backed and
+manually reviewed policy versions retain their original behavior.
+
+Implemented behavior
+
+Added current_member_records_v1 to the versioned composite SES policy. SES uses
+the current recorded household monthly income and explicit household 4Ps Yes/No;
+HM uses the current recorded household count. ES uses an explicitly saved mapping
+from registration employment status to the existing engine categories. No default
+production mapping is invented: Programa reuses the existing fixture-only
+Employed -> Full-Time Worker / Unemployed -> Unemployed mapping from the local
+test rules previously chosen by the owner. Other statuses require an explicit
+policy mapping or correction; they do not silently become unemployed.
+
+PA continues to use confirmed, non-voided actual releases under the same saved
+scope, date window and recording cutoff. A zero count means zero qualifying
+recorded releases. Missing, invalid or unsupported member values remain blockers.
+Membership approval, active membership, program eligibility, actual program
+requirements and the review of unresolved change reports remain enforced.
+
+The automatic source has explicit current-record periods. It does not copy one
+monthly value into three invented historical observations. The old monthly-
+averaging and individual evidence-review-age fields are inactive for this source.
+Current policy validity, closed intake and cutoff gates remain enforced.
+
+Generation captures member ID/version, the exact selected fields, source digest,
+ledger releases, configuration and weights in the immutable calculation snapshot.
+Replay derives inputs again from that saved snapshot, never from today's member
+record. No DatasetInputReview rows or manual verification findings are fabricated.
+GET readiness remains read-only. Changes require a new complete-pool calculation;
+old runs stay reproducible. Confirmed post-cutoff delivery can be projected under
+the existing fulfillment contract without changing the earlier scoring inputs.
+
+Ranking displays Member record inputs and Ready for ranking from member records.
+The separate input-review link is absent, and old entry URLs redirect to ranking
+without recording acceptance. The calculation guide explains current income;
+4Ps display labels distinguish recorded values from a separate verification.
+Policy draft/review pages expose the exact employment mapping.
+
+Reported-information regression
+
+The document-removal configuration revision had invalidated Finn's existing
+member_update review solely because the configuration digest changed. His
+declaration, member version/profile and program terms were unchanged. Read-only
+review matching now follows only validated consecutive source revisions with
+unchanged program terms, weights and cutoff and strictly limited source-rule
+differences. The original audit remains the review authority. Changed declarations,
+member facts/versions, dates, unrelated predecessors and unreviewed reports still
+fail. This also supports the subsequent automatic-source revision without making
+the administrator repeat the same reviewed member correction.
+
+Local Programa operation
+
+Retained configurations 25 and 26 and all earlier policies. Appended policy draft
+15, approved policy 16 and configuration 27 (revision 6). Its current input source
+is current_member_records_v1. The old local test math, exact bound weight vector,
+program schedule, cutoff, release scope, normalization, ties and human selection
+rules remain unchanged. Policy source procedures explicitly record the owner
+instruction. This is not institutional approval of the local test rules.
+
+A scoped private backup is in .local/ranking-member-records/automatic-before.json.
+The operation checked exact expected predecessors, zero accepted input reviews,
+zero previous Programa runs and preserved program/application/history snapshots.
+Before commit, calculation preflight succeeded for all three eligible applicants.
+
+Generated Programa operational run 24, revision 1, for three applicants through
+the normal permission-checked, locked, audited calculation service. Application
+records were unchanged, no input-review rows were created and no beneficiary
+decisions were recorded. The result is saved in the local system; no external
+publication, release, notification or deployment was performed.
+
+Validation
+
+20 tests passed for the reported-information regression and member-record source.
+Evidence: %TEMP%/santolan-g12-tests-byw244et/django.log.
+
+45 focused tests passed for automatic records, manual-record compatibility,
+reported-information review, input presentation and configured program evidence.
+Evidence: %TEMP%/santolan-g12-tests-8g6c1cou/django.log.
+
+30 tests passed after extending coverage to source-policy history, explicit
+employment mapping, missing values, zero/No preservation, generation permissions,
+audit rollback, snapshot tampering, post-cutoff delivery, frozen replay, current-
+income explanations and retained manual composite-policy workflows.
+Evidence: %TEMP%/santolan-g12-tests-fm49psem/django.log.
+These runs overlap and are not summed as distinct tests. All used fresh disposable
+native MySQL through g12_test_runner and RegistrationIntakeTestRunner.
+
+Two final focused tests passed after clearing inactive historical-income fields
+and refining the current-income guide, covering generation without review rows
+and the saved guide/breakdown. Evidence:
+%TEMP%/santolan-g12-tests-3y2uqnim/django.log.
+
+Authenticated server renders of the actual Programa ranking, score breakdown and
+calculation guide returned 200 without INSERT/UPDATE/DELETE queries. Ranking has
+the ready-from-member-records state, no separate review links and no verification
+blocker. Retained run replay passes for all three applicants. No new browser visual
+test was performed; UI changes are labels/links and source explanations.
+The live current-run check under the normal program fence confirms run 24 is
+current and usable, not merely a historical saved result.
+
+Django system/database checks passed; migration dry run reports no changes.
+git diff --check passed. The identified local web process was refreshed and its
+instance health check passed. Earlier unfinished work was preserved.

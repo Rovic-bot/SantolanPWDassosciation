@@ -1,0 +1,9 @@
+{% if program.public_application_status == 'upcoming' %}
+<p>Applications are not open yet. Check this page for updates before the scheduled opening.</p>
+{% elif program.public_application_status == 'ended' %}
+<p>This application period has ended. You can still review the program information.</p>
+{% elif program.public_application_status == 'cancelled' %}
+<p>This program has been cancelled. Applications are not being accepted.</p>
+{% elif program.public_application_status == 'unavailable' %}
+<p>Applications are not currently available because the required application arrangements are incomplete. Please check back or contact the Association Help Desk.</p>
+{% endif %}

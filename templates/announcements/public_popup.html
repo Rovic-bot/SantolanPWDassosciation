@@ -1,0 +1,20 @@
+{% load public_result_tags %}
+<article class="announcement-poster" data-public-popup-content aria-labelledby="announcement-popup-heading">
+    {% if published_result %}{% include 'announcements/public_result_header.html' with heading_id='announcement-popup-heading' %}{% else %}
+    <div class="announcement-poster-hero">
+        <div class="announcement-poster-artwork">
+            {% if announcement.image_url %}<img src="{{ announcement.image_url }}" alt="{{ announcement.image_alt }}" data-announcement-poster-image>{% endif %}
+        </div>
+        <p class="announcement-poster-kicker"><span class="announcement-poster-badge">{{ announcement.category_label }}</span><span class="announcement-poster-kind">&middot; Announcement</span></p>
+        <div class="announcement-poster-bottom">
+            <div class="announcement-poster-copy">
+                <h3 id="announcement-popup-heading" translate="no">{{ announcement.title }}</h3>
+                <div class="announcement-poster-meta"><time datetime="{{ announcement.published_at|date:'c' }}">{{ announcement.published_at|date:'F j, Y' }}</time><span class="announcement-poster-dot" aria-hidden="true">&bull;</span><span class="announcement-poster-summary" translate="no">{{ announcement.content|linebreaksbr }}</span></div>
+            </div>
+            {% if announcement.destination %}<a class="announcement-poster-action" href="{{ announcement.destination }}">{{ announcement.destination_label }}{% include 'public/icon.html' with name='arrow' %}</a>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {% if published_result %}<div class="announcement-poster-records announcement-poster-records-result">{% public_result_details published_result published_at=announcement.published_at source_office=announcement.source_office schedule=announcement.schedule %}</div>
+    {% elif participation %}<div class="announcement-poster-records">{% include 'announcements/selection_reason.html' with results=participation %}{% include 'announcements/participation_tables.html' %}</div>{% endif %}
+</article>

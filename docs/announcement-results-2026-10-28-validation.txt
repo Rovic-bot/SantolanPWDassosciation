@@ -1,0 +1,75 @@
+Announcements landing and truthful result-publication badges
+October 28, 2026
+
+Requested change
+The Announcements landing page now displays Prepare and publish program results
+with the existing program cards, search, filters, pagination and review popup.
+The Association updates table no longer appears there. Create announcement is
+retained; Saved announcements opens the existing notice/history management at
+/announcements/manage/notices/. Staff without private result-preparation
+permissions retain notice management without receiving access to program cards.
+
+Result cards distinguish program publication from result publication. The main
+badge reflects Results not published, draft, published, scheduled, need review,
+archived or deleted. Program status remains separately labeled. A View public
+results link appears only for records accepted by AnnouncementQuerySet.published,
+the same status/date/source/revision checks used by the public Results portal.
+The popup click handler only intercepts review links, leaving public-result
+links as normal navigation. Program Management cards remain unchanged.
+
+Confirmed cause in the retained development database
+All nine programs are published, but that is their program status.
+Only HM Focus has a result announcement. Its revision was published on
+October 27 at 19:06 Manila time, then explicitly withdrawn to draft on
+October 28 at 04:37. The original publication timestamp is historical; it does
+not override the draft status. The other eight programs have no result notice.
+Zero results currently pass the public publication gate.
+
+The current HM publication preview also reports earlier-ranking decisions.
+Read-only inspection found ten latest NOT_SELECTED decisions bound to an older
+ranking and no deferred decisions. Those ten decisions are not covered by
+confirmed fulfillment. The existing gate requires their authorized review
+against the current ranking before republishing. The UI change does not infer
+new decisions, publish anything, or bypass that gate.
+
+Validation
+82 announcement tests passed in 18.214 seconds, including six new result-card
+tests and the existing publication/privacy/rollback/permission/history tests.
+Command:
+  .venv/Scripts/python.exe -B scripts/g12_test_runner.py test announcements
+    --testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+    --noinput --verbosity 1
+The runner verified a fresh native MySQL 8.4.11 instance, isolated database
+grants and test_g12_disposable; .env was disabled. It used the existing guarded
+model-synchronized test baseline, not the historical migration chain.
+Log: announcement-results-2026-10-28/tests.log.
+
+Browser: node scripts/announcement_results_browser.cjs
+Passed against the identity-verified retained development instance on port
+8012: nine result cards, draft/unpublished labels, title/search filtering,
+desktop and 390px mobile layout, no horizontal overflow, popup without page
+navigation, keyboard focus containment/Escape/focus return, saved notices,
+compatible chooser URL and anonymous public Results visibility. No JavaScript
+errors. The browser enforced GET/HEAD only after login and did not publish.
+An initial assertion expecting an enabled HM Publish results button failed;
+the checker was corrected to accept and inspect the existing valid source-review
+blocker. The successful run records the exact blocker in browser-results.json.
+Desktop, mobile and review-dialog screenshots were visually inspected.
+
+Guarded Django database checks and makemigrations --check --dry-run passed.
+No model changes or migration were needed. Node syntax and git diff --check
+passed. The local development server was restarted to load the new view.
+
+Preservation
+Before/after counts and SHA-256 digests match for all 14 inspected models:
+Program 9, ProgramApplication 87, AssistanceLog 143, Member 12,
+AssistanceRelease 29, OperationalConfiguration 10, OperationalRun 15,
+OperationalDecision 13, Announcement 1, ProgramResultRevision 1,
+AnnouncementEvent 3, DatasetInputReview 60, SharedDatasetPolicy 10,
+VaultRevision 26. Browser login/session metadata may change. No business
+records, scoring policy, selection, release, disclosure rules or public
+publication state were changed. No older database was opened.
+Evidence: announcement-results-2026-10-28/database-preservation.json.
+Private read-only probe: .local/announcement-results-20261028/probe.py.
+Pre-existing Assets/ files remain untouched; no commit or deployment performed.
+The owner-defined 70% milestone remains unchanged.

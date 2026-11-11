@@ -1,0 +1,45 @@
+/* Motion only changes presentation; reduced motion always exposes final values. */
+@keyframes admin-page-enter {
+  from { opacity: 0; translate: 0 10px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes admin-popup-enter {
+  from { opacity: 0; translate: 0 12px; scale: .985; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion=reduce]) .admin-workspace :is(#main-content, #content-start) {
+    animation: admin-page-enter 340ms cubic-bezier(.22,.75,.25,1) backwards;
+  }
+  html:not([data-motion=reduce]) .admin-workspace dialog[open],
+  html:not([data-motion=reduce]) .admin-workspace .modal.show .modal-dialog {
+    animation: admin-popup-enter 260ms cubic-bezier(.22,.75,.25,1) backwards;
+  }
+  @supports (transition-behavior: allow-discrete) {
+    html:not([data-motion=reduce]) .admin-workspace dialog {
+      opacity: 0; translate: 0 10px; scale: .985;
+      transition: opacity 200ms ease, translate 200ms ease, scale 200ms ease,
+                  display 200ms allow-discrete, overlay 200ms allow-discrete;
+    }
+    html:not([data-motion=reduce]) .admin-workspace dialog[open] {
+      opacity: 1; translate: 0 0; scale: 1;
+    }
+    html:not([data-motion=reduce]) .admin-workspace dialog::backdrop {
+      opacity: 0;
+      transition: opacity 200ms ease, display 200ms allow-discrete, overlay 200ms allow-discrete;
+    }
+    html:not([data-motion=reduce]) .admin-workspace dialog[open]::backdrop { opacity: 1; }
+    @starting-style {
+      html:not([data-motion=reduce]) .admin-workspace dialog[open]::backdrop { opacity: 0; }
+    }
+  }
+}
+html[data-motion=reduce] .admin-workspace :is(#main-content, #content-start, dialog, .modal-dialog),
+html[data-motion=reduce] .admin-workspace dialog::backdrop {
+  animation: none !important; transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-workspace :is(#main-content, #content-start, dialog, .modal-dialog), .admin-workspace dialog::backdrop {
+    animation: none !important; transition: none !important;
+  }
+}

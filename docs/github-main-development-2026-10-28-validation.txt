@@ -1,0 +1,102 @@
+Main development GitHub publication — October 28, 2026
+
+Scope
+The owner requested publication of the main development system at
+http://127.0.0.1:8013/ to GitHub, initially with Render deployment. The owner
+subsequently requested GitHub publication only. The publication target is the
+new deploy/main-development-2026-10-28 branch in private Rovic-bot/capstone,
+based on EWAF-testing commit 5328acab6821f3a772422773da6523981f2eb9fc.
+Existing main, development, EWAF-testing and feature/events branches are retained.
+The owner-defined 70% milestone is unchanged.
+
+Included source
+This snapshot preserves the previously unfinished announcement/results changes,
+Admin full-name presentation, independently authorized recorded-result
+publication, public masking, tests, browser harnesses and port-8013 launcher
+documentation. Their business authorization and original validation are recorded
+in the existing October 28 announcement/result notes. Deployment preparation
+does not introduce new scoring, selection, eligibility or disclosure rules.
+
+The recorded-result collector now eagerly loads application and predecessor
+relationships and fetches shared ranking snapshots once. This removes avoidable
+SQL queries and repeated decoding of potentially large run JSON while retaining
+each decision's artifact/audit validation. A query-scaling regression checks
+multiple decisions, including a revision, without changing the public payload.
+Two outdated test labels were aligned with the current authorized UI; permission,
+CSRF, privacy, history and rollback assertions are retained.
+
+Validation
+Focused scope: 175 distinct tests covering announcements, production settings,
+production logging and private remote storage. The first run had three obsolete
+UI-text assertion failures across two test methods and no errors. Both methods,
+including both membership flag subcases, passed after correcting their labels;
+the other 173 methods passed originally. The new query-scaling regression passed.
+No application behavior was changed to satisfy these labels.
+
+The broad command discovered 2,232 tests before those corrections and before
+the new query regression was discovered. It reported failures and errors and
+was interrupted after its scope proved unsuitable for combined acceptance:
+discovery includes the optional program_intake app, which is not installed in
+the current runtime, environment-specific main_testing cases and historical
+migration tests incompatible with the model-synchronized runner. The command
+has no overall timeout. Partial output is retained privately at
+.local/render-validation-20261028/full-tests.log. No completed-suite count or
+passing full-suite result is claimed; not all observed failures were diagnosed.
+Full regression acceptance remains unresolved. This branch is a source backup,
+not a validated production release. No tests were skipped or deleted to
+make this broad attempt appear successful.
+
+The focused command selected announcements, core.tests.test_deployment,
+core.tests.test_production_logging and documents.test_storage with the existing
+SyntheticTwelveRunner and isolated g12 launcher. The final corrective rerun
+selected AnnouncementCategoryTests.test_admin_categories_search_and_explicit_review_confirmation
+and RemoteMembershipTests.test_guidelines_show_confirmed_requirements_without_publishing_upload_configuration.
+Private logs and browser artifacts remain under .local/render-validation-20261028/.
+
+The retained instance identity, Django database checks and migration drift checks
+passed. Its migration plan has no outstanding operations. Node syntax checks and
+git diff --check passed.
+
+Read-only browser checks covered nine public routes at desktop/mobile sizes,
+and the Admin result cards, filtering, full names, review dialog, keyboard focus,
+Escape/focus return, and published public results. No horizontal overflow,
+JavaScript errors or unexpected HTTP errors were found. After authentication,
+the harness allowed GET/HEAD only and performed no business-data mutations.
+The current published state was checked using a task-local read-only harness
+adaptation; older notes describing a withdrawn result are historical and were
+not used to change today's database. Additional integrated EWAF browser journeys
+in the incomplete broad run passed, but do not replace full-suite acceptance.
+
+All 79 checked-in migrations applied successfully to a separate fresh MySQL
+8.4.11 instance using the real migration chain. Production-like checks verified
+HTTPS, private-media rejection, health URLs, and 184 collected static source
+assets with 176 compressed outputs. Existing HSTS subdomain/preload warnings
+W005 and W021 remain visible. See render-compatibility-2026-10-28-validation.md
+for exact settings parity and the limits of these local checks.
+
+Publication and data preservation
+GitHub repository metadata confirmed private visibility and push access.
+Source commit f77ff458b90270048e43d139292ddeeafded3283 was pushed successfully and
+git ls-remote confirmed its branch hash. The four checked existing remote branch
+hashes (main, development, EWAF-testing and feature/events) matched pre-push values.
+This final validation report is a separate documentation-only follow-up commit.
+Credential-signature scanning of 1,290 tracked/unignored text files found no
+high-confidence token/private-key matches. The staged paths are reviewed
+explicitly; this scan is not a guarantee of detecting every possible secret.
+No .env, .local, database, credential, private upload or original Assets/ file
+is included. Approved website assets already under static/ remain in source.
+All mutation tests use fresh isolated MySQL data and disposable test databases.
+No development or hosted migration, data copy, reset, seed or publication was
+performed. Authentication/session metadata may change during browser login.
+The interrupted full-run Python child was identity-verified before stopping.
+Its supervising launcher shut down the disposable MySQL instance normally;
+the test process and port are gone and the retained port-8013 identity still
+matches. Other development processes were not stopped.
+
+Render status
+The existing free service remains on its older feature/events configuration.
+Its legacy health/public routes responded successfully during read-only
+discovery; those responses do not validate this new source snapshot.
+No Render environment, branch, service size or deployment was changed.
+Hosted backup/migration review, current source deployment, Linux startup,
+storage durability and live performance acceptance remain pending.

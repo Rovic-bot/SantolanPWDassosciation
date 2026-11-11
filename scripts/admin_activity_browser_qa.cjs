@@ -1,0 +1,105 @@
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'C:/Users/rovic/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs = require('node:fs'), assert = require('node:assert/strict');
+(async () => {
+  const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_EXECUTABLE || 'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+  const origin = process.env.QA_URL, route = process.env.QA_ROUTE, output = process.env.QA_OUTPUT;
+  const cookie = {name:'sessionid', value:process.env.QA_ADMIN_SESSION, url:origin};
+  try {
+    const context = await browser.newContext({reducedMotion:'reduce'});
+    await context.addCookies([cookie]);
+    const page = await context.newPage(), errors = [], mutations = [], checks = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('request', request => {if(request.method() !== 'GET') mutations.push(request.method());});
+    for (const dark of [false,true]) {
+      for (const width of [1440,768,390,320]) {
+        await page.setViewportSize({width,height:960});
+        await page.goto(origin + route);
+        await page.evaluate(dark => document.dispatchEvent(new CustomEvent('santolan:setadmintheme', {detail:dark ? 'dark' : 'light'})), dark);
+        assert.equal(await page.locator('html').getAttribute('data-dashboard-theme'), dark ? 'dark' : 'light');
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
+        assert.equal(await page.locator('.activity-entry').count(), 30);
+        assert.equal(await page.locator('.activity-metric').count(),4);
+        await page.screenshot({path:`${output}/activity-${dark?'dark':'light'}-${width}.png`});
+        const opener=page.locator('.activity-detail-link').first(), beforeURL=page.url();
+        await opener.click();
+        const dialog=page.locator('[data-activity-dialog]');
+        await dialog.locator('[data-activity-detail]').waitFor();
+        assert.equal(page.url(),beforeURL);
+        assert(await dialog.evaluate(el=>el.open&&el.scrollWidth<=el.clientWidth+1));
+        assert.match(await dialog.locator('[data-activity-note]').innerText(), /^Changed the program details\./);
+        assert(await dialog.getByRole('heading',{name:'What happened'}).isVisible());
+        await page.keyboard.press('Tab');
+        assert(await dialog.evaluate(el=>el.contains(document.activeElement)));
+        await page.keyboard.press('Shift+Tab');
+        assert(await dialog.evaluate(el=>el.contains(document.activeElement)));
+        await page.screenshot({path:`${output}/inspect-${dark?'dark':'light'}-${width}.png`});
+        await page.keyboard.press('Escape');
+        assert.equal(await dialog.evaluate(el=>el.open),false);
+        assert(await opener.evaluate(el=>el===document.activeElement));
+        checks.push({dark,width,overflow:false});
+      }
+    }
+    await page.setViewportSize({width:1440,height:960});
+    await page.goto(origin + route);
+    await page.getByRole('link',{name:'Approvals',exact:true}).click();
+    await page.waitForURL(url=>url.searchParams.get('kind')==='approval');
+    assert.equal(await page.locator('.activity-entry').count(),2);
+    assert.deepEqual(await page.locator('.activity-metric strong').allTextContents(),['2','2','0','0']);
+    await page.getByRole('link',{name:'All activity',exact:true}).click();
+    await page.waitForURL(url=>!url.searchParams.has('kind'));
+    for (const action of ['Member approved','Member marked eligible','Assistance approved / member selected','Results published']) {
+      await page.selectOption('#id_activity', action);
+      await page.waitForURL(url => url.searchParams.get('activity') === action);
+      assert.deepEqual(await page.locator('.activity-entry h3').allTextContents(), [action]);
+    }
+    await page.selectOption('#id_activity','Program changed');
+    await page.waitForURL(url => url.searchParams.get('activity') === 'Program changed');
+    await page.locator('[aria-label="Activity pages"] a[rel="next"]').click();
+    await page.waitForURL(url => url.searchParams.get('p') === '2');
+    assert.equal(await page.locator('.activity-entry').count(),3);
+    await page.locator('#id_q').fill('Synthetic community');
+    await page.waitForURL(url => url.searchParams.get('q') === 'Synthetic community' && !url.searchParams.has('p'));
+    assert.equal(await page.locator('#id_activity').inputValue(), 'Program changed');
+    await page.locator('.activity-detail-link').first().click();
+    await page.waitForSelector('[data-activity-dialog] [data-activity-detail]');
+    assert.match(await page.locator('[data-activity-detail] h3').innerText(), /Program changed/);
+    assert.equal(await page.locator('.activity-note').innerText(), 'Changed the program details.');
+    assert.match(await page.locator('.activity-additional-note').innerText(), /Fictional program correction/);
+    await page.getByRole('button',{name:'Close activity details'}).click();
+    assert.equal(await page.locator('#id_q').inputValue(),'Synthetic community');
+    await page.route('**/activity/**?dialog=1',r=>r.fulfill({status:503,body:'Unavailable'}));
+    await page.locator('.activity-detail-link').first().click();
+    await page.locator('[data-activity-error]:visible').waitFor();
+    await page.unroute('**/activity/**?dialog=1');
+    await page.getByRole('button',{name:'Try again',exact:true}).click();
+    await page.locator('[data-activity-dialog] [data-activity-detail]').waitFor();
+    await page.mouse.click(2,2);
+    assert.equal(await page.locator('[data-activity-dialog]').evaluate(el=>el.open),false);
+    await page.setViewportSize({width:390,height:960});
+    await page.goto(origin+route);
+    assert.equal(await page.locator('#activity-filter-panel').isVisible(),false);
+    await page.getByRole('button',{name:/Filters/}).click();
+    assert.equal(await page.locator('#activity-filter-panel').isVisible(),true);
+    await page.selectOption('#id_period','7');
+    await page.waitForURL(url=>url.searchParams.get('period')==='7');
+    await page.getByRole('button',{name:/Filters/}).click();
+    await page.selectOption('#id_period','custom');
+    await page.waitForURL(url=>url.searchParams.get('period')==='custom');
+    await page.getByRole('button',{name:/Filters/}).click();
+    assert(await page.locator('#id_date_from').isVisible());
+    const noJS = await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:900}});
+    await noJS.addCookies([cookie]);
+    const fallback = await noJS.newPage();
+    await fallback.goto(origin + route);
+    await fallback.selectOption('#id_activity','Results published');
+    await fallback.getByRole('button',{name:'Apply filters'}).click();
+    assert.deepEqual(await fallback.locator('.activity-entry h3').allTextContents(), ['Results published']);
+    await fallback.locator('.activity-detail-link').first().click();
+    await fallback.waitForSelector('.activity-detail');
+    assert.match(await fallback.locator('h1').innerText(),/Results published/);
+    assert.equal(await fallback.locator('[data-activity-note]').innerText(),'Published the program results for the public to view.');
+    assert.deepEqual(errors,[]); assert.deepEqual(mutations,[]);
+    fs.writeFileSync(`${output}/results.json`,JSON.stringify({checks,filters:true,metrics:true,pagination:true,search:true,popup:true,popupRetry:true,keyboard:true,noJS:true,errors,mutations},null,2));
+    console.log('Activity UI passed: 8 layouts and popups, summary/category filters, pagination, search, retry, keyboard, no-JavaScript fallback, no writes.');
+  } finally {await browser.close();}
+})().catch(error => {console.error(error);process.exitCode=1;});

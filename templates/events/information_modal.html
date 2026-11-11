@@ -1,0 +1,22 @@
+<div class="modal fade" id="event-information-{{ event.pk }}" tabindex="-1" aria-labelledby="event-information-title-{{ event.pk }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h4" id="event-information-title-{{ event.pk }}">Event information</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close event information"></button>
+      </div>
+      <div class="modal-body p-4 text-break">
+        <h3 class="h4">{{ event.title }}</h3>
+        <p><span class="quiet-badge" data-status="{{ event.status }}">{{ event.get_status_display }}</span></p>
+        {% if event.image %}<img class="img-fluid rounded mb-4" src="{% url 'events:preview_image' event.pk %}" alt="{{ event.image_description }}" loading="lazy">{% endif %}
+        <h4 class="h5">Schedule and participation</h4>
+        {% include 'events/schedule.html' %}
+        <h4 class="h5 mt-4">Description</h4>
+        {{ event.description|linebreaks }}
+      </div>
+      {% if perms.events.change_event %}{% if event.status == 'draft' or event.status == 'archived' or perms.events.publish_event %}<div class="modal-footer">
+        <a class="btn btn-outline-primary" href="{% url 'events:edit' event.pk %}">Edit event</a>
+      </div>{% endif %}{% endif %}
+    </div>
+  </div>
+</div>

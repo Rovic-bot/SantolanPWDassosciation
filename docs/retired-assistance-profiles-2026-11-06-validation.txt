@@ -1,0 +1,15 @@
+Retired duplicate assistance profiles — November 6, 2026
+
+Owner scope: remove the Beneficiary decisions and assistance link from Application review and eliminate the duplicate per-application assistance profile for every applicant.
+
+The active Application review template no longer renders that link. The duplicate assistance/detail.html template is deleted. The permission-checked legacy /assistance/<application UUID>/ route only redirects: to the existing member record for staff with member viewing permission, otherwise to the existing application review. POST remains disallowed, anonymous access remains protected, and missing applications remain 404.
+
+Active templates no longer link to the retired page. Review links use Application review. Non-EWAF decision controls remain in the selection queue and Assistance releases. Release and void forms return to Assistance releases; non-EWAF decisions return to the selection queue. Existing receipt details and void controls are available in Assistance releases and the member's permission-protected Assistance history. Historical and voided receipts remain visible. No case, member, release, score, or audit data is deleted; service authorization and validation are unchanged. Community Assistance Desk referral pages are outside this duplicate-profile scope and are preserved.
+
+Validation:
+- 47 tests passed: assistance.test_retired_detail, assistance.tests.AssistanceTests, programs.test_direct_review.DirectApplicationReviewTests, and members.test_record_layout.
+- Tests ran only in the identity-verified fresh MySQL instance through scripts/g12_test_runner.py and RegistrationIntakeTestRunner. Application test runtime: 10.731 seconds.
+- Artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-4eq038ty/django.log.
+- Coverage includes canonical redirects, no record writes on legacy GET, permission boundaries, removed navigation, receipt/void form returns, no unauthorized receipt disclosure, escaping, and cross-application void protection.
+- Django system check and git diff --check (core.safecrlf=false) passed.
+- Refreshed only the identity-checked local web process at port 8013, preserving its existing MySQL connection. No migrations or application-data edits were required.

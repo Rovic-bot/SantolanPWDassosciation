@@ -1,0 +1,80 @@
+{% extends 'membership/onsite/base.html' %}{% load static onsite_registration %}
+{% block title %}Update member record · Santolan PWD{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True %}{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-editor.css' %}?v=20261110-1">{% endblock %}
+{% block content %}
+<div class="container onsite-container member-editor">
+  <header class="member-edit-header">
+    <a class="workspace-back" href="{% url 'member_directory' %}">&larr; Member directory</a>
+    <h1>Update member record</h1>
+  </header>
+
+  <section class="onsite-lookup member-edit-identity" aria-label="Member being updated">
+    <div class="onsite-lookup-heading">
+      <span class="onsite-id-mark" aria-hidden="true">ID</span>
+      <div><h2>{{ member.full_name }}</h2><p>Review and update this member's saved information.</p></div>
+    </div>
+    <dl><dt>PWD No.</dt><dd>{{ member.control_number }}</dd></dl>
+  </section>
+
+  {% if member.archived_at %}
+    <div class="alert alert-warning">Restore this archived member before editing their profile.</div>
+  {% else %}
+  <div class="onsite-workspace-grid">
+    <div class="onsite-form-column">
+      <p class="onsite-privacy"><span aria-hidden="true">&#9679;</span><strong>Private staff workspace</strong><span>Required fields are marked *. Changes update this member's record and retain its history.</span></p>
+      <form method="post" enctype="multipart/form-data" autocomplete="off" class="onsite-form registration-editor">
+        {% csrf_token %}
+        {% if form.member_profile_format %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}{% endif %}
+        {% if form.errors %}
+        <div class="onsite-validation" role="alert" id="member-update-errors" tabindex="-1">
+          <h2>Check the updated details</h2>{{ form.non_field_errors }}
+          <ul>{% for field in form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul>
+        </div>
+        {% endif %}
+
+        {% if form.member_profile_format %}
+          {% onsite_sections form as registration_sections %}
+          {% for section in registration_sections %}
+            {% include 'membership/onsite/section.html' with number=forloop.counter %}
+            {% if section.key == 'documents' and membership_documents.current %}
+            <section class="onsite-section member-edit-documents" aria-labelledby="member-current-documents-heading">
+              <header class="onsite-section-heading"><div><h2 id="member-current-documents-heading">Current membership documents</h2><p>Leave an upload blank to keep its current file. Earlier versions are retained when you upload a replacement.</p></div></header>
+              <ul>{% for document in membership_documents.current %}<li><a href="{{ document.preview_url }}" target="_blank" rel="noopener">{{ document.label }}</a></li>{% endfor %}</ul>
+            </section>
+            {% endif %}
+          {% endfor %}
+
+          <details class="onsite-section member-edit-retained">
+            <summary>Earlier recorded information</summary>
+            <dl class="onsite-fields">{% for label,value in form.retained_information %}<div><dt>{{ label }}</dt><dd>{% if value == '' %}Not recorded{% else %}{{ value|default_if_none:'Not recorded' }}{% endif %}</dd></div>{% endfor %}</dl>
+          </details>
+
+          <section class="onsite-section" aria-labelledby="member-update-reason-heading">
+            <header class="onsite-section-heading"><span class="onsite-section-number" aria-hidden="true">{{ registration_sections|length|add:'1'|stringformat:'02d' }}</span><div><h2 id="member-update-reason-heading">Record this update</h2><p>Briefly explain what changed and why.</p></div></header>
+            <div class="onsite-fields">{% include 'membership/onsite/field.html' with field=form.notes %}</div>
+          </section>
+        {% else %}
+          {% include 'members/profile_form.html' %}
+        {% endif %}
+
+        <div class="onsite-form-actions">
+          <div class="onsite-action-note">Review the changes before saving.</div>
+          <div class="onsite-action-buttons"><a class="btn btn-outline-secondary" href="{% url 'member_directory' %}">Cancel</a><button class="btn btn-primary" type="submit">Update member record</button></div>
+        </div>
+      </form>
+    </div>
+
+    <aside class="onsite-guide" aria-labelledby="member-update-guide-heading">
+      <section class="onsite-record-status" aria-label="Current member status"><span>Member status</span><strong>{{ member.status|title }}</strong><small>Updating an existing record</small></section>
+      <div class="onsite-guide-card">
+        <p class="onsite-eyebrow">Update guide</p><h2 id="member-update-guide-heading">Before you save</h2>
+        <ol><li>Confirm the member's current details.</li><li>Check each field you changed.</li><li>Keep current documents or upload replacements.</li><li>Confirm the acknowledgement and enter a reason for the update.</li></ol>
+        <p class="onsite-guide-note">The original registration and earlier documents remain in the record's history.</p>
+      </div>
+      <div class="onsite-help-card"><span class="onsite-help-mark" aria-hidden="true">?</span><h2>Need assistance?</h2><p>Get help with member information and document requirements.</p><a href="{% url 'core:contact' %}" target="_blank" rel="noopener">Contact membership desk <span aria-hidden="true">&#8599;</span></a></div>
+    </aside>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+<header class="page-hero resident-heading">
+  <div class="container resident-mast">
+    <div>
+      {% if back %}<div class="page-location"><a href="{{ back }}">← {{ back_label }}</a></div>{% endif %}
+      <p class="eyebrow">{{ label }}</p>
+      <h1>{{ title }}</h1>
+      {% if intro %}<p class="page-intro">{{ intro }}</p>{% endif %}
+    </div>
+    <div class="resident-mark" aria-hidden="true">{% include 'public/icon.html' with name=icon|default:'document' %}</div>
+  </div>
+</header>

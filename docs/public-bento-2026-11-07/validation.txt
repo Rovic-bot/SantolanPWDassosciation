@@ -1,0 +1,221 @@
+Public portal screenshot-reference redesign — November 7, 2026
+
+Implemented locally against the owner's seven PNG references in new pages/.
+App.jsx was not supplied; this implements the reference design in the existing
+Django application rather than claiming a JSX conversion.
+
+Scope: public templates and public-only styling. The shared public base now has
+floating pill navigation, desktop quick links, a mobile menu and bottom bar,
+footer links, Tailwind custom colors with preflight disabled, and existing inline
+SVG icons. The new public-bento.css supplies the beige/cream/charcoal palette,
+rounded cards, serif headings, badges and responsive page layouts. It loads after
+the existing public styles and does not load in the admin layout.
+
+Home was rebuilt around a photographic hero, live announcement list and Help
+Desk card. Existing information anchors remain available as disclosures.
+About, Announcements, Events, Programs, Membership and Resources use the shared
+theme with their existing Django views and live context. Programs has the split
+dark heading/requirements card. Existing Association photographs are used;
+the stock photographs in the references were not provided as source assets.
+Results remains reachable. Published content, filters, pagination, application
+links, privacy controls, membership/PDAO tabs and resource links are retained.
+No business rules, database schema, records, admin templates or URL semantics
+were changed by this redesign. Earlier program-lifecycle work was preserved.
+
+Verification: node scripts/public_bento_browser_qa.cjs
+- All seven public routes returned HTTP 200 at 1440px and 390px.
+- No horizontal overflow and no JavaScript page errors in the final browser run.
+- Membership/PDAO service switching and FAQ disclosure passed.
+- Admin login does not load the public-bento stylesheet.
+- Screenshots saved beside this file; representative desktop/mobile images
+  were visually inspected and CSS conflicts/contrast issues corrected.
+- Django current-development system/database check and git diff --check passed.
+
+The existing local server was restarted at http://127.0.0.1:8013/.
+No external hosting deployment, commit or business-data write was performed.
+This is a focused visual/browser check, not full workflow or WCAG certification.
+
+Programs reference follow-up (November 7):
+- Moved the live period filters into the dark hero and placed compact program
+  cards directly below it. Requirements/help remains alongside the hero.
+- Search/category controls remain available in an expandable requirements-card
+  section, automatically expanded when those filters are active.
+- Cards show category, status, title, application dates and the detail link;
+  full descriptions remain on program detail pages. Date disclosures remain.
+- A zero-count Unavailable filter is omitted unless selected; nonzero counts
+  remain visible. Counts, query logic and application rules were not changed.
+- Preserved the sidebar gutter, existing Results navigation and lower guidance.
+- Browser checks passed at 1750, 1440, 1200, 992, 768, 390 and 320 pixels with
+  no horizontal overflow. Search, category/period filters, pagination, date
+  disclosure and a detail link passed; no JavaScript page errors were observed.
+- Final screenshots and programs-reference-results.json are in this directory.
+- Current-development Django system/database check and scoped diff check passed.
+
+Events card reference follow-up (November 7):
+- Scheduled activity cards now use a dark date panel, cream rounded surface,
+  status pill, clock/location icons and an outlined Read details link.
+- Descriptions and uploaded images remain on the existing detail pages.
+- Labels distinguish upcoming, ongoing, past and cancelled events using the
+  listing's existing query timestamp; publication and participation rules are
+  unchanged. All four labels passed an in-memory template rendering check.
+- Seven viewport widths (1750 through 320 pixels) passed overflow, date-panel
+  contrast and content-bound checks. Mobile uses a horizontal date panel.
+- Schedule filtering, keyboard activation and both live event detail links
+  passed. No JavaScript page errors occurred in the final browser run.
+- Card screenshots and events-reference-results.json are saved here. Django
+  system/database and scoped diff checks passed. No event records were written.
+
+Logo, navigation and program detail follow-up (November 7):
+- Copied the owner's supplied logo unchanged to the public static images and
+  replaced the SP header monogram. Admin branding was not changed.
+- Removed the top search button and Results tab at the owner's explicit request.
+  The seven main destinations share one link template. Existing Results routes,
+  announcement categories and footer links remain accessible.
+- Sidebar/mobile current states now derive from the resolved section, including
+  program detail/application pages. Result pages highlight Announcements. The
+  sidebar no longer permanently highlights Home; hover/focus/click feedback remains.
+- Program details use overview/schedule and eligibility cards matching the new
+  reference. Retained availability notices, dates/times, slots, optional amount,
+  correction deadline, eligibility, conditional Apply and tracking links.
+- Verified all four sidebar clicks, mobile navigation, result access through
+  Announcements, application/tracking destinations and closed-program controls.
+- Seven widths from 320 to 1600 pixels passed header, panel and page overflow
+  checks. No JavaScript page errors. Admin login remains isolated.
+- Updated and directly checked the existing navigation expectation; checked
+  active-route mappings and cross-year/partial/missing dates using in-memory
+  rendering. These checks did not run the full database-backed Django test suite.
+- Django system/database and git diff --check passed. Screenshots and
+  navigation-detail-results.json are saved here. No application records changed.
+
+Announcements and pinned navigation follow-up (November 7):
+- Public top navigation now stays fixed at its floating position while the page
+  scrolls, including mobile. Main content keeps its existing reserved top space;
+  in-page targets receive a header offset and the mobile menu can scroll.
+- Announcements now has compact topic tabs and a full-width search card above
+  a two-column bulletin: bounded, keyboard-scrollable notice list and results
+  callout. Dates show separate day/month/year; rows use serif titles and rounded
+  actions. The results card stacks below the list on mobile.
+- Existing queries, program filters, destinations, pagination and empty states
+  remain intact. No backend or data changes were required.
+- Seven widths (320 through 1600 pixels) passed horizontal overflow, readable
+  card-column widths and expected side-by-side/stacked placement checks.
+- Header position remained unchanged after scrolling at all widths. The mobile
+  menu worked while scrolled; keyboard feed scrolling, search, topic/program
+  filters, empty-state recovery and both result links passed. No page errors.
+- Screenshots and announcements-reference-results.json are saved here. Final
+  Django system/database and scoped diff checks passed.
+
+Readable typography, seven-section rail and home follow-up (November 7):
+- Replaced the public theme's serif heading, badge/date and brand typography
+  with sans-serif fonts. Preserved the user's logo and pinned top navigation.
+- Sidebar now derives all seven destinations from the same public navigation
+  list as the top menu, with labelled icons and current-section highlighting.
+  It stays vertically centered and scrolls within short desktop windows.
+- Eligibility cards size to their content instead of stretching to the overview.
+  Tracking is an outlined button; existing conditional Apply behavior remains.
+- Removed the entire pictured More about your application section from the
+  membership page and its obsolete in-page jump. Main service tabs, checklists,
+  form/download links and their privacy/consent workflows remain unchanged.
+- Rebuilt Home with a photographic hero, bold sans-serif heading, latest update,
+  three service facts and a Help Desk card over the image. Six open guidance
+  disclosures remain below it with their existing bookmark anchors/content.
+- Used the existing privacy-blurred Association photograph and a live count of
+  publicly listed programs. No unverified 24/7 or 100% claims were copied from
+  the reference. Read the guide opens existing guidance; no video was invented.
+- All seven public routes passed at 1440px and 390px, with additional home
+  checks at 1600, 1199, 992, 768 and 320px. No horizontal overflow/page errors.
+- Verified all seven sidebar links, current states, guide anchor/header spacing,
+  live program total, compact eligibility/tracking link, open-program Apply,
+  retained membership tabs, mobile menu and short-window sidebar scrolling.
+- Admin styling remained isolated. Django system/database and git diff --check
+  passed. Screenshots and clean-home-results.json are saved here. No data writes,
+  migrations, deployment or full database-backed test-suite run were performed.
+
+Architectural home reference follow-up (November 7):
+- Home now uses a broad photo canvas with inset seven-section navigation,
+  a featured published event/image, three public counters, and a compact dark
+  support card. Browse programs and Membership are the primary hero actions.
+- First guidance panel starts open; the other five start collapsed. Existing
+  bookmarks open their target panel and position it below the pinned header.
+- Retained clean sans-serif typography, the supplied logo, all seven sidebar
+  links and the absence of the search/Results tabs, as previously requested.
+- The built-in image_gen tool created a decorative pavilion illustration at
+  static/images/home-pavilion-illustration.png. It does not depict the actual
+  Association premises. Source/provenance and the final prompt are recorded in
+  home-background-prompt.txt. The generated asset was copied unchanged.
+- Counters use published/listed program and scheduled activity counts and the
+  seven public sections, rather than invented private member/family statistics.
+- Eight widths (1600, 1440, 1200, 1199, 992, 768, 390 and 320px) passed page,
+  header and card overflow checks. Pinned header, seven sidebar destinations,
+  panel toggles/bookmarks and event/support/program/membership links passed.
+- New public-home-v2.css loads only on Home. Other public pages and admin
+  styling remain isolated. No JavaScript page errors were observed.
+- Screenshots and home-pavilion-results.json are saved here. Django system/
+  database and scoped diff checks passed. No business records were changed.
+
+Shared public design and navigation follow-up (November 7):
+- Removed the top navigation markup and Home's separate navigation layout.
+  All public pages now use one seven-link navigation component in public/base.
+  The supplied logo, route-aware active states and visible labels remain.
+- Desktop uses a fixed sidebar with a minimum 24px content gap. Tablet and
+  phone use the same seven links at the bottom; every link has a 44px minimum
+  target. Phone navigation uses two rows so no destination depends on a menu.
+- Added public-shell.css for shared page gutters, light neutral introductions,
+  rounded translucent cards, white edges, pill controls and Arial typography.
+  About, Announcements, Events, Programs, Membership and Resources reuse the
+  Home design principles. Removed obsolete Home-only header/sidebar overrides.
+- Membership choices stack on phones with readable selected-state subtitles.
+  Annual observances occupy a keyboard-focusable scroll region. Relative
+  positioning contains screen-reader labels within that scroll region and
+  prevents a large empty page below the footer. Print expands this region.
+- Read-only scripts/public_shared_navigation_qa.cjs passed 56 route/viewport
+  checks (seven sections at 1600, 1440, 1200, 992, 991, 768, 390 and 320px).
+  No horizontal page overflow or JavaScript errors were found. Checked all
+  seven link destinations, active state, visible touch targets, sidebar gutter,
+  reduced top spacing, pinned navigation, membership keyboard switching,
+  FAQ toggles, program detail navigation, calendar controls and privacy anchors.
+- Results still maps to Announcements in navigation. Admin login loads neither
+  the new stylesheet nor the public navigation. No admin or business logic,
+  application data, publication rules, permissions or migrations were changed.
+- Ten additional Events list/month layout checks passed after the scroll
+  containment correction. No offscreen content expands document height.
+- Evidence: shared-navigation-results.json, shared-calendar-results.json and
+  shared-<section>-1440.png / shared-<section>-390.png. Django system/database
+  check passed. Development server restarted at http://127.0.0.1:8013/.
+
+Centered navigation, Home cards and guidance popups follow-up (November 7):
+- Desktop navigation is centered vertically on the left. At tablet/phone
+  breakpoints labels hide visually, while accessible names remain on all
+  seven links. The mobile navigation stays on one row, including at 320px.
+- Replaced Home's old feature cards with a photo/fade current-event card,
+  translucent Programs/Members/Events counts and a compact dark support card.
+  Member count is the active, unarchived aggregate only; no member identity,
+  profile or private evidence is loaded into the response. Figures are actual
+  counts, not the example totals in the reference image.
+- Current event requires published status, a released publication time,
+  starts_at <= now and ends_at > now. If several are ongoing, the most recently
+  started event is featured. Future, ended, cancelled, archived and draft
+  events are excluded. If none exists the card says no event is happening now.
+  Published images use the existing event-image route; missing images display
+  the first letters of the first two title words. Titles remain HTML-escaped.
+- All six Home guidance topics use native modal dialogs with labelled titles,
+  scrollable content, focus cycling, Escape/close/backdrop dismissal and focus
+  restoration. Existing footer routes and #bookmarks open their corresponding
+  dialogs. Get Help & Support opens Contact. Without JavaScript the published
+  guidance remains readable inline. No guidance text or processing policy was
+  replaced by the presentation change.
+- Nine focused Django tests passed against a fresh, isolated disposable MySQL
+  instance through scripts/g12_test_runner.py (test_g12_disposable). Covered
+  publication/time boundaries, empty state, image/initials/escaping, aggregate
+  privacy, six dialogs, stable support redirects and seven public page routes.
+  Application data was not used for these tests or modified.
+- Updated scripts/public_shared_navigation_qa.cjs passed 56 responsive route
+  checks, centered desktop placement, one-row icon navigation, all seven
+  destinations, active states and existing public interactions.
+- scripts/public_home_dialogs_qa.cjs passed 30 modal checks at 1440, 992, 768,
+  390 and 320px, plus deep links, keyboard focus, Back, no-JavaScript fallback,
+  and page/card overflow checks. No JavaScript page errors occurred.
+- Evidence: home-dialogs-results.json, shared-navigation-results.json,
+  home-dialogs-{1440,390,320}.png and privacy-dialog-{1440,390,320}.png.
+  Django system/database check, JavaScript syntax check and scoped whitespace
+  checks passed. No migrations or admin workflow changes.

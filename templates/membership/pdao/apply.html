@@ -1,0 +1,23 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Online PDAO registration · Santolan PWD{% endblock %}
+{% block public_class %}registration-page membership-application-page pdao-application-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-membership-application.css' %}?v=20261108-1">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/registration.css' %}?v=20261027-privacy">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/registration-privacy.js' %}?v=20261027" defer></script>{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}
+{% url 'core:membership' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Membership & PWD ID' label='PDAO · Online application' title='Prepare your PWD ID application' intro='Complete the form for staff review and preparation for forwarding to Pasig City PDAO.' icon='members' only %}
+<div class="container content-section resident-form-layout">
+<div class="resident-form-rail">
+<section aria-labelledby="pdao-onsite-heading"><h2 id="pdao-onsite-heading">Your onsite visit</h2><p>Complete your PDAO application for staff review. Bring your requirements to the Help Desk to verify your information and prepare the signed form for forwarding to PDAO.</p><p>PDAO makes the final PWD ID decision.</p></section>
+{% include 'membership/registration/privacy_notice.html' %}
+{% include 'public/form_directory.html' %}
+</div>
+<div class="resident-form-body">
+<form method="post" autocomplete="off" class="record-editor registration-editor" data-registration-privacy-form>{% csrf_token %}{{ form.submission_token }}
+<p class="form-text application-required-note">Please complete all required fields (*)</p>
+{% include 'membership/registration/fields.html' with public_profile_layout=True resident_anchors=True %}
+<button class="btn btn-primary" type="submit">Confirm details and submit application</button></form>
+</div>
+</div>{% endblock %}

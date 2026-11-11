@@ -1,0 +1,19 @@
+<div class="registration-privacy-controls" data-registration-privacy-controls hidden>
+  <button type="button" class="btn btn-outline-primary" data-registration-privacy-open aria-haspopup="dialog" aria-controls="registration-privacy-dialog">Privacy information</button>
+</div>
+{# Keep the notice readable inline when JavaScript or native dialogs are unavailable. #}
+<section class="registration-privacy-notice" data-registration-privacy-notice aria-labelledby="registration-privacy-title">
+  <h2 id="registration-privacy-title" tabindex="-1">Privacy information</h2>
+  {{ privacy_notice|linebreaks }}
+  {% if association_privacy %}
+  <p>Review your details before submitting. Only staff approval creates your member record. Keep your reference number for your onsite visit; you can print your submitted form during this session.</p>
+  {% if expires_at %}<p>This submission session ends at <time datetime="{{ expires_at|date:'c' }}">{{ expires_at|date:'M j, Y, g:i A' }}</time>. If it expires before submission, reopen the form and enter your information again. For an already submitted form, follow the approved onsite Help Desk process.</p>{% endif %}
+  {% if policy.upload_slots %}<p>Permitted pre-uploads are optional: at most {{ policy.file_max_bytes|filesizeformat }} per file and {{ policy.total_max_bytes|filesizeformat }} combined. Bring the required physical items onsite. Do not upload a photograph of the long envelope.</p>{% else %}<p>No uploads are needed here. Bring the required physical items to the Help Desk.</p>{% endif %}
+  {% endif %}
+</section>
+<dialog id="registration-privacy-dialog" class="registration-privacy-dialog" aria-labelledby="registration-privacy-title" data-registration-privacy-dialog>
+  <div class="registration-privacy-content" data-registration-privacy-content tabindex="0" role="region" aria-label="Privacy notice"></div>
+  <div class="registration-privacy-footer">
+    <button type="button" class="btn btn-primary" data-registration-privacy-close>Continue filling form</button>
+  </div>
+</dialog>

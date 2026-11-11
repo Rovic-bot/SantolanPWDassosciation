@@ -1,0 +1,52 @@
+Public portal visual editor - 2026-11-06
+
+Owner scope
+Content Management displays the public portal tabs. Staff open a page, edit its
+text and pictures in the actual page layout, preview, and explicitly save.
+
+Implemented
+- Eight current public pages: Home, About, Announcements, Events, Programs,
+  Results, Membership & PWD ID, and Resources & Help.
+- Actual public templates in a permission-checked preview frame; editable copy
+  and picture controls, plain-text editing, Preview, Discard changes, and Save.
+- Existing content view/change/publication permissions remain authoritative.
+  Publishers save publicly; editors without publication permission save private
+  drafts. A publisher can save an existing draft without making another edit.
+- Page versions prevent stale overwrites. Every save records actor, version,
+  and before/after snapshots transactionally. New upload cleanup on rollback.
+- PNG/JPEG uploads use the existing image validation/re-encoding pipeline.
+  Private storage and token-checked views serve current published artwork;
+  draft artwork requires content access. Replacement history is retained.
+- Existing program, announcement, event, application and result records continue
+  to supply dynamic content. Public navigation and workflow actions remain intact.
+- Legacy content edit/history URLs remain available for existing records.
+
+Schema and local installation
+- Added core migration 0004: PortalPage and PortalPageRevision only.
+- The retained development baseline disables historical migrations. Created only
+  the two new empty tables using Django's schema editor, after verifying a private
+  SQL recovery backup and database instance identity.
+- Before/after fingerprints confirm all 123 pre-existing tables and rows unchanged.
+- Private backup/checksum/schema evidence: .local/portal-editor-20261106/.
+- Collected assets and restarted only the web process, retaining MySQL.
+
+Validation
+- 28 focused Django tests passed using a fresh disposable native-MySQL database:
+  core.tests.test_portal_editor, core.tests.test_home_program_availability,
+  core.tests.test_public_portal.
+- Coverage includes eight actual previews/public pages, public program route
+  aliases, escaped copy, drafts/publication, stale versions, unknown fields,
+  permissions/CSRF/POST-only writes, image publication/replacement/reset,
+  audit rollback/upload cleanup, and stale request replay.
+- Django database configuration check, JavaScript syntax checks, core migration
+  drift check, and git diff --check passed.
+- Native browser: editor loaded with all eight tabs; inline welcome-heading edit
+  enabled Save and displayed Unsaved changes; Preview removed editing outlines.
+- Visual inspection found the home picture button behind the overlaid public
+  header. Adjusted its position below the header and recollected assets.
+- Native browser verification ended at the discard confirmation because the
+  computer-use tool could not establish the browser URL. No further browser
+  automation was attempted. The user was told to confirm discarding the temporary
+  preview edit. Picture-dialog interaction was not verified in the live browser.
+- Read-only database verification confirms zero PortalPage/PortalPageRevision
+  records: no live public copy or pictures were changed during validation.

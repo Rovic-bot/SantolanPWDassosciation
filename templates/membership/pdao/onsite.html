@@ -1,0 +1,35 @@
+{% extends 'membership/onsite/base.html' %}
+{% block title %}Onsite PDAO registration · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container onsite-container">
+  <h1 class="visually-hidden">Onsite PDAO registration</h1>
+  <section class="onsite-lookup" aria-labelledby="pdao-existing-heading"><div class="onsite-lookup-heading"><span class="onsite-id-mark" aria-hidden="true">ID</span><div><h2 id="pdao-existing-heading">Already applied online?</h2><p>Find the existing PDAO application before creating a new record.</p></div></div><a data-workspace-tab class="btn btn-outline-primary" href="{% url 'membership:pdao_inbox' %}">Find a PDAO application</a></section>
+  <div class="onsite-workspace-grid">
+    <div class="onsite-form-column">
+      <p class="onsite-privacy"><strong>Private staff workspace</strong><span>Required fields are marked *. Save the PDAO form for review and manual forwarding.</span></p>
+      <form method="post" autocomplete="off" class="onsite-form registration-editor" data-onsite-form>
+        {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+        {% if form.errors %}<div class="onsite-validation" id="registration-errors" role="alert" tabindex="-1"><h2>Check the application</h2>{{ form.non_field_errors }}<ul>{% for field in form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+        <div class="onsite-validation" data-onsite-validation role="alert" tabindex="-1" hidden><h2>Check the application</h2><p>Complete or correct these fields before reviewing.</p><ul></ul></div>
+        {% for title, fields in form.profile_sections %}
+        <section class="onsite-section" id="pdao-onsite-section-{{ forloop.counter }}" data-onsite-section>
+          <header class="onsite-section-heading"><span class="onsite-section-number">{{ forloop.counter|stringformat:'02d' }}</span><h2>{{ title }}</h2></header>
+          <div class="onsite-fields">{% for field in fields %}{% include 'membership/onsite/field.html' %}{% endfor %}</div>
+        </section>
+        {% endfor %}
+        <div class="onsite-form-actions"><div class="onsite-action-note"><span data-save-feedback role="status">Ready when you are.</span></div><div class="onsite-action-buttons"><button type="submit" class="btn btn-primary" data-review-application hidden>Review application</button><button type="submit" class="btn btn-primary" data-save-registration>Save PDAO application for review</button></div></div>
+      </form>
+    </div>
+    <aside class="onsite-guide" aria-labelledby="pdao-guide-heading">
+      <section class="onsite-record-status"><span>Application status</span><strong data-record-status>New record</strong><small data-record-updated>Not yet submitted</small></section>
+      <section class="onsite-guide-card"><p class="onsite-eyebrow">Application guide</p><h2 id="pdao-guide-heading">Before you submit</h2><ol><li>Check for an existing PDAO application.</li><li>Confirm the applicant's details and complete the PDAO fields.</li><li>Explain the privacy information and record the acknowledgement.</li><li>Review, save and prepare the form for signing.</li></ol><p class="onsite-guide-note">PDAO decides on the PWD ID. This application does not create an Association membership.</p></section>
+      <section class="onsite-help-card"><h2>Privacy information</h2><p>{{ privacy_notice }}</p></section>
+    </aside>
+  </div>
+  <dialog class="onsite-review-dialog" data-onsite-review-dialog aria-labelledby="onsite-review-title" aria-describedby="onsite-review-description">
+    <header><div><p class="onsite-eyebrow">One final check</p><h2 id="onsite-review-title">Review PDAO application</h2><p id="onsite-review-description">Confirm these details before saving the onsite application for staff review.</p></div><button type="button" class="onsite-dialog-close" data-close-review aria-label="Close application review">×</button></header>
+    <div class="onsite-review-body" data-review-content tabindex="0" aria-label="Application details"></div>
+    <footer><button type="button" class="btn btn-outline-secondary" data-close-review>Continue editing</button><button type="button" class="btn btn-primary" data-confirm-registration>Save PDAO application</button></footer>
+  </dialog>
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Please try again later · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs resident-message{% endblock %}
+{% block content %}<div class="container content-section"><h1>Please try again later</h1><p>Too many membership verification attempts. Wait before trying again, or contact the association for help.</p><a href="{% url 'programs:detail' program.pk %}">Return to program details</a></div>{% endblock %}

@@ -1,0 +1,5 @@
+Manrope by Mikhail Sharanda and Mirko Velimirovic.
+Source: https://fonts.google.com/specimen/Manrope
+Font binaries: Google Fonts API, Manrope v23, weights 400?800.
+Downloaded 2026-11-04 for the Figma Make public portal layout.
+License: SIL Open Font License 1.1 (OFL.txt).

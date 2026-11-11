@@ -1,0 +1,7 @@
+Mode: built-in image_gen tool.
+Workspace asset: static/images/home-pavilion-illustration.png
+Purpose: decorative architectural illustration for the home hero; not a photo
+of the actual Association premises. Copied unchanged from the generated output.
+
+Final prompt:
+Use case: photorealistic-natural. Asset type: wide decorative website hero background, landscape 16:9. Create a photorealistic architectural illustration of a modest contemporary community pavilion in a leafy tropical garden at early dusk. A low glass-and-warm-timber building with dark slim metal framing occupies the RIGHT HALF of the image, warm inviting interior lights, floor-to-ceiling windows, a level accessible path leading to the entrance. Large trees arch overhead with soft leaves and branches silhouetted against a muted blue-grey sky. The LEFT HALF is subdued, airy, softly blurred pale grey-beige foliage and empty visual space suitable for dark headline text. Restrained natural palette of warm cream, charcoal, timber and muted green. Eye-level architectural photograph, calm welcoming atmosphere, slightly soft focus, realistic materials. This is generic illustrative architecture, not an actual identified Association premises. No people, no logos, no signage, no text, no UI, no buttons or cards, no watermarks. Wide full-bleed composition with the building toward the right and bottom.

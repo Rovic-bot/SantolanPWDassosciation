@@ -1,0 +1,20 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Eligibility readiness · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:evidence_queue' %}">Evidence applications</a>
+<h1>Eligibility and evidence readiness</h1><p>{{ application.public_reference }} · {{ application.program.name }}</p>
+<p>Diagnostics do not change eligibility, application status or beneficiary decisions.</p>
+<dl><dt>Eligibility readiness</dt><dd>{{ result.eligibility_readiness|yesno:'Current review checks pass,Review required' }}</dd>
+<dt>Criterion evidence completeness</dt><dd>{{ result.criterion_completeness|yesno:'Current findings recorded,Incomplete or outdated' }}</dd>
+<dt>Governance readiness</dt><dd>{{ result.governance_readiness|yesno:'Ready,Pending authorization' }}</dd>
+<dt>Processing authorization</dt><dd>Unavailable — scoring and ranking remain disabled.</dd></dl>
+{% for group, reasons in result.reasons.items %}<section><h2 class="h5">{{ group|capfirst }} findings</h2>
+<ul>{% for reason in reasons %}<li style="overflow-wrap:anywhere">{{ reason.code }}{% if reason.source %} · Source {{ reason.source }}{% endif %}</li>{% empty %}<li>No blockers detected in this diagnostic check.</li>{% endfor %}</ul></section>{% endfor %}
+<h2>Criterion findings</h2>
+{% for criterion in result.criteria %}<article class="record-history"><h3 class="h5">{{ criterion.criterion }}</h3><p>{{ criterion.state }} · {{ criterion.current|yesno:'Current,Missing or requires review' }}</p>
+{% if perms.ewaf.review_criterionassessment or perms.ewaf.declare_criterionassessment %}<a href="{% url 'ewaf:evidence_review' application.pk criterion.criterion %}">Review {{ criterion.criterion }} evidence</a>{% endif %}</article>{% endfor %}
+<p>{{ result.integrity_note }}</p>
+<p><a href="{% url 'ewaf:evidence_history' application.pk %}">Assessment and readiness history</a></p>
+{% if perms.ewaf.record_evidencepolicyrevision %}<p><a href="{% url 'ewaf:evidence_policy' application.program_id %}">Record evidence policy definitions</a></p>{% endif %}
+{% if perms.ewaf.record_eligibilityreadinesssnapshot %}<h2>Retain this diagnostic review</h2>{% include 'ewaf/evidence_form.html' with submit_label='Retain readiness snapshot' %}{% endif %}
+</div>{% endblock %}

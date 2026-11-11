@@ -1,0 +1,46 @@
+Event Details layout and ticket popup cleanup - 5 November 2026
+
+Owner scope
+Remove the Full view option when View ticket opens a Community Assistance Desk request. Apply the current Program Details layout to Events > Manage > Event Details.
+
+Delivered
+The Community Assistance Desk inbox omits Open full page from its ticket dialog. Reply controls, automatic review, protected forms, history, scrolling, Close and Escape remain. The shared dialog script handles the absent link and gives retry/session guidance without referring to it. Member-record dialogs retain their existing full-page link. Native protected detail routes remain available as existing navigation fallbacks; no permission boundary changed.
+
+Event Details uses the current Program Details stylesheet, icons, date rows and disclosure behavior. The page has a title/status/update header and Edit event action; a two-column overview/publication row; schedule beside venue; a full-width protected event image section; and collapsible, permission-checked history. The saved description stays complete in the overview. Dates use Philippine time. Missing images have an explicit empty state. The layout supports dark/light themes and mobile stacking.
+
+Existing one-click event publishing and reasoned status changes retain their original routes, versions, CSRF, permissions, validation and audits. The publication form now uses distinct field IDs so its hidden version does not duplicate the other action form's ID. Event publication state and timestamp are actual saved values. No event readiness percentage, application count, capacity, attendance or new public participation behavior was invented. Previously removed attendance/legacy/public-event links remain removed.
+
+Scope and preservation
+No service, model, schema, migration, dependency or business policy changed. The existing unfinished Git work is preserved. Pre-edit copies and the starting Git inventory are under .local/event-detail-and-ticket-20261105/before/ and git-status-before.txt.
+
+Affected source files
+templates/events/manage_detail.html
+templates/events/profile/publication.html (new)
+static/css/event-detail.css (new; additions to shared Program Details styles)
+events/views.py (publication form field IDs only)
+templates/admin_portal/dashboard_topbar.html (Event Details breadcrumb/title)
+templates/partials/record_dialog.html
+templates/assistance/referrals/inbox.html
+static/js/record-dialog.js
+static/js/program-detail.js (initialize existing disclosure behavior for event profiles)
+templates/members/directory/base.html (script cache version)
+templates/programs/manage_detail.html and profile/dialog_scripts.html (script cache version)
+Existing event-list, referral and direct-mail checks; new event-detail browser harness.
+
+Verification
+46 distinct Django tests pass across the combined run and focused final rerun: 43 backend checks plus three browser harnesses.
+
+Combined command:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test events.test_list_actions events.test_optional_event_details events.test_simple_publication programs.test_detail_workspace assistance.test_referral_quick_actions scripts.event_detail_browser_qa scripts.direct_gmail_browser_qa scripts.program_detail_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+
+Combined artifacts: santolan-g12-tests-1081w6c4. 45/46 passed in 25.517 seconds. The new event browser check read the old history page before asynchronous navigation finished; its wait now observes the updated pagination text. No product failure was suppressed. Visual inspection also adjusted the mobile Edit event button to use the available width. The focused event browser rerun passed in 5.043 seconds: santolan-g12-tests-eztqx0vl.
+
+Event browser: 14 layouts across dark/light themes and 320-1600 px widths; Manage navigation; real date/venue/full-description values; protected image and alt text; aligned two-column cards and full-width image/history; unique IDs; no overflow; history keyboard disclosure and pagination; larger text/high contrast/forced colors; no-JavaScript fallback; publish and reasoned withdrawal on one fictional event.
+
+Ticket browser: no full-page link on desktop/mobile; direct replies using saved sender settings with mocked provider; automatic review; reply validation; failed-load retry and expired-session guidance; Close/Escape and focus return. The same harness opened a member record and verified that its full-page link is still available. No real email was sent.
+
+Existing Program Details browser: 14 full-page plus 12 popup layouts; both themes; publication/withdrawal and blocked EWAF; navigation, history and keyboard controls passed with the shared disclosure script.
+
+All test writes used fresh, verified disposable MySQL instances with test_g12_disposable, isolated credentials and temporary fictional media. Retained application data was not used for tests. Selected final screenshots were visually inspected and copied here.
+
+Django system/database check: no issues. Migration drift: no changes. JavaScript syntax checks and git diff --check passed. Collected three updated/new assets, with 238 unchanged. Refreshed only the identity-checked local website at http://127.0.0.1:8013/; retained MySQL stayed running. HTTP responses for all three affected assets match their source files.

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Administrator sign in · Santolan PWD{% endblock %}
+{% block body_class %}staff-sign-in{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/staff-sign-in.css' %}?v=20261108-neutral">
+<link rel="stylesheet" href="{% static 'css/password-input.css' %}?v=20261111">
+{% endblock %}
+
+{% block header %}
+<header class="signin-header">
+  <div class="signin-wrap signin-header-inner">
+    <a class="signin-brand" href="{% url 'core:home' %}">
+      <img class="association-logo" src="{% static 'images/public-association-logo.png' %}" alt="" width="48" height="48">
+      <span><strong>Santolan PWD</strong><span>Administration</span></span>
+    </a>
+    <a class="signin-return" href="{% url 'core:home' %}">
+      <span aria-hidden="true">←</span> <span>Public portal</span>
+    </a>
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="signin-wrap signin-layout">
+  <section class="signin-story" aria-labelledby="signin-story-title">
+    <img class="signin-story-photo" src="{% static 'images/community/gathering-1080.webp' %}" alt="" width="1080" height="608" fetchpriority="high">
+    <div class="signin-story-copy">
+    <p class="signin-overline">BARANGAY SANTOLAN · PASIG CITY</p>
+    <h2 id="signin-story-title">Here for our<br><span>community.</span></h2>
+    <p class="signin-intro">Supporting the people behind every record, every program, and every step forward.</p>
+    </div>
+    <div class="signin-community-note">
+      <span class="signin-note-icon" aria-hidden="true">{% include 'public/icon.html' with name='members' %}</span>
+      <div><strong>Together, we make a difference.</strong><p>From the Santolan PWD Association community archive.</p></div>
+    </div>
+  </section>
+
+  <section class="signin-panel" aria-labelledby="signin-title">
+    <div class="signin-panel-heading">
+      <span class="signin-lock" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
+      </span>
+      <p class="signin-overline">ADMINISTRATOR ACCESS</p>
+    </div>
+    {% if request.user.is_authenticated %}
+      <h1 id="signin-title">You’re signed in.</h1>
+      <p class="signin-description">Continue to your administration workspace, or sign out to use another account.</p>
+      <a class="signin-submit" href="{% url 'core:dashboard' %}">Open your workspace {% include 'public/icon.html' with name='arrow' %}</a>
+      <form method="post" action="{% url 'accounts:logout' %}" class="signin-logout">
+        {% csrf_token %}
+        <button class="signin-secondary" type="submit">Sign out</button>
+      </form>
+    {% else %}
+      <h1 id="signin-title">Welcome back.</h1>
+      <p class="signin-description">Sign in to your administration workspace.</p>
+      <form method="post" class="account-form signin-form" action="{% url 'accounts:login' %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger signin-error" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+        {% for field in form %}
+          <div class="signin-field">
+            {{ field.label_tag }}
+            {% if field.name == 'password' %}{% include 'partials/password_input.html' with field=field %}{% else %}{{ field }}{% endif %}
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="signin-submit">Sign in {% include 'public/icon.html' with name='arrow' %}</button>
+      </form>
+      <div class="signin-help">
+        <p class="signin-help-title">Need help signing in?</p>
+        <p>For account access or a forgotten password, contact your system administrator.</p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="signin-footer">
+  <div class="signin-wrap signin-footer-inner">
+    <span>Association ng Taong May Kapansanan ng Barangay Santolan, Inc.</span>
+    <span>For authorized administrators only.</span>
+  </div>
+</footer>
+{% endblock %}
+
+{% block extra_scripts %}<script src="{% static 'js/password-input.js' %}?v=20261111" defer></script>{% endblock %}

@@ -1,0 +1,8 @@
+{% if form.errors %}<div class="alert alert-danger" role="alert"><h2 class="h5">Review the form</h2>{{ form.non_field_errors }}<p>Correct the errors below. Reload if the evidence changed.</p></div>{% endif %}
+<form method="post">{% csrf_token %}
+{% for field in form %}{% if field.is_hidden %}{{ field }}{{ field.errors }}{% else %}
+<div class="mb-3">{{ field.label_tag }}<div>{{ field }}</div>
+{% if field.help_text %}<p class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+{{ field.errors }}</div>{% endif %}{% endfor %}
+<button class="btn btn-primary" type="submit">{{ submit_label }}</button>
+</form>

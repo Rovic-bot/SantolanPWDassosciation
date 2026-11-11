@@ -1,0 +1,14 @@
+<article class="observance-poster" data-public-popup-content aria-labelledby="observance-popup-heading">
+  <header class="observance-poster-hero">
+    {% if observance.image %}<img src="{% url 'events:observance_image' observance.pk %}" alt="{{ observance.image_alt }}" data-event-poster-image>{% endif %}
+    <div class="observance-poster-heading"><h3 id="observance-popup-heading">{{ observance.title }}</h3><p>{{ observance.category_label }}</p></div>
+  </header>
+  <div class="observance-poster-body">
+    <div class="observance-poster-date"><h4>Every year</h4><p>{{ observance.recurrence_rule }}</p></div>
+    <div class="observance-poster-description">{{ observance.description|linebreaks }}</div>
+    <footer class="observance-poster-footer">
+      <dl><div><dt>Target audience</dt><dd>{{ observance.target_audience|default:'Contact the Association for details.' }}</dd></div><div><dt>Who may participate</dt><dd>{{ observance.who_may_participate|default:'Check with the organizer.' }}</dd></div></dl>
+      <span class="observance-poster-calendar" aria-hidden="true">{% include 'public/icon.html' with name='calendar' %}</span>
+    </footer>
+  </div>
+</article>

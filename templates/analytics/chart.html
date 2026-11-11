@@ -1,0 +1,37 @@
+<div class="overview-chart-group" data-visualization="{{ chart.id }}">
+  {% if chart.total == 0 %}<p class="overview-empty">No matching recorded data for this chart.</p>{% endif %}
+  {% if chart.kind == 'heatmap' %}
+    <div class="overview-table-scroll" role="region" tabindex="0" aria-label="{{ chart.title }}">
+      <table class="overview-heatmap"><caption class="visually-hidden">{{ chart.title }} · {{ chart.scope }}</caption>
+        <thead><tr>{% for column in chart.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for row in chart.heat_rows %}<tr><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td data-level="{{ cell.level }}">{{ cell.count }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="overview-visual" data-chart="{{ chart.id }}" role="img" aria-labelledby="{{ chart.id }}-heading" aria-describedby="{{ chart.id }}-summary {{ chart.id }}-context {{ chart.id }}-scroll" hidden></div>
+    <p class="visually-hidden" id="{{ chart.id }}-scroll" data-chart-scroll hidden>Scroll the chart with the arrow keys, or use View data below.</p>
+    <p class="overview-scroll-cue" data-chart-more hidden>Scroll for more programs <span aria-hidden="true">↓</span></p>
+    {{ chart.payload|json_script:chart.id }}
+    <p class="overview-render-status" data-chart-fallback>Chart data is available in the table below.</p>
+  {% endif %}
+  {% if chart.kind == 'stacked' or chart.kind == 'donut' %}<ol class="overview-legend overview-chart-legend" aria-label="{{ chart.title }} categories">{% for item in chart.legend %}<li><span class="overview-key" data-tone="{{ item.tone }}">{{ item.index }}</span><span>{{ item.label }}</span></li>{% endfor %}</ol>{% endif %}
+  {% if chart.kind == 'member-donut' %}<div class="overview-member-footer"><p class="overview-note">Classification counts; member percentages may overlap.</p>{% endif %}
+  <button type="button" class="overview-data-button" data-open-chart-data aria-haspopup="dialog" aria-controls="overview-data-dialog" hidden><span aria-hidden="true">▸</span> View data<span class="visually-hidden"> for {{ chart.title }}</span></button>
+  {% if chart.kind == 'member-donut' %}</div>{% endif %}
+  <details class="overview-data" open>
+    <summary>View data<span class="visually-hidden"> for {{ chart.title }}</span></summary>
+    <div class="overview-data-content">
+    <p class="overview-summary" id="{{ chart.id }}-summary">{{ chart.summary }}</p>
+    <p class="overview-chart-context" id="{{ chart.id }}-context">{{ chart.scope }} · {% if chart.kind == 'scatter' %}programs / slots / applications{% else %}count{% endif %}</p>
+    <p class="overview-note">{{ chart.note }}</p>
+    {% if chart.kind == 'heatmap' %}<ul class="overview-heat-scale" aria-label="Event count color scale">{% for level in chart.heat_scale %}<li><span class="overview-heat-swatch" data-level="{{ level.level }}" aria-hidden="true"></span>{{ level.label }}</li>{% endfor %}</ul>{% endif %}
+    {% if chart.legend %}<ol class="overview-legend" aria-label="{{ chart.title }} categories">{% for item in chart.legend %}<li><span class="overview-key" data-tone="{{ item.tone }}">{{ item.index }}</span><span>{{ item.label }}{% if item.value %} · <strong>{{ item.value }}</strong>{% endif %}</span></li>{% endfor %}</ol>{% endif %}
+    <div class="overview-table-scroll" role="region" tabindex="0" aria-label="Data: {{ chart.title }}">
+      <table class="overview-data-table"><caption>{{ chart.title }} · {{ chart.scope }}</caption>
+        <thead><tr>{% for column in chart.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for row in chart.rows %}<tr>{% for cell in row %}{% if forloop.first %}<th scope="row">{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}</tr>{% empty %}<tr><td colspan="{{ chart.columns|length }}">No matching recorded data (0).</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    </div>
+  </details>
+</div>

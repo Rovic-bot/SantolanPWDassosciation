@@ -1,0 +1,283 @@
+P1: Technical Background
+P2: The proposed system is a web-based platform developed for the Barangay Santolan PWD Association. It is used to manage member records, assistance applications, programs, events, announcements, reports, and system activities through a centralized information management environment.
+P3: The system is built using Django and Django REST Framework for application development, MySQL for data storage, Bootstrap 5 for the user interface, and Chart.js for data visualization. It follows a Three-Tier Architecture consisting of the Presentation Layer, Application Layer, and Data Layer.
+P4: The system includes an Equity Weighted Analytics Module that evaluates assistance applications using general criteria and program eligibility requirements. The generated results are presented to administrators as part of the application review process.
+P5: Authorized administrators use protected, role-based accounts to manage records and reviews. Members use the approved public application processes without member login accounts. System activities are recorded through the Audit Trail Module, while reports and analytics may be generated through the Reporting Module.
+P6: Updated EWAF Computation Example
+P7: This revision uses the five criteria and default weights supplied by the project owner: HI, SI, ES, PA, and HM. It retains the source sequence of pairwise comparison, column summation, matrix normalization, weight calculation, consistency validation, data encoding, applicant normalization, and weighted scoring.
+TABLE 1
+Code | Updated criterion | Source information
+HI | Household Monthly Income | Accepted household monthly income in PHP.
+SI | Socioeconomic Indicator | Accepted socioeconomic assessment supported by relevant documents and 4Ps information, where applicable.
+ES | Employment Status | Accepted employment category.
+PA | Previous Assistance Received | Confirmed, non-voided assistance releases within the approved scope and period.
+HM | Number of Household Members | Accepted number of household members under the approved household definition.
+P8: Scope: The revised criterion set is supplied by the user. A new independently elicited pairwise matrix and a complete SI scoring rubric were not supplied. The following arithmetic is an illustrative worked example, not approval of those missing rules or a change to the running system. The final page identifies the explicit editorial changes.
+P10: Saaty’s Fundamental Scale of Pairwise Comparison
+P11: The source uses the following scale for expressing criterion importance in actual pairwise judgments. Reciprocal values represent the opposite comparison.
+TABLE 2
+Scale | Interpretation
+1 | Equal Importance
+3 | Moderate Importance
+5 | Strong Importance
+7 | Very Strong Importance
+9 | Extreme Importance
+2,4,6,8 | Intermediate Values
+P12: Table 1. Saaty scale retained from the source document.
+P13: Pairwise Comparison Matrix
+P14: Illustrative reconstruction: To reproduce the exact supplied default weights without inventing stakeholder judgments, this example constructs each entry as aᵢⱼ = qᵢ / qⱼ. Here q is the supplied weight vector. This is a reverse construction for explaining the mathematics; it is not evidence that the Association performed these pairwise comparisons.
+P15: q = (0.3421, 0.2360, 0.1774, 0.1223, 0.1222)
+P16: ai,j = qi / qj;   ai,i = 1;   aj,i = 1 / ai,j
+TABLE 3
+Criterion | HI | SI | ES | PA | HM
+HI | 1.000000 | 1.449576 | 1.928410 | 2.797220 | 2.799509
+SI | 0.689857 | 1.000000 | 1.330327 | 1.929681 | 1.931260
+ES | 0.518562 | 0.751695 | 1.000000 | 1.450531 | 1.451718
+PA | 0.357498 | 0.518220 | 0.689402 | 1.000000 | 1.000818
+HM | 0.357205 | 0.517797 | 0.688839 | 0.999182 | 1.000000
+P17: Table 2. Constructed reciprocal matrix for the updated default-weight example.
+P18: Example: aHI,SI = 0.3421 / 0.2360 = 1.449576271…; the reciprocal aSI,HI = 0.689856767…. Matrix entries are shown to six decimal places. All results below use exact fractions, not the rounded table entries.
+P19: The decimal ratios in Table 2 are not new selections from the integer Saaty scale. Replace this demonstration matrix with the recorded judgments when validating the actual AHP configuration.
+P21: Column Summation and Matrix Normalization
+P22: The values in each column are summed. Each matrix element is then divided by the total of its own column, as in the original computation.
+P23: sj = Σi ai,j
+TABLE 4
+Column | Total
+HI | 2.92312189
+SI | 4.23728814
+ES | 5.63697858
+PA | 8.17661488
+HM | 8.18330606
+P24: Table 3. Recalculated column totals.
+P25: For example, the HI column total is 1 + (0.2360/0.3421) + (0.1774/0.3421) + (0.1223/0.3421) + (0.1222/0.3421) = 2.923121894….
+P26: Ni,j = ai,j / sj
+P27: Where Nᵢⱼ is a normalized matrix element, aᵢⱼ is the corresponding comparison value, and sⱼ is that column’s total.
+TABLE 5
+Criterion | HI | SI | ES | PA | HM
+HI | 0.3421 | 0.3421 | 0.3421 | 0.3421 | 0.3421
+SI | 0.2360 | 0.2360 | 0.2360 | 0.2360 | 0.2360
+ES | 0.1774 | 0.1774 | 0.1774 | 0.1774 | 0.1774
+PA | 0.1223 | 0.1223 | 0.1223 | 0.1223 | 0.1223
+HM | 0.1222 | 0.1222 | 0.1222 | 0.1222 | 0.1222
+P28: Table 4. Normalized comparison matrix.
+P29: NHI,SI = (0.3421 / 0.2360) / (1 / 0.2360) = 0.3421
+P30: Why each column is identical: For the constructed matrix, the column total is 1/qⱼ because the supplied weights sum to 1. Therefore, every normalized entry in row i is qᵢ. This identity is caused by the reconstruction; it is not an independent validation of the supplied priorities.
+P32: Final AHP Weights — Illustrative Reconstruction
+P33: The average of each normalized row becomes the weight, using the same row-average method as the original document.
+P34: wi = (Σj Ni,j) / n,   where n = 5
+P35: wHI = (0.3421 + 0.3421 + 0.3421 + 0.3421 + 0.3421) / 5 = 0.3421
+TABLE 6
+Criterion | Example weight | Percentage
+Household Monthly Income (HI) | 0.3421 | 34.21%
+Socioeconomic Indicator (SI) | 0.2360 | 23.60%
+Employment Status (ES) | 0.1774 | 17.74%
+Previous Assistance Received (PA) | 0.1223 | 12.23%
+Number of Household Members (HM) | 0.1222 | 12.22%
+Total | 1.0000 | 100.00%
+P36: Table 5. Updated example weights reproduced from the supplied defaults.
+P37: These percentages are the selected example configuration, not permanently fixed percentages for every program. This construction reproduces them; it does not establish that they were derived from an independent stakeholder comparison.
+P38: Adjustable Weights
+P39: The supplied interface allows HI, SI, ES, and PA to be adjusted, while HM receives the remaining percentage. Its displayed ranges are retained below as user-supplied interface values, not as proof that every combination is feasible.
+TABLE 7
+Criterion | Displayed range / rule
+HI | 26.40% to 62.55%
+SI | 19.48% to 34.21%
+ES | 14.07% to 23.60%
+PA | 12.23% to 17.74%
+HM | 100% − (HI + SI + ES + PA)
+P40: Configuration note. The worked example uses the default vector only.
+P41: At HI = 62.55% and the other three stated minima, the subtotal is 108.33% and HM would be −8.33%. Such a combination is invalid. The theoretical HI ceiling is 54.22% with those minima only when HM = 0 is permitted; no HM minimum is invented here.
+P42: Manual slider adjustments are proposed weights, not automatically AHP-derived judgments. A real AHP consistency check must use the independently recorded matrix. Rebuilding a matrix from chosen weights will always make it perfectly consistent and must not be used to certify those judgments.
+P44: AHP Consistency Validation
+P45: The same sequence is retained: Weighted Sum Vector, Consistency Vector, estimated maximum eigenvalue, Consistency Index, and Consistency Ratio. All values are recalculated for Table 2; the old matrix’s consistency results are not reused.
+P46: Weighted Sum Vector Results
+P47: WSVi = Σj (ai,j × wj)
+P48: Where aᵢⱼ is the comparison at row i and column j, wⱼ is criterion j’s weight, and the sum covers all five criteria.
+TABLE 8
+Criterion | Weighted Sum Vector
+HI | 1.7105
+SI | 1.1800
+ES | 0.8870
+PA | 0.6115
+HM | 0.6110
+P49: Table 6. Recalculated Weighted Sum Vector for the constructed example.
+P50: WSVHI = Σj [(qHI / qj) × qj] = 5 × 0.3421 = 1.7105
+P51: Consistency Vector Results
+P52: CVi = WSVi / wi
+TABLE 9
+Criterion | Consistency Vector
+HI | 5.0000
+SI | 5.0000
+ES | 5.0000
+PA | 5.0000
+HM | 5.0000
+P53: Table 7. Recalculated Consistency Vector.
+P54: Every ratio is exactly 5 because the reconstructed matrix was defined from one internally consistent weight vector. Rounded displayed numbers should not be fed back into the computation.
+P56: Maximum Eigenvalue, CI, and CR
+P57: Maximum Eigenvalue Estimate
+P58: λmax = (Σi CVi) / n = (5 + 5 + 5 + 5 + 5) / 5 = 5.0000
+P59: Consistency Index
+P60: CI = (λmax − n) / (n − 1) = (5 − 5) / 4 = 0.0000
+P61: Saaty’s Random Index (RI)
+P62: The source’s Random Index table is retained. For this five-criterion example, RI = 1.12.
+TABLE 10
+Number of criteria (n) | Random Index (RI)
+1 | 0.00
+2 | 0.00
+3 | 0.58
+4 | 0.90
+5 | 1.12
+6 | 1.24
+7 | 1.32
+8 | 1.41
+9 | 1.45
+10 | 1.49
+P63: Table 8. Random Index values retained from the source.
+P64: Consistency Ratio
+P65: CR = CI / RI = 0.0000 / 1.12 = 0.0000
+P66: This demonstration satisfies the source’s CR < 0.10 condition. The five supplied weights sum to 100.00%.
+P67: Interpretation: CR = 0 is guaranteed here by aᵢⱼ = qᵢ/qⱼ. It does not establish fairness, truthful applicant information, or independent AHP approval. The real configuration’s CR cannot be verified until its actual pairwise judgments are provided.
+P69: Data Encoding
+P70: Numeric source values and categorical assessments must be distinguished. HI is recorded in PHP; HM is a household count; PA is a count of qualifying confirmed releases. ES requires a category-to-number mapping. SI requires an accepted numerical assessment under a documented rule.
+P71: Employment Status Encoding
+P72: The original document’s employment encoding is retained for this example; no new employment categories or scoring levels are invented.
+TABLE 11
+Employment status | Encoded value
+Full-Time Worker | 1
+Part-Time Worker | 2
+Seasonal Worker | 3
+Unemployed | 4
+P73: Table 9. Employment Status encoding retained from the source.
+P74: An unlisted or unresolved category must be reviewed under the applicable rule rather than automatically assigned one of these values.
+P75: Socioeconomic Indicator Encoding
+P76: The old Program Relevance encoding is no longer a scored table in this five-criterion example. It is replaced by the SI input requirements below. The source does not supply a mapping from 4Ps or supporting documents to an SI number.
+TABLE 12
+Information | Treatment before computation
+Supporting documents | Evidence for assessment, not a score based on the number of files.
+4Ps membership, where applicable | Record its evidence/verification status. Do not assume membership means the maximum score or non-membership means no need.
+Accepted SI assessment | Use the numeric result of a separately documented assessment rule. Do not simply repeat household income as SI.
+Missing or disputed assessment | Leave unresolved; do not silently encode as zero.
+P77: Table 10. SI evidence-to-input requirements; no new policy rubric is asserted.
+P78: Synthetic values used below: Applicants A, B, and C are assigned SI values of 4, 3, and 1 solely to demonstrate the arithmetic. These are assumed accepted scores; no particular 4Ps status or document is claimed to justify them. The official SI rubric remains unspecified.
+P80: Min–Max Normalization
+P81: Following encoding, the source applies Min–Max normalization using the minimum and maximum within a dataset. This worked example retains that dataset-based method: the same three fictional applicants define the bounds for every calculation.
+P82: Increasing Formula — Retained from the Source
+P83: zi,j = (xi,j − xmin,j) / (xmax,j − xmin,j)
+P84: Use an increasing direction when a higher accepted value receives a higher criterion contribution. The example applies it to SI, ES, and HM.
+P85: Inverse Formula — Explicit Example Extension
+P86: zi,j = (xmax,j − xi,j) / (xmax,j − xmin,j)
+P87: For this demonstration only, lower HI and fewer PA releases receive higher contributions. The inverse formula implements that example policy. The source printed only the increasing formula; this added direction is disclosed, not treated as an already approved institutional rule.
+P88: Here xᵢⱼ is applicant i’s accepted value for criterion j; xmin,j and xmax,j are the shared dataset bounds; zᵢⱼ is the normalized value. These bounds are example data, not official poverty thresholds or approved fixed limits.
+TABLE 13
+Applicant | HI (PHP) | SI* | ES** | PA releases | HM people
+A | 5,000 | 4 | 3 | 1 | 4
+B | 12,500 | 3 | 4 | 0 | 2
+C | 20,000 | 1 | 1 | 3 | 6
+P89: Table 11. Fictional accepted-input dataset for the worked example.
+P90: * SI values are illustrative assessed numbers, not a documented 4Ps scoring policy. ** ES: A = Seasonal Worker (3), B = Unemployed (4), C = Full-Time Worker (1). All three applicants are assumed to have passed eligibility.
+TABLE 14
+Criterion | Minimum | Maximum | Example direction
+HI | 5000 | 20000 | Inverse
+SI | 1 | 4 | Increasing
+ES | 1 | 4 | Increasing
+PA | 0 | 3 | Inverse
+HM | 2 | 6 | Increasing
+P91: Table 12. Shared dataset bounds and the disclosed example directions.
+P93: Normalized Applicant Values
+TABLE 15
+Criterion | Applicant A | Applicant B | Applicant C
+HI | 1.000000 | 0.500000 | 0.000000
+SI | 1.000000 | 0.666667 | 0.000000
+ES | 0.666667 | 1.000000 | 0.000000
+PA | 0.666667 | 1.000000 | 0.000000
+HM | 0.500000 | 0.000000 | 1.000000
+P94: Table 13. Normalized inputs on the 0–1 scale.
+P95: Applicant A — Step-by-Step Normalization
+P96: HI: (20,000 − 5,000) / (20,000 − 5,000) = 1
+P97: SI: (4 − 1) / (4 − 1) = 1
+P98: ES: (3 − 1) / (4 − 1) = 2/3
+P99: PA: (3 − 1) / (3 − 0) = 2/3
+P100: HM: (4 − 2) / (6 − 2) = 1/2
+P101: For Applicant B, the normalized values are 1/2, 2/3, 1, 1, and 0. For Applicant C, they are 0, 0, 0, 0, and 1. A normalized zero identifies the low-contribution endpoint in this example; it does not mean the applicant has no actual need.
+P102: Calculation Boundaries
+P103: If xmax = xmin for a criterion, the formula divides by zero. Stop the example calculation for that case until an explicit constant-column rule is selected; do not invent a zero or maximum value.
+P104: Do not calculate from missing, disputed, or stale required inputs. An unknown value is not the number zero.
+P105: If this dataset-based method is used and the accepted pool or its values change, recompute the shared bounds and all affected results consistently. Preserve the earlier run.
+P106: Store sufficient precision and round only displayed values. Use exact 2/3 in this worked example, not a prematurely rounded 0.67.
+P107: Dataset-derived bounds are retained for fidelity to this source example. This document does not replace an existing software configuration that requires separately approved fixed bounds.
+P109: Equity Weighted Scoring (EWS)
+P110: After normalization, the criterion contributions are added using the Weighted Sum Method. With decimal weights summing to 1, the first result lies on a 0–1 scale. Multiplying by 100 makes it compatible with the source’s 0–100 classification bands.
+P111: EWSi = Σj (wj × zi,j)
+P112: EWS100,i = 100 × EWSi
+P113: EWS100 = 34.21zHI + 23.60zSI + 17.74zES + 12.23zPA + 12.22zHM
+P114: The last formula already uses percentage-point weights. Do not multiply that result by 100 again.
+TABLE 16
+Criterion | Weight (%) | A: points | B: points | C: points
+HI | 34.21 | 34.210000 | 17.105000 | 0.000000
+SI | 23.60 | 23.600000 | 15.733333 | 0.000000
+ES | 17.74 | 11.826667 | 17.740000 | 0.000000
+PA | 12.23 | 8.153333 | 12.230000 | 0.000000
+HM | 12.22 | 6.110000 | 0.000000 | 12.220000
+Total | 100.00 | 83.900000 | 62.808333 | 12.220000
+P115: Table 14. Weighted contributions in points out of 100.
+P116: Applicant A — Complete Calculation
+P117: EWSA = (0.3421 × 1) + (0.2360 × 1) + (0.1774 × 2/3)
+P118:           + (0.1223 × 2/3) + (0.1222 × 1/2)
+P119: EWSA = 0.839;   EWS100,A = 83.90
+P120: Other Applicants
+P121: EWS100,B = 17.105 + 15.733333… + 17.74 + 12.23 + 0
+P122: EWS100,B = 62.808333… ≈ 62.81
+P123: EWS100,C = 0 + 0 + 0 + 0 + 12.22 = 12.22
+P124: These scores are consequences of the stated example weights, dataset, assumed SI values, and disclosed normalization directions. They are not measured scores of real members or guarantees of selection.
+P126: Assistance Need Classification
+P127: The source’s four descriptive bands are retained as example interpretation ranges. The interval notation below covers unrounded scores without creating gaps between values such as 79.99 and 80.00.
+TABLE 17
+Score on the 0–100 scale | Example classification
+80 ≤ score ≤ 100 | High Assistance Need
+60 ≤ score < 80 | Moderate Assistance Need
+40 ≤ score < 60 | Low Assistance Need
+0 ≤ score < 40 | Minimal Assistance Need
+P128: Table 15. Source classification bands expressed as continuous intervals.
+TABLE 18
+Applicant | Score (displayed) | Example classification
+A | 83.90 | High Assistance Need
+B | 62.81 | Moderate Assistance Need
+C | 12.22 | Minimal Assistance Need
+P129: Table 16. Results of the fictional calculation example.
+P130: Classify the stored unrounded score, not an already rounded display value. These bands are retained from the source; their operational use requires the applicable approved configuration. They do not measure a probability, diagnose need, or automatically allocate assistance.
+P131: Program Eligibility Validation
+P132: Eligibility screening precedes the official score calculation. The Association checks membership and the program’s mandatory qualifications, identification requirements where applicable, and required evidence. An eligible applicant is not automatically selected.
+P133: Program Relevance is not included in this updated HI/SI/ES/PA/HM weighted sum. It remains a program-qualification consideration where required. Number of Household Members is not the former Number of Dependents; their definitions and historical values must not be interchanged.
+P134: Overall Calculation Flow
+P135: Approve the applicable configuration → Verify and accept current information → Confirm program eligibility → Encode categorical values → Apply the disclosed Min–Max directions → Compute EWS → Interpret the result → Record the authorized human decision.
+P136: For a real AHP setup, the weight and consistency calculations occur before the configuration is approved. They are not repeated merely because another applicant submits a form.
+P138: Assistance Program Analytics and Human Validation
+P139: Assistance Program Analytics
+P140: As in the source document, the analytical outputs may be used for disability-distribution, socioeconomic, employment, participation, assistance-distribution, program-relevance, and trend analysis. The updated example additionally distinguishes household income and household size as separate input measures.
+P141: Charts, summaries, and reports support monitoring and planning. An analytical breakdown does not authorize public disclosure of private member data or establish that a dashboard has already been implemented.
+P142: Human Validation
+P143: Authorized personnel review member records, accepted evidence, assistance history, eligibility findings, applicable classifications, and calculation results before recording final decisions. The framework supplies analytical support only; it does not automatically select beneficiaries.
+P144: Preserve the data and configuration used for the calculation. A legitimate correction to an ongoing evaluation should be recorded and recalculated through the approved process, not implemented by typing a different final score. Changes occurring after a correctly completed evaluation do not automatically rewrite its history.
+P145: Accessibility Features
+P146: The source’s accessibility-oriented design is retained, including high-contrast viewing and text-to-speech functionality. Information and score explanations should remain understandable and accessible through the approved user interfaces and assisted procedures.
+P147: Data Privacy, Security, and Audit Trail
+P148: The source places personal and sensitive information under its stated Republic Act No. 10173 framework and identifies role-based access, authentication and authorization, audit logging, session management, encryption, and controlled access as planned safeguards. This calculation document does not verify legal compliance or deployed security controls.
+P149: Relevant reviews, corrections, configuration changes, calculations, decisions, and publication actions should retain the responsible actor, date, and necessary history. Individual evidence and detailed household information remain subject to the system’s approved access rules.
+P150: Relationship to the Existing System
+P151: Documentation only: This is a revised computation example. It does not modify source code, databases, existing four-criterion or historical five-criterion runs, institutional approvals, or the accepted development milestone. Any production adoption requires its own reviewed policy and implementation version.
+P153: Revision Record and Example Assumptions
+P154: Source: Computation(1).docx, supplied by the user. New criteria, default percentages, displayed adjustment ranges, and data sources were supplied in the conversation. No new signed comparison matrix or SI scoring rubric was provided.
+TABLE 19
+Item | Explicit revision / limitation
+Criterion set | Replaced PA/SI/ES/ND/PR with HI/SI/ES/PA/HM for this new example. PR is not scored; HM is not relabeled ND. Historical examples are not overwritten.
+Default weights | Uses 34.21%, 23.60%, 17.74%, 12.23%, and 12.22%, as supplied. These are example defaults rather than universally fixed weights.
+AHP matrix | Constructed aᵢⱼ = qᵢ/qⱼ solely to reproduce the supplied weights. All matrix totals and consistency tables were recomputed. This does not document independent stakeholder judgments.
+Consistency | For this construction only: λmax = 5, CI = 0, CR = 0. The previous 5.0799 / 0.0199 / 0.0178 values belong to the old matrix and are not reused.
+Encoding | Retains source ES values 1–4. Replaces the PR scoring table with SI evidence requirements. Synthetic SI numbers do not establish a 4Ps/document scoring rule.
+Normalization | Retains dataset-based Min–Max. Adds a clearly labeled inverse example direction for HI and PA; uses increasing SI, ES, and HM. These directions are assumptions for this demonstration.
+Score scale | Adds the explicit ×100 conversion required by the source’s classification bands. Uses full-precision intermediate values.
+Worked example | Adds three fictional applicants and reproducible contribution tables. No numerical business ranks, approval outcomes, or real beneficiary claims are generated.
+Classification | Retains the source’s four bands; writes interval boundaries to avoid rounding gaps. Their operational validity is not inferred.
+Workflow/context | Clarifies eligibility before scoring and replaces the obsolete member-account sentence with the conversation’s no-member-login workflow. Other technology descriptions remain proposed source context, not verified implementation claims.
+P155: Revision register. Differences and assumptions are disclosed rather than silently adopted.
+P156: Still needed for real scoring: actual approved pairwise judgments or a separately authorized weighting method; an operational SI rubric; household/income and PA scope/period definitions; accepted evidence rules; authorized normalization direction/bounds; and policy for equal-value columns, missing information, adjustments, and classification. The source ES table is retained for the example, not extended to unlisted categories.

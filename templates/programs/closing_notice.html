@@ -1,0 +1,6 @@
+{% if program.registration_notice_starts_at %}
+<p class="program-closing-note" data-public-deadline data-notice-start="{{ program.registration_notice_starts_at|date:'c' }}" data-notice-end="{{ program.registration_closes_at|date:'c' }}" data-notice-now="{{ program.registration_notice_at|date:'c' }}"{% if not program.registration_closing_soon %} hidden{% endif %} role="status">
+    {% include 'public/icon.html' with name='clock' %}
+    <span><strong>Closing soon.</strong> Registration ends <time datetime="{{ program.registration_closes_at|date:'c' }}">{{ program.registration_closes_at|date:'M j, g:i A' }}</time> (PHT).</span>
+</p>
+{% endif %}

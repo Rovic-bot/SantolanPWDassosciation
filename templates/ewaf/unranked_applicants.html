@@ -1,0 +1,9 @@
+<div id="unranked-applicants">
+{% if unranked_applicants %}<section class="ewaf-card ewaf-unranked-card" aria-labelledby="unranked-heading">
+<header class="ewaf-card-header"><h2 id="unranked-heading">{% if result.run %}Not in this ranking{% else %}Applicants{% endif %} <small>{{ unranked_applicants.paginator.count }} applicants</small></h2></header>
+<div class="table-responsive"><table class="table ewaf-ranking-table"><thead><tr><th>Applicant</th><th>Status</th></tr></thead><tbody>
+{% for row in unranked_applicants %}<tr data-applicant="{{ row.application }}"{% if row.panel_selected %} class="is-selected"{% endif %}><th scope="row"><a class="ewaf-applicant-name" data-applicant-open{% if row.panel_selected %} aria-current="true"{% endif %} href="{% querystring review=row.application %}#readiness">{{ row.member_name }}</a><small>{{ row.reference }}</small>{% if row.needs_review %}<span class="ewaf-needs-review" title="{{ row.review_summary }}">{% include 'ewaf/ui_icon.html' with icon='info' %} Needs review</span>{% endif %}</th><td>{{ row.status_label }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% if unranked_applicants.has_other_pages %}<nav class="ewaf-pagination" aria-label="Other applicant pages">{% if unranked_applicants.has_previous %}<a href="{% querystring applicants_page=unranked_applicants.previous_page_number review=None %}#unranked-applicants">Previous</a>{% endif %}<span>Page {{ unranked_applicants.number }} of {{ unranked_applicants.paginator.num_pages }}</span>{% if unranked_applicants.has_next %}<a href="{% querystring applicants_page=unranked_applicants.next_page_number review=None %}#unranked-applicants">Next</a>{% endif %}</nav>{% endif %}
+</section>{% endif %}
+</div>

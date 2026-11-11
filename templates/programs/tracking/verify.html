@@ -1,0 +1,21 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Program Application Tracking · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs{% endblock %}
+{% block content %}
+{% url 'core:programs' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Programs' label='Application status' title='Program Application Tracking' intro='Check the progress of a submitted application. No member account is needed.' icon='search' only %}
+<div class="container content-section resident-columns">
+<section class="resident-panel">
+  <h2>Find your application</h2>
+  <p>Enter the application reference number from your receipt to see its processing status.</p>
+  <form method="post" action="{% url 'programs:tracking' %}" autocomplete="off">
+    {% csrf_token %}{{ form.non_field_errors }}
+    {% for field in form %}{% include 'membership/field.html' %}{% endfor %}
+    <button class="btn btn-primary" type="submit">View application status</button>
+  </form>
+  </section>
+  <aside class="resident-aside"><h2>About this check</h2><p>This page shows limited application progress. It does not show member profiles, documents, or detailed assessments.</p>
+  <p>Use <strong>Finish tracking</strong> when you are done, especially on a shared device. This tracking session expires after a short time.</p>
+  <p>Lost your reference or need help? <a href="{% url 'core:contact' %}">Contact the Association Help Desk</a>. You can also browse <a href="{% url 'core:programs' %}">Programs</a> and <a href="{% url 'core:announcements' %}?category=results">published program results</a>.</p>
+</aside></div>
+{% endblock %}

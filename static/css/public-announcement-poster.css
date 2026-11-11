@@ -1,0 +1,72 @@
+/* Published announcement artwork, with the notice and its existing destination. */
+html body.public-portal dialog.public-event-dialog.announcement-poster-dialog {
+    --notice-surface: var(--surface);
+    --notice-ink: var(--ink);
+    --notice-muted: var(--muted);
+    --notice-edge: var(--line);
+    --notice-control: var(--stone);
+    --notice-action: var(--brand-primary);
+    --notice-on-action: var(--surface);
+    width: min(860px, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    border: 1px solid var(--notice-edge);
+    border-radius: 34px;
+    color: var(--notice-ink);
+    background: var(--notice-surface);
+    box-shadow: 0 26px 80px #27231d44;
+    scrollbar-width: thin;
+}
+.public-portal .announcement-poster-dialog::backdrop { background: #24221e99; backdrop-filter: blur(8px); }
+html body.public-portal .announcement-poster-dialog .event-dialog-heading { position: sticky; top: 0; z-index: 3; height: 0; min-height: 0; padding: 0; border: 0; background: transparent !important; }
+.public-portal .announcement-poster-dialog .event-dialog-heading h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.public-portal .announcement-poster-dialog .event-dialog-heading form { position: absolute; top: 28px; right: 30px; }
+html body.public-portal .announcement-poster-dialog .event-dialog-body { padding: 0; }
+.public-portal .announcement-poster { overflow-wrap: anywhere; background: var(--notice-surface); }
+.public-portal .announcement-poster-hero { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: space-between; gap: 155px; min-height: 364px; padding: 40px 34px 32px; }
+.public-portal .announcement-poster-artwork { position: absolute; inset: 0; z-index: -1; background: linear-gradient(115deg, var(--stone), var(--paper) 75%, var(--surface)); }
+.public-portal .announcement-poster-artwork img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; object-position: center; }
+.public-portal .announcement-poster-artwork img[hidden] { display: none; }
+.public-portal .announcement-poster-artwork::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--notice-surface) 85%, transparent) 0%, color-mix(in srgb, var(--notice-surface) 25%, transparent) 42%, color-mix(in srgb, var(--notice-surface) 90%, transparent) 76%, var(--notice-surface) 100%); }
+.public-portal .announcement-poster-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-right: 60px; margin: 0; text-transform: uppercase; font-weight: 700; }
+.public-portal .announcement-poster-badge { padding: 5px 14px; border: 1px solid var(--notice-edge); border-radius: 99px; background: var(--notice-control); box-shadow: 0 3px 7px #0002; font-size: .75rem; line-height: 1.4; }
+.public-portal .announcement-poster-kind { font-size: .65rem; line-height: 1.5; }
+.public-portal .announcement-poster-bottom { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 26px; }
+.public-portal .announcement-poster-bottom::before { content: ''; position: absolute; z-index: -1; inset: -80px -34px -32px; background: linear-gradient(180deg, transparent, var(--notice-surface) 80px); pointer-events: none; }
+.public-portal .announcement-poster-copy { min-width: 0; }
+.public-portal .announcement-poster-copy:only-child { grid-column: 1 / -1; }
+html body.public-portal .announcement-poster-dialog .announcement-poster-copy h3 { margin: 0 0 7px; font-size: clamp(1.8rem, 3.5vw, 2.625rem); font-weight: 800; line-height: 1.05; letter-spacing: -.045em; }
+.public-portal .announcement-poster-meta { font-size: .8rem; line-height: 1.6; }
+.public-portal .announcement-poster-meta time { font-weight: 700; }
+.public-portal .announcement-poster-dot { padding-inline: 7px; }
+.public-portal .announcement-poster-action { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 50px; max-width: 100%; padding: 13px 24px; border: 1px solid var(--notice-action); border-radius: 14px; background: var(--notice-action); color: var(--notice-on-action); font-size: .875rem; font-weight: 700; line-height: 1.4; text-decoration: none; }
+.public-portal .announcement-poster-action .portal-icon { width: 18px; height: 18px; flex: 0 0 18px; }
+.public-portal .announcement-poster-records { padding: 0 34px 30px; border-top: 1px solid var(--notice-edge); }
+.public-portal .announcement-poster-records .table { --bs-table-bg: transparent; --bs-table-color: var(--notice-ink); --bs-table-border-color: var(--notice-edge); }
+/* These scoped rules take precedence over the shared portal's theme overrides. */
+html:not([data-contrast="true"]) body.public-portal dialog.public-event-dialog.announcement-poster-dialog { background: var(--notice-surface) !important; border-color: var(--notice-edge) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog :is(h3, .announcement-poster-badge) { color: var(--notice-ink) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog :is(.announcement-poster-meta, .announcement-poster-meta time, .announcement-poster-summary, .announcement-poster-kind) { color: var(--notice-muted) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog .announcement-poster-dot { color: var(--notice-muted) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog .event-dialog-heading button { width: 44px; height: 44px; border: 1px solid var(--control-edge) !important; background: var(--notice-control) !important; color: var(--notice-ink) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog .announcement-poster-action { color: var(--notice-on-action) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog .announcement-poster-action :is(span, svg) { color: inherit !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog .announcement-poster-action:hover { background: var(--notice-control); border-color: var(--control-edge); color: var(--notice-ink) !important; }
+html:not([data-contrast="true"]) body.public-portal #main-content .announcement-poster-dialog :is(button, a):focus-visible { outline: 3px solid var(--focus) !important; outline-offset: 3px; }
+html[data-contrast="true"] body.public-portal dialog.announcement-poster-dialog { --notice-surface: #fff; --notice-ink: #111; --notice-muted: #333; --notice-edge: #555; }
+html[data-contrast="true"] body.public-portal .announcement-poster-artwork { background: #fff; }
+html[data-contrast="true"] body.public-portal .announcement-poster-artwork img { visibility: hidden; }
+html[data-contrast="true"] body.public-portal .announcement-poster-artwork::after { background: #fff; }
+html[data-contrast="true"] body.public-portal :is(.announcement-poster-badge, .announcement-poster-action) { background: #fff; border-color: #555; color: #111; }
+@media (max-width: 649px) {
+    html body.public-portal dialog.public-event-dialog.announcement-poster-dialog { width: calc(100% - 24px); border-radius: 26px; }
+    .public-portal .announcement-poster-hero { padding: 26px 22px; gap: 150px; }
+    .public-portal .announcement-poster-dialog .event-dialog-heading form { top: 16px; right: 16px; }
+    .public-portal .announcement-poster-bottom { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .public-portal .announcement-poster-bottom::before { inset: -80px -22px -26px; }
+    .public-portal .announcement-poster-action { justify-self: start; }
+    .public-portal .announcement-poster-records { padding: 0 22px 24px; }
+}
+@media (forced-colors: active) {
+    html body.public-portal dialog.announcement-poster-dialog { --notice-surface: Canvas; --notice-ink: CanvasText; --notice-muted: CanvasText; --notice-edge: CanvasText; }
+    .public-portal .announcement-poster-artwork { display: none; }
+}

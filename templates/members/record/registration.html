@@ -1,0 +1,19 @@
+<section class="member-record-card member-registration-card" id="member-record-registration" data-registration-tabs>
+  <header class="member-registration-heading">
+    <div><h2>{% include 'members/record/icon.html' with name='document' %} Registration information</h2><p>Information submitted during membership registration.</p></div>
+    <span class="member-record-tag">Registration record</span>
+  </header>
+  <div class="member-registration-tabs" role="tablist" aria-label="Registration information categories" hidden>
+    {% for tab in original_registration_tabs %}
+    <button type="button" role="tab" id="registration-{{ member.pk }}-tab-{{ tab.key }}" aria-controls="registration-{{ member.pk }}-panel-{{ tab.key }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-registration-tab="{{ tab.key }}">{% include 'members/record/icon.html' with name=tab.icon %}<span>{{ tab.label }}</span></button>
+    {% endfor %}
+  </div>
+  {% for tab in original_registration_tabs %}
+  <section class="member-registration-panel" id="registration-{{ member.pk }}-panel-{{ tab.key }}" data-registration-panel="{{ tab.key }}" aria-labelledby="registration-{{ member.pk }}-heading-{{ tab.key }}">
+    <h3 id="registration-{{ member.pk }}-heading-{{ tab.key }}" data-registration-heading>{{ tab.label }}</h3>
+    <dl class="member-registration-fields">
+      {% for field in tab.fields %}<div><dt>{{ field.label }}</dt><dd{% if field.missing %} class="member-registration-missing"{% endif %}>{% if field.missing %}{{ field.value|default:'Not provided' }}{% else %}{{ field.value|linebreaksbr }}{% endif %}</dd></div>{% endfor %}
+    </dl>
+  </section>
+  {% endfor %}
+</section>

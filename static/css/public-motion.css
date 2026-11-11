@@ -1,0 +1,63 @@
+/* The public shell stays steady while the section or results change. */
+@view-transition { navigation: auto; }
+
+body.public-portal #main-content { view-transition-name: portal-page; }
+body.public-portal .portal-navigation { view-transition-name: portal-navigation; }
+body.public-portal .accessibility-widget { view-transition-name: portal-accessibility; }
+html[data-public-transition="results"] body.public-portal :is(#main-content, .portal-navigation, .accessibility-widget) { view-transition-name: none; }
+html[data-public-transition="results"] .notice-main { view-transition-name: portal-results; }
+
+::view-transition-old(root) { animation: none; opacity: 0; }
+::view-transition-new(root) { animation: none; }
+::view-transition-group(portal-page),
+::view-transition-group(portal-results) { animation: none; }
+::view-transition-old(portal-page),
+::view-transition-old(portal-results) {
+    animation: public-content-out 220ms ease both;
+}
+::view-transition-new(portal-page),
+::view-transition-new(portal-results) {
+    animation: public-content-in 280ms cubic-bezier(.2, .7, .2, 1) both;
+}
+::view-transition-old(portal-navigation),
+::view-transition-new(portal-navigation),
+::view-transition-old(portal-accessibility),
+::view-transition-new(portal-accessibility) { animation-duration: 220ms; }
+
+@keyframes public-content-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes public-content-out {
+    to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes public-dialog-in {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes public-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html:not([data-motion="reduce"]) .public-portal :is(.public-event-dialog, .home-guidance-dialog)[open] {
+        animation: public-dialog-in 260ms cubic-bezier(.2, .7, .2, 1) both;
+    }
+    html:not([data-motion="reduce"]) .public-portal :is(.public-event-dialog, .home-guidance-dialog)[open]::backdrop {
+        animation: public-backdrop-in 220ms ease both;
+    }
+}
+.public-portal .public-event-dialog .event-dialog-body[aria-busy="true"] {
+    min-height: min(360px, 60dvh);
+}
+
+html[data-motion="reduce"]::view-transition-group(*),
+html[data-motion="reduce"]::view-transition-old(*),
+html[data-motion="reduce"]::view-transition-new(*) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+    @view-transition { navigation: none; }
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) { animation: none !important; }
+}

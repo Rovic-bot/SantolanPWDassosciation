@@ -1,0 +1,3 @@
+<div id="applicant-panels" hidden data-run="{{ result.run.pk }}" data-default-applicant="{{ default_applicant }}">
+{% for panel in applicant_panels %}<template data-applicant-panel="{{ panel.application }}">{% include 'ewaf/applicant_panel.html' with selected_input=panel.input panel_row=panel.row %}</template>{% endfor %}
+</div>

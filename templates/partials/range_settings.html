@@ -1,0 +1,17 @@
+    <div class="builder-range-settings">
+    <div class="builder-range-modes" role="group" aria-label="Choose the schedule to edit">
+      {% if program_ranges %}
+      <button type="button" id="registration-range" data-range="registration" data-accent="blue" aria-pressed="true" aria-controls="schedule-calendar"><span>Registration window</span><small data-range-summary>No dates selected</small></button>
+      <button type="button" id="delivery-range" data-range="delivery" data-accent="violet" aria-pressed="false" aria-controls="schedule-calendar"><span>Program schedule</span><small data-range-summary>Optional</small></button>
+      {% elif annual_observance %}
+      <button type="button" id="observance-range" data-range="observance" data-accent="blue" aria-pressed="true" aria-controls="schedule-calendar"><span>Annual observance</span><small data-range-summary>Current annual rule</small></button>
+      {% else %}
+      <button type="button" id="event-range" data-range="event" data-accent="blue" aria-pressed="true" aria-controls="schedule-calendar"><span>Event schedule</span><small data-range-summary>No dates selected</small></button>
+      {% endif %}
+    </div>
+    <div class="builder-range-endpoints" role="group" aria-label="Choose which date to update">
+      <button type="button" data-endpoint="start" aria-pressed="true"><span>Start date</span><strong data-start-label>Choose date</strong></button>
+      <button type="button" data-endpoint="end" aria-pressed="false"><span>End date</span><strong data-end-label>Choose date</strong></button>
+    </div>
+    <p class="builder-help" id="schedule-instructions" data-selection-help aria-live="polite">Choose a start date, then an end date.</p>
+    </div>

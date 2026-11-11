@@ -1,0 +1,13 @@
+{% if sections %}
+  {% for title, fields in sections %}
+  <section class="onsite-section" id="review-section-{{ forloop.counter }}">
+    <header class="onsite-section-heading"><span class="onsite-section-number">{{ forloop.counter|stringformat:'02d' }}</span><h2>{{ title }}</h2></header>
+    <div class="onsite-fields">{% for field in fields %}{% if not field.is_hidden %}{% include 'membership/onsite/field.html' %}{% endif %}{% endfor %}</div>
+  </section>
+  {% endfor %}
+{% else %}
+  <section class="onsite-section" id="review-section-1">
+    <header class="onsite-section-heading"><span class="onsite-section-number">01</span><h2>Applicant information</h2></header>
+    <div class="onsite-fields">{% for field in form.visible_fields %}{% include 'membership/onsite/field.html' %}{% endfor %}</div>
+  </section>
+{% endif %}

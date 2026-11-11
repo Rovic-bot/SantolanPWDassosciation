@@ -1,0 +1,22 @@
+{% if results.kind == 'program_participation' %}
+<section aria-label="Official program results">{% if not hide_program_heading %}<h2 translate="no">{{ results.program_name }}</h2>{% endif %}<div translate="no">{{ results.description|linebreaks }}</div>
+<dl><dt>Program date</dt><dd>{{ results.program_date }}</dd><dt>Available slots</dt><dd>{% if current_capacity %}{{ current_capacity }}{% else %}{{ results.slots|default_if_none:'No fixed slot limit' }}{% endif %}</dd>{% if results.publication_mode != 'recorded' %}<dt>Eligible applicants</dt><dd>{{ results.eligible_count }}</dd>{% endif %}</dl>
+{% if results.publication_mode == 'recorded' %}<p>Applicant and selection records published by the association.</p>{% else %}<h3 class="h5">Approved selection method</h3>{{ results.selection_method|linebreaks }}<p>{{ results.ewaf_explanation }}</p>{% endif %}
+{% include 'announcements/selection_reason.html' %}
+{% include 'announcements/participation_tables.html' with participation=results %}
+</section>
+{% else %}
+<section aria-label="Official program results">
+{% if not hide_program_heading %}<h2 translate="no">{{ results.program_name }}</h2>{% endif %}<div translate="no">{{ results.description|linebreaks }}</div>
+<dl><dt>Program date</dt><dd>{{ results.program_date }}</dd><dt>Available slots</dt><dd>{% if current_capacity %}{{ current_capacity }}{% else %}{{ results.slots|default_if_none:'No fixed slot limit' }}{% endif %}</dd>{% if results.kind != 'assistance_recipients' %}<dt>Eligible applicants</dt><dd>{{ results.eligible_count }}</dd>{% endif %}</dl>
+<h3 class="h5">How applications were considered</h3><p>{{ results.eligibility_explanation }}</p>
+<h3 class="h5">Approved selection method</h3>{{ results.selection_method|linebreaks }}<p>{{ results.ewaf_explanation }}</p>
+{% include 'announcements/selection_reason.html' %}
+<p>Available slots limit the number selected. The list below shows the authorized outcomes in name order; its order is not a ranking. Private member information and individual scores remain protected.</p>
+<div class="table-responsive" tabindex="0" role="region" aria-label="Selected participants"><table class="table"><caption>{% if results.kind == 'assistance_recipients' %}Confirmed assistance recipients{% else %}Authorized selected participants{% endif %}{% if not results.private_names %} — masked identities{% endif %}</caption><thead><tr><th scope="col">{% if results.private_names %}Full name{% else %}Masked name{% endif %}</th><th scope="col">Reference ending</th><th scope="col">Result</th></tr></thead><tbody>
+{% for row in results.rows %}<tr><td>{{ row.name }}</td><td><span class="text-nowrap">{{ row.reference }}</span>{% if row.ambiguous %}<br><span>Similar entry — please confirm with the Help Desk.</span>{% endif %}</td><td class="text-nowrap">{{ row.status }}</td></tr>{% empty %}<tr><td colspan="3">No entries in this published revision.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if results.private_names %}<p>Full names are visible in Admin. Public results retain masked identities.</p>{% else %}<p>Keep your original Application Reference Number. Masked entries may look alike and are not proof of identity. If an entry is unclear or you need help with your result, contact the Barangay Santolan PWD Association Help Desk privately. Do not post your full reference or personal documents publicly.</p>{% endif %}
+</section>
+
+{% endif %}

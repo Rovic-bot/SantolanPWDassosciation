@@ -1,0 +1,132 @@
+EWAF approval and reranking after assistance delivery — 2026-10-27
+
+Request and diagnosis
+The owner authorized repeat weight edits/approvals followed by Generate EWAF
+Ranking using the latest approved Configuration Vault weights. The retained
+development database already had a valid approved weight version 20.
+
+The blocker was a confirmed release to Ben Testbravo in the HM program. Its
+legitimate COMPLETED status failed the original candidate-only inventory, and
+the new member-level ledger entry made accepted-input source snapshots stale
+in the other programs. The release was delivered and recorded on October 27,
+after the programs' immutable October 11 assessment cutoff. It must remain in
+the ledger without changing the earlier cutoff's three qualifying PA releases.
+The generic UI incorrectly described this as incomplete scoring configuration.
+
+Implemented behavior
+New composite SES calculations retain an explicit
+composite-post-cutoff-fulfillment-v1 source contract. An already calculated
+pool can reuse the exact accepted review when the only differences are later
+confirmed deliveries, supported by native delivery audits and original
+beneficiary approvals. The new snapshot retains both the reviewed source and
+the actual current source, plus receipt/audit/approval witnesses. No stored
+member, application, assessment, decision, receipt or earlier run is edited.
+
+Only releases both delivered after the cutoff date and recorded after the
+cutoff instant qualify for this reconciliation. Backdated/in-period changes,
+voids, altered approval provenance, unexplained application version/status
+changes, altered source information, unresolved fields and changed supporting
+evidence remain blockers. New or unreviewed pools do not inherit acceptance.
+The approved PA scope, history period, coverage finding, formulas and counting
+rules are unchanged. The latest approved AHP weights continue to be captured
+per new ranking; old calculations retain their original weights and scores.
+
+Completed recipients remain in the original normalization/ranking pool. The
+Admin table shows Assistance received and removes selection/review controls
+for that completed benefit; the service also rejects duplicate assistance.
+Results preparation retains a completed recipient's original selected
+decision after reranking. Other decisions still require current-ranking
+review. Publication remains a separate explicit action, with masked names,
+full application references and private scoring/evidence data excluded.
+
+Verification environment
+All write tests ran through scripts/g12_test_runner.py using freshly initialized,
+identity-verified loopback MySQL 8.4.11 instances, isolated database grants and
+private media, disabled project .env loading, model-synchronized disposable
+test schemas, local-memory email and disabled referrals. No working-database
+migration or data preparation was performed. Test fixtures reuse the actual
+12-member registration, program, acceptance, 27-release and ranking services.
+
+Executed tests and outcomes
+108 distinct cases pass across the scoped regression and final targeted runs;
+no skips were reported. The full project suite was not run.
+
+1. Initial delivery regression: 6 cases, 5 passed and one browser failure.
+2. Initial new reranking cases: 3 errors. These exposed old-snapshot shape
+   compatibility and an additional timestamp-order check not present in the
+   native delivery contract. The fix preserves old snapshots and validates
+   native release audits/approval digests without imposing that extra rule.
+3. Corrected reranking plus delivery-publication case: 4 cases, 3 passed and
+   one results-collector error after successful browser reranking. The final
+   participation collector still omitted fulfilled earlier-run decisions;
+   it now includes the already validated completed selections.
+4. Final complete browser/reranking/publication follow-up: 1 passed in 124.476s.
+5. Scoped regression: 105 cases in 622.287s; 104 passed. Its sole failure was
+   an older concurrency assertion expecting the exact phrase "Sources changed"
+   at commit. Retained-run validation now catches that injected approval
+   earlier as "Calculation sources or predecessor changed". The test now
+   accepts either detection fence while retaining all rollback/count checks.
+6. Final concurrency follow-up: 1 passed in 22.530s. This completes all 105
+   regression cases plus the 3 new reranking cases successfully.
+
+Regression modules: ewaf.test_current_ahp, ewaf.test_current_weights,
+ewaf.test_composite_ses, ewaf.test_operational, ewaf.test_delivery,
+ewaf.test_ses_workflow, announcements.test_generation and
+announcements.test_public_results. New cases: ewaf.test_reranking.
+Every run used the verified disposable launcher with
+--testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner --noinput.
+Final Python/JavaScript syntax and git diff --check also passed.
+
+New integration coverage
+The browser journey starts with two retained pre-change calculations and a
+confirmed release to Ben. It edits/approves SES-focused then HM-focused weights
+and generates both programs after each approval. All four rankings contain
+12 members, match the independent exact fixed-weight oracle, retain PA=3 for
+Ben, and retain the actual current ledger count=4 in the private source. Iris
+and Jiro remain tied. Original runs, reviews, decisions and receipts remain
+identical. A second legitimate recipient can receive after reranking and both
+completed selections appear in explicitly generated masked results.
+
+Additional tests reject duplicate delivery/selection, unauthorized access,
+stale generation tokens, audit-write failure, corrupted approval, changed
+historical release dates, late in-period receipts, unexplained completion and
+application version changes, and an actual service-created void. Audit failure
+rolls back the new calculation. Historical replay and publication tests remain
+part of the regression run. Desktop/mobile browser checks passed without
+JavaScript errors. Screenshots are retained in the adjacent evidence folder.
+
+Development handoff and preservation
+The guarded main-development restart loaded the fix at http://127.0.0.1:8012/.
+Read-only Chrome checks confirmed enabled Generate EWAF Ranking in all five
+programs, the protected completed-recipient row, and enabled Vault approval
+without Save weight draft. Only login and unsaved AHP previews were permitted
+POST requests in that harness. No main-database ranking, approval, selection
+or publication was created by this task.
+
+Before/after complete-row SHA-256 digests match for all 13 inspected business
+models: Program 9; ProgramApplication 87; AssistanceLog 142; Member 12;
+AssistanceRelease 28; OperationalConfiguration 10; OperationalRun 10;
+OperationalDecision 12; Announcement 1; ProgramResultRevision 1;
+DatasetInputReview 60; SharedDatasetPolicy 10; VaultRevision 20. Authentication
+sessions and permission-checked access metadata can change during read checks.
+Django system checks passed and makemigrations --check --dry-run found no changes.
+
+Task-relative implementation and test files
+announcements/generation.py
+announcements/participation.py
+ewaf/operational_services.py
+ewaf/operational_views.py
+ewaf/presentation.py
+ewaf/revised/fulfillment.py (new)
+ewaf/revised/live_evidence.py
+ewaf/test_current_weights.py
+ewaf/test_reranking.py (new)
+scripts/ewaf_reranking_browser.cjs (new)
+scripts/ewaf_reranking_readonly.cjs (new)
+templates/ewaf/workspace_results.html
+This report and the adjacent ewaf-reranking-2026-10-27 evidence directory are
+new. source-changes.json records task-relative hashes, preserving all earlier
+unfinished Git changes. The eight Admin groups, Public Portal and accepted
+70% development milestone remain unchanged. No commit, push, merge, deployment,
+real scoring activation, real member modification or public demo publication
+was performed.

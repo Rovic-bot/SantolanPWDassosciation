@@ -1,0 +1,30 @@
+/* Shared public palette for private conversation pages and fetched dialogs. */
+body.public-portal { --chat-surface: #f4f2ec; --chat-member: #e8e5df; --chat-staff: #e8efeb; --chat-ink: #1c1a18; --chat-muted: #615d56; --chat-line: #b5aea2; }
+html[data-public-theme=dark] body.public-portal { --chat-surface: #242220; --chat-member: #35322e; --chat-staff: #223b34; --chat-ink: #f4f2ec; --chat-muted: #d0c9bc; --chat-line: #8d867b; }
+html[data-contrast=true] body.public-portal { --chat-surface: #fff; --chat-member: #fff; --chat-staff: #fff; --chat-ink: #111; --chat-muted: #111; --chat-line: #111; }
+.concern-flow-options { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.4rem; }
+.concern-flow-options a { padding: .6rem .9rem; border: 1px solid var(--chat-line); border-radius: 2rem; color: var(--chat-ink); }
+.concern-flow-options a[aria-current=page] { background: var(--chat-member); font-weight: 700; text-decoration: none; }
+.concern-private-reference { padding: .9rem; border: 1px solid var(--chat-line); border-radius: .7rem; background: var(--chat-member); color: var(--chat-ink); overflow-wrap: anywhere; user-select: all; font-family: ui-monospace, monospace; }
+.concern-conversation-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding-bottom: 1rem; border-bottom: 1px solid var(--chat-line); }
+.concern-conversation-heading > div { min-width: 0; overflow-wrap: anywhere; }
+.concern-conversation-heading h2 { margin: 0 0 .5rem; }
+.concern-conversation-heading p { margin: 0; }
+.concern-conversation-status { padding: .3rem .7rem; border: 1px solid var(--chat-line); border-radius: 2rem; white-space: nowrap; color: var(--chat-ink); background: var(--chat-staff); font-size: .8rem; }
+.concern-chat-messages { display: flex; flex-direction: column; gap: 1rem; max-height: 430px; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem .25rem; }
+.concern-chat-message { max-width: 90%; border: 1px solid var(--chat-line); border-radius: 1rem; padding: .85rem 1rem; color: var(--chat-ink); overflow-wrap: anywhere; }
+.concern-chat-message--member { background: var(--chat-member); align-self: flex-end; }
+.concern-chat-message--staff { background: var(--chat-staff); align-self: flex-start; }
+.concern-chat-message header { display: flex; flex-wrap: wrap; gap: .25rem .85rem; align-items: baseline; margin-bottom: .5rem; }
+.concern-chat-message time { font-size: .75rem; color: var(--chat-muted); }
+body.public-portal .concern-chat-message p { white-space: pre-wrap; margin: 0; color: var(--chat-ink); }
+.concern-chat-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.concern-reference-details { border-top: 1px solid var(--chat-line); padding-top: 1rem; }
+.concern-reference-details summary { cursor: pointer; }
+.concern-finish { margin-top: 1rem; }
+[data-referral-conversation] [hidden] { display: none !important; }
+@media (max-width: 575px) {
+  .concern-conversation-heading { flex-direction: column; gap: .7rem; }
+  .concern-chat-message { max-width: 97%; }
+  .concern-chat-messages { max-height: 360px; }
+}

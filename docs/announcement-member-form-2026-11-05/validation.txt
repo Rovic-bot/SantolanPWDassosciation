@@ -1,0 +1,68 @@
+Announcements, full member record, and program application cleanup
+5 November 2026
+
+Owner-requested changes
+
+Announcement creation now uses an accessible plus link on the right of the
+filter box, on both the program-results chooser and notices list. The prior
+standalone Create announcement link was removed. The plus keeps its accessible
+name, keyboard behavior, existing creation route and add-announcement permission.
+Automatic filters remain GET forms; the creation link is outside those forms.
+
+The full member record no longer links to a separate Original membership
+application page. Its inline section is titled Registration information. This
+preserves the earlier explicit request to show the complete registration data
+inside the member record. The source intake, protected history, approval routes,
+registration printing and access controls were not deleted.
+
+Confirmed program applications no longer collect a contact number, including
+through a hidden field. The audited submission service rebuilds the form with
+the locked verified member and saves the directory contact in its private
+confirmation snapshot, marked contact_source=member_record. Public overrides
+are ignored. Later member edits do not rewrite earlier application snapshots.
+The copied number is not exposed on the public form or presented as an
+applicant-supplied declaration in the new application review. Older submitted
+contact declarations retain their original display and data.
+
+Removed the requested screening, explanatory, Help Desk, document-reuse,
+upload-guidance and upload-limit paragraphs. Application details, program-specific
+instructions, configured requirements and the remaining inputs are retained.
+Actual file validation, limits, CSRF, verification/disability gates, current
+information reporting and file retention on validation errors still apply.
+
+Validation
+
+75 tests passed, process exit 0, using disposable native MySQL via:
+  scripts/g12_test_runner.py test
+  programs.test_application_workflow programs.test_application_retry
+  programs.test_direct_review programs.test_configured_application
+  programs.test_information_update members.test_original_registration
+  members.test_record_layout announcements.test_catalog
+  scripts.program_application_browser_qa
+  --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  --noinput --verbosity 1
+
+The tests verify saved directory contact provenance, ignored forged contact
+overrides, unchanged historical snapshots, private rendering, membership and
+eligibility gates, permissions, audit rollback, program requirements, and retries.
+Chrome checks also verify real CSRF rotation, unchanged selected files through
+client/server/network errors, successful submission without contact input,
+registration information inside the full member record with no separate original
+application link, and plus-link keyboard navigation. Both announcement layouts
+passed right-of-filter positioning, touch-target and horizontal-overflow checks
+at 1440px and 390px in light and dark themes.
+
+Screenshot and result artifacts here contain synthetic test data only. The
+application-validation screenshot deliberately shows a validation error while
+the selected upload remains attached. Source artifacts are in the temporary
+santolan-g12-tests-54bdbqhy directory.
+
+Django/database check, migration drift check, JS syntax check and git diff --check
+passed. No model changes or migrations were needed. Collected the new stylesheet,
+refreshed the identified local web server at http://127.0.0.1:8013/, checked its
+health and verified the served stylesheet matches the current source.
+
+Before copies: .local/announcement-member-form-20261105/before/.
+Existing unfinished changes, retained data, private uploads and earlier authorized
+work were preserved. No real application, email, external publication, commit or
+push was performed.

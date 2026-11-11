@@ -1,0 +1,145 @@
+/* Public display controls and selected-text reading. Loaded after page styles. */
+body.public-portal .accessibility-widget .display-panel {
+    width: min(360px, calc(100vw - 48px));
+    padding: 24px;
+    border: 1px solid #9c9589;
+    border-radius: 24px;
+    background: #f4f2ec;
+    color: #1c1a18;
+    box-shadow: 0 12px 40px #1c1a1833;
+}
+body.public-portal .accessibility-widget .display-heading { align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+body.public-portal .accessibility-widget .display-heading h2 { margin: 0; font: 700 1.35rem/1.25 Arial, sans-serif !important; color: #1c1a18 !important; }
+body.public-portal .accessibility-widget .display-close {
+    display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px;
+    min-height: 44px; margin: -8px -8px 0 0; padding: 0; border: 1px solid #c5c0b8;
+    border-radius: 50%; background: transparent; color: #1c1a18; line-height: 1;
+}
+body.public-portal .accessibility-widget .display-panel p { color: #514d46; font-size: .875rem; line-height: 1.55; }
+body.public-portal .accessibility-widget .display-panel label { color: #1c1a18; font-size: .9rem; font-weight: 600; }
+body.public-portal .accessibility-widget .display-panel select { min-height: 44px; border: 1px solid #8b857b; border-radius: 12px; background: #fff; color: #1c1a18; }
+body.public-portal .accessibility-widget .display-option { min-height: 56px; border-color: #c5c0b8; }
+body.public-portal .accessibility-widget .display-option input { flex: 0 0 22px; accent-color: #2a2826; }
+body.public-portal .accessibility-widget .display-reset { min-height: 44px; padding: 8px 16px; border: 1px solid #9c9589; border-radius: 99px; background: transparent; color: #1c1a18; font-size: .875rem; font-weight: 600; text-decoration: none; }
+body.public-portal .accessibility-widget .display-language { min-height: 44px; margin: 8px 0 0 6px; padding: 8px 16px; border: 1px solid #9c9589; border-radius: 99px; background: #2a2826; color: #fff; font-size: .875rem; font-weight: 600; }
+body.public-portal .accessibility-widget .display-language[aria-pressed="true"] { background: #e1ddd5; color: #1c1a18; }
+body.public-portal .accessibility-widget .display-language[hidden] { display: none; }
+body.public-portal .accessibility-widget :is(.display-close, .display-reset):hover { background: #e1ddd5; color: #1c1a18; }
+body.public-portal .accessibility-widget .display-selection-hint { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid #c5c0b8; }
+body.public-portal .accessibility-widget :is(button, select, input):focus-visible { outline: 2px solid #1c1a18 !important; outline-offset: 3px; }
+body.public-portal .selection-reader {
+    position: fixed; z-index: 1100; display: flex; align-items: center; gap: 2px;
+    max-width: calc(100vw - 20px); padding: 4px; border: 1px solid #f4f2ec;
+    border-radius: 16px; background: #2a2826; color: #fff; box-shadow: 0 6px 22px #0004;
+}
+body.public-portal .selection-reader[hidden] { display: none; }
+body.public-portal .selection-reader button {
+    display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+    min-height: 44px; padding: 8px 12px; border: 0; border-radius: 11px;
+    background: transparent; color: #fff; font: 600 .875rem/1.4 Arial, sans-serif; touch-action: manipulation;
+}
+body.public-portal .selection-reader .selection-reader-close { flex: 0 0 44px; width: 44px; padding: 0; font-size: 1.5rem; border-left: 1px solid #fff5; }
+body.public-portal .selection-reader svg { flex: 0 0 20px; }
+body.public-portal .selection-reader button:hover { background: #48443e; color: #fff; }
+body.public-portal .selection-reader button:focus-visible { outline: 2px solid #fff !important; outline-offset: -3px; }
+body.public-portal ::selection { background: #2a2826; color: #fff; }
+
+/* One coherent high-contrast palette replaces the overlapping legacy themes. */
+html[data-contrast="true"] body.public-portal #main-content :is(.pdao-reference-card,.pdao-confirmation,.pdao-next,.pdao-copy-preview) { background: #fff !important; color: #111 !important; border: 1px solid #555; }
+html[data-contrast="true"] body.public-portal #main-content :is(.pdao-step-number,.pdao-received-label) { background: #eee !important; color: #111 !important; }
+html[data-contrast="true"] body.public-portal #main-content .pdao-reference-card :is(.pdao-reference-number,dd,.pdao-reference-caption,.pdao-reference-note,dt) { color: #111 !important; }
+@media screen {
+    html[data-contrast="true"] body.public-portal .skip-link { background: #fff !important; color: #111 !important; border: 2px solid #111; }
+    html[data-contrast="true"] body.public-portal {
+        --ink: #111; --ink-soft: #111; --muted: #333; --ink-deep: #111;
+        --paper: #fff; --surface: #fff; --stone: #eee; --line: #555; --edge: #555;
+        --teal: #111; --teal-hover: #000; --brand-primary: #111; --brand-navy: #111;
+        --brand-royal: #111; --control-edge: #555; --accent: #111; --focus: #111;
+        --portal-card: #fff; --portal-border: #555; --portal-shadow: none;
+        --glass: #fff; --tint: #eee; --rim: #555;
+        background: #fff !important; color: #111 !important;
+    }
+    html[data-contrast="true"] body.public-portal :is(#main-content, .bento-footer, .portal-navigation, .display-panel, .display-trigger, dialog) {
+        background-color: #fff !important; color: #111 !important;
+        border-color: #555 !important; box-shadow: none !important; backdrop-filter: none !important;
+    }
+    html[data-contrast="true"] body.public-portal :is(#main-content, .bento-footer, .portal-navigation, dialog) :where(h1, h2, h3, h4, p, li, dt, dd, label, legend, summary, strong, em, small, span, a, figcaption) {
+        color: #111 !important; text-shadow: none !important;
+    }
+    html[data-contrast="true"] body.public-portal #main-content :is(
+        .section-hero, .page-hero, .home-service-facts, .home-featured-event,
+        .bento-program-requirements, .catalog-card, .catalog-guide, .catalog-empty,
+        .portal-supplies, .portal-event-card, .portal-help-layout, .portal-help-options article,
+        .public-swipe-card, .about-background-source, .portal-note, .portal-help-banner, .portal-side-help,
+        .program-detail-overview, .program-detail-steps, .program-detail-schedule, .program-detail-help,
+        .notice-row, .notice-results-callout, .portal-result-row, .bulletin-topics,
+        .portal-filter-bar, .catalog-toolbar, .portal-disclosure, .portal-service-selector a,
+        .resident-panel, .resident-aside, .resident-form-rail, .record-section,
+        .portal-membership-layout > div, .make-resource-layout > div, .section-about-reading > div
+    ) {
+        background: #fff !important; border-color: #555 !important; box-shadow: none !important; backdrop-filter: none !important;
+    }
+    html[data-contrast="true"] body.public-portal #main-content :is(.eyebrow, .quiet-badge, .section-overline, .catalog-category, .catalog-step-number) { background: #eee !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .section-banner-shade { background: #ffffffed !important; }
+    html[data-contrast="true"] body.public-portal #main-content .section-banner-copy { color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .home-landing::after { background: linear-gradient(90deg, #fff 0%, #fffffff5 55%, #ffffff99 100%) !important; }
+    html[data-contrast="true"] body.public-portal #main-content .home-service-facts { border: 1px solid #555; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.catalog-photo-fallback, .event-card-initials, .home-event-initials) { color: #111 !important; background: #eee !important; }
+    html[data-contrast="true"] body.public-portal #main-content .public-program-artwork { background: #eee !important; }
+    html[data-contrast="true"] body.public-portal #main-content .notice-copy::before { background: none !important; }
+    html[data-contrast="true"] body.public-portal dialog :is(.page-hero,.resident-panel,.resident-aside) { background: #fff !important; color: #111 !important; }
+
+    /* Dark support panels retain white text; reading cards stay white. */
+    html[data-contrast="true"] body.public-portal #main-content :is(.home-help-card, .make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist, .public-stack-panel):is(section, article, aside, div, details) { background: #111 !important; color: #fff !important; border-color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.home-help-card, .make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist) :where(h2, h3, p, li, dt, dd, label, strong, small, span, a, figcaption) { color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .make-about-split .make-split-copy { background: transparent !important; }
+    html[data-contrast="true"] body.public-portal #main-content .public-stack-panel :is(.public-stack-heading, .public-stack-heading-link, .public-stack-hint, .public-faq-intro, .public-faq-summary, .public-faq-summary h2, .public-faq-summary span) { color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.public-stack-panel, .make-about-split) .eyebrow { background: #fff !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .public-stack-panel .public-faq-summary span.eyebrow { color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .schedule-date { background: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .schedule-date :is(span, strong) { color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.program-slot-count, .program-help-icon) { background: #eee !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content .program-step-number { background: #111 !important; color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .notice-topic-links a[aria-current] { background: #111 !important; color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .notice-topic-links a[aria-current] span { color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .public-stack-controls button { background: transparent !important; color: #fff !important; border-color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .public-stack-controls button:focus-visible { outline-color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .program-detail-eligibility .program-eligibility-list li { border-color: #aaa !important; background: #222 !important; }
+
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog, .display-panel) :is(input:not([type=checkbox]):not([type=radio]), textarea, select) { background: #fff !important; color: #111 !important; border-color: #555 !important; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog, .display-panel) :is(input, textarea)::placeholder { color: #444 !important; opacity: 1; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog, .display-panel) :is(input[type=checkbox], input[type=radio]) { accent-color: #111; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog) :is(.btn, .catalog-tab, .catalog-pagination a, .public-swipe-arrows button) { background: #fff !important; border-color: #111 !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog) :is(.btn, .catalog-tab, .catalog-pagination a) :is(span, strong) { color: inherit !important; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, dialog) :is(.btn-primary, .catalog-tab[aria-current], .catalog-pagination a[aria-current], .btn:hover, .btn:focus-visible, .public-swipe-arrows button:hover) { background: #111 !important; color: #fff !important; border-color: #111 !important; }
+    html[data-contrast="true"] body.public-portal :is(.portal-navigation, #public-header) a { color: #111 !important; }
+    html[data-contrast="true"] body.public-portal :is(.portal-navigation, #public-header) a:is([aria-current], :hover) { background: #111 !important; color: #fff !important; }
+    html[data-contrast="true"] body.public-portal :is(.portal-navigation, #public-header) a:is([aria-current], :hover) span { color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content .home-support-card > a:is(:hover, :focus-visible) { background: #fff !important; color: #111 !important; border-color: #fff !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist) .btn:is(a, button) { background: #fff !important; border-color: #fff !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist) .btn:is(:hover, :focus-visible) { background: #eee !important; color: #111 !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist) .btn :is(span, strong) { color: inherit !important; }
+    html[data-contrast="true"] body.public-portal #main-content .portal-icon { color: inherit !important; }
+    html[data-contrast="true"] body.public-portal #main-content :is(.make-about-split, .make-resource-aside, .forms-resource, .program-detail-eligibility, .portal-checklist) :focus-visible { outline-color: #fff !important; }
+    html[data-contrast="true"] body.public-portal :is(#main-content, .bento-footer, dialog) a:not(.btn):not([class*="arrow"]):not([aria-current]) { text-decoration-thickness: 2px; text-underline-offset: .18em; }
+    html[data-contrast="true"] body.public-portal :focus-visible { outline: 3px solid #111 !important; outline-offset: 3px; }
+    html[data-contrast="true"] body.public-portal :is(a, button, input, select, textarea) { transition: none !important; }
+    html[data-contrast="true"] body.public-portal .accessibility-widget :is(.display-panel, .display-trigger) { background: #fff !important; color: #111 !important; border-color: #111 !important; }
+    html[data-contrast="true"] body.public-portal .accessibility-widget .display-panel :is(h2, p, label, span, button) { color: #111 !important; }
+    html[data-contrast="true"] body.public-portal .accessibility-widget .display-panel button { background: #fff !important; border-color: #555 !important; }
+    html[data-contrast="true"] body.public-portal .accessibility-widget .display-panel button:hover { background: #eee !important; }
+    html[data-contrast="true"] body.public-portal .selection-reader { background: #111; border: 2px solid #fff; outline: 1px solid #111; box-shadow: none; }
+    html[data-contrast="true"] body.public-portal .selection-reader :focus-visible { outline-color: #fff !important; }
+    html[data-contrast="true"] body.public-portal ::selection { background: #111; color: #fff; }
+}
+@media (max-width: 575px) {
+    body.public-portal .accessibility-widget { right: 12px !important; }
+    body.public-portal .accessibility-widget .display-panel { padding: 20px; max-height: calc(100dvh - 180px); }
+}
+@media (forced-colors: active) {
+    body.public-portal .selection-reader { border-color: ButtonText; background: Canvas; color: CanvasText; }
+    body.public-portal .selection-reader button { background: ButtonFace; color: ButtonText; }
+}
+@media print {
+    body.public-portal .selection-reader, body.public-portal .accessibility-widget { display: none !important; }
+}

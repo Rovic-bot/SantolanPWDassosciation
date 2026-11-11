@@ -1,0 +1,73 @@
+Onsite PRPWD lookup and manual decision — November 5, 2026
+
+Owner authorization
+The owner requested that onsite registration open PRPWD using the applicant's
+PWD number, then record PRPWD from the admin's Approve/Not approved decision.
+The owner subsequently confirmed that the external PRPWD page is currently down.
+This changes the prior current-profile flow that approved Association membership
+without recording a PRPWD finding. Historical records are not reinterpreted.
+
+Implemented
+- Save and open PRPWD opens a separate tab and copies the submitted PWD number.
+  A blocked popup leaves the lookup marker empty; the review page offers a retry.
+- The pending review has Open PRPWD and copy PWD No., Approve membership,
+  Not approved and Leave pending. A changed PWD number requires another lookup.
+- An authenticated admin's explicit decision on the current PWD-number form
+  records the manual result, reviewer, timestamp, configured URL and note, plus
+  separate verification and membership-decision audits in one transaction.
+- Both verification and membership-decision permissions are enforced server-side.
+  Lookup markers only associate the opened lookup with the reviewed number;
+  they are not claims that the government site loaded or returned a result.
+- Merely saving registration/opening the link creates no Member or verification.
+  Existing references, original declarations, private attachments, idempotent
+  retries, stale versions, duplicate-ID protection and source/audit boundaries
+  remain covered. Earlier profile contracts and decisions remain retained.
+- No earlier member was automatically marked verified. Existing membership
+  records were compared unchanged when the link setting was updated.
+
+External dependency and exact limitation
+The retained setting was https://registry.example.test/manual. Replaced through
+the existing admin model/form and reference transaction, with an admin change
+log and private before-value backup, by:
+https://pwd.doh.gov.ph/tbl_pwd_id_verificationlist.php
+
+The URL is published in Pasig City's PDAO Citizen's Charter:
+https://assets.pasigcity.gov.ph/storage/attachments/person_with_disability_affairs_office/686b67e4b86c11751869412Citizen_s%20Charter%20English.pdf
+DOH guidance also names the registry and ID Verification tab:
+https://caro.doh.gov.ph/mahalagang-paalala-para-sa-mga-pwd-id-holders/
+
+This computer could not resolve pwd.doh.gov.ph; web retrieval also failed.
+No search-parameter/API contract could be verified. Automatic external search
+is therefore NOT implemented or claimed. The fallback opens the official page
+and copies the number for manual paste/search when available. No invented query
+parameters, proxy, scraping, simulated result, automatic rejection or automatic
+verification was added. No applicant number was submitted to an external site
+during development. The popup suppresses opener access and referrer disclosure.
+
+Validation
+34 tests passed in fresh disposable native MySQL:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test membership.test_prpwd_registration membership.test_registration_decisions membership.test_onsite_registration_alignment --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+Log: %TEMP%/santolan-g12-tests-aty3g1sj/django.log
+
+Node behavior checks passed for copied-number preservation, popup blocking,
+opener/referrer isolation, unchanged external URL (no PII query), decision-button
+gating and clearing the lookup marker after a number change:
+node scripts/prpwd_review_dom_test.cjs
+
+JavaScript syntax checks, Django check --database default, migration dry-run
+(no changes) and git diff --check passed. No schema migration or external
+deployment ran. The recognized local web server was refreshed and is healthy.
+
+Owner-confirmed historical correction
+The owner subsequently identified one approved member and explicitly confirmed
+that the person had previously been checked in PRPWD and approved. That member's
+missing verification was recorded in a scoped, locked transaction, with the
+current recording time and notes distinguishing it from the unknown original
+check time. No fresh external lookup was claimed. A private before-value backup
+was retained. Membership and member audit entries were appended; the original
+approval, all prior audit rows and program applications were compared unchanged.
+The preflight confirmed no operational runs or accepted dataset/registered-input
+reviews in the member's related programs. Other members were untouched. A
+read-only render of the member record returned HTTP 200 and displayed
+"PRPWD: manually verified". No standing business-rule guard was weakened and
+no general retroactive verification or automatic backfill was introduced.

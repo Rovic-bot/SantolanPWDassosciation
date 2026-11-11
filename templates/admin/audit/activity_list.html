@@ -1,0 +1,49 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block responsive %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin-activity.css' %}?v=20261110-notes"><script src="{% static 'js/admin-activity.js' %}?v=20261110-notes" defer></script>{% endblock %}
+{% block bodyclass %}{{ block.super }} administration-activity-page{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content %}
+<form method="get" data-auto-filter id="activity-filters" class="activity-layout">
+  <div class="activity-workspace">
+    <header class="activity-page-heading"><h1>Administration changes</h1><p>Track recorded changes, decisions, and updates made by administrators.</p></header>
+    <section class="activity-metrics" aria-label="Activity summary">
+      {% for metric in metrics %}<article class="activity-metric" data-kind="{{ metric.kind }}"><div><h2>{{ metric.label }}</h2><strong>{{ metric.display_value }}</strong><p>{{ metric.hint }}</p></div><span class="activity-metric-icon">{% include 'admin/audit/activity_icon.html' with icon=metric.icon %}</span></article>{% endfor %}
+    </section>
+    <div class="activity-toolbar">
+      <nav class="activity-tabs" aria-label="Activity categories">{% for tab in tabs %}<a href="{{ tab.url }}"{% if tab.active %} aria-current="page"{% endif %}>{{ tab.label }}</a>{% endfor %}</nav>
+      <div class="activity-tools"><div class="activity-search"><label class="visually-hidden" for="{{ form.q.id_for_label }}">Search activity</label>{% include 'admin/audit/activity_icon.html' with icon='search' %}{{ form.q }}{{ form.q.errors }}</div><button type="button" class="activity-filter-toggle" data-activity-filter-toggle aria-controls="activity-filter-panel" aria-expanded="true" hidden>{% include 'admin/audit/activity_icon.html' with icon='filter' %}Filters{% if active_filter_count %}<span>{{ active_filter_count }}</span>{% endif %}</button></div>
+    </div>
+    <section class="activity-feed" aria-labelledby="activity-heading">
+      <header class="activity-heading"><h2 id="activity-heading"><span class="activity-stream-dot" aria-hidden="true"></span>Activity stream</h2><p>Showing <strong>{{ page.start_index }}–{{ page.end_index }}</strong> of {{ page.paginator.count }} entries</p></header>
+      <ol class="activity-list">
+      {% for entry in page %}<li class="activity-entry" data-activity="{{ entry.activity_label }}" data-kind="{{ entry.activity_kind }}">
+        <span class="activity-entry-icon">{% include 'admin/audit/activity_icon.html' with icon=entry.icon %}</span>
+        <div class="activity-main"><div class="activity-title-line"><h3>{{ entry.activity_label }}</h3><span class="activity-badge">{{ entry.kind_label }}</span><span class="activity-log-id" title="{{ entry.activity_source }} #{{ entry.activity_id }}">#{{ entry.activity_source }}-{{ entry.activity_id|slice:'-8:' }}</span></div><p class="activity-record">{{ entry.activity_record|default:'Record not available' }}</p><p class="activity-by"><span class="activity-avatar" aria-hidden="true">{{ entry.activity_actor|slice:':1'|upper }}</span><span class="activity-admin">{{ entry.activity_actor }}</span><span aria-hidden="true">·</span><span class="activity-section">{{ entry.area_label }}</span></p></div>
+        <time class="activity-time" datetime="{{ entry.activity_time|date:'c' }}"><strong>{{ entry.activity_time|date:'M j, Y' }}</strong><span>{{ entry.activity_time|date:'g:i A' }} PHT</span></time>
+        <a class="activity-detail-link" href="{{ entry.detail_url }}" data-activity-inspect>Inspect<span class="visually-hidden">: {{ entry.activity_label }} — {{ entry.activity_record }}</span></a>
+      </li>{% empty %}<li class="activity-empty">{% include 'admin/audit/activity_icon.html' with icon='search' %}<h3>No matching activity</h3><p>Try another search, action, administrator, or date range.</p><a href="{{ request.path }}">Clear all filters</a></li>{% endfor %}
+      </ol>
+      <footer class="activity-pagination"><p>Page <strong>{{ page.number }}</strong> of {{ page.paginator.num_pages }}</p><nav aria-label="Activity pages">{% if previous_url %}<a href="{{ previous_url }}" rel="prev">Previous</a>{% else %}<span aria-disabled="true">Previous</span>{% endif %}{% if next_url %}<a href="{{ next_url }}" rel="next">Next</a>{% else %}<span aria-disabled="true">Next</span>{% endif %}</nav></footer>
+    </section>
+  </div>
+  <aside class="activity-filter-panel" id="activity-filter-panel" aria-labelledby="activity-filter-heading">
+    <header class="activity-heading"><h2 id="activity-filter-heading">{% include 'admin/audit/activity_icon.html' with icon='filter' %}Filter audit trail</h2><a href="{{ request.path }}">Reset</a></header>
+    {{ form.non_field_errors }}
+    <div class="activity-filter-field"><label for="{{ form.period.id_for_label }}">Time range</label>{{ form.period }}{{ form.period.errors }}</div>
+    <div class="activity-date-fields" data-activity-dates>{% for field in form %}{% if field.name == 'date_from' or field.name == 'date_to' %}<div class="activity-filter-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endif %}{% endfor %}</div>
+    <div class="activity-filter-field"><label for="{{ form.area.id_for_label }}">System section</label>{{ form.area }}{{ form.area.errors }}</div>
+    <fieldset class="activity-kind-filter"><legend>Action type</legend><div>{% for choice in form.kind %}<label>{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>{{ form.kind.errors }}</fieldset>
+    <div class="activity-filter-field"><label for="{{ form.activity.id_for_label }}">Specific action</label>{{ form.activity }}{{ form.activity.errors }}</div>
+    <div class="activity-filter-field"><label for="{{ form.actor.id_for_label }}">Administrator account</label>{{ form.actor }}{{ form.actor.errors }}</div>
+    <button type="submit" class="button default">Apply filters</button>
+    <p class="activity-filter-note">Only activity you have permission to view is shown. Times use Philippine time.</p>
+  </aside>
+</form>
+<dialog class="activity-inspect" data-activity-dialog aria-labelledby="activity-inspect-heading">
+  <header class="activity-inspect-heading"><h2 id="activity-inspect-heading">Inspect activity</h2><button type="button" data-activity-close aria-label="Close activity details">{% include 'admin/audit/activity_icon.html' with icon='close' %}</button></header>
+  <div class="activity-inspect-body" data-activity-body aria-live="polite"></div>
+  <div class="activity-inspect-error" data-activity-error hidden><h3>Activity details could not be loaded</h3><p>Try again, or open the details page.</p><button type="button" data-activity-retry>Try again</button><a href="{% url 'admin:admin_logentry_changelist' %}" data-activity-fallback>Open details page</a></div>
+  <footer class="activity-inspect-footer">{% include 'admin/audit/activity_icon.html' with icon='lock' %}Read-only audit record</footer>
+</dialog>
+{% endblock %}

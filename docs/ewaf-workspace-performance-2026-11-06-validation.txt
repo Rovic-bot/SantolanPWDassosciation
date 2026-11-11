@@ -1,0 +1,86 @@
+EWAF tab and applicant switching performance - 2026-11-06
+
+Owner request
+Speed up the EWAF tab and switching an applicant on the left to show inputs on
+the right.
+
+Measured cause
+Every row click fetched and rendered the entire workspace. A 12-applicant page
+performed three complete inventory inspections (preview, generation readiness,
+saved-ranking freshness), with repeated source/evidence reads. Policy validation
+also rebuilt the same choice definitions for every individual choice.
+
+Implemented
+- Pre-render applicant panels for only the displayed ranked/unranked pages and
+  the explicitly selected applicant. Inert HTML templates hold these cards in
+  this private page's memory. Clicking a loaded row switches the panel, highlight,
+  accessible selection state and URL locally, without a network request.
+- Different rankings, filter results and unloaded applicants still use the
+  permission-checked server route. Superseded requests are aborted and their
+  responses cannot replace a newer local selection. No localStorage, browser
+  database, cross-user cache or persisted applicant-data cache was added.
+- GET workspace and program-preview requests reuse matching inventories within
+  one existing terms-lock transaction. The request-local cache distinguishes
+  program/application/member versions, configuration digest, assessment cutoff,
+  evaluation date and timezone. Each caller gets an independent deep copy.
+  The cache is discarded even on error. POST generation/selection and all
+  callers outside these GET scopes continue to execute fresh inspections.
+- Authority, source observation, evidence checks, retained-run validation and
+  decision services remain in place. Rendering additional cards does not select
+  anyone. A stale form is still rejected by the server after records change.
+- Reuse the constructed policy-choice definitions inside each validation/catalog
+  loop. This removes repeated copies without changing choices or findings.
+
+Profile comparison
+Read-only RequestFactory requests, cProfile and CaptureQueriesContext, retained
+local native MySQL. Profiling adds overhead; these are local comparison figures,
+not end-to-end network guarantees. No INSERT/UPDATE/DELETE occurred in the probes.
+
+Case                       Before seconds/queries   After seconds/queries
+12-applicant stale page          4.714 / 2138             2.644 / 926
+Explicit applicant GET          4.585 / 2136             2.130 / 924
+Current 3-applicant page         2.425 / 706              1.292 / 462
+EWAF program listing            1.633 / 276              1.048 / 276
+
+Normal clicks between loaded applicants no longer issue the explicit GET at all.
+The 12-applicant document increased from about 41 KB to 89 KB because the cards
+are included once. Preloading is bounded to visible pages, not the whole pool.
+Profile files (function timings and numeric summaries only):
+  C:/Users/rovic/AppData/Local/Temp/santolan-ewaf-perf-6pgozys1/
+
+Verification
+39 workflow/regression tests passed (105.640 s):
+  ewaf.test_applicant_panel.ApplicantPanelTests
+  ewaf.test_workspace_read_cache.WorkspaceReadCacheTests
+  ewaf.test_ranking_freshness.RankingFreshnessTests
+  ewaf.test_retired_screens.RetiredScreensTests
+  ewaf.test_input_presentation
+  ewaf.test_selection_workspace
+Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-zipd9jdg/django.log
+
+After the policy-definition optimization, 4 focused tests passed (4.594 s):
+  ewaf.test_workspace_read_cache.PolicyDefinitionReuseTests
+  AutomaticMemberInputsTests.test_policy_requires_explicit_mapping_and_current_record_periods
+  CompositeSesWorkflowTests.test_explicit_policy_approval_controls_internal_coefficients_and_procedures
+  DatasetPolicyTests.test_incomplete_policy_blocks_binding_and_scoring_but_approved_weights_allow_publication
+Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-cy294cn_/django.log
+
+Both suites used scripts/g12_test_runner.py and the registration-intake runner
+with separate disposable native MySQL databases, never the application database.
+Coverage includes cache isolation and reset, distinct periods, immutable retained
+scores, fresh POST validation after a member change, permission enforcement,
+correct panel/application/form pairing, excluded/unranked applicants and filters.
+
+node scripts/ewaf_applicant_switch_dom_test.cjs passed: 100 synthetic switches in
+11.91 ms with zero fetches, matching inputs/highlights/history, blank-row clicks,
+modifier keys, no cross-ranking card reuse, late-response cancellation and
+protected fallback. This is a synthetic DOM timing, not a browser timing claim.
+
+Native Brave checks confirmed switching among Gia, Luis and Ana updates the
+matching right-side heading. Server-log delta confirmed zero workspace GETs
+during the final two switches. No live eligibility/selection/release was changed.
+Node syntax, Django system/database and git diff --check checks passed.
+
+Collected assets, bumped the workspace script version and reloaded only the
+verified local web process on port 8013, preserving the existing MySQL connection.
+No schema changes or migrations.

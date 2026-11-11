@@ -1,0 +1,12 @@
+/* Annual observances share the event builder's layout and controls. */
+.observance-builder-workspace .builder-form textarea[name=target_audience] { height: 90px; min-height: 90px; }
+.observance-builder-workspace .builder-record-name { overflow-wrap: anywhere; }
+.observance-builder-workspace .builder-header .workspace-back { display: inline-block; margin-bottom: 1rem; }
+.observance-builder-workspace .builder-fields input[type=date] { min-width: 0; max-width: 100%; }
+.observance-builder-workspace .event-image-preview[hidden] { display: none; }
+.observance-builder-workspace .event-calendar-controls { grid-template-columns: minmax(0, 1fr); }
+.observance-builder-workspace .builder-date-band[data-band=observance] { background: var(--range-fill); }
+.observance-builder-workspace [data-clear-range] { margin-bottom: .75rem; }
+@media (max-width: 699px) {
+  .observance-builder-workspace .builder-action-bar { bottom: 5rem; }
+}

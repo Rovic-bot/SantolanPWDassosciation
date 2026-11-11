@@ -1,0 +1,124 @@
+Current shared EWAF weights — validation, 27 October 2026
+
+OWNER-AUTHORIZED WORKFLOW
+Edit main weights -> Calculate AHP weights -> Approve configuration.
+EWAF Ranking -> select program -> Generate EWAF Ranking -> click applicant name
+or score -> view that applicant's retained scoring explanation.
+
+The owner's follow-up authorizes current approved main weights for new composite
+SES/ES/PA/HM calculations across existing and new programs. This supersedes the
+earlier requirement that each such program use its initial weights forever.
+It does not authorize rewriting historical results, changing accepted evidence,
+changing formula coefficients, converting historical methods, or selecting people.
+
+IMPLEMENTATION
+New composite calculations resolve the latest approved matching Vault version.
+The exact AHP vector, approval reference, digest, provenance and approving actor
+are retained in the calculation snapshot when they differ from the original
+program binding. Replay validates that exact approval; it never substitutes the
+current Vault into a saved run. Original binding weights remain the replay source
+when no newer shared weight snapshot is present.
+
+The original scoring-policy binding remains immutable. Its accepted-input rules,
+evidence, assessment cutoff and source checks remain in force. Weight-only changes
+therefore require neither a fabricated evidence acceptance nor a second program
+configuration. Drafts and slider previews have no effect on calculation weights.
+Program cards and workspaces show the current approved weights; saved result and
+explanation pages show the actual version used by that saved calculation.
+
+Approval accepts the signed server AHP preview for the current proposal, method
+and Vault version. It atomically records the draft and approval, with existing
+permissions and audits. A separate Save weight draft action remains optional.
+Missing, stale, altered and forged preview confirmations fail closed. A staff
+member who can approve an existing draft still needs configuration authority to
+create a changed proposal; no permissions were broadened.
+
+The existing terms lock serializes approvals and calculations. Generation rejects
+stale request context and checks its complete snapshot again before committing.
+An older ranking cannot support new decisions after a shared weight change until
+a current ranking is generated. Prior decisions, selections, deliveries and public
+results are not rewritten or automatically issued.
+
+New composite programs and already-open weights-only intakes can use a centrally
+approved compatible assessment policy after the main weights change. They retain
+that policy's original approval and cutoff rule, while new calculations use the
+current main weights. This exception is limited to centrally approved composite
+policies; historical methods and explicit historical binding contracts remain
+protected. Missing institutional rules or accepted information still block scoring.
+
+The 90/10 composite SES formula, employment encoding safeguards, PA ledger source,
+pool bounds, exact fractions, display rounding and competition ties are unchanged.
+No model fields or migrations were added. Admin groups and Public Portal behavior
+are preserved. The owner-defined 70% milestone remains unchanged.
+
+TESTS ACTUALLY EXECUTED
+1. New current-weight integration suite: 3 passed in 134.095 seconds.
+   Fresh MySQL test_g12_disposable, port 62382, UUID
+   8fd0f875-d1e3-11f1-9bbd-581122e63603.
+2. Combined EWAF regression run: 160 passed in 573.121 seconds.
+   Modules: test_current_weights, test_composite_ses, test_ses_workflow,
+   test_dataset_policy, test_shared_application, test_vault, test_operational,
+   test_score_breakdown, test_household_criteria, test_synthetic_twelve.
+   Fresh MySQL test_g12_disposable, port 51552, UUID
+   11ea3c59-d1e4-11f1-9a1f-581122e63603.
+3. Final new-program/pending-intake follow-up: 73 passed in 172.458 seconds.
+   Modules: test_shared_application, test_dataset_policy, test_ses_workflow.
+   This includes two added tests after the combined run started; remaining cases
+   overlap that run. Fresh MySQL test_g12_disposable, port 58351, UUID
+   f07674ab-d1e4-11f1-bf8e-581122e63603.
+   There are 162 distinct passing cases across the combined and follow-up runs;
+   repeated tests are not additional independent coverage. No failures or skips.
+4. JavaScript cascade/reorder harness: 2,500 cases and six SES examples passed.
+5. Python syntax, Node syntax and git diff --check passed. Existing newline
+   normalization notices are not test failures.
+
+All database test commands used scripts/g12_test_runner.py with
+--testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+--noinput --verbosity 1. The runner verified fresh disposable native MySQL,
+restricted schema grants, separate private media and disabled .env loading.
+It synchronized current models and forbade historical migration execution.
+No working database was opened or migrated. This is not a migration rehearsal.
+
+DIRECT WORKFLOW EVIDENCE
+- Five approved scenarios were applied to two already prepared 12-member programs.
+  All 120 new exact scores and ranks matched the independent fixed-vector oracle.
+- Prior run payloads, original configurations and accepted-input records remained
+  unchanged. New approved weights did not require another evidence acceptance.
+- A draft did not change the next generation context or current scores.
+- Stale generation requests and simulated approval changes during generation
+  rolled back. Missing authority, tampered snapshots and failed approval audits
+  were rejected without partial approval or calculation records.
+- Chrome/Playwright used actual login, sliders, Calculate AHP weights and Approve
+  configuration without a manual draft-save step. It selected two existing
+  programs from EWAF Ranking, generated their rankings, clicked applicant names
+  and checked SES-focused scoring. Both programs ranked Ana Testalpha first.
+- The original five-scenario browser suite also passed, including 12 rows per
+  scenario, private headers, calculation guides and 390/1440-pixel layouts.
+- Existing legacy engines, evidence blockers, permission checks, audit behavior,
+  human selection, ties and historical scoring explanations passed regression.
+
+PERSISTENT DEMO HANDOFF
+The separate local demo was restarted using its own Start/Stop implementation.
+URL: http://127.0.0.1:8012/ewaf-demo/
+MySQL: santolan_ewaf_twelve_demo on 127.0.0.1:3309.
+Its own manifest, datadir and UUID checks guarded every connection.
+Login remains ewaf_demo; the generated password remains in its ignored LOGIN.txt.
+No demo weight approval or calculation was created during the restart verification.
+
+Live browser verification confirmed that the new Vault controls loaded, all five
+programs select approved Vault version 10 for their next ranking, all five Generate
+controls are enabled, and applicant names open their historical scoring pages.
+Before/after hashes matched for all 12 members, 27 releases, 10 program configuration
+versions, 7 saved calculations, 60 accepted reviews, 10 scoring-policy versions and
+10 Vault versions. Authentication/session records may change during ordinary login.
+The persistent demo's Django check passed and its dry-run model-change check reported
+No changes detected. Normal Start System.cmd and the ordinary database were untouched.
+
+ARTIFACTS AND SCOPE
+ewaf-current-weights-2026-10-27/ contains the test logs, synthetic browser screenshots,
+source-change inventory and demo before/after preservation evidence.
+Source work is limited to shared weight selection/replay, approval handling,
+compatible first policy application, relevant views/templates/tests and the current
+composite workflow guide. The exact list is in source-changes.json in that folder.
+Unrelated unfinished source changes remain intact. No emails, SMS, remote registry
+queries, real approvals, public result publication, commit, push, merge or deployment.

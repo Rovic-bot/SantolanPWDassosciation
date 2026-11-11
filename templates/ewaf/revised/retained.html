@@ -1,0 +1,14 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Synthetic EWAF history · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section"><p class="eyebrow">EWAF &amp; SELECTION</p><h1>Synthetic preview revision {{ run.revision }}</h1>
+{% include 'ewaf/tabs.html' %}<p>{{ program.name }} · Retained by {{ run.actor_label }} on {{ run.recorded_at }}</p><p>{{ run.reason }}</p>
+<p class="alert alert-info"><strong>Synthetic demonstration only.</strong> This immutable preview is never an approved operational configuration or beneficiary decision.</p>
+{% if not is_current %}<p class="alert alert-warning">Historical preview: the program context or latest preview has changed. The retained calculation remains unchanged. Create a new preview to review the current context.</p>{% endif %}
+{% if run.previous_id %}<p>Predecessor: <a href="{% url 'ewaf:revised_run' run.previous_id %}">revision {{ run.previous.revision }}</a>.</p>{% endif %}
+<p><a href="{% url 'ewaf:operational_programs' %}">Back to EWAF Ranking</a></p>
+{% include 'ewaf/revised/result.html' %}
+{% if can_export %}<section class="ui-panel mb-4"><h2 class="h4">Private exports</h2><p>Exports retain synthetic labels, exact scores and calculation details.</p><a href="{% url 'ewaf:revised_export' run.pk %}?format=json">Complete JSON snapshot</a> · <a href="{% url 'ewaf:revised_export' run.pk %}?format=csv">CSV breakdown</a> · <a href="{% url 'ewaf:revised_export' run.pk %}?format=xlsx">Excel breakdown</a></section>{% endif %}
+<section class="ui-panel mb-4"><h2 class="h4">Demonstration review</h2>{% for error in errors %}<p class="alert alert-danger">{{ error }}</p>{% endfor %}
+{% if can_review and is_current %}<form method="post">{% csrf_token %}<input type="hidden" name="expected" value="{{ expected }}"><label for="review-finding">Finding</label><select id="review-finding" name="finding" class="form-select"><option value="REVIEWED">Reviewed demonstration</option><option value="CORRECTIONS_REQUESTED">Corrections requested</option></select><label for="review-reason">Review note</label><textarea id="review-reason" name="reason" class="form-control" maxlength="2000" required></textarea><button class="btn btn-primary mt-2">Record review</button></form>{% endif %}
+<ul>{% for item in reviews %}<li>{{ item.get_finding_display }} · {{ item.actor_label }} · {{ item.recorded_at }}<p>{{ item.reason }}</p></li>{% empty %}<li>No demonstration review recorded.</li>{% endfor %}</ul></section>
+</div>{% endblock %}

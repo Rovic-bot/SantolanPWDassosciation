@@ -1,0 +1,32 @@
+.pdao-claim-toolbar { margin: 1rem 0; padding: 1.25rem; border: 1px solid var(--glass-line); border-radius: 1rem; background: var(--glass); color: var(--ink); }
+.admin-workspace .pdao-claim-toolbar h2 { font-size: 1rem; margin: 0 0 .5rem; }
+.pdao-claim-toolbar p, .pdao-claim-toolbar details { font-size: .8rem; color: var(--muted); }
+.pdao-claim-toolbar p { margin: 0 0 .75rem; }
+.pdao-claim-confirm { margin: 1rem 0; }
+.pdao-claim-toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; font-size: .8rem; }
+.pdao-claim-toolbar-actions > a { margin-left: auto; color: var(--teal); }
+.pdao-claim-toolbar details { margin-top: 1rem; }
+.pdao-claim-toolbar summary { width: fit-content; cursor: pointer; min-height: 32px; align-content: center; }
+.pdao-claim-toolbar details[open] p { margin-top: .5rem; }
+.pdao-claim-col-select { width: 3rem; }
+.pdao-claim-col-status { width: 14rem; }
+.pdao-claim-table { min-width: 66rem; }
+.pdao-claim-table .registration-inbox-col-applicant { width: auto; }
+.pdao-claim-table .registration-inbox-col-channel { width: 7.25rem; }
+.pdao-claim-table .registration-inbox-col-received { width: 11rem; }
+.pdao-claim-table .registration-inbox-col-status { width: 10rem; }
+.pdao-claim-table .registration-inbox-col-action { width: 5.5rem; }
+.pdao-claim-table > :not(caption) > * > * { padding-inline: .9rem; }
+.pdao-claim-table thead th { overflow-wrap: normal; }
+.registration-inbox-table .pdao-claim-selection { text-align: center; }
+.registration-inbox-table :is([data-claim-select], [data-claim-all]) { width: 20px; height: 20px; cursor: pointer; }
+.registration-inbox-table input:disabled { cursor: default; }
+.pdao-claim-delivery { overflow-wrap: anywhere; }
+.pdao-claim-delivery small { display: block; margin-top: .35rem; color: var(--muted); }
+.pdao-claim-delivery [data-state=sent] { color: var(--green); }
+.pdao-claim-delivery :is([data-state=failed], [data-state=uncertain]) { color: var(--orange); }
+.pdao-claim-action { padding-top: 1rem; border-top: 1px solid var(--line); }
+.pdao-claim-action h3 { font-size: .95rem; }
+.pdao-claim-action p { color: var(--muted); font-size: .8rem; overflow-wrap: anywhere; }
+.pdao-claim-action .form-check { margin: 1rem 0; font-size: .8rem; }
+@media (max-width: 639px) { .pdao-claim-toolbar-actions { align-items: flex-start; flex-direction: column; } .pdao-claim-toolbar-actions > a { margin-left: 0; } }

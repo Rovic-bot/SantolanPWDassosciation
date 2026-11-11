@@ -1,0 +1,41 @@
+{# Decorative service illustrations. Each uses the accent of its section. #}
+<svg viewBox="0 0 440 210" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sheet" x1="0" x2="1" y1="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="currentColor" stop-opacity=".19"/><stop offset="1" stop-color="#f5fbff" stop-opacity=".96"/></linearGradient>
+    <linearGradient id="edge" x2=".8" y2="1"><stop stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity=".26"/></linearGradient>
+    <pattern id="ruled" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="currentColor" opacity=".25"/></pattern>
+  </defs>
+  <rect x="4" y="4" width="432" height="202" rx="20" fill="url(#ruled)"/>
+  <g stroke="currentColor" opacity=".22"><ellipse cx="226" cy="115" rx="151" ry="50" transform="rotate(-16 226 115)"/><path d="M28 36h12m-6-6v12m358 132h12m-6-6v12"/></g>
+  {% if motif == 'notices' %}
+  <g transform="rotate(-8 220 105)">
+    <rect x="144" y="58" width="164" height="112" rx="10" fill="#c4dcfb" stroke="url(#edge)"/>
+    <rect x="130" y="45" width="164" height="112" rx="10" fill="url(#sheet)" stroke="url(#edge)" stroke-width="1.8"/>
+    <g stroke="currentColor" stroke-linecap="round"><path d="M147 66h54" stroke-width="5"/><path d="M147 80h130" opacity=".55"/><rect x="148" y="94" width="45" height="41" rx="4" fill="currentColor" fill-opacity=".18"/><path d="M157 122l9-11 6 6 6-8 7 9m20-21h67m-67 12h58m-58 12h63m-63 12h39" stroke-width="2"/></g>
+  </g>
+  {% elif motif == 'programs' %}
+  <g transform="rotate(-8 220 106)" stroke-linejoin="round"><path d="M135 77q0-10 10-10h43l14 12h87q11 0 11 11v64q0 10-10 10H146q-11 0-11-11z" fill="#c4dcfb" stroke="url(#edge)"/>
+    <rect x="160" y="51" width="107" height="83" rx="6" fill="#c4dcfb" stroke="url(#edge)" transform="rotate(8 215 92)"/>
+    <rect x="151" y="57" width="106" height="85" rx="6" fill="url(#sheet)" stroke="url(#edge)"/>
+    <path d="M164 70h31m-31 10h56" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M127 94q-1-8 8-8h51l13 8h99q9 0 7 8l-10 54q-1 8-11 8H147q-9 0-11-9z" fill="url(#sheet)" stroke="url(#edge)" stroke-width="1.8"/>
+    <path d="M149 143h36" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></g>
+  {% elif motif == 'results' %}
+  <g transform="rotate(-8 220 110)">
+    <rect x="163" y="36" width="113" height="145" rx="9" fill="#c4dcfb" stroke="url(#edge)"/>
+    <rect x="151" y="29" width="112" height="144" rx="9" fill="url(#sheet)" stroke="url(#edge)" stroke-width="1.8"/>
+    <g stroke="currentColor" stroke-linecap="round"><path d="M170 53h43" stroke-width="4"/><path d="M170 70h73m-73 13h62m-62 13h73m-73 13h47m-47 30h27" stroke-width="2" opacity=".8"/></g>
+    <circle cx="263" cy="137" r="27" fill="#e5f3ff" stroke="url(#edge)" stroke-width="2"/><circle cx="263" cy="137" r="21" stroke="currentColor" opacity=".4"/><path d="m251 137 8 8 16-17" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  {% elif motif == 'membership' %}
+  <g transform="rotate(8 231 91)"><rect x="161" y="46" width="149" height="90" rx="12" fill="#c4dcfb" stroke="url(#edge)"/><path d="M172 67h125" stroke="currentColor" stroke-width="6" opacity=".35"/></g>
+  <g transform="rotate(-8 208 122)"><rect x="123" y="72" width="172" height="100" rx="12" fill="url(#sheet)" stroke="url(#edge)" stroke-width="1.8"/>
+    <rect x="138" y="91" width="47" height="54" rx="7" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-opacity=".45"/>
+    <g stroke="currentColor" stroke-linecap="round" stroke-width="2"><circle cx="162" cy="108" r="7"/><path d="M148 132a14 14 0 0 1 28 0m23-32h48m-48 14h74m-74 13h57m-57 22h24m7 0h13"/></g>
+  </g>
+  {% else %}
+  <g transform="rotate(8 242 96)"><path d="M183 47h104q12 0 12 12v47q0 12-12 12h-8l-1 19-25-19h-70q-12 0-12-12V59q0-12 12-12z" fill="#c4dcfb" stroke="url(#edge)"/><path d="M207 70h66m-48 13h48" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".75"/></g>
+  <g transform="rotate(-8 197 128)"><path d="M141 80h110q13 0 13 13v47q0 13-13 13h-71l-25 20v-20h-14q-13 0-13-13V93q0-13 13-13z" fill="url(#sheet)" stroke="url(#edge)" stroke-width="1.8"/>
+    <g fill="currentColor"><circle cx="169" cy="118" r="4"/><circle cx="195" cy="118" r="4"/><circle cx="221" cy="118" r="4"/></g></g>
+  {% endif %}
+</svg>

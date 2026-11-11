@@ -1,0 +1,6 @@
+<li><a class="directory-row" href="{{ member.full_url }}" data-select-member="{{ member.id }}" data-selected="{{ forloop.first|yesno:'true,false' }}">
+  <span class="directory-identity"><span class="directory-avatar" aria-hidden="true">{{ member.initials }}</span><span class="directory-identity-text"><strong>{{ member.name }}</strong><span class="directory-code">{{ member.control_number }}</span></span></span>
+  <span class="directory-classification" title="{{ member.classification }}"><span class="directory-mobile-label">Disability</span>{{ member.classification }}</span>
+  <span class="directory-row-status"><span class="directory-badge" data-status="{{ member.status }}">{{ member.status_label }}</span>{% if member.needs_review %}<span class="directory-review-flag">Review</span>{% endif %}</span>
+  <span class="directory-joined"><span class="directory-mobile-label">Joined</span>{{ member.joined }}</span>
+</a></li>

@@ -1,0 +1,5 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block responsive %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin-activity.css' %}?v=20261110-notes">{% endblock %}
+{% block content_title %}<p class="eyebrow">ADMINISTRATION / ACTIVITY</p><h1>{{ activity.activity_label }}</h1>{% endblock %}
+{% block content %}<section class="activity-detail"><a class="activity-back" href="{% url 'admin:admin_logentry_changelist' %}">← All administration changes</a>{% include 'admin/audit/activity_content.html' %}</section>{% endblock %}

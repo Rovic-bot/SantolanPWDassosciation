@@ -1,0 +1,17 @@
+{% extends 'public/resident_base.html' %}{% block title %}Submit a concern - Community Assistance Desk{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Resources & Help' label='Membership verified' title='Community Assistance Desk' intro='Enter your email address, subject and concern. Supporting evidence is optional now and may be provided later by email or onsite.' icon='help' only %}
+<div class="container content-section resident-columns"><section class="resident-panel"><p>Already submitted a concern? <a href="{% url 'assistance:referral_conversation_verify' %}">Continue your conversation using its reference</a>.</p><h2>Your request</h2><p class="alert alert-info">{{ notice }}</p>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.non_field_errors }}
+{% include 'membership/field.html' with field=form.email %}
+{% include 'membership/field.html' with field=form.subject %}
+{% include 'membership/field.html' with field=form.assistance_type %}
+{% include 'membership/field.html' with field=form.concern %}
+<button class="btn btn-outline-secondary mb-3" id="add-supporting-evidence" type="button" data-bs-toggle="collapse" data-bs-target="#supporting-evidence" aria-controls="supporting-evidence" aria-expanded="{{ form.evidence_1.errors|yesno:'true,false' }}">Add supporting evidence</button>
+<div class="collapse{% if form.evidence_1.errors %} show{% endif %}" id="supporting-evidence">{% include 'membership/field.html' with field=form.evidence_1 %}</div>
+<noscript><style>#supporting-evidence.collapse{display:block}#add-supporting-evidence{display:none}</style></noscript>
+<div class="form-check mb-4">{{ form.acknowledgement }}<label class="form-check-label" for="{{ form.acknowledgement.id_for_label }}">{{ form.acknowledgement.label }} <span aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>{{ form.acknowledgement.errors }}</div>
+<p>Your request, contact details and supporting evidence are private. Request details and updates are sent to the email address you provide; supporting files stay in the private system. <a href="{% url 'core:privacy' %}">Read the privacy information</a>.</p><button class="btn btn-primary">Submit request</button></form>
+</section><aside class="resident-aside"><h2>Leave this request</h2><p>When using a shared device, clear your verification before you leave.</p><form method="post" action="{% url 'assistance:referral_finish' %}" class="mt-3">{% csrf_token %}<button class="btn btn-outline-secondary">Cancel and clear verification</button></form></aside></div>{% endblock %}

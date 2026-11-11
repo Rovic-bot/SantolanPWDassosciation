@@ -1,0 +1,11 @@
+.ewaf-breakdown { min-width: 0; overflow-wrap: anywhere; }
+.ewaf-breakdown .metric-grid article { min-width: 0; }
+.ewaf-breakdown .form-select { max-width: 100%; }
+.ewaf-breakdown .table-responsive:focus-visible { outline: 3px solid var(--primary, #246b4f); outline-offset: 3px; }
+.ewaf-breakdown .breakdown-table { min-width: 54rem; }
+.ewaf-breakdown .breakdown-table th:first-child { min-width: 10rem; }
+.ewaf-breakdown .breakdown-table td:nth-child(4) { min-width: 13rem; }
+.ewaf-breakdown .breakdown-formula { display: block; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; margin-block: .4rem; }
+.ewaf-breakdown .breakdown-leading > :first-child { border-left: 3px solid var(--primary, #246b4f); }
+.ewaf-breakdown .breakdown-selected > * { background-color: var(--surface-alt, #edf6f0); }
+.ewaf-breakdown td { font-variant-numeric: tabular-nums; }

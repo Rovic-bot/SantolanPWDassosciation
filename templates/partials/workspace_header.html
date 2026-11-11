@@ -1,0 +1,23 @@
+{% load static workspace_navigation %}
+{% workspace_navigation as workspace_groups %}
+{% if onsite_registration %}{% include 'membership/onsite/topbar.html' %}{% else %}{% include 'admin_portal/dashboard_topbar.html' %}{% endif %}
+<button class="workspace-sidebar-toggle" type="button" aria-controls="workspace-sidebar" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+<aside class="workspace-sidebar" id="workspace-sidebar">
+  <a class="workspace-brand" href="{% if perms.accounts.access_dashboard %}{% url 'core:dashboard' %}{% else %}{% url 'admin:index' %}{% endif %}">{% include 'partials/association_logo.html' %}<span>Santolan PWD<small>{% if compact_workspace_navigation %}Administrator workspace{% else %}ADMINISTRATOR WORKSPACE{% endif %}</small></span></a>
+  <button class="workspace-menu" type="button" data-bs-toggle="collapse" data-bs-target="#admin-nav" aria-controls="admin-nav" aria-expanded="false">Workspace menu <svg class="workspace-menu-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="collapse workspace-navigation" id="admin-nav" data-scroll-key="{{ request.user.pk }}"{% if compact_workspace_navigation %} data-compact="true"{% endif %}>
+    <nav aria-label="Administration navigation">
+      {% for group in workspace_groups %}
+      <details class="workspace-module{% if group.active %} current-module{% endif %}" data-group-key="{{ group.key }}" data-current="{{ group.active|yesno:'true,false' }}"{% if not compact_workspace_navigation or group.active %} open{% endif %}>
+        <summary aria-label="{{ group.label }}{% if group.active %}, current module{% endif %}{% if group.referral_badge.count %}, {{ group.referral_badge.count }} new concerns awaiting review{% endif %}">{% include 'partials/workspace_icon.html' with key=group.key %}<span data-module-label>{{ group.label }}</span>{% if group.referral_badge %}{% include 'partials/referral_count_badge.html' with badge=group.referral_badge only %}{% endif %}<svg class="workspace-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg></summary>
+        <div class="workspace-module-links">
+          {% for link in group.links %}<a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{% if link.referral_badge %}<span class="workspace-concern-label">{{ link.label }}</span>{% include 'partials/referral_count_badge.html' with badge=link.referral_badge only %}{% elif dashboard_overview and link.label == 'EWAF' %}Program ranking{% else %}{{ link.label }}{% endif %}</a>{% endfor %}
+          {% if group.notice %}<p class="workspace-module-notice">{{ group.notice }}</p>{% endif %}
+        </div>
+      </details>
+      {% endfor %}
+    </nav>
+    <div class="workspace-account"><span class="account-label">SIGNED IN AS</span><strong>{{ request.user.get_short_name|default:request.user.username }}</strong><a href="{% if native_admin %}{% url 'admin:password_change' %}{% else %}{% url 'accounts:password_change' %}{% endif %}">Change password</a><form method="post" action="{% if native_admin %}{% url 'admin:logout' %}{% else %}{% url 'accounts:logout' %}{% endif %}">{% csrf_token %}<button type="submit">Sign out <span aria-hidden="true">↗</span></button></form></div>
+  </div>
+</aside>
+<script src="{% static 'js/referral-notifications.js' %}?v=20261111-count" defer></script>

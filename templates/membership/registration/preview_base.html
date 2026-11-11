@@ -1,0 +1,10 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Submitted membership form{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+<script src="{% static 'js/workspace-page.js' %}?v=20261104"></script>
+{% block extra_head %}{% endblock %}
+<link rel="stylesheet" href="{% static 'css/membership-form-preview.css' %}">
+</head><body class="form-preview {% block body_class %}{% endblock %}">
+<main id="main-content">{% block content %}{% endblock %}</main>
+{% block extra_scripts %}{% endblock %}<script src="{% static 'js/membership-form-preview.js' %}" defer></script></body></html>

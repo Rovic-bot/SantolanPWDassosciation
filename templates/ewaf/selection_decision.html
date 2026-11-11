@@ -1,0 +1,15 @@
+<section class="ewaf-selection-decision" aria-label="Selection decision"><h3>Selection decision</h3><p class="ewaf-decision ewaf-decision-{{ row.decision_key }}">{% include 'ewaf/ui_icon.html' with icon=row.decision_icon %} {{ row.decision_label }}</p>
+{% if row.has_previous_decision %}<details class="ewaf-selection-review"><summary>Previous selection decision</summary><p>{{ row.decision.get_outcome_display }} &middot; Ranking {{ row.decision.run.revision }}</p><p>{{ row.decision.recorded_at|date:'M j, Y, g:i A' }}</p></details>{% endif %}
+{% if row.received %}<p>Confirmed assistance is already recorded for this application.</p><a class="btn ewaf-secondary-button w-100" href="{% url 'assistance:program_releases' program.pk %}">View assistance releases</a>
+{% else %}{% if row.tie_held %}<p class="ewaf-review-warning">This tie is held for review under the approved selection procedure.</p>{% endif %}
+{% if row.is_selected %}
+  {% if row.can_unselect %}<form method="post" class="selection-unselect-form" action="{% url 'ewaf:operational_workspace' program.pk %}?run={{ run.pk }}">
+    {% csrf_token %}<input type="hidden" name="action" value="UNSELECT_ASSISTANCE">
+    {% for field in row.unselect_form.hidden_fields %}{{ field }}{% endfor %}
+    {{ row.unselect_form.non_field_errors }}
+    <button class="btn ewaf-secondary-button w-100">{% include 'ewaf/ui_icon.html' with icon='close' %} Unselect for assistance</button>
+  </form>{% endif %}
+{% elif selection_waiting %}<p>Registration has closed. Generate a final ranking after the assessment cutoff before making new selections.</p>{% elif can_decide %}<p>Selection requires your review. A score does not approve assistance.</p><form method="post" class="selection-form" action="{% url 'ewaf:operational_workspace' program.pk %}?run={{ run.pk }}">{% csrf_token %}<input type="hidden" name="action" value="SELECT_ASSISTANCE">{% for field in row.select_form.hidden_fields %}{{ field }}{% endfor %}{{ row.select_form.non_field_errors }}{% if row.tie_review and not row.tie_held %}{{ row.select_form.tie_reason.as_field_group }}{% endif %}<button class="btn btn-primary w-100" {% if not active or row.tie_held %}disabled{% endif %}{% if not active %} aria-describedby="calculation-readiness"{% endif %}>{% include 'ewaf/ui_icon.html' with icon='tick' %} Select for assistance</button></form>{% else %}<p>Selection permission required.</p>{% endif %}
+{% if active and can_decide and not row.is_selected and not row.is_unselected %}{% if row.decision or row.tie_review %}<details class="ewaf-selection-review"><summary>Review selection</summary><form method="post" class="selection-review-form" action="{% url 'ewaf:operational_workspace' program.pk %}?run={{ run.pk }}">{% csrf_token %}<input type="hidden" name="action" value="DECISION">{{ row.form.as_p }}<button class="btn ewaf-secondary-button">Save review</button></form></details>{% endif %}{% endif %}{% endif %}
+<p data-selection-feedback role="status" aria-live="polite" class="small mb-0"></p>
+</section>

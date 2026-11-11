@@ -1,0 +1,28 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Your conversation · Community Assistance Desk{% endblock %}
+{% block resident_class %}section-help conversation-screen{% endblock %}
+{% block footer %}{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-conversation-screen.css' %}?v=20261110-screen-display">{% endblock %}
+{% block content %}
+<div class="container content-section concern-screen-shell" data-referral-conversation data-ticket="{{ ticket.pk }}" data-updates-url="{{ updates_url }}" data-new-concern-url="{% url 'assistance:referral_verify' %}" data-version="{{ ticket.version }}">
+  <section class="resident-panel concern-conversation-panel">
+    <header class="concern-conversation-heading">
+      <a class="concern-back" href="{% url 'core:resources' %}#referral-support" aria-label="Back to Community Assistance Desk" title="Community Assistance Desk">{% include 'public/icon.html' with name='arrow' %}</a>
+      <div class="concern-chat-title"><p>Community Assistance Desk</p><h1 title="{{ ticket.subject|default:'Your conversation' }}">{{ ticket.subject|default:'Your conversation' }}</h1></div>
+      <span class="concern-conversation-status" data-conversation-status>{{ ticket.get_status_display }}</span>
+    </header>
+    <section class="concern-reference-details" aria-label="Your conversation reference"><span>Private reference</span><code class="concern-private-reference" title="Keep this reference to reopen your conversation">{{ ticket.reference }}</code><a href="{{ conversation_url }}" data-conversation-refresh aria-label="Check for new messages" title="Check for new messages"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1"/></svg></a></section>
+    <div class="concern-chat-messages" data-conversation-messages role="log" aria-label="Conversation messages" aria-relevant="additions" tabindex="0">
+      <article class="concern-chat-message concern-chat-message--member"><header><strong>You</strong><time datetime="{{ ticket.received_at|date:'c' }}">{{ ticket.received_at|date:'M j, Y, g:i A' }}</time></header><p>{{ ticket.concern }}</p></article>
+      {% for item in conversation_messages %}<article class="concern-chat-message{% if item.action == 'member_replied' %} concern-chat-message--member{% else %} concern-chat-message--staff{% endif %}" data-message-id="{{ item.pk }}"><header><strong>{% if item.action == 'member_replied' %}You{% else %}Association team{% endif %}</strong><time datetime="{{ item.recorded_at|date:'c' }}">{{ item.recorded_at|date:'M j, Y, g:i A' }}</time></header><p>{{ item.member_message }}</p></article>{% endfor %}
+    </div>
+    <div class="concern-chat-composer" data-conversation-reply>
+      <p class="concern-chat-feedback" data-conversation-notice role="status"></p>
+      <form method="post" action="{{ conversation_url }}" data-conversation-form>{% csrf_token %}<input type="hidden" name="conversation_ticket" value="{{ ticket.pk }}">{{ form.non_field_errors }}{{ form.version }}{{ form.version.errors }}
+        <div class="concern-compose-row"><div class="concern-compose-input"><label class="visually-hidden" for="{{ form.message.id_for_label }}">Your message (required)</label>{{ form.message }}{{ form.message.errors }}</div><button class="btn btn-primary concern-send" type="submit" aria-label="Send message" title="Send message"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 19 9-19 9 4-9-4-9Zm4 9h15"/></svg><span>Send</span></button></div>
+      </form>
+      <div class="concern-chat-toolbar"><span class="concern-timezone">Philippine time (UTC+8)</span><a href="{% url 'assistance:referral_conversation_verify' %}">Open another conversation</a><form method="post" action="{% url 'assistance:referral_finish' %}" class="concern-finish">{% csrf_token %}<button type="submit" aria-label="Finish and clear this session">Finish session</button></form></div>
+    </div>
+  </section>
+</div>
+{% endblock %}

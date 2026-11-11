@@ -1,0 +1,22 @@
+{% extends 'public/resident_base.html' %}{% block title %}New concern · Community Assistance Desk{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Community Assistance Desk' label='Community Assistance Desk' title='New concern' intro='Start a private conversation with the Association.' icon='help' only %}
+<div class="container content-section resident-columns">
+  <section class="resident-panel">
+    <nav class="concern-flow-options" aria-label="Community Assistance options"><a href="{% url 'assistance:referral_verify' %}" aria-current="page">New concern</a><a href="{% url 'assistance:referral_conversation_verify' %}">Continue a conversation</a></nav>
+    <form method="post" action="{% url 'assistance:referral_verify' %}">{% csrf_token %}{{ form.non_field_errors }}{{ form.request_key }}{{ form.request_key.errors }}
+      {% include 'membership/field.html' with field=form.control_number %}
+      {% include 'membership/field.html' with field=form.full_name %}
+      {% include 'membership/field.html' with field=form.email %}
+      {% include 'membership/field.html' with field=form.subject %}
+      {% include 'membership/field.html' with field=form.assistance_type %}
+      {% include 'membership/field.html' with field=form.concern %}
+      <p class="form-text">By choosing Submit, you confirm that these details are accurate, you can access this email address, and you understand the <a href="{% url 'core:privacy' %}">privacy information</a>. Submission does not guarantee assistance, referral approval, or selection.</p>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </section>
+  <aside class="resident-aside"><h2>What happens next</h2><p>We check your registered details and open your conversation page with your concern. Continue the conversation there and keep the conversation reference for your next visit.</p><p>Use your PWD number if it is also your Association control number.</p><p><a href="{% url 'core:contact' %}">Contact the Association Help Desk</a> if you need help.</p></aside>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+/* The public Display layout, using the admin portal's light/dark/contrast tokens. */
+body.admin-workspace .accessibility-widget { right: 1.25rem; bottom: 1rem; z-index: 1100; }
+body.admin-workspace .accessibility-widget .display-trigger { border: 1px solid var(--control-edge); border-radius: 16px; background: var(--surface); color: var(--ink); min-height: 48px; }
+body.admin-workspace .accessibility-widget .display-trigger-label { display: inline; }
+body.admin-workspace .accessibility-widget .display-panel { width: min(360px, calc(100vw - 32px)); max-height: calc(100dvh - 112px); padding: 24px; border: 1px solid var(--control-edge); border-radius: 24px; background: var(--surface); color: var(--ink); box-shadow: 0 12px 40px #0003; }
+body.admin-workspace .accessibility-widget .display-heading { align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+body.admin-workspace .accessibility-widget .display-heading h2 { margin: 0; font: 700 1.35rem/1.25 Arial, sans-serif; color: var(--ink); }
+body.admin-workspace .accessibility-widget .display-close { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; margin: -8px -8px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); line-height: 1; }
+body.admin-workspace .accessibility-widget .display-panel p { color: var(--muted); font-size: .875rem; line-height: 1.55; }
+body.admin-workspace .accessibility-widget .display-panel label { color: var(--ink); font-size: .9rem; font-weight: 600; }
+body.admin-workspace .accessibility-widget .display-panel select { min-height: 44px; border: 1px solid var(--control-edge); border-radius: 12px; background: var(--stone); color: var(--ink); }
+body.admin-workspace .accessibility-widget .display-option { min-height: 56px; border-color: var(--line); }
+body.admin-workspace .accessibility-widget .display-option input { flex: 0 0 22px; width: 22px; height: 22px; accent-color: var(--ink); }
+body.admin-workspace .accessibility-widget :is(.display-reset,.display-language) { min-height: 44px; padding: 8px 16px; border: 1px solid var(--control-edge); border-radius: 99px; background: transparent; color: var(--ink); font-size: .875rem; font-weight: 600; text-decoration: none; }
+body.admin-workspace .accessibility-widget .display-language { margin: 8px 0 0 6px; background: var(--brand-primary); color: var(--brand-on-action); }
+body.admin-workspace .accessibility-widget :is(.display-close,.display-reset):hover { background: var(--stone); }
+body.admin-workspace .accessibility-widget .display-selection-hint { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+body.admin-workspace .accessibility-widget :is(button,select,input):focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+body.admin-workspace .selection-reader { position: fixed; z-index: 1100; display: flex; align-items: center; gap: 2px; max-width: calc(100vw - 20px); padding: 4px; border: 1px solid var(--control-edge); border-radius: 16px; background: var(--ink); color: var(--surface); box-shadow: 0 6px 22px #0004; }
+body.admin-workspace .selection-reader[hidden] { display: none; }
+body.admin-workspace .selection-reader button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 11px; background: transparent; color: var(--surface); font: 600 .875rem/1.4 Arial, sans-serif; touch-action: manipulation; }
+body.admin-workspace .selection-reader .selection-reader-close { flex: 0 0 44px; width: 44px; padding: 0; font-size: 1.5rem; border-left: 1px solid currentColor; }
+body.admin-workspace .selection-reader button:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+html[data-contrast=true] body.admin-workspace .accessibility-widget { --surface: #fff; --stone: #eee; --ink: #111; --muted: #333; --line: #555; --control-edge: #111; --brand-primary: #111; --brand-on-action: #fff; }
+@media (max-width: 600px) { body.admin-workspace .accessibility-widget { right: 12px; bottom: 12px; } body.admin-workspace .accessibility-widget .display-panel { padding: 20px; } }
+@media (forced-colors: active) { body.admin-workspace :is(.display-panel,.display-trigger,.selection-reader) { background: Canvas; color: CanvasText; border-color: CanvasText; } body.admin-workspace .selection-reader button { color: ButtonText; background: ButtonFace; } }
+@media print { body.admin-workspace :is(.accessibility-widget,.selection-reader) { display: none !important; } }

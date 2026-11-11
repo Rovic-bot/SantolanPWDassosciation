@@ -1,0 +1,48 @@
+Public Events picture-card grid — 29 October 2026
+
+The owner requested published events in the public portal as grid cards showing
+their uploaded pictures. Scheduled event rows now use responsive cards: three
+columns on desktop, two at tablet widths, and one on phones. Each card includes
+its actual uploaded image, category/cancellation label, title, start date/time,
+location, description excerpt and event-detail link. Images use contain sizing
+so portrait posters and their text are not cropped. Cards without an upload show
+a neutral calendar placeholder. Empty views span the grid width.
+
+Files changed for this follow-up:
+- templates/events/public_list.html: card markup and published-image endpoint.
+- static/css/public-portal.css: scoped card styles and responsive breakpoints.
+- templates/public/base.html: stylesheet cache version updated.
+
+The existing publication queryset, permission-checked image delivery, category
+and upcoming/past filters, pagination, event detail route and annual-observance
+section remain in use. No unrestricted media URL or client-side private data was
+introduced. No backend, database schema or publication rule changed.
+
+Verification
+Django system checks and git diff --check passed. Chrome verified:
+- The real published event appears as a card and its details link opens correctly.
+- Live category and past-event filter routes work; twelve annual observances remain.
+- Synthetic rendered cards exercise images, no image, cancellation and long titles.
+- Grid column counts at 1440, 820, 390 and 320 pixels are 3, 2, 1 and 1 respectively.
+- Images decode successfully, use the scoped event image URLs, include accessible
+  text and retain contain sizing. No horizontal overflow at 320 pixels or with
+  200-percent root text size. No JavaScript errors.
+
+The retained database currently has one published event without an uploaded image,
+so image/multiple-card layout checks used four unsaved synthetic Event instances
+rendered through the actual Django template. The read-only renderer blocked all
+database mutations. The browser intercepted only those synthetic image requests
+with an existing repository community photo; no event or image was added to the
+application database. Synthetic screenshot titles explicitly identify the preview.
+All browser requests were read-only.
+
+Evidence in this directory:
+- live-events-desktop.png
+- synthetic-cards-1440.png
+- synthetic-cards-820.png
+- synthetic-cards-390.png
+Private harnesses: .local/public-event-grid-20261029/render_preview.py and verify.cjs.
+
+The identity-verified local server was restarted at http://127.0.0.1:8013/.
+No event was created or published, no migration ran, and no commit, push or remote
+deployment was performed. Earlier unfinished work was preserved.

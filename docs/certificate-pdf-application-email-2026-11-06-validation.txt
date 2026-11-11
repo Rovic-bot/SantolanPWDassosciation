@@ -1,0 +1,40 @@
+PDF certificates and required program application email - 6 November 2026
+
+Owner-authorized scope
+- Convert emailed certificates to PDF using the supplied Word certificate.
+- Require email on the current verified program application form.
+- Fill an empty Member.email from the submitted application email; preserve every existing nonblank member email even when the application uses a different address.
+- Keep the current email visible in member records and editing.
+This later explicit authorization supersedes the historical optional application email and DOCX attachment behavior documented in the preceding validation notes. Other workflow decisions remain unchanged.
+
+Implemented behavior
+- The existing OOXML personalization preserves the owner's source template. One isolated, hidden LibreOffice conversion handles the new certificates in a publication. New outbox documents and their hashes contain the resulting PDFs.
+- Gmail and Resend attachments and the permission-checked download use the PDF filename/MIME type. Publication and all new outbox jobs roll back if PDF conversion fails. No partial certificate batch is committed.
+- Original issued outbox bytes, recipients, provider identity, idempotency and attempt history remain immutable. Historical DOCX records retain their original attachment format for safe retries. Re-publication does not resend previously accepted messages.
+- The current public application form requires a valid email (maximum 254 characters) in both the UI and locked submission service. Email is not prefilled from private member records.
+- A valid verified submission fills only an empty member email under the existing transaction/member lock. It increments the member version and appends an email_added_from_application MemberEvent identifying the application reference. The application source snapshot records the resulting member version. Audit/submission failure rolls back the email change.
+- Existing nonblank member emails stay byte-for-byte unchanged. The application keeps its own address and uses it for eligibility emails and certificates. Duplicate submissions do not replace the first address or add another member audit entry.
+- The original onsite registration and its revision history remain unchanged. Current contact details and the member editor already read Member.email; verified both reflect the added email. Existing stale-editor/version safeguards remain active.
+
+Validation
+- 86 focused tests passed in 71.446 seconds on a newly created disposable native MySQL instance. No application database was used for tests.
+  Command: .venv/Scripts/python.exe -B scripts/g12_test_runner.py test programs.test_application_email programs.test_application_workflow announcements.test_certificate_pdf announcements.test_certificate_delivery announcements.test_gmail_certificates announcements.test_recorded_results scripts.certificate_publication_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 2
+  Artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-xxppmazf
+- Coverage includes blank/invalid email rejection, blank-member fill, existing address preservation, member edit visibility, audit rollback, stale grants, duplicate applications, PDF conversion failure rollback, private PDF MIME/downloads, Gmail and Resend attachment payloads, repeated-publication and concurrent-worker guards, SMTP ambiguity handling, publication privacy, and retained EWAF/release history.
+- Desktop/mobile browser publication and PDF download checks passed with no browser errors. Backend/browser workflow tests substitute the Office converter and use mocked or memory email transports.
+- Separately ran the real local LibreOffice conversion for three fictional certificates (normal, long and near-maximum names/titles). All are one 792 x 612 point landscape page, contain the personalized text/date with no template placeholders, and passed rendered PNG inspection without clipping or overflow.
+  Preview: output/pdf/sample-certificate.pdf (120955 bytes).
+  Stress-check files: output/pdf/long-certificate.pdf and output/pdf/maximum-certificate.pdf.
+- The actual converted sample PDF passed Gmail MIME serialization and byte-for-byte attachment decoding through the memory transport with SMTP explicitly disabled. No real test email was sent for this update.
+- Django/database check, model/migration drift check and git diff --check passed. No model/schema migration was needed.
+
+Local activation
+- Retained local settings use Gmail and the existing private LibreOffice executable at .local/certificate-resend-20261106/libreoffice/extracted/program/soffice.exe. Gmail connection reports ready.
+- Collected static assets and restarted only the identity-verified website process; MySQL was not stopped or reset. http://127.0.0.1:8013/ is running with required application email and PDF generation enabled.
+- Three previously sent DOCX certificate jobs existed by activation, accepted on 6 November at 15:14 UTC. Their complete stored rows were verified unchanged across activation. No old messages were resent. New certificate jobs use PDF.
+- Private activation evidence: .local/certificate-pdf-20261106/activation.json.
+- Future deployment requires LibreOffice on that application host. Set CERTIFICATE_OFFICE_EXECUTABLE to its executable, or make soffice available on PATH. Conversion is local; member documents are not uploaded to an external conversion service.
+
+Primary converter references
+https://help.libreoffice.org/latest/en-GB/text/shared/guide/start_parameters.html
+https://help.libreoffice.org/latest/en-US/text/shared/guide/pdf_params.html

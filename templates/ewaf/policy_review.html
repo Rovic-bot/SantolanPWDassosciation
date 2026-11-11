@@ -1,0 +1,27 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}EWAF policy review · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:configuration_detail' program.pk %}">Configuration diagnostics</a>
+<h1>EWAF policy review</h1><h2 class="h5">{{ program.name }}</h2>
+<p role="status">Reference review only. Association policy decisions remain pending. Operational scoring, ranking and selection are unavailable.</p>
+<p>This checklist compares the supplied Computation.docx with the workbook and existing configuration controls. It does not certify this program's policy or record an approval.</p>
+<h2 class="h5">Prepare a review</h2>
+<ol>
+<li>Resolve the source authority and policy questions below with the Association.</li>
+<li>Record proposed comparisons through the existing configuration draft form. Fields start blank; no source example is selected for you.</li>
+<li>Retain mathematical validation, then record a review or corrections against that exact revision. Use the review explanation and correction requests to identify unresolved policy questions.</li>
+<li>Record documentary authority only when evidence exists. This remains non-effective; it cannot activate scoring or selection.</li>
+</ol>
+<p>Use <a href="{% url 'ewaf:configuration_detail' program.pk %}">Configuration diagnostics</a> for the actions your account can perform and <a href="{% url 'ewaf:configuration_history' program.pk %}">Configuration and review history</a> for retained records.</p>
+<h2 class="h5">Reference and decision checklist</h2>
+<p>Every decision below is pending. A recorded draft, completed review or passing consistency check does not resolve these decisions.</p>
+{% for item in review_items %}
+<section class="mb-4" aria-labelledby="policy-{{ item.key }}" data-policy-item="{{ item.key }}">
+<h3 class="h6" id="policy-{{ item.key }}">{{ item.title }}</h3>
+<p><strong>{{ item.status }}</strong></p>
+<dl><dt>Source or current contract</dt><dd>{{ item.reference }}</dd>
+<dt>Decision needed</dt><dd>{{ item.decision }}</dd>
+<dt>Reference</dt><dd>{{ item.source }}</dd></dl>
+</section>
+{% endfor %}
+</div>{% endblock %}

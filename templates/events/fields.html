@@ -1,0 +1,2 @@
+{{ form.non_field_errors }}
+{% for field in form %}{% if field.is_hidden %}{{ field }}{{ field.errors }}{% elif field.name == 'remove_image' or field.name == 'confirm' %}<div class="form-check mb-4">{{ field }}<label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field.errors }}</div>{% else %}{% include 'membership/field.html' %}{% endif %}{% endfor %}

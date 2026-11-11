@@ -1,0 +1,10 @@
+{
+  "name": "santolan-pwd-frontend",
+  "private": true,
+  "scripts": {
+    "build:guidance": "tailwindcss -c tailwind.guidance.config.cjs -i static/css/src/home-guidance.css -o static/css/home-guidance.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.19"
+  }
+}

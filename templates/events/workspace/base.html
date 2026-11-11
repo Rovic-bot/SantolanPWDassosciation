@@ -1,0 +1,6 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Community events · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} events-calendar-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}{% include 'programs/profile/dialog_styles.html' %}<link rel="stylesheet" href="{% static 'css/event-detail.css' %}?v=20261105"><link rel="stylesheet" href="{% static 'css/events-workspace.css' %}?v=20261111-create-observance">{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True event_workspace=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}{% include 'programs/profile/dialog.html' with event_dialog=True %}<script src="{% static 'js/program-detail.js' %}?v=20261110-archive" defer></script><script src="{% static 'js/program-dialog.js' %}?v=20261111-processing" defer></script><script src="{% static 'js/events-workspace.js' %}?v=20261111-double-open" defer></script>{% endblock %}

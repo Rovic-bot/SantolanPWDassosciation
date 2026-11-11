@@ -1,0 +1,24 @@
+<div class="selection-layout" data-selection-results data-result-count="{{ page_obj.paginator.count }}" data-selected-id="{{ selected_id }}">
+  <section class="selection-board" aria-label="EWAF program queue">
+    <div class="selection-queue selection-glass">
+      <div class="selection-columns" aria-hidden="true"{% if not page_obj %} hidden{% endif %}><span>Program</span><span>Applicants</span><span>Eligibility</span><span>Slots used</span></div>
+      <ul class="selection-rows">
+      {% for program in program_rows %}
+        <li class="selection-row" data-program-row="{{ program.pk }}" data-ranking-url="{{ program.selection.url }}#results" data-search="{{ program.name }} {{ program.public_code|default:'' }}" data-state="{{ program.selection.state }}" data-selected="{{ program.selection.selected|yesno:'true,false' }}"{% if not program.selection.visible %} hidden{% endif %}>
+          <div class="selection-identity"><span class="selection-state" data-state="{{ program.selection.state }}">{{ program.selection.label }}</span><h2><a data-select-program="{{ program.pk }}" href="{% querystring selected=program.pk %}#selected-program-panel"{% if program.selection.selected %} aria-current="true"{% endif %}>{{ program.name }}</a></h2><small>{{ program.public_code|default:'Code not assigned' }}</small></div>
+          <div class="selection-number"><strong>{{ program.applicant_count }}</strong><small>Total applicants</small></div>
+          <div class="selection-number"><strong>{{ program.eligible_count }}</strong><small>Eligible · {{ program.pending_count }} pending</small></div>
+          <div class="selection-slots">
+          {% if program.can_view_capacity and program.slots != None %}<div><span>{{ program.allocated_slots }} / {{ program.slots }}</span><strong>{{ program.usage_percent|default_if_none:0 }}%</strong></div><progress value="{{ program.usage_percent|default_if_none:0 }}" max="100" aria-label="{{ program.name }} beneficiary slots used">{{ program.usage_percent|default_if_none:0 }}%</progress><small>{{ program.available_slots }} available{% if program.allocated_slots > program.slots %} · Over capacity{% endif %}</small>{% else %}<small>{% if not program.can_view_capacity %}Capacity access required{% else %}Capacity not set{% endif %}</small>{% endif %}
+          </div>
+        </li>
+      {% endfor %}
+        <li class="selection-empty" data-selection-empty{% if page_obj %} hidden{% endif %}><h2>No EWAF programs found</h2><p>Adjust the program title or configuration status.</p><a class="selection-button" href="{{ request.path }}" data-selection-reset>Clear filters</a></li>
+      </ul>
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}<nav class="selection-pagination" aria-label="EWAF program pages">{% if page_obj.has_previous %}<a data-selection-page href="{% querystring page=page_obj.previous_page_number %}">Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a data-selection-page href="{% querystring page=page_obj.next_page_number %}">Next</a>{% endif %}</nav>{% endif %}
+  </section>
+  <aside class="selection-analysis" id="selected-program-panel" aria-label="Selected program analysis" tabindex="-1">
+    {% for program in program_rows %}<article class="selection-panel selection-glass" data-program-panel="{{ program.pk }}" data-panel-url="{{ program.selection.panel_url }}"{% if not program.selection.selected %} hidden{% endif %}><h2>{{ program.name }}</h2><p data-panel-status role="status">Open this program to check scoring readiness and view its saved ranking.</p><a class="selection-button" href="{{ program.selection.url }}">Open scoring workspace</a><button type="button" class="selection-button" data-retry-panel hidden>Retry readiness checks</button></article>{% endfor %}<div class="selection-glass selection-empty" data-analysis-empty{% if page_obj %} hidden{% endif %}><p>Select a program to inspect its readiness and approved weights.</p></div>
+  </aside>
+</div>

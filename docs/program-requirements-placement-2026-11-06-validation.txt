@@ -1,0 +1,16 @@
+Program requirements placement — November 6, 2026
+
+Scope: owner-requested layout change on Program Details.
+
+Requirements & evidence now occupies the left column immediately below Schedule & capacity. Eligibility spans the adjacent rows. Requirements use two tiles per row on wider layouts, with a lone requirement using the available width. Smaller layouts retain the single-column section flow. The shared event layout is preserved.
+
+The full-page and dialog stylesheet URLs were versioned. The existing browser harness expectations were updated for the new placement; the harness was not run during this change.
+
+Validation:
+- Django system check passed.
+- JavaScript syntax check for scripts/program_detail_browser_qa.cjs passed.
+- git diff --check passed with core.safecrlf=false.
+- Restarted only the retained development web process; its existing MySQL connection remained usable.
+- Visually verified the live Programa testing page at port 8013: Requirements & evidence begins directly below Schedule & capacity, alongside the eligibility list.
+
+No models, data, business rules, or permission handling changed.

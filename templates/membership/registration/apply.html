@@ -1,0 +1,24 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Apply for membership · Santolan PWD{% endblock %}
+{% block public_class %}registration-page membership-application-page{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/registration.css' %}?v=20261027-privacy">{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-membership-application.css' %}?v=20261108-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/member-profile.js' %}" defer></script><script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/registration-privacy.js' %}?v=20261027" defer></script>{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}
+{% url 'core:membership' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Membership & PWD ID' label='Association membership' title='Apply for membership' intro='Submit your application for Admin review. Check your email for office-verification instructions before final membership approval.' icon='members' only %}
+<div class="container content-section resident-form-layout">
+<div class="resident-form-rail">
+
+<section aria-labelledby="onsite-heading"><h2 id="onsite-heading" class="h4">Your onsite visit</h2>{{ policy.onsite_instructions|linebreaks }}</section>
+<section aria-labelledby="approval-email-info"><h2 id="approval-email-info" class="h4">Application emails</h2><p>Provide an email address you can access and your PWD number. An admin may email the reason and next steps if your application stays pending. The Association will email you to visit the barangay office to verify your information. Bring your PWD ID. You become a member only after office verification and final Admin approval; a separate email will confirm your membership.</p></section>
+{% include 'membership/registration/privacy_notice.html' with privacy_notice=policy.privacy_notice association_privacy=True %}
+{% include 'public/form_directory.html' %}
+</div>
+<div class="resident-form-body">
+<form method="post" enctype="multipart/form-data" autocomplete="off" class="record-editor registration-editor" data-registration-privacy-form>{% csrf_token %}<input type="hidden" name="context_id" value="{{ context_id }}">
+<p class="form-text application-required-note">Please complete all required fields (*)</p>
+{% include 'membership/registration/fields.html' with public_profile_layout=True resident_anchors=True %}<button class="btn btn-primary" type="submit">Confirm details and submit application</button></form>
+<p class="mt-3"><a href="{% url 'core:membership' %}">Membership guidance and onsite assistance</a></p></div>
+</div>{% endblock %}

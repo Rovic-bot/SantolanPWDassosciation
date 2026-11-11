@@ -1,0 +1,26 @@
+<article class="ewaf-input-card" data-input-state="{{ row.input_state }}" aria-labelledby="input-applicant-{{ row.application }}">
+  <header class="ewaf-input-card-header">
+    <div><h3 id="input-applicant-{{ row.application }}">{{ row.member_name }}</h3><p>{{ row.reference }}</p></div>
+    <span class="ewaf-input-status" data-status="{{ row.status|lower }}">{{ row.status_label }}</span>
+  </header>
+  <div class="ewaf-input-card-body">
+    <div class="ewaf-input-source"><p>{% if row.accepted_values %}{% if row.automatic_inputs %}Member record inputs{% else %}Accepted scoring inputs{% endif %}{% elif row.registered_scoring_values %}Registered scoring inputs{% else %}From member registration{% endif %}</p><span class="ewaf-input-badge">{{ row.input_badge }}</span></div>
+    <dl class="ewaf-input-values">
+      {% if row.accepted_values %}
+        {% for item in row.accepted_values %}{% include 'ewaf/input_value.html' %}{% endfor %}
+      {% elif row.registered_scoring_values %}
+        {% for item in row.registered_scoring_values %}{% include 'ewaf/input_value.html' with registered=True %}{% endfor %}
+      {% else %}
+        {% for item in row.registered_values %}<div><dt>{{ item.label }}:</dt><dd>{{ item.value }}</dd></div>{% endfor %}
+      {% endif %}
+    </dl>
+  </div>
+  <footer class="ewaf-input-card-footer">
+    {% if row.input_status %}<p class="ewaf-input-note">{% include 'ewaf/ui_icon.html' with icon=row.input_icon %}<span>{{ row.input_status }}</span></p>{% endif %}
+
+    <div class="ewaf-input-card-actions">
+    <a href="{% url 'programs:application_detail' program.pk row.application %}{% if row.needs_review %}#eligibility{% endif %}">{% if row.needs_review %}Review eligibility{% else %}View applicant{% endif %}<span class="visually-hidden">: {{ row.member_name }}</span></a>
+    <a href="{% url 'members:detail' row.member_id %}">Member record<span class="visually-hidden">: {{ row.member_name }}</span></a>
+    </div>
+  </footer>
+</article>

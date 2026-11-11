@@ -1,0 +1,109 @@
+Owner-requested portal, event editor, and application retry changes
+Validated locally on 5 November 2026.
+
+Authorized behavior
+
+The owner explicitly requested application tracking with the application
+reference alone. This supersedes the prior identity gate for this limited
+progress view. It does not change identity/disability checks for making a new
+application. Anyone with an issued reference can now see the existing limited
+progress summary; private profiles, attachments, answers, assessments, scores,
+ranks, and internal decision details are excluded. Archived members remain
+excluded. Issued references, aliases, legacy retired routes, receipt access,
+tracking feature flags, expiry, CSRF, and hashed reference/IP limits remain.
+
+The public program detail page now shows overview/description, assistance type,
+application availability, registration/program dates, slots, configured amount
+and correction deadline when present, and the eligibility profile. Removed the
+purpose/benefit, review/selection instructions, photo instructions, and configured
+requirements list requested by the owner. Actual application requirements are
+still enforced and displayed while applying. Admin program details are retained.
+
+Event creation and editing share the same builder and primary fields: title,
+location, description, start/end dates and times, and optional image. Category,
+program linkage, audience, participation, and capacity controls are absent.
+Existing image preview/removal is available in the editor. New events are general;
+historical category/link/audience/capacity values are preserved and forged hidden
+field changes are ignored. Empty old categories no longer block publication or
+hide already-published events from the public list/home calendar. Publication,
+schedule, cancellation, authorization, protected program terms, version checks,
+image controls, immutable history, and source invalidation controls remain.
+Edits receive an automatic audit reason without requiring another visible field.
+Annual observance publication rules remain unchanged; Specific Events labels
+were removed from the current event/observance presentation.
+
+Program application submission now validates in place. Native required-field
+checks stop incomplete requests. Server validation returns structured errors;
+the browser retains the original form and selected File objects. Successful
+submission uses the existing audited service, receipt session and redirect.
+Failed connections and expired verification keep the form open; the latter
+offers verification in a separate tab. There is no temporary evidence storage
+or browser persistent storage. Files remain selected while the page stays open;
+manually reloading/leaving the page still clears browser file inputs. The normal
+HTML submission fallback remains available without JavaScript.
+
+Validation
+
+- Django/database check: no issues. Migration drift check: no changes detected.
+- Node syntax checks passed for both production scripts and both browser harnesses.
+- git diff --check passed.
+- Disposable native MySQL only: current selection ran 239 tests, all test cases OK.
+  The first successful case run encountered a Windows cleanup lock afterward:
+  the added event browser test did not close a streaming image response. Fixed
+  the harness to close it, then reran that browser test plus event workspace
+  tests: 9 tests OK, process exit 0 and clean database/media teardown.
+- Covered reference-only lookup and aliases, generic misses, privacy allowlist,
+  limits, session expiry, CSRF, archived records, requirement enforcement,
+  invalid-answer retries, server-only errors, duplicates, stale versions,
+  public program availability, event permissions, publication concurrency,
+  image handling, audit rollback, historical hidden fields, and source audits.
+- Real Chrome: a rejected disability check followed by a real cross-tab staff
+  login/token rotation succeeds after correcting the member without reloading.
+- Real Chrome: identical file input and File object survive a missing required
+  answer, server validation error, and aborted connection. Correcting the form
+  creates one application and one private attachment, without reselecting files.
+- Anonymous Chrome tracking uses one reference input, shows limited status, and
+  omits member name/control/contact/email and application evidence.
+- Public program details, validation errors, tracking, and the existing member
+  record/application review boundary checked at desktop and 390px widths.
+- Event browser: 14 create layouts and four edit layouts across light/dark themes,
+  no horizontal overflow, calendar keyboard/date controls, required/image checks,
+  no-JavaScript fallback, saved-image retention, draft edit, publication and
+  published edit with matching primary fields and audited saves.
+
+Scope of the test selection
+
+The exploratory broad run included older checks that do not describe this UI.
+Updated expectations related to this request (removed categories/capacity,
+historical public event inclusion, and removed public program instructions).
+The final 239-case selection includes all event test classes except two historical
+migration tests and these three unrelated older UI assertions:
+- events.tests.EventWorkflowTests.test_search_filter_pagination_and_member_history
+  expects historical event registration in the current member detail page.
+- events.test_open_attendance.OpenAttendanceTests.test_private_routes_csrf_escaping_and_public_flow
+  expects the old public "Verified Members" label.
+- events.test_observance_workflow.ObservanceWorkflowTests.test_unapplied_storage_fails_closed_for_public_and_private_routes
+  mocks the earlier storage lookup location rather than the workspace import.
+No historical migrations were run or weakened to make those checks pass.
+This evidence is for the current scoped selection, not a claim that the entire
+historical repository suite passes.
+
+Also included: programs.test_application_retry, test_public_receipt,
+test_public_catalog, test_public_availability, test_tracking, test_creation_builder;
+core.tests.test_public_portal, test_home_program_availability, test_short_references;
+ewaf.test_general_event_editor; scripts.program_application_browser_qa and
+scripts.event_builder_browser_qa.
+
+Artifacts
+
+Screenshots and browser result JSON alongside this file contain synthetic data.
+239-case source: temporary santolan-g12-tests-bcmi7kb8 directory.
+Clean 9-case follow-up: temporary santolan-g12-tests-_rmz47t0 directory.
+Before-edit file copies: .local/portal-event-upload-20261105/before.
+
+The retained local server at http://127.0.0.1:8013/ was refreshed after collecting
+three changed static assets. Read-only HTTP smoke checks confirmed reference-only
+tracking, the simplified public program page, and exact current JS/CSS bytes.
+The retained database, private uploads, earlier work, and issued references were
+preserved. No schema/data migration, real submission/email, commit, push, or
+external deployment was performed for this change.

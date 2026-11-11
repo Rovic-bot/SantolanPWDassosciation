@@ -1,0 +1,226 @@
+/* Section landings only. Detail and intake screens keep their existing styles. */
+.section-page {
+  --accent: var(--teal);
+  --tint: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  --rim: color-mix(in srgb, var(--accent) 20%, var(--line));
+  --glass: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 65%), color-mix(in srgb, var(--surface) 94%, transparent);
+  --portal-radius: 1.05rem;
+  --pad: clamp(1.1rem, 2.25vw, 1.85rem);
+  --portal-space: clamp(2.3rem, 4.5vw, 4rem);
+}
+/* Landings share the blue brand; semantic status labels keep their own colors. */
+.section-page #public-header { background: linear-gradient(115deg,var(--surface),var(--paper) 60%); border-color: var(--line); }
+.section-page #public-header .navbar-toggler { border-color: var(--line); border-radius: .8rem; }
+.section-page .portal-footer { background: var(--surface); }
+.section-page :is(.display-trigger,.display-panel) { background: var(--surface); border-color: var(--line); }
+.section-page main { background: radial-gradient(ellipse 48rem 36rem at 100% 10rem, color-mix(in srgb,var(--accent) 6%,transparent), transparent), var(--paper); }
+.section-page .section-hero {
+  background: radial-gradient(ellipse at 82% 45%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 54%), linear-gradient(105deg,var(--surface),var(--paper) 72%);
+  border-bottom: 1px solid var(--line);
+}
+.section-page .section-hero-grid {
+  display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); align-items: center;
+  gap: clamp(1.5rem,4vw,4rem); padding-block: clamp(1.8rem,3vw,2.9rem);
+}
+.section-page .section-intro { min-width: 0; }
+.section-page .portal-breadcrumb { margin: 0 0 1.25rem; font-size: .9rem; }
+.section-page .portal-breadcrumb a { text-underline-offset: .24em; }
+.section-page .section-overline, .section-page .eyebrow {
+  color: var(--accent); font-size: .76rem; line-height: 1.5; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+.section-page .section-overline { display: flex; align-items: center; gap: .6rem; margin-bottom: .65rem; }
+.section-overline::before { content: ""; width: 1.65rem; height: 2px; background: currentColor; }
+.section-page .section-hero h1 { max-width: none; font-size: clamp(2.35rem,4vw,4.15rem); line-height: 1.05; font-weight: 715; letter-spacing: -.05em; margin: 0 0 .85rem; }
+.section-page .section-lead { max-width: 49ch; font-size: clamp(1.05rem,1.5vw,1.22rem); line-height: 1.6; color: var(--muted); margin: 0; }
+.section-jumps { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; margin-top: .8rem; }
+.section-jumps a { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; font-weight: 600; font-size: .95rem; }
+.section-jumps a span { text-decoration: none; }
+.section-illustration { width: min(100%,28rem); justify-self: end; color: var(--accent); }
+.section-illustration svg { display: block; width: 100%; height: auto; }
+.section-page .section-portrait {
+  width: min(100%,24rem); justify-self: end; margin: 0; padding: .45rem;
+  border: 1px solid var(--rim); border-radius: 1rem; background: var(--glass);
+  backdrop-filter: blur(12px); box-shadow: 0 .6rem 2rem #02060d35;
+}
+.section-portrait img { display: block; width: 100%; height: auto; border-radius: .65rem; }
+.section-events .section-portrait img { aspect-ratio: 1.75; object-fit: cover; object-position: 50% 49%; }
+.section-page .section-portrait figcaption { padding: .55rem .5rem .25rem; line-height: 1.45; color: var(--muted); }
+.section-page :is(.portal-section,.catalog-content,.notice-layout) h2 { letter-spacing: -.035em; }
+.section-page .portal-section-heading > :last-child { max-width: 100%; }
+.section-page .btn:is(.btn-primary,.catalog-filter-button,.notice-filter-button),
+.section-page .notice-search button, .section-page .portal-view-controls button[aria-pressed=true],
+.section-page :is(.notice-pagination,.catalog-pagination) a[aria-current=page] {
+  background: var(--teal); border: 1px solid var(--teal); color: var(--paper);
+}
+.section-page .btn:is(.btn-primary,.catalog-filter-button,.notice-filter-button):hover,
+.section-page .notice-search button:hover { background: var(--teal-hover); border-color: var(--teal-hover); color: var(--paper); }
+.section-page .catalog-filter-button .ui-icon { color: inherit; }
+.public-portal.section-page form[method=get] :is(select[name],input[type=search]) { background: var(--paper); color: var(--ink); border-color: var(--rim); border-radius: .7rem; }
+.section-page :is(.portal-empty,.catalog-empty,.notice-empty,.portal-checklist,.portal-event-card,.catalog-guide,
+  .portal-filter-bar,.catalog-toolbar,.bulletin-topics,.notice-results-callout,.notice-program-filters,.notice-row,
+  .catalog-card,.portal-result-row,.portal-side-help,.portal-help-options article,.portal-resource-list article,
+  .portal-help-banner,.portal-note,.portal-purpose-list li,.portal-service-selector a) {
+  border: 1px solid var(--line); border-radius: var(--portal-radius); background: var(--glass);
+  box-shadow: inset 0 1px 0 #ffffff09;
+}
+.section-page :is(.portal-side-help,.portal-help-banner,.portal-note,.bulletin-topics,.catalog-toolbar,.portal-result-row,
+  .notice-results-callout,.portal-resource-list article,.portal-purpose-list li,.catalog-card,.notice-row,.portal-help-options article) { padding: var(--pad); }
+.section-page :is(.portal-note,.portal-help-banner,.portal-side-help,.notice-results-callout) { background: linear-gradient(140deg,var(--tint),var(--surface) 88%); border-color: var(--rim); }
+.section-page :is(.bulletin-topics,.catalog-toolbar,.portal-filter-bar,.portal-service-selector a,.portal-help-options article,.portal-side-help,.portal-note) {
+  background: linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,transparent),transparent 66%),color-mix(in srgb,var(--surface) 84%,transparent);
+  backdrop-filter: blur(14px); border-top-color: var(--rim); box-shadow: inset 0 1px 0 #d3e9ff0b;
+}
+.section-page :is(.catalog-card,.notice-row,.portal-event-card,.portal-result-row):focus-within { border-color: var(--teal); }
+.section-page .portal-disclosure > summary::marker, .section-page .membership-guide-details > summary::marker { color: var(--accent); }
+.section-page .membership-guide-details[open] > summary { background: transparent; }
+.section-page .portal-help-banner p, .section-page .portal-note p { color: var(--muted); }
+
+/* About: the community photograph opens the page; three tiles explain the Association's role. */
+.section-page .section-about-work > div { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: .3rem 3rem; align-items: center; }
+.section-about-work > div .eyebrow { grid-column: 1/-1; }
+.section-about-work > div p:last-child { color: var(--muted); margin: 0; }
+.section-page .portal-purpose-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; margin: 1.55rem 0 .65rem; }
+.section-page .portal-purpose-list li:nth-child(2) { --accent: var(--violet); }
+.section-page .portal-purpose-list li:nth-child(3) { --accent: var(--mint); }
+.section-page :is(.portal-purpose-list li,.portal-help-options article) > .portal-icon,
+.section-page .portal-service-selector .portal-icon {
+  box-sizing: content-box; padding: .65rem; width: 1.45rem; height: 1.45rem; flex-basis: 1.45rem;
+  color: var(--accent); background: color-mix(in srgb,var(--accent) 12%,transparent); border-radius: .8rem;
+}
+.section-page .portal-purpose-list strong { margin: .9rem 0 .3rem; }
+.section-page .section-about-reading { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); align-items: start; gap: 3rem; }
+.section-page .section-about-reading .portal-note { margin: 0; }
+
+/* Bulletin: topics above the feed, publication dates beside each notice. */
+.section-page main .container { max-width: 1240px; }
+.section-page .notice-layout { grid-template-columns: minmax(0,1fr) minmax(14rem,.4fr); align-items: start; gap: 1.8rem; }
+.bulletin-topics { grid-column: 1/-1; }
+.section-page .bulletin-topics h2 { font-size: 1.1rem; margin-bottom: .7rem; }
+.section-page .notice-main { grid-area: auto; }
+.section-page .notice-topic-links, .section-page .catalog-tabs { display: flex; flex-flow: row wrap; gap: .5rem; border: 0; }
+.section-page .notice-topic-links a, .section-page .catalog-tab, .section-page .portal-month-links a {
+  display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line);
+  border-radius: 2rem; background: var(--paper); color: var(--muted); padding: .45rem .9rem; margin: 0; text-decoration: none;
+}
+.section-page .notice-topic-links a[aria-current], .section-page .catalog-tab[aria-current=page],
+.section-page .notice-topic-links a:hover, .section-page .catalog-tab:hover, .section-page .portal-month-links a:hover {
+  border: 1px solid var(--accent); color: var(--accent); background: var(--tint); box-shadow: none;
+}
+.section-page .notice-topic-links a[aria-current] > span { text-decoration: none; }
+.section-page .notice-results-callout { display: block; margin: 0; }
+.section-page .notice-results-callout h2 { font-size: 1.35rem; margin-bottom: .75rem; }
+.section-page .notice-results-callout p { display: block; }
+.section-page .notice-search { max-width: 39rem; }
+.section-page .notice-search input { padding-left: .85rem; }
+.section-page .notice-search button { border-radius: 2rem; }
+.section-page .notice-source { font-size: .9rem; }
+.section-page .notice-list, .section-page .portal-result-list { display: grid; gap: 1rem; border: 0; }
+.section-page .notice-row { align-items: start; grid-template-columns: 5.4rem minmax(0,1fr); gap: .5rem 1.3rem; }
+.section-page .notice-date { grid-row: span 2; border: 1px solid var(--rim); border-radius: .8rem; background: var(--tint); padding: .65rem; align-self: start; text-align: center; }
+.section-page .notice-day { color: var(--accent); }
+.section-page .notice-row-action { margin: 0; }
+.section-page .notice-list-footer { padding-top: .85rem; }
+.section-page .notice-empty p { font-size: 1rem; }
+
+/* Events: a searchable schedule, followed by a separate observance index. */
+.section-page .portal-view-controls button { border-radius: 2rem; border-color: var(--rim); }
+.section-page .portal-filter-bar { padding: var(--pad); }
+.section-page .portal-event-grid { gap: 1.1rem; }
+.section-page .portal-empty { padding: var(--pad); }
+.section-page .portal-month { grid-template-columns: minmax(7rem,.24fr) minmax(0,1fr); }
+.section-page .portal-observances[data-observance-view=months] .portal-month { background: var(--glass); border-radius: var(--portal-radius); }
+.section-page .portal-month-links { gap: .45rem; }
+.section-page .portal-month-links a { font-size: .94rem; }
+
+/* Programs: comparison cards keep period, requirements and availability together. */
+.section-page .catalog-filters { margin-top: 1rem; padding-bottom: 0; }
+.public-portal.section-page .catalog-search input[type=search] { padding-left: 2.6rem; }
+.section-page .catalog-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.section-page .catalog-card-top { align-items: center; justify-content: space-between; }
+.section-page .catalog-category { margin: 0; font-size: .8rem; color: var(--accent); }
+.section-page .catalog-card h3 { margin-top: .65rem; }
+.section-page .catalog-card-bottom { flex-direction: column; gap: .3rem; margin-top: auto; padding-top: .75rem; border-top: 1px solid var(--line); }
+.section-page .catalog-description { font-size: 1rem; }
+.section-page .catalog-status { padding: 0; }
+.section-page .catalog-status .quiet-badge { border-radius: 1rem; color: var(--muted); background: var(--stone); padding: .3rem .75rem; }
+.section-page .catalog-status--open .quiet-badge { color: var(--mint); }
+.section-page .catalog-status--upcoming .quiet-badge { color: var(--teal); }
+.section-page :is(.catalog-status--cancelled,.catalog-status--unavailable) .quiet-badge { color: var(--peach); }
+.section-page .catalog-step-number { color: var(--accent); }
+.section-page .catalog-empty-icon { margin-left: 0; }
+.section-page .catalog-guide { padding: var(--pad); }
+.section-page .portal-supplies { padding-block: 2rem 0; }
+
+/* Published outcomes: keep the public register and private follow-up visually distinct. */
+.section-page .portal-results-layout { gap: 2rem; grid-template-columns: minmax(0,1fr) minmax(16rem,.44fr); }
+.section-page .portal-result-row .portal-small { color: var(--accent); font-weight: 600; font-size: .93rem; }
+.section-page .portal-result-row h3 { font-size: 1.45rem; }
+.section-page .portal-side-help hr { margin-block: 1.5rem; border-color: var(--line); opacity: 1; }
+
+/* Membership: applicants choose one service, then read its steps alongside its own checklist. */
+.section-page .portal-service-selector { gap: .85rem; }
+.section-page .portal-service-selector a { padding: 1.15rem; }
+.section-page .portal-service-selector a[aria-selected=true] { background: var(--tint); border: 2px solid var(--accent); padding: calc(1.15rem - 1px); }
+.section-page .portal-membership-layout { gap: clamp(1.5rem,4vw,3.75rem); }
+.section-page .portal-membership-layout > div > p:not(.eyebrow) { color: var(--muted); }
+.section-page .portal-checklist { border-top-color: var(--accent); }
+.section-page .membership-preparation-list label { color: var(--ink); }
+.section-page .membership-preparation-list input:checked + label { color: var(--mint); }
+.section-page .membership-detail-list { max-width: 60rem; }
+.section-page .membership-details-body :is(p,li) { max-width: 72ch; }
+
+/* Resources: action cards first; questions and reference guides stay easy to scan. */
+.section-page .portal-help-options { gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,24rem),1fr)); }
+.section-page .portal-help-options article { display: flex; align-items: flex-start; flex-direction: column; }
+.section-page .portal-help-options article > p:first-of-type { flex: 1; }
+.section-page .portal-help-options h3 { font-size: 1.4rem; }
+.section-page .portal-help-options #application-tracking { --accent: var(--violet); }
+.section-page .portal-resource-list { gap: 1rem; }
+.section-page .portal-help-layout { grid-template-columns: minmax(0,.68fr) minmax(0,1.32fr); }
+.section-help .portal-help-layout > div:last-child, .section-page .membership-detail-list {
+  padding: .25rem var(--pad); border: 1px solid var(--line); background: var(--glass); border-radius: var(--portal-radius);
+}
+.section-page :is(.portal-help-layout,.membership-detail-list) details:last-child { border-bottom: 0; }
+
+html[data-contrast=true] .section-page { --glass: var(--surface); --tint: var(--stone); --rim: var(--line); }
+html[data-contrast=true] .section-page :is(main,.section-hero,#public-header) { background: var(--surface); }
+html[data-contrast=true] .section-page #public-header .nav-link { color: var(--ink); }
+html[data-contrast=true] .section-page #public-header .nav-link[aria-current] { color: var(--teal); }
+html[data-contrast=true] .section-page :is(.bulletin-topics,.catalog-toolbar,.portal-filter-bar,.portal-service-selector a,.portal-help-options article,.portal-side-help,.portal-note) {
+  background: var(--surface); backdrop-filter: none;
+}
+html[data-contrast=true] .section-page .portal-service-selector a[aria-selected=true] { background: var(--stone); }
+@media (max-width: 900px) {
+  .section-page .notice-layout, .section-page .portal-results-layout { grid-template-columns: minmax(0,1fr); }
+  .section-page .bulletin-aside { max-width: 50rem; }
+  .section-page .section-about-reading, .section-page .portal-help-layout { gap: 1.5rem; }
+}
+@media (max-width: 750px) {
+  .section-page .section-hero-grid { grid-template-columns: minmax(0,1fr); gap: 1rem; }
+  .section-illustration { display: none; }
+  .section-page .section-portrait { justify-self: start; width: min(100%,25rem); }
+  .section-page .section-hero:has(.section-portrait) .section-hero-grid { padding-bottom: 1.5rem; }
+  .section-page .section-about-work > div, .section-page .section-about-reading, .section-page .portal-help-layout,
+  .section-page .portal-purpose-list, .section-page .catalog-grid, .section-page .portal-month { grid-template-columns: minmax(0,1fr); }
+  .section-page .section-about-work > div .eyebrow { margin-bottom: .35rem; }
+  .section-page .portal-purpose-list li { display: grid; grid-template-columns: auto minmax(0,1fr); gap: .25rem .85rem; align-items: center; }
+  .section-page .portal-purpose-list .portal-icon { grid-row: span 2; }
+  .section-page .portal-purpose-list strong { margin: 0; }
+  .section-page .catalog-search { flex-basis: 100%; }
+}
+@media (max-width: 479px) {
+  .section-page .notice-row { grid-template-columns: minmax(0,1fr); gap: .6rem; }
+  .section-page .notice-date { grid-row: auto; padding: .25rem .65rem; width: fit-content; align-items: center; }
+  .section-page .notice-row-action { grid-column: auto; }
+  .section-page .notice-search input { flex-basis: 100%; }
+  .section-page .portal-help-banner > .btn { flex-shrink: 1; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .section-page { --glass: var(--surface); }
+  .section-page :is(.section-portrait,.bulletin-topics,.catalog-toolbar,.portal-filter-bar,.portal-service-selector a,.portal-help-options article,.portal-side-help,.portal-note) { background: var(--surface); backdrop-filter: none; }
+}
+@media print {
+  .public-portal.section-page { --ink: #000; --muted: #222; --teal: #000; --accent: #000; --surface: white; --paper: white; --stone: white; --line: #888; --rim: #888; --glass: white; --tint: white; color-scheme: light; }
+  .section-page :is(main,.section-hero,.portal-side-help,.portal-note,.portal-help-banner) { background: white; }
+  .section-page :is(.section-illustration,.section-jumps) { display: none; }
+}

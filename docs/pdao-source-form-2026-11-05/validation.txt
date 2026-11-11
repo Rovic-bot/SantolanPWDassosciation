@@ -1,0 +1,99 @@
+Pasig PDAO application source and printing — November 5, 2026
+
+Owner request
+Use Pasig_PDAO_PWD_ID_Application_Editable_Google_Docs.docx for the PDAO
+application fields and for printing applications. The supplied blank document
+was read without modifying it. SHA-256:
+aa1856a81b38909e6790a3ef8294bb267024357e8dd56a804e20cdbe52509830
+
+Scope and implementation
+The existing PDAOForm already captures the source's applicant fields. Its age
+is calculated from birthdate. Section 19 is printed from recorded intake_channel;
+saved online submissions remain automatically Online, preserving the earlier
+owner decision to remove the planned-channel question. Missing historical
+channel information remains unselected, including legacy planned-channel answers.
+No new applicant question, database column, migration, or business decision was
+necessary. The source acknowledgement/signature remains for signing on paper.
+
+Replaced the generic printable field summary with an isolated A4 print view
+following the source's numbered sections 1–19, tables, checkboxes, 1×1 photo
+space, family/emergency details, PDAO consent, separate New/Renewal requirements,
+contact block and seals. word/media/image1.png, image2.jpeg and image3.png were
+copied unchanged to static/images/pdao-form as doh.png, pasig.jpeg and pdao.png.
+Source spelling/spacing was normalized for readable labels. This is a browser
+print rendition, not a generated or edited DOCX and not pixel-identical Word
+layout. Original DOCX and existing blank PDF download remain unchanged.
+
+Private applicant receipts print original declarations. Staff print views use
+the latest saved reviewed details. Existing receipt references remain visible
+and printable as a separate small footer; they are not entered as PWD numbers.
+Checkbox values and free text are escaped. Optional absent answers stay blank.
+Unknown historical choice values are retained in the print projection. The
+projection does not write records, change references, sign, forward, approve,
+or create membership. Permission gates, cache protections, correction revisions,
+audits and forwarding controls remain in the existing services/views.
+
+Association requirements, onsite/manual PRPWD, program/EWAF policy and existing
+unfinished Git changes were preserved. The source's residency alternatives,
+minor/dependent guidance and contact details are reproduced on its printout;
+they do not silently change Association completeness rules or claim independently
+verified current government policy. The screen identifies the supplied Version
+4.0 source and asks applicants to confirm details with PDAO.
+
+Verification
+34 distinct tests passed: 31 PDAO print/intake/review/browser tests in
+C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-z7_fbg_9, and 3 resident/staff
+layout-boundary tests in santolan-g12-tests-7g9re1p9. After retaining the printed
+receipt footer, all 13 affected source-form, transient-print, layout-boundary and
+browser tests passed again in santolan-g12-tests-y56edf8c.
+
+Database-backed tests used scripts/g12_test_runner.py, which disables project
+.env, verifies a fresh disposable native-MySQL datadir and grants access only to
+g12_empty/test_g12_disposable. No application data or schema was modified.
+Covered existing correction/history preservation, permission/revocation,
+idempotency, stale/concurrent corrections, audit rollback, receipt separation,
+CSRF, duplicate/unsupported input, escaping and no-write transient preparation.
+
+Chrome produced two A4 pages for filled and minimal fictional applications.
+The long-value fixture produced four pages rather than clipping data. Browser
+checks cover loaded seals, selected boxes, horizontal text overflow, 390px
+viewport containment, hidden screen controls in print, retained receipt footer,
+and the Print/Save PDF button. Filled pages and mobile view were visually
+inspected; screenshots here contain fictional data only. All three fixture
+PDFs and screenshots remain in the y56edf8c/pdao-source-print test directory.
+Use A4, 100% scale, with browser headers/footers off. Exceptionally long values
+can add pages; the application never truncates them to force two pages.
+
+Database checks passed on disposable MySQL in santolan-g12-tests-il6sbt4e.
+Migration drift check passed with No changes detected in santolan-g12-tests-yc9co9mi.
+The ordinary local settings database was unavailable (connection refused), so
+these checks do not establish live database availability. Git diff --check passed.
+
+Separate existing test issue
+The broader initial 32-test run also exercised
+PDAORegistrationTests.test_enabled_association_confirmation_admin_decision_creates_member.
+Its Association-approval request returned 400 instead of expected 302. Its
+fixture omits prpwd_lookup_number, required by the existing registration editor
+for approval, and does not set up the current manual PRPWD review. This is
+outside PDAO printing; neither that control nor its test was changed. The final
+31-test PDAO run explicitly selected the other PDAORegistrationTests methods,
+alongside the print, review and browser suites. No claim of a green full suite.
+
+No commit, push, deployment, government transmission or document signing occurred.
+
+Live receipt repair — November 5, 2026
+The retained development server on port 8013 had been started before the new
+pdao_print template library existed. Its launcher explicitly uses
+use_reloader=False, so the running Django template engine retained the old
+library registry even after template files changed. This caused the reported
+TemplateSyntaxError on the session-bound PDAO receipt.
+
+Verified the running web process against the retained instance health response
+and server manifest, restarted only that web process, and confirmed replacement
+process health. The existing MySQL service was not stopped or reset. No schema,
+application record, session, permission or source-code change was needed.
+The user's existing Brave tab at /membership/registration/pdao/receipt/ was then
+observed displaying the submitted receipt and both application pages normally,
+with the print action available. No receipt values or screenshots were saved
+to this validation record. Future Python/template-library changes must restart
+this no-reload development web process before live acceptance is claimed.

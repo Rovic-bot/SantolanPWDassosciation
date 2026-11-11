@@ -1,0 +1,10 @@
+<section class="onsite-section" id="onsite-{{ section.key }}" data-onsite-section="{{ section.key }}" aria-labelledby="onsite-heading-{{ section.key }}">
+  <header class="onsite-section-heading"><span class="onsite-section-number" aria-hidden="true">{{ number|stringformat:'02d' }}</span><div><h2 id="onsite-heading-{{ section.key }}">{{ section.title }}</h2><p>{{ section.description }}</p></div></header>
+  <div class="onsite-fields">
+    {% if section.key == 'documents' and form.member_profile_format and form.privacy_notice %}<details class="onsite-field onsite-field-wide"><summary>Privacy notice</summary>{{ form.privacy_notice|linebreaks }}</details>{% endif %}
+    {% for field in section.fields %}{% include 'membership/onsite/field.html' %}{% endfor %}
+  </div>
+  {% if section.key == 'documents' and not section.has_uploads %}
+  <div class="onsite-document-guidance"><p>Bring the required documents to the Help Desk. This intake uses onsite document presentation.</p></div>
+  {% endif %}
+</section>

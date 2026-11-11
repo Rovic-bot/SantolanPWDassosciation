@@ -1,0 +1,15 @@
+<dialog class="public-event-dialog concern-dialog" data-tracking-dialog aria-labelledby="tracking-dialog-title"
+        data-verify-url="{% url 'programs:tracking' %}" data-apply-url="{% url 'programs:tracking_progress' %}"
+        data-receipt-url="{% url 'programs:tracking_progress' %}" data-finish-url="{% url 'programs:tracking_finish' %}"
+        data-resources-url="{% url 'programs:tracking' %}">
+  <header class="event-dialog-heading">
+    <h2 id="tracking-dialog-title">Check program application</h2>
+    <form method="dialog"><button aria-label="Close application check">&times;</button></form>
+  </header>
+  <div class="concern-dialog-notice" data-concern-notice hidden>
+    <p role="alert" data-concern-error></p>
+    <button class="btn btn-outline-primary" type="button" data-concern-retry>Try again</button>
+  </div>
+  <div class="event-dialog-body" data-concern-body></div>
+  <p class="visually-hidden" role="status" data-concern-progress></p>
+</dialog>

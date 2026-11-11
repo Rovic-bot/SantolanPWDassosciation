@@ -1,0 +1,23 @@
+{% extends 'admin_portal/base.html' %}{% load static workspace_navigation %}
+{% block title %}Record actual receipt · Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/assistance-releases.css' %}?v=20261111-compact-receipt">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/assistance-claimant.js' %}?v=20261111-compact-receipt" defer></script>{% endblock %}
+{% block content %}
+<div class="container content-section assistance-releases claimant-workspace" data-release-table data-program-id="{{ program.pk }}">
+  <a class="claimant-back" href="{{ return_url }}" data-receipt-navigation>← Back to assistance receipts</a>
+  <header class="receipt-page-heading"><div><p class="eyebrow">ASSISTANCE RELEASES</p><h1>Record actual receipt</h1><p class="receipt-page-help">Identify who received the assistance and record your onsite verification.</p></div></header>
+  <div class="claimant-summary"><div><small>Beneficiary</small><strong>{{ application.member.full_name }}</strong><span>{{ application.short_reference }}</span></div><div><small>Program</small><strong>{{ program.name }}</strong><span>{{ program.benefit }}{% if program.amount != None %} · PHP {{ program.amount|floatformat:2 }}{% endif %}</span></div></div>
+  {% if release_blocker %}<div class="alert alert-warning" role="alert" id="receipt-release-blocker"><strong>Receipt recording is on hold</strong><p>{{ release_blocker }}</p>
+    {% operational_ewaf_access as can_use_ewaf %}{% if program.ewaf_applicable and can_use_ewaf %}<a href="{% url 'ewaf:operational_workspace' program.pk %}?review={{ application.pk }}">Review latest ranking and beneficiary selection →</a>{% else %}<a href="{{ return_url }}" data-receipt-navigation>Review assistance receipts →</a>{% endif %}
+  </div>{% endif %}
+  <form method="post" action="{% url 'assistance:release' application.pk %}" class="receipt-action-form claimant-form" data-claimant-form>
+    {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+    {% if form.errors and not release_blocker %}<div class="alert alert-danger" role="alert"><strong>Receipt has not been recorded.</strong>{% if form.non_field_errors %}{{ form.non_field_errors }}{% else %}<p>Review the highlighted fields before confirming.</p>{% endif %}{% for field in form.hidden_fields %}{{ field.errors }}{% endfor %}</div>{% endif %}
+    <section class="claimant-section"><h2>Receipt confirmation</h2>{% include 'assistance/claimant_field.html' with field=form.claimant_type %}
+      <fieldset class="claimant-representative" data-representative-fields><legend>Guardian / representative details</legend><div class="claimant-grid">{% for field in representative_fields %}{% include 'assistance/claimant_field.html' %}{% endfor %}</div><p class="receipt-page-help">The beneficiary will be emailed after this receipt is saved.</p></fieldset>
+      <div class="claimant-confirmations">{% include 'assistance/claimant_field.html' with field=form.beneficiary_identity_verified %}{% include 'assistance/claimant_field.html' with field=form.receipt_confirmed %}</div>
+    </section>
+    <footer class="claimant-actions"><a href="{{ return_url }}" data-receipt-navigation>Cancel</a><button type="submit" class="receipt-button"{% if release_blocker %} disabled aria-describedby="receipt-release-blocker"{% endif %}>Confirm and record receipt</button></footer>
+  </form>
+</div>
+{% endblock %}

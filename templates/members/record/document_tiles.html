@@ -1,0 +1,8 @@
+<div class="member-document-grid">
+{% for document in document_items %}
+  <article class="member-document-tile">
+    <a class="member-document-preview" href="{{ document.preview_url }}" target="_blank" rel="noopener" aria-label="Preview {{ document.label }}" title="{{ document.label }}">{% include 'members/record/icon.html' with name='document' %}<span>{{ document.label }}</span></a>
+    <div class="member-document-actions"><a href="{{ document.url }}" aria-label="Download {{ document.label }}" title="Download {{ document.label }}">{% include 'members/record/icon.html' with name='download' %}</a>{% if document.review_url and perms.documents.verify_document %}<a href="{{ document.review_url }}">Verify for reuse</a>{% endif %}</div>
+  </article>
+{% empty %}<p class="member-record-empty">No membership documents have been uploaded.</p>{% endfor %}
+</div>

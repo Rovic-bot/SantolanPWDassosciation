@@ -1,0 +1,18 @@
+<nav id="changelist-filter" class="audit-filter-panel" aria-labelledby="changelist-filter-header">
+  <header class="directory-filter-heading"><h2 id="changelist-filter-header">Filter audit logs</h2><a href="{{ request.path }}">Reset all</a></header>
+  <form method="get" class="audit-filter-form">
+    {% for key, value in audit_preserved_filters %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endfor %}
+    {% for filter in audit_filters %}
+      {% if filter.radio %}<fieldset><legend>{% if opts.label_lower == 'audit.securityevent' %}By status{% else %}By action type{% endif %}</legend>
+        {% for option in filter.options %}<label class="audit-radio-choice"><input type="radio" name="{{ filter.name }}" value="{{ option.value }}"{% if option.selected %} checked{% endif %}><span>{{ option.display }}</span></label>{% endfor %}
+      </fieldset>{% else %}<div class="audit-select-filter"><label for="audit-filter-{{ forloop.counter }}">{% if filter.name == 'content_type__id__exact' %}Content type / model{% else %}By username{% endif %}</label>
+        <select id="audit-filter-{{ forloop.counter }}" name="{{ filter.name }}">{% for option in filter.options %}<option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.display }}</option>{% endfor %}</select>
+      </div>{% endif %}
+    {% endfor %}
+    <fieldset class="audit-date-range"><legend>Date range</legend>{{ audit_dates.non_field_errors }}
+      <label for="id_date_from" class="visually-hidden">Start date</label>{{ audit_dates.date_from }}{{ audit_dates.date_from.errors }}
+      <label for="id_date_to" class="visually-hidden">End date</label>{{ audit_dates.date_to }}{{ audit_dates.date_to.errors }}
+    </fieldset>
+    <button type="submit" class="button default">Apply filters</button>
+  </form>
+</nav>

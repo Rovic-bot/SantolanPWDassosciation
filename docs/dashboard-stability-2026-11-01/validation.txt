@@ -1,0 +1,44 @@
+Dashboard hover stability and header removal — 1 November 2026
+
+Changes
+- Removed the visible reporting-period heading, Dashboard overview title and
+  introduction. Filters now begin directly below the workspace bar with compact
+  top spacing. A visually hidden page heading preserves heading navigation.
+- Moved scatter tooltips outside the scrollable SVG viewport and gave them an
+  explicit intrinsic width and initial position. Tooltip measurement cannot
+  change the plot's scrollable dimensions.
+- Fit SVG dimensions inside fractional-pixel viewports. Observe the surrounding
+  chart layout rather than scrollbar-driven viewport width to avoid redraw loops.
+- Preserved live values, data modals, five-row scrolling and all existing controls.
+
+Files changed in this refinement
+templates/admin_portal/dashboard.html
+static/css/dashboard.css
+static/js/dashboard.js
+scripts/dashboard_themes_browser.cjs
+docs/dashboard-stability-2026-11-01/
+
+Verification
+- 25 analytics tests passed against a fresh disposable MySQL instance. Fixture
+  aggregate/render used 22 SELECT queries. No application records were modified.
+- Browser regression checked unchanged width/height/scroll dimensions and zero
+  SVG replacements while hovering and keyboard-focusing every scatter cluster,
+  at 1920/1440/390/320 pixels and fractional 110% text at desktop width.
+- All twelve chart/modal tables matched synthetic aggregates. Paired alignment,
+  five-row scrolling, enlarged rings, tooltip keyboard access and modal focus,
+  Escape/Close/backdrop handling passed.
+- Dark/light, system/persisted themes, blocked storage, 200% text, high contrast,
+  forced colors, reduced motion and no-JavaScript data-table fallback passed.
+- No clipped chart labels, unintended page overflow, external requests, write
+  requests or JavaScript errors in the browser harness.
+- Live read-only render passed responsive label/overflow checks at
+  1440/1024/390/320 pixels. Header removal and compact filter placement inspected.
+- Django configuration/database check, JavaScript syntax checks and git diff
+  --check passed. collectstatic completed into .local/dashboard-stability-static-build.
+- Refreshed only the verified local web process; database process and an existing
+  database connection remained running. Public / and native /admin/ checks passed.
+- Automatic browser refresh was unavailable because the Computer Use native pipe
+  could not connect. Reloading the existing dashboard loads the versioned assets.
+
+Evidence images here use synthetic data. Live screenshots remain in ignored
+.local/. Public pages, native admin tools and business rules remain unchanged.

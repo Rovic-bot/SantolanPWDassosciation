@@ -1,0 +1,32 @@
+/* The adjacent association name supplies the accessible name for each brand link. */
+.association-logo {
+    display: block;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #fff;
+}
+.workspace-brand .association-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+}
+.admin-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    max-width: 100%;
+}
+.admin-brand > span, .workspace-brand > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 575px) {
+    .brand .association-logo {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+    }
+}

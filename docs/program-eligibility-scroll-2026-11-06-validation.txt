@@ -1,0 +1,19 @@
+Scrollable program eligibility profile — November 6, 2026
+
+Supersedes the earlier eligibility disclosure at the owner's request.
+
+Eligibility is always visible. On desktop, its card fills the height beside Schedule & capacity and Requirements & evidence without increasing their rows. The heading stays above a separately scrollable disability list. All saved disability types remain present, including inactive and unrestricted states. The list can receive keyboard focus and has a visible focus outline. Narrow layouts cap the list at 28rem; print styling exposes the whole list.
+
+The matching overview/publication heights and left-column requirements placement are preserved. Event layout, business rules, permissions, and application data are unchanged.
+
+Validation:
+- Django system check passed and updated templates compile.
+- git diff --check passed with core.safecrlf=false.
+- Identity-checked local web process refreshed; its existing MySQL connection remained usable.
+- Live-page visual inspection confirmed the dropdown is gone, disability types are visible with an internal scrollbar, and the panel bottom aligns with Requirements & evidence above Program history. The complete list remains in the accessibility tree. Manual scrolling was interrupted by concurrent browser input; no automated browser harness was run.
+
+Follow-up: fit the card to its actual content
+
+The owner requested that one, two, three, or other short lists only use their needed height. An invisible grid slot now supplies the maximum available height while the visible card uses its natural content height. Long lists retain the internal scroll limit, and narrow/print layouts retain their existing sizing. This supersedes the always-full-height card behavior above.
+
+Django system checks, template compilation, and git diff --check passed. The retained web process was refreshed without restarting MySQL. Live visual verification on the existing Programa page confirmed the card ends immediately below its single Learning Disability row. Further navigation to a two-type program was skipped when concurrent user input changed the active tab. No program records were changed.

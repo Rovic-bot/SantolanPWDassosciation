@@ -1,0 +1,36 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Revised EWAF preview · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<p class="eyebrow">EWAF &amp; SELECTION</p><h1>Revised EWAF preview</h1>
+{% include 'ewaf/tabs.html' %}
+<p>HI / SI / ES / PA / HM · Dataset Min–Max · Version 1</p>
+<p class="alert alert-info"><strong>Synthetic demonstration only.</strong> Applicants A, B and C are fictional. Draft weights and internal ranks do not authorize scoring or beneficiary selection.</p>
+<section class="ui-panel mb-4" aria-labelledby="weights-heading"><h2 id="weights-heading" class="h4">Adjust draft criterion weights</h2>
+{% if can_calculate %}
+<form method="post" id="revised-weight-form">{% csrf_token %}
+{{ form.non_field_errors }}{{ form.expected }}{{ form.request_key }}{{ form.request_key.errors }}
+<div class="mb-3">{{ form.mode.label_tag }}{{ form.mode }}{{ form.mode.errors }}</div>
+<p>Change HI, SI, ES or PA. HM receives the remaining weight. Other weights stay at the values you entered.</p>
+{% for control in controls %}<div class="row align-items-center mb-3">
+<div class="col-md-5">{{ control.field.label_tag }}<p class="small mb-1">Proposed range: {{ control.lower }}–{{ control.upper }}%</p></div>
+<div class="col-md-4"><label class="visually-hidden" for="slider-{{ control.code }}">{{ control.name }} percentage slider</label><input type="range" class="form-range w-100" id="slider-{{ control.code }}" data-proposal-range="{{ control.code }}" min="{{ control.lower }}" max="{{ control.upper }}" step="0.01" value="{{ control.field.value }}"></div>
+<div class="col-md-3"><div class="input-group">{{ control.field }}<span class="input-group-text">%</span></div>{{ control.field.errors }}</div>
+</div>{% endfor %}
+<div aria-live="polite"><p><strong>Number of Household Members (HM): <output id="hm-weight">{{ hm_percent }}</output>%</strong> · Total: <output id="total-weight">{{ weight_total }}</output>%</p><p id="weight-feedback" class="small">HM has no separately approved minimum or maximum. Zero is only an exploratory endpoint, never a positive-weight AHP configuration.</p></div>
+<div class="mb-3">{{ form.classify }} {{ form.classify.label_tag }}</div>
+<div class="mb-3">{{ form.capacity.label_tag }}{{ form.capacity }}{{ form.capacity.errors }}</div>
+<button class="btn btn-primary" name="action" value="PREVIEW" data-preview-submit>Preview synthetic ranking</button>
+<button type="button" class="btn btn-outline-secondary" id="reset-example">Restore document defaults</button>
+<noscript><p>Enter percentages using the number controls and select Preview. The server calculates HM and rejects invalid combinations.</p></noscript>
+{% if program and schema_available %}<div class="mt-3">{{ form.reason.label_tag }}{{ form.reason }}{{ form.reason.errors }}<button class="btn btn-outline-primary mt-2" name="action" value="RETAIN" data-preview-submit>Retain this synthetic preview</button></div>{% endif %}
+</form><script src="{% static 'js/ewaf-revised-weights.js' %}" defer></script>
+{% else %}<p>Calculation permission is required to preview draft weights. Retained history remains available to authorized viewers.</p>{% endif %}
+</section>
+{% if result %}{% include 'ewaf/revised/result.html' %}{% endif %}
+<section class="ui-panel mb-4"><h2 class="h4">Readiness for official use</h2><p><strong>Blocked.</strong> No official calculation can be requested from this preview.</p><ul>{% for item in blockers %}<li>{{ item.message }}</li>{% endfor %}</ul><p>Demonstration classifications are optional. Official classifications require their own approved policy.</p></section>
+<section class="ui-panel mb-4"><h2 class="h4">Program context and preview history</h2>
+<form method="get" data-auto-filter><label for="program-context">Select a program context for retained synthetic history</label><div class="d-flex gap-2"><select name="program" id="program-context" class="form-select"><option value="">Document example only</option>{% for item in programs %}<option value="{{ item.pk }}" {% if item.pk == program.pk %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select><button class="btn btn-outline-primary">Open</button></div></form>
+<p class="small mt-2">A program context labels the demonstration. Its real applications and approved configuration are not used or changed.</p>
+{% if not schema_available %}<p>The additive preview-history schema is not installed in this environment. Calculation preview remains available; no migration is run by this page.</p>{% endif %}
+{% if history %}<ul>{% for row in history %}<li><a href="{% url 'ewaf:revised_run' row.pk %}">Synthetic revision {{ row.revision }} — {{ row.get_mode_display }}</a> · {{ row.recorded_at }} · {{ row.actor_label }}</li>{% endfor %}</ul>{% if history.has_previous %}<a href="?program={{ program.pk }}&amp;page={{ history.previous_page_number }}">Newer previews</a>{% endif %} {% if history.has_next %}<a href="?program={{ program.pk }}&amp;page={{ history.next_page_number }}">Older previews</a>{% endif %}{% else %}<p>No retained synthetic previews in this context.</p>{% endif %}
+</section></div>{% endblock %}

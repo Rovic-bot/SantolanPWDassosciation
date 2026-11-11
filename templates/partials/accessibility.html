@@ -1,0 +1,27 @@
+<div class="accessibility-widget" data-display-widget hidden>
+  <button class="display-trigger" type="button" aria-label="Display preferences" aria-expanded="false" aria-controls="display-panel">
+    <span aria-hidden="true">Aa</span><span class="display-trigger-label">Display</span>
+  </button>
+  <section class="display-panel" id="display-panel" aria-labelledby="display-title" hidden>
+    <div class="display-heading"><h2 id="display-title">Make yourself comfortable.</h2><button type="button" class="display-close" aria-label="Close display preferences">×</button></div>
+    <p>Adjust how this website looks on this device.</p>
+    <label for="display-size">Text size</label>
+    <select id="display-size" data-preference="text"><option value="default">Standard</option><option value="large">Larger</option><option value="largest">Largest</option></select>
+    <label class="display-option"><span>Dark mode</span><input type="checkbox" data-preference="dark"></label>
+    <label class="display-option"><span>High contrast</span><input type="checkbox" data-preference="contrast"></label>
+    <label class="display-option"><span>Reduce motion</span><input type="checkbox" data-preference="motion"></label>
+    <p class="display-hint">Your device’s reduced motion setting is always respected.</p>
+    <button type="button" class="display-reset">Reset preferences</button>
+    <button type="button" class="display-language" data-public-language aria-pressed="false" hidden>Tagalog</button>
+    <p class="display-selection-hint" data-selection-hint hidden>Highlight text on the page, then choose Read aloud. Keyboard shortcut: Alt + R.</p>
+    <p class="visually-hidden" role="status" data-display-status></p>
+  </section>
+</div>
+<div class="selection-reader" data-selection-reader hidden role="group" aria-label="Read selected text">
+  <button type="button" class="selection-read-button" data-selection-read aria-keyshortcuts="Alt+R">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"/></svg>
+    <span data-selection-read-label>Read aloud</span>
+  </button>
+  <button type="button" class="selection-reader-close" data-selection-dismiss aria-label="Close read aloud">&times;</button>
+</div>
+<p class="visually-hidden" role="status" aria-live="polite" data-selection-status></p>

@@ -1,0 +1,166 @@
+/* Admin presentation layer shared by workspace pages and Django's native tools.
+   Keep public styles, permission projection and workflow behavior independent. */
+.admin-workspace {
+  --ink: #24343d;
+  --muted: #596970;
+  --teal: #21685e;
+  --teal-wash: #e9f2ef;
+  --line: #dce3e3;
+  --stone: #f1f4f4;
+  --surface: #fff;
+  --focus: #21685e;
+  --radius-sm: .375rem;
+  background: #f5f7f8;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.admin-workspace h1,.native-admin-workspace #content h1 { font-size: clamp(1.5rem, 2vw, 1.875rem); line-height: 1.25; font-weight: 650; letter-spacing: -.025em; margin-bottom: .625rem; }
+.admin-workspace h2 { font-size: 1.125rem; line-height: 1.4; font-weight: 600; letter-spacing: -.015em; }
+.admin-workspace h3 { font-size: 1rem; line-height: 1.4; font-weight: 600; }
+.admin-workspace .eyebrow { color: var(--muted); font-size: .6875rem; letter-spacing: .085em; margin-bottom: .625rem; }
+.admin-workspace .container { max-width: 1360px; padding-inline: clamp(1rem, 2.3vw, 2rem); }
+.admin-workspace .content-section { padding-block: 2rem 4rem; }
+.admin-workspace .workspace-page-heading { align-items: flex-start; gap: 1.5rem; margin-bottom: 1.5rem; }
+.workspace-page-heading > div { min-width: 0; }
+.workspace-page-heading p { max-width: 48rem; }
+.workspace-heading-actions { display: flex; flex-direction: column; align-items: flex-end; flex: 0 0 auto; gap: .75rem; }
+.workspace-heading-actions .workspace-date { padding: 0; }
+.workspace-topbar { min-height: 64px; padding: .5rem 2rem; font-size: .8125rem; }
+.workspace-topbar .workspace-context { font-weight: 600; }
+.workspace-topbar > a { gap: .5rem; color: var(--muted); font-weight: 500; }
+.workspace-topbar > a:hover { color: var(--teal); }
+.workspace-sidebar { --nav-surface: #fff; --nav-hover: #f2f5f4; --nav-selected: #e9f2ef; }
+.workspace-sidebar a.workspace-brand { padding: 1.25rem; font-size: .9375rem; }
+.workspace-brand small { font-size: .625rem; letter-spacing: .06em; }
+/* Django forms.css styles all .collapse summaries as dark fieldset headers.
+   Scope navigation explicitly so native edit pages cannot restyle our groups. */
+.admin-workspace .workspace-sidebar .workspace-module > summary { margin: 0; padding: .625rem; border: 0; font-size: .8125rem; font-weight: 500; background: transparent; color: var(--ink); }
+.admin-workspace .workspace-sidebar .workspace-module > summary:hover { background: var(--nav-hover); }
+.admin-workspace .workspace-sidebar .workspace-module.current-module > summary { color: var(--teal); font-weight: 600; }
+.admin-workspace .workspace-sidebar .workspace-module.current-module:not([open]) > summary { background: var(--nav-selected); box-shadow: inset 2px 0 var(--teal); }
+.workspace-module-links { border-color: #e4e9e7; }
+.workspace-navigation nav a { font-size: .8125rem; }
+.workspace-module-notice { font-size: .75rem; line-height: 1.6; }
+.workspace-account { margin-top: 1.25rem; }
+
+/* A compact, consistent set of actions and form controls. */
+.admin-workspace .btn { min-height: 44px; padding: .55rem .9rem; gap: .5rem; font-size: .8125rem; font-weight: 600; border-radius: .375rem; box-shadow: none; transition: none; }
+.admin-workspace .btn:active { transform: none; }
+.admin-workspace .btn-primary { --bs-btn-bg: var(--teal); --bs-btn-border-color: var(--teal); --bs-btn-hover-bg: #18564d; --bs-btn-hover-border-color: #18564d; --bs-btn-active-bg: #18564d; --bs-btn-active-border-color: #18564d; }
+.admin-workspace .btn-outline-primary { --bs-btn-color: var(--teal); --bs-btn-border-color: #a9c2bb; --bs-btn-hover-color: var(--teal); --bs-btn-hover-bg: var(--teal-wash); --bs-btn-hover-border-color: var(--teal); --bs-btn-active-color: var(--teal); --bs-btn-active-bg: var(--teal-wash); --bs-btn-active-border-color: var(--teal); }
+.admin-workspace .btn-outline-secondary { --bs-btn-color: var(--muted); --bs-btn-border-color: #adb9bc; --bs-btn-hover-color: var(--ink); --bs-btn-hover-bg: var(--stone); --bs-btn-hover-border-color: #87999e; }
+.admin-workspace .form-label,.admin-workspace form > label { font-size: .8125rem; font-weight: 600; margin-bottom: .375rem; }
+.admin-workspace :is(.form-control,.form-select) { min-height: 44px; border-color: #aab9bd; font-size: .875rem; padding: .55rem .75rem; border-radius: .375rem; }
+.admin-workspace .form-select { padding-right: 2.25rem; }
+.admin-workspace :is(.form-control,.form-select):focus { border-color: var(--teal); box-shadow: none; }
+.admin-workspace textarea.form-control { min-height: 7rem; }
+.admin-workspace .form-text,.admin-workspace .helptext { font-size: .8125rem; color: var(--muted); }
+.admin-workspace .record-editor { max-width: 58rem; margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); }
+.admin-workspace .record-editor > .mb-4 { margin-bottom: 1.25rem!important; }
+.admin-workspace .application-filters { padding: 1.125rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); --bs-gutter-x: 1rem; --bs-gutter-y: .875rem; }
+.admin-workspace .application-filters.row { margin-top: 0; padding-top: .25rem; }
+.workspace-search { display: flex; align-items: flex-end; flex-wrap: wrap; gap: .75rem; }
+.workspace-search > div { flex: 1 1 18rem; min-width: 0; }
+.admin-workspace .workspace-search > .btn { width: auto; flex: 0 0 auto; }
+.admin-workspace nav[aria-label="Member management"] { gap: .375rem!important; border-bottom: 1px solid var(--line); padding-bottom: .75rem; }
+.admin-workspace nav[aria-label="Member management"] .btn { border-color: transparent; color: var(--muted); background: transparent; }
+.admin-workspace nav[aria-label="Member management"] .btn[aria-current] { color: var(--teal); background: var(--teal-wash); border-color: #cbded7; }
+.admin-workspace .document-configuration-tabs { margin-block: 1rem 1.5rem; padding-bottom: .75rem; border-bottom: 1px solid var(--line); }
+.admin-workspace .document-configuration-tabs a { padding-inline: .75rem; border-radius: .25rem; }
+.admin-workspace .document-configuration-tabs a[aria-current] { color: var(--teal); background: var(--teal-wash); box-shadow: inset 0 -2px var(--teal); }
+
+/* Tables retain their semantic markup and keyboard-accessible scroll regions. */
+.admin-workspace .table-summary { margin-block: 1.5rem .75rem; }
+.admin-workspace .table-summary h2 { font-size: .9375rem; }
+.admin-workspace .table-summary > span { font-size: .8125rem; }
+.admin-workspace .application-table { border: 1px solid var(--line); border-radius: .5rem; }
+.admin-workspace .application-table thead th { background: #f1f5f5; color: #4d6269; font-size: .75rem; font-weight: 600; letter-spacing: 0; text-transform: none; padding: .75rem 1rem; white-space: nowrap; }
+.admin-workspace .application-table tbody :is(td,th) { font-size: .8125rem; line-height: 1.5; padding: .625rem 1rem; vertical-align: middle; }
+.admin-workspace .application-table tbody tr:last-child > * { border-bottom: 0; }
+.admin-workspace .application-table tbody tr:hover { background: #f7faf9; }
+.admin-workspace .application-table tbody th { width: auto; min-width: 13rem; font-weight: 600; }
+.admin-workspace .application-table tbody th a { color: var(--ink); text-decoration: none; }
+.admin-workspace .application-table tbody th a:hover { color: var(--teal); text-decoration: underline; }
+.admin-workspace .application-table caption { padding: .75rem 1rem; color: var(--muted); font-size: .8125rem; }
+.admin-workspace .quiet-badge { padding: .2rem .5rem; border-radius: .25rem; background: #f1f4f4; border-color: #dce3e3; font-size: .75rem; font-weight: 500; white-space: nowrap; }
+.admin-workspace .quiet-badge:is([data-status="published"],[data-status="active"],.status-approved) { background: #e9f3ed; color: #305c42; border-color: #cddfd3; }
+.admin-workspace .quiet-badge.status-pending { background: #faf3e3; color: #73551b; border-color: #e7dac0; }
+.admin-workspace .quiet-badge.status-rejected { background: #f8eceb; color: #853d37; border-color: #e6cfcb; }
+.admin-workspace .application-table .table-empty { padding: 2.5rem 1.25rem; }
+.admin-workspace .table-empty h3 { font-size: 1rem; }
+.admin-workspace .table-empty p { margin-top: .5rem; }
+.admin-workspace .pagination-bar { padding-block: 1rem; gap: .75rem; font-size: .8125rem; }
+.admin-workspace .pagination-bar a { padding: .375rem .75rem; background: var(--surface); border: 1px solid var(--line); border-radius: .375rem; text-decoration: none; }
+
+/* Existing dashboard destinations, arranged as practical work areas. */
+.admin-workspace .dashboard-layout { grid-template-columns: minmax(0, 1fr) 240px; gap: 1.5rem; }
+.admin-workspace .workspace-priority { padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--teal); border-radius: .5rem; }
+.admin-workspace .workspace-priority h2 { font-size: 1.1875rem; }
+.admin-workspace .workspace-priority p:not(.eyebrow) { font-size: .875rem; margin-block: .625rem 1rem; }
+.admin-workspace .workspace-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.admin-workspace .workspace-sections section { min-width: 0; padding: 1.25rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); display: flex; flex-direction: column; align-items: flex-start; }
+.admin-workspace .workspace-sections h2 { font-size: 1rem; margin: 0 0 .5rem; }
+.admin-workspace .workspace-section-heading { margin-bottom: 0; }
+.admin-workspace .workspace-sections p { font-size: .8125rem; margin-bottom: .75rem; }
+.admin-workspace .workspace-sections section > a,.admin-workspace .workspace-actions { margin-top: auto; font-size: .8125rem; }
+.admin-workspace .workspace-sections section > a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font-weight: 600; }
+.admin-workspace .workspace-actions { gap: .125rem 1rem; }
+.admin-workspace .workspace-actions a { font-size: .8125rem; }
+.admin-workspace .workspace-aside { border: 0; padding: 0; }
+.admin-workspace .workspace-aside section,.admin-workspace .workspace-aside section:first-child { padding: 1.25rem; margin-bottom: 1rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); }
+.admin-workspace .workspace-aside h2 { font-size: 1rem; margin-bottom: .75rem; }
+.admin-workspace .workspace-aside p,.admin-workspace .workspace-aside li { font-size: .8125rem; }
+.admin-workspace .workspace-aside .text-link { font-size: .8125rem; gap: .5rem; }
+.admin-workspace .record-section { padding-block: 1.25rem; }
+.admin-workspace .empty-board { max-width: 58rem; padding: 1.5rem; border: 1px solid var(--line); border-radius: .5rem; }
+.admin-workspace details.record-section { background: var(--surface); border: 1px solid var(--line); border-radius: .5rem; padding: .75rem 1rem; }
+.admin-workspace details.record-section > summary { cursor: pointer; min-height: 44px; align-content: center; }
+.workspace-link-list { display: grid; gap: .75rem; padding: 0; list-style: none; }
+.workspace-link-list > li { padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--line); border-radius: .5rem; }
+.workspace-link-list h2 { margin: 0; font-size: 1rem; }
+.workspace-link-list a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; text-decoration: none; }
+.workspace-link-list a:hover { text-decoration: underline; }
+.workspace-link-list p { margin: .25rem 0; color: var(--muted); }
+.workspace-content-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* Native Admin widgets keep their behavior and receive the same visual scale. */
+.native-admin-workspace #content { max-width: 1360px; padding: 1.5rem clamp(1rem, 2.3vw, 2rem) 4rem; }
+.native-admin-workspace .object-tools { margin: .875rem 0 1.5rem; }
+.native-admin-workspace #content > h2 { margin: .25rem 0 1.25rem; font-size: 1rem; }
+.native-admin-workspace div.breadcrumbs { padding-inline: clamp(1rem, 2.3vw, 2rem); }
+.native-admin-workspace #toolbar { padding: 1rem; border-radius: .5rem; }
+.native-admin-workspace #content :is(input[type=text],input[type=password],input[type=email],input[type=url],input[type=number],input[type=search],textarea,select),.native-admin-workspace #toolbar #searchbar { min-height: 44px; padding: .55rem .75rem; font-size: .875rem; border-color: #aab9bd; }
+.native-admin-workspace #toolbar input[type=submit],.native-admin-workspace #content input[type=submit],.native-admin-workspace #content .button,.native-admin-workspace .object-tools a { min-height: 44px; padding: .55rem .9rem; font-size: .8125rem; border-radius: .375rem; }
+.native-admin-workspace #changelist .results { border: 1px solid var(--line); border-radius: .5rem; }
+.native-admin-workspace #changelist table thead th { font-size: .75rem; padding: .75rem; letter-spacing: 0; text-transform: none; background: #f1f5f5; }
+.native-admin-workspace #changelist table tbody th,.native-admin-workspace #changelist table tbody td { font-size: .8125rem; padding: .625rem .75rem; }
+.native-admin-workspace .form-row { padding: 1rem; }
+.native-admin-workspace #content .workspace-empty h2 { font-size: 1rem; }
+.native-admin-workspace .workspace-empty { border: 1px solid var(--line); border-radius: .5rem; padding: 2rem 1.25rem; }
+
+html[data-contrast=true] .admin-workspace { --ink: #102a32; --muted: #344e55; --line: #647a7f; --teal: #005749; --focus: #005749; }
+html[data-contrast=true] .workspace-sidebar { --nav-surface: #fff; --nav-selected: #dbece5; }
+@media (max-width: 1199px) {
+  .admin-workspace .dashboard-layout { grid-template-columns: minmax(0, 1fr); }
+  .admin-workspace .workspace-aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .admin-workspace .workspace-aside section { margin: 0; }
+}
+@media (max-width: 1099px) {
+  .workspace-topbar { padding-inline: 1.25rem; }
+  .workspace-sidebar a.workspace-brand { padding: 1rem 1.25rem; }
+  .workspace-navigation { border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 767px) {
+  .admin-workspace .workspace-page-heading { flex-direction: column; gap: .75rem; }
+  .workspace-heading-actions { align-items: flex-start; }
+  .admin-workspace .workspace-sections,.admin-workspace .workspace-aside,.workspace-content-links { grid-template-columns: minmax(0, 1fr); }
+  .admin-workspace .content-section { padding-top: 1.5rem; }
+  .admin-workspace .record-editor { padding: 1rem; }
+  .admin-workspace .application-filters.row { padding-inline: .5rem; }
+  .admin-workspace .workspace-search > .btn { width: 100%; }
+  .admin-workspace .table-summary { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .native-admin-workspace .workspace-navigation.collapsing { transition: none; } }
+@media print { .admin-workspace .workspace-sections { display: block; } .admin-workspace .workspace-sections section { break-inside: avoid; } }

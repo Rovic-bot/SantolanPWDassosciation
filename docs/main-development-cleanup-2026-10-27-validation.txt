@@ -1,0 +1,93 @@
+Main development system and EWAF interface cleanup
+Validated October 27, 2026
+
+Requested result
+The retained 12-member database is now the default development system launched
+by Start System.cmd, scripts/run.ps1, and scripts/run-current-development.ps1.
+Website: http://127.0.0.1:8012/ ; private MySQL instance: 127.0.0.1:3309.
+Existing login credentials remain valid. Login redirects to the Admin dashboard.
+Stop System.cmd stops this instance while retaining its database and files.
+Restart uses scripts/restart-current-development.ps1. Create Admin.cmd targets
+the same verified instance. The previous launcher is retained separately as
+scripts/run-previous-development.ps1 and was not run during this change.
+
+Interface changes
+- Removed the listed shared-configuration panel, policy/cutoff text and links,
+  accepted-input shortcut, private JSON download link, Decision history, and
+  Calculation history from the ranking interface.
+- Removed both environment demonstration banners from the active system.
+- Generate EWAF Ranking no longer requests a reason. The server supplies a
+  standard audit description; actor, time, configuration, idempotency checks,
+  permissions, accepted-input validation, and immutable run history remain.
+- Existing beneficiary decision reasons and protected export endpoints remain.
+- Applicant links still open their score breakdowns. Stale-ranking protection
+  continues to require regeneration when approved weights or inputs change.
+
+Data preservation
+The existing santolan_ewaf_twelve_demo database and its private media were
+retained in place. No migration, reseed, reset, approval, or ranking generation
+was performed against it. Main settings inherit its isolation and identity
+guards and disabled outbound messaging. Older databases were not opened.
+Before/after row counts AND SHA-256 digests match for these models:
+  members.Member                    12
+  assistance.AssistanceRelease     27
+  ewaf.OperationalConfiguration    10
+  ewaf.OperationalRun               9
+  ewaf.DatasetInputReview          60
+  ewaf.SharedDatasetPolicy         10
+  ewaf.VaultRevision               14
+Login checks can update authentication/session metadata. Detailed model
+digests are in main-development-cleanup-2026-10-27/database-preservation.json.
+
+Executed validation
+1. Focused suite:
+   .venv\Scripts\python.exe -B scripts\g12_test_runner.py test
+   ewaf.test_current_weights ewaf.test_operational ewaf.test_score_breakdown
+   ewaf.test_shared_application
+   --testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+   --noinput --verbosity 1
+   PASS: 48 tests in 223.850 seconds; zero failures or skips.
+   A fresh disposable MySQL 8.4.11 instance used test_g12_disposable at port
+   65304, UUID 28ea318f-d1e9-11f1-ad65-581122e63603, separate media and disabled
+   outbound messaging. This runner synchronizes model tables rather than
+   applying the historical migration chain. It destroyed its test database.
+   Browser coverage exercised slider edits, AHP calculation, approval, ranking
+   generation without a reason on two existing programs, and applicant scoring.
+   Regression coverage includes unauthorized generation, protected exports,
+   automatic audit details, preserved historical payloads, and retry handling.
+2. node scripts/current_development_browser.cjs
+   PASS against the retained main instance: verified instance identity, public
+   home, dashboard login, all five program ranking pages, 12 saved scores each,
+   absent requested text/reason fields, and applicant scoring links.
+   Desktop (1440px) and mobile (390px) checks passed without horizontal overflow
+   or JavaScript errors. No approvals or calculations were changed by this check.
+3. .venv\Scripts\python.exe -B scripts\current_development.py check
+   PASS: no system-check issues. Guarded makemigrations --check --dry-run also
+   found no model changes; no migrations were applied to the retained instance.
+4. Actual restart through scripts/restart-current-development.ps1, idempotent
+   startup through scripts/run.ps1, and -CheckOnly status all passed.
+5. Python AST, Node syntax, and PowerShell parser checks passed for changed
+   executable files. git diff --check passed (line-ending notices only).
+
+Evidence
+main-development-cleanup-2026-10-27/django.log
+main-development-cleanup-2026-10-27/database-preservation.json
+main-development-cleanup-2026-10-27/source-changes.json
+main-development-cleanup-2026-10-27/ranking-desktop.png
+main-development-cleanup-2026-10-27/ranking-results.png
+main-development-cleanup-2026-10-27/ranking-mobile.png
+The ranking screenshot was visually inspected. Existing saved rankings can
+correctly show a stale-weights notice until Generate EWAF Ranking is selected.
+
+Scope and source preservation
+source-changes.json lists this task's exact source changes relative to a
+pre-task hash inventory, including pre-existing uncommitted work. Seventeen
+existing files changed, no existing files were removed, and five new source
+files were added, along with this validation report and evidence. Launcher
+backups and inventory are retained privately under
+.local/main-development-cleanup-20261027/. Existing local login instructions
+were updated without changing credentials. Start System.cmd itself needed no
+edit because its existing target now launches the retained system.
+The owner-defined 70% milestone, eight Admin groups, public sections, scoring
+methods, approval boundaries, and stored business records remain unchanged.
+No commit, push, merge, deployment, or real program decision was performed.

@@ -1,0 +1,24 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{{ heading|default:'Program applications' }} &middot; Santolan PWD{% endblock %}
+{% block content %}
+<div class="container content-section">
+  {% if destination == 'releases' %}<h1 class="visually-hidden">Assistance releases</h1>{% else %}
+  <p class="eyebrow">{{ eyebrow|default:'APPLICATIONS & VERIFICATION' }}</p>
+  <h1>{{ heading|default:'Program applications' }}</h1>
+  <p>Choose a program to {{ purpose|default:'review its applicants and supporting documents' }}.</p>
+  {% endif %}
+  {% if sort_options %}{% include 'programs/card_filters.html' %}{% else %}<form method="get" data-auto-filter class="application-filters workspace-search mb-4">
+    {% if selection %}<input type="hidden" name="eligibility" value="eligible">{% endif %}
+    <div><label for="program-search" class="form-label">Search program name</label><input id="program-search" name="q" value="{{ query }}" class="form-control" type="search"></div>
+    <button class="btn btn-outline-primary" type="submit">Search</button>
+  </form>{% endif %}
+  <div class="program-grid">
+    {% for program in page_obj %}
+    {% if destination == 'eligibility' %}{% url 'assistance:queue' as queue_url %}<article class="program-card"><h2><a href="{{ queue_url }}?program={{ program.pk }}{% if selection %}&amp;eligibility=eligible{% endif %}">{{ program.name }}</a></h2>{% include 'programs/card_facts.html' %}</article>
+    {% elif destination == 'releases' %}{% url 'assistance:program_releases' program.pk as card_url %}{% include 'programs/program_card.html' with card_action='View Releases' %}
+    {% else %}{% url 'programs:applications' program.pk as card_url %}{% include 'programs/program_card.html' %}{% endif %}
+    {% empty %}<p>No programs match this search.</p>{% endfor %}
+  </div>
+  {% include 'partials/page_links.html' %}
+</div>
+{% endblock %}

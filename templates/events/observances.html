@@ -1,0 +1,8 @@
+{% extends 'events/workspace/base.html' %}
+{% block title %}Annual observances &middot; Santolan PWD{% endblock %}
+{% block content %}<div class="container event-workspace-container event-observances-only">
+  <h1 class="visually-hidden">Annual observances</h1>
+  <div class="event-workspace-actions">{% if perms.events.view_event %}<a class="btn btn-outline-secondary" href="{% url 'event_workspace' %}">View events</a>{% endif %}{% if perms.events.add_event and perms.events.view_event %}<a class="btn btn-primary" href="{% url 'events:create' %}">Create event</a>{% endif %}</div>
+  {% include 'partials/workspace_messages.html' %}
+  {% include 'events/workspace/quarters.html' %}
+</div>{% endblock %}

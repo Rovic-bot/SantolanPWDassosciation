@@ -1,0 +1,41 @@
+{% extends 'admin_portal/base.html' %}
+{% load static %}
+{% block title %}Review observance · Santolan PWD{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/observances.css' %}">{% endblock %}
+{% block content %}
+<div class="container content-section">
+  <a class="workspace-back" href="{% url 'events:observances' %}">← Annual Observances</a>
+  <p class="eyebrow mt-4">OBSERVANCE REVIEW</p><h1>{{ observance.title }}</h1>
+  <p><span class="quiet-badge">{{ observance.get_status_display }}</span> · Version {{ observance.version }}</p>
+  {% include 'partials/workspace_messages.html' %}
+  <div class="workspace-actions mb-4">
+    {% if observance.status != 'archived' and perms.events.change_annualobservance and perms.events.publish_annualobservance %}<a href="{% url 'events:observance_edit' observance.pk %}">Edit observance</a>{% endif %}
+    {% if observance.status == 'published' %}<a href="{% url 'core:events' %}#observance-month-{{ observance.month }}">View public calendar</a>{% endif %}
+  </div>
+  <div class="record-columns"><div>
+    <section class="record-section observance-preview" aria-labelledby="card-preview">
+      <h2 id="card-preview">Card preview</h2>
+      {% if observance.image %}<img class="observance-photo" src="{% url 'events:observance_preview_image' observance.pk %}" alt="{{ observance.image_alt }}">{% endif %}
+      <p>{{ observance.get_category_display }}</p><h3>{{ observance.title }}</h3>
+      <p><strong>{{ observance.recurrence_rule }}</strong> · Every year</p>
+      {{ observance.description|linebreaks }}
+      <p><strong>Annual observance</strong></p>
+      {% include 'events/participation.html' with item=observance %}
+      {% if observance.legal_basis or observance.source_url %}<p>{{ observance.legal_basis }}{% if observance.source_url %}<br><a href="{{ observance.source_url }}" rel="external">Official source for {{ observance.title }}</a>{% endif %}</p>{% endif %}
+    </section>
+    {% if revisions is not None %}<section class="record-section" aria-labelledby="revision-history"><h2 id="revision-history">Revision history</h2>
+      {% for revision in revisions %}<details class="record-section"><summary>Version {{ revision.version }} · {{ revision.get_status_display }} · {{ revision.occurred_at|date:'M j, Y, g:i A' }}</summary>
+        <p>{{ revision.actor_label }} · {{ revision.action }} · {{ revision.reason }}</p>
+        <h3>{{ revision.title }}</h3><p>{{ revision.recurrence_rule }} · {{ revision.get_category_display }}</p>
+        {{ revision.description|linebreaks }}{% if revision.legal_basis or revision.source_url %}<p>{{ revision.legal_basis }}{% if revision.source_url %}<br><a href="{{ revision.source_url }}">Recorded official source</a>{% endif %}</p>{% endif %}
+        {% include 'events/participation.html' with item=revision %}
+        {% if revision.image %}<p><a href="{% url 'events:observance_revision_image' observance.pk revision.pk %}">View photo from version {{ revision.version }}</a></p><p>Photo description: {{ revision.image_alt }}</p>{% endif %}
+      </details>{% endfor %}
+      {% if revisions.has_other_pages %}<nav class="pagination-bar" aria-label="Revision history pages">{% if revisions.has_previous %}<a href="?revision_page={{ revisions.previous_page_number }}">Previous revisions</a>{% endif %}<span>Page {{ revisions.number }} of {{ revisions.paginator.num_pages }}</span>{% if revisions.has_next %}<a href="?revision_page={{ revisions.next_page_number }}">Next revisions</a>{% endif %}</nav>{% endif %}
+    </section>{% endif %}
+    {% if logs is not None %}<section class="record-section"><h2>Audit records</h2>{% for log in logs %}<details class="record-section"><summary>Version {{ log.version }} · {{ log.action }} · {{ log.occurred_at|date:'M j, Y, g:i A' }}</summary><p>{{ log.actor_label }} · {{ log.reason }}</p><dl>{% for field, change in log.changes.items %}<dt>{{ field }}</dt><dd>Before: {{ change.before }}<br>After: {{ change.after }}</dd>{% endfor %}</dl></details>{% endfor %}
+      {% if logs.has_other_pages %}<nav class="pagination-bar" aria-label="Audit pages">{% if logs.has_previous %}<a href="?log_page={{ logs.previous_page_number }}">Previous audits</a>{% endif %}<span>Page {{ logs.number }} of {{ logs.paginator.num_pages }}</span>{% if logs.has_next %}<a href="?log_page={{ logs.next_page_number }}">Next audits</a>{% endif %}</nav>{% endif %}
+    </section>{% endif %}
+  </div><aside>{% if actions %}<section class="card p-4"><h2 class="h4">Publication controls</h2><p>Only published cards appear publicly. Drafts, archives and revision history remain private.</p><form method="post">{% csrf_token %}{% include 'events/fields.html' %}<button class="btn btn-primary" type="submit">Apply publication change</button></form></section>{% endif %}</aside></div>
+</div>
+{% endblock %}

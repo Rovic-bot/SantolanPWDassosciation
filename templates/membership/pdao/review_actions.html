@@ -1,0 +1,56 @@
+{% if registration.status != 'forwarded' and perms.membership.forward_pdaoregistration %}
+<div id="pdao-manual-review" data-pdao-number="{{ submitted.pwd_number }}" data-pdao-registry="{{ prpwd_lookup_url }}">
+  {% if online_review %}
+    {% if submitted.pwd_number %}
+      <div class="pdao-registry-check">
+        <h3>Check the PWD number</h3>
+        <p class="pdao-saved-number">{{ submitted.pwd_number }}</p>
+        {% if prpwd_lookup_url %}<button type="button" class="btn btn-outline-primary" data-pdao-registry-open>Check PWD number in PRPWD ↗</button>
+        {% else %}<p role="alert">Configure the official PRPWD link before recording a result.</p>{% endif %}
+        <p class="form-text" data-pdao-registry-feedback role="status">Check the number in PRPWD, then return here. Opening the link does not verify it.</p>
+      </div>
+    {% else %}<p class="pdao-permission-note">No existing PWD number was provided. Arrange verification at the office; a new applicant does not need an existing number.</p>{% endif %}
+    <p class="form-text">Review notices go to <strong>{{ submitted.email|default:'the applicant’s saved email (not recorded)' }}</strong>. Save any corrections in Application details first.</p>
+  {% else %}<p class="pdao-permission-note">Onsite application. These actions do not send review emails.</p>{% endif %}
+
+  <form method="post" id="pdao-forward-form">{% csrf_token %}<input type="hidden" name="version" value="{{ registration.version }}">
+    <input type="hidden" name="action" value="{% if registration.status == 'ready' %}forwarded{% else %}ready{% endif %}">
+    {{ form.non_field_errors }}{{ form.prpwd_lookup_number.errors }}
+    {% if registration.status == 'ready' %}
+      <div class="form-check">{{ form.confirmed }}<label class="form-check-label" for="{{ form.confirmed.id_for_label }}">{{ form.confirmed.label }}</label>{{ form.confirmed.errors }}</div>
+    {% elif online_review and submitted.pwd_number %}
+      <input type="hidden" name="prpwd_lookup_number" data-pdao-lookup value="">
+      <noscript><p><a href="{{ prpwd_lookup_url }}" target="_blank" rel="noopener noreferrer">Open PRPWD</a></p><label><input type="checkbox" name="prpwd_lookup_number" value="{{ submitted.pwd_number }}" required> I manually checked this PWD number in PRPWD.</label></noscript>
+      <p class="form-text">Marking ready records that you manually verified this number and emails an invitation for onsite verification.</p>
+    {% endif %}
+    <button class="btn btn-primary" type="submit"{% if online_review and submitted.pwd_number and registration.status != 'ready' %} data-pdao-decision{% endif %}>{% if registration.status == 'ready' %}Record forwarded to PDAO{% else %}Mark ready to forward{% endif %}</button>
+  </form>
+  {% if online_review and registration.status != 'needs_info' %}
+    <details class="pdao-information-request"{% if needs_form.is_bound %} open{% endif %}>
+      <summary class="btn btn-outline-primary">Needs information</summary>
+      <form method="post">{% csrf_token %}{{ needs_form.version }}{{ needs_form.action }}
+        {% if submitted.pwd_number %}<input type="hidden" name="prpwd_lookup_number" data-pdao-lookup value=""><noscript><label><input type="checkbox" name="prpwd_lookup_number" value="{{ submitted.pwd_number }}" required> I manually checked this PWD number in PRPWD.</label></noscript>{% endif %}
+        <p>The email asks the applicant to complete the PDAO form again or visit the office to correct their information.</p>
+        <label for="{{ needs_form.reason.id_for_label }}">{{ needs_form.reason.label }}</label>{{ needs_form.reason }}{{ needs_form.reason.errors }}
+        <button class="btn btn-outline-primary" type="submit"{% if submitted.pwd_number %} data-pdao-decision{% endif %}>Send email and mark needs information</button>
+      </form>
+    </details>
+  {% endif %}
+</div>
+{% elif registration.status != 'forwarded' %}<p class="pdao-permission-note">An authorized staff member can update the forwarding status.</p>{% endif %}
+{% if registration.status == 'forwarded' %}
+  <div class="pdao-claim-action">
+    <h3>PWD ID collection</h3>
+    {% if claim_notice %}
+      <p>A claim notice has been requested for this application. See Applicant emails for the saved message and delivery status.</p>
+    {% elif can_send_claim_notice %}
+      <p>Send <strong>{{ claim_recipient }}</strong> an email saying their PWD ID is ready to claim at the Barangay Santolan office.</p>
+      <form method="post" action="{% url 'membership:pdao_claim_notices' %}">{% csrf_token %}
+        <input type="hidden" name="applications" value="{{ registration.pk }}:{{ registration.version }}">{{ claim_form.return_to }}
+        <div class="form-check">{{ claim_form.confirmed }}<label class="form-check-label" for="{{ claim_form.confirmed.id_for_label }}">I confirm that this PWD ID is ready for collection at the Barangay Santolan office.</label></div>
+        <button type="submit" class="btn btn-primary">Send PWD ID claim email</button>
+      </form>
+    {% elif not claim_recipient %}<p>No valid email address is recorded. Contact the applicant directly about collection.</p>
+    {% else %}<p>An authorized staff member can send the collection notice when the PWD ID is available.</p>{% endif %}
+  </div>
+{% endif %}

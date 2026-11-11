@@ -1,0 +1,51 @@
+Dashboard chart interactions — 1 November 2026
+
+Requested changes
+- Eligibility outcomes displays exactly five complete program rows initially.
+  The remaining rows stay in the same chart and are accessible by scrolling,
+  including keyboard scrolling. The viewport accounts for wrapped program names.
+- Program status rings scale to the available plot space with larger counts.
+- Every View data control opens a native modal with the corresponding complete
+  table, definitions and scope. Escape, Close and backdrop dismiss it. Tab and
+  Shift+Tab stay inside, then focus returns to the initiating control.
+- Scatter program numbers appear in a tooltip on hover or keyboard focus.
+  Coincident points share a focus target listing every associated program number.
+  Original coordinates, counts and descriptive trend are retained.
+
+Scope and changed files
+Only /dashboard/ presentation was changed in this refinement:
+  static/js/dashboard.js
+  static/css/dashboard.css
+  templates/admin_portal/dashboard.html
+  templates/analytics/chart.html
+  scripts/dashboard_themes_browser.cjs
+  docs/dashboard-interactions-2026-11-01/
+No changes to live queries, permissions, business rules, records, the public site,
+or native /admin/ tools. Prior uncommitted work was preserved.
+
+Verification
+- 25 analytics tests passed using a fresh disposable MySQL database through
+  scripts/g12_test_runner.py and RegistrationIntakeTestRunner. The fixture render
+  used 22 SELECT queries. Application database records were untouched.
+- Django check --database default --settings=config.current_development_settings
+  passed. JavaScript syntax and git diff --check passed.
+- Final collectstatic passed into .local/dashboard-interactions-static-build.
+- Browser tests verified all twelve modal tables against server fixture values,
+  four visible primary metrics, paired chart/card alignment and no clipped SVG
+  text or page overflow at 1440/1024/768/390/320 pixels.
+- A synthetic ten-program fixture verified rows 1–5 initially, keyboard access to
+  later rows and grouped scatter-point tooltips at 1440/390/320 pixels.
+- Both modal themes, focus cycle in both directions, Escape/Close/backdrop,
+  focus restoration, unchanged card geometry and 200% text at 320 pixels passed.
+- Theme persistence, blocked storage, custom filters, high contrast, reduced
+  motion, forced colors, and JavaScript-disabled source tables passed.
+- No browser errors, external network requests or write requests in the harness.
+- Current live dashboard rendered with a read-only database guard. Its eligibility
+  viewport showed the first five rows, scrolled through the final program, and
+  its modal contained every program. Responsive live label/overflow checks passed.
+- Only the verified local web process was refreshed; the database process and an
+  existing database connection were preserved. Public / and native /admin/ route
+  checks passed. The authenticated browser was refreshed for the user.
+
+Screenshots in this directory contain synthetic fixtures only. Actual live
+captures remain under ignored .local/. No manual screen-reader test was run.

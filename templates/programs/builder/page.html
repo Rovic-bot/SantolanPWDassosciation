@@ -1,0 +1,71 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{% if editing %}Edit program{% else %}Create program{% endif %} &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} program-builder-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-builder.css' %}?v=20261106-picture">{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True program_builder=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/schedule-calendar.js' %}?v=20261111-annual" defer></script><script src="{% static 'js/program-builder.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}
+<div class="container builder-container{% if not editing %} builder-container-compact{% endif %}" data-program-builder data-retained-types="{{ form.legacy_disability_types|length }}" data-saved="{{ builder_saved|yesno:'true,false' }}" data-persisted="{{ editing|yesno:'true,false' }}" data-bound="{{ form.is_bound|yesno:'true,false' }}" data-saved-label="{% if builder_created %}Draft saved{% elif builder_saved %}Program updated{% else %}Up to date{% endif %}"{% if editing %} data-edit-url="{% url 'programs:edit' program.pk %}" data-review-url="{% url 'programs:manage_detail' program.pk %}" data-saved-at="{{ program.updated_at|date:'c' }}"{% endif %}>
+  {% if editing %}
+  <header class="builder-header">
+    <div><h1>Edit program</h1><p class="builder-record-name">{{ program.name|default:'Untitled program' }}</p></div>
+    {% include 'programs/builder/status.html' %}
+  </header>
+  {% else %}<h1 class="visually-hidden">Create program</h1>{% endif %}
+  {% include 'partials/workspace_messages.html' %}
+  <div class="builder-layout">
+    <nav class="builder-steps" aria-label="Program setup sections"><p class="builder-eyebrow">Program setup</p>
+      <a href="#setup-identity" aria-current="step"><span>01</span><div>Identity<small>Program details</small></div></a>
+      <a href="#setup-schedule"><span>02</span><div>Schedule<small>Dates &amp; times</small></div></a>
+      <a href="#setup-capacity"><span>03</span><div>Capacity<small>Places &amp; assessment</small></div></a>
+      <a href="#setup-eligibility"><span>04</span><div>Eligibility<small>Configuration</small></div></a>
+      <a href="#setup-requirements"><span>05</span><div>Requirements<small>Applicant evidence</small></div></a>
+    </nav>
+    <form class="builder-form" method="post" enctype="multipart/form-data" action="{% if editing %}{% url 'programs:edit' program.pk %}{% else %}{% url 'program_builder' %}{% endif %}" data-builder-form>
+      {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+      {{ form.resubmission_closes_at.as_hidden }}
+      <div class="builder-validation builder-glass" data-validation-summary tabindex="-1"{% if not form.errors and not additions.errors and not additions.non_form_errors %} hidden{% endif %}><h2>Check your program setup</h2><div data-validation-content>{% include 'programs/builder/errors.html' %}</div></div>
+      <section class="builder-section builder-glass" id="setup-identity" aria-labelledby="identity-heading"><header><span>01</span><div><h2 id="identity-heading">Program identity</h2><p>Give this service a clear name and purpose.</p></div></header><div class="builder-fields">
+        {% include 'programs/builder/field.html' with field=form.name %}
+        {% include 'programs/builder/field.html' with field=form.assistance_type %}
+        {% include 'programs/builder/field.html' with field=form.description wide=True %}
+        {% if form.benefit %}{% include 'programs/builder/field.html' with field=form.benefit wide=True %}{% endif %}
+        {% include 'programs/builder/field.html' with field=form.picture wide=True %}
+        <div class="builder-wide builder-picture">
+          {% if program.picture_asset.image %}<img src="{% url 'programs:picture' program.pk %}?v={{ program.picture_asset.version }}" alt="Current program picture" width="180" height="100">{% endif %}
+          <div class="form-check">{{ form.remove_picture }}<label for="{{ form.remove_picture.id_for_label }}">{{ form.remove_picture.label }}</label>{{ form.remove_picture.errors }}</div>
+        </div>
+      </div></section>
+      <section class="builder-section builder-glass builder-schedule" id="setup-schedule" aria-labelledby="schedule-heading"><header><span>02</span><div><h2 id="schedule-heading">Registration &amp; program schedule</h2><p>All dates and times use Philippine Standard Time (UTC+8).</p></div></header>
+        {% include 'programs/builder/calendar.html' %}
+      </section>
+      <section class="builder-section builder-glass" id="setup-capacity" aria-labelledby="capacity-heading"><header><span>03</span><div><h2 id="capacity-heading">Capacity &amp; assessment</h2><p>Set the beneficiary limit for EWAF selection.</p></div></header><div class="builder-fields">
+        {% include 'programs/builder/field.html' with field=form.slots %}
+        <div class="builder-field"><strong>EWAF assessment</strong><p class="builder-help">Every program uses EWAF. Eligible applicants are ranked using the approved configuration, and beneficiaries are selected within the slot limit.</p></div>
+      </div></section>
+      <section class="builder-section builder-glass" id="setup-eligibility" aria-labelledby="eligibility-heading"><header><span>04</span><div><h2 id="eligibility-heading">Eligibility profile</h2><p>Choose only the disability types applicable to this program.</p></div></header>
+        <fieldset class="builder-disabilities" id="program-disability-options" data-disability-selection tabindex="-1"><legend>Applicable disability types <span>(required)</span></legend><button type="button" class="btn btn-sm btn-outline-secondary builder-js-only" data-select-all-disabilities aria-controls="program-disability-options" hidden{% if form.terms_protected %} disabled{% endif %}>Select all disability types</button>{{ form.eligible_disability_types }}{{ form.eligible_disability_types.errors }}</fieldset>
+        <p class="builder-help">Select at least one disability type. Choose Select all disability types when the program is open to every listed type.</p>
+        {% if form.legacy_disability_types %}<p class="builder-help">Earlier classifications retained: {% for item in form.legacy_disability_types %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %}.</p>{% endif %}
+      </section>
+      <section class="builder-section builder-glass" id="setup-requirements" aria-labelledby="requirements-heading"><header><span>05</span><div><h2 id="requirements-heading">Requirements</h2><p>Add the documents or questions applicants need to complete. If a calendar photo is needed, add it as a Document upload requirement.</p></div></header>
+      {% if perms.programs.configure_program and not form.terms_protected %}
+        <div class="builder-questions">
+          {% if requirements %}<ul class="builder-saved-requirements">{% for item in requirements %}<li><span>{{ forloop.counter }}. {{ item.label }}<small>{{ item.get_kind_display }} &middot; {{ item.is_required|yesno:'Required,Optional' }}</small></span><a href="{% url 'programs:requirement_edit' program.pk item.pk %}">Edit<span class="visually-hidden"> {{ item.label }}</span></a></li>{% endfor %}</ul>{% endif %}
+          {{ additions.management_form }}<div data-question-rows>{% for entry in additions %}{% include 'programs/builder/question.html' with entry=entry %}{% endfor %}</div>
+          <template data-question-template>{% include 'programs/builder/question.html' with entry=additions.empty_form %}</template>
+          <button type="button" class="btn btn-outline-secondary builder-js-only" data-add-question hidden>Add Requirements <span aria-hidden="true">+</span></button><p class="builder-help" data-question-feedback aria-live="polite"></p><noscript><p class="builder-help">Save the draft, then use Add requirement on the program record to configure requirements.</p></noscript>
+        </div>
+      {% elif form.terms_protected %}<p class="builder-help">Approved requirements and eligibility rules are retained. Changes to these rules require renewed approval.</p>
+      {% endif %}
+      </section>
+      {% if form.notes %}<div class="builder-section builder-glass">{% include 'programs/builder/field.html' with field=form.notes %}<p class="builder-help">{% if form.is_incomplete_draft %}You can add a reason for this draft update.{% else %}A reason is required when updating a saved program.{% endif %}</p></div>{% endif %}
+      <p class="builder-private-notice"><span aria-hidden="true">&#9671;</span> {% if program.status == 'published' or program.status == 'cancelled' %}Update program details, capacity and dates here. Changes are checked against existing applications, approvals and scoring records. Approved evaluation rules and earlier records are retained.{% else %}Beneficiary slots and disability types are required to save. Complete the remaining setup and approval before publishing.{% endif %}</p>
+      <section class="builder-review builder-glass" data-review-ready hidden tabindex="-1"><h2>Program ready for review</h2><p>Your changes are saved. Open the program record to review its details and publication status.</p><a class="btn btn-primary" data-open-review href="{% if editing %}{% url 'programs:manage_detail' program.pk %}{% else %}#{% endif %}">Open program review <span aria-hidden="true">&#8594;</span></a></section>
+      <footer class="builder-action-bar builder-glass"><p data-save-feedback role="status">{% if form.is_bound %}Review the highlighted fields.{% elif builder_created %}Draft saved privately.{% elif builder_saved %}Program updated.{% elif editing %}Your changes are saved.{% else %}Your program is not public.{% endif %}</p><div><button class="btn btn-outline-secondary" type="submit" data-save-draft{% if editing and not perms.programs.change_program %} disabled{% endif %}>{% if editing %}Update program{% else %}Save draft{% endif %}</button><button class="btn btn-primary builder-js-only" type="button" data-review-program hidden{% if editing and not perms.programs.change_program %} disabled{% endif %}>Review program <span aria-hidden="true">&#8594;</span></button></div></footer>
+      {% if editing and not perms.programs.change_program %}<p class="builder-help">Your program is saved. Updating it requires program-change access. <a href="{% url 'programs:manage_detail' program.pk %}">Open the saved record</a>.</p>{% endif %}
+    </form>
+    {% include 'programs/builder/summary.html' %}
+  </div>
+</div>
+{% endblock %}

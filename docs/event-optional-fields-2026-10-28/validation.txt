@@ -1,0 +1,59 @@
+Optional scheduled-event details and modal cleanup — 28 October 2026
+
+Owner authorization
+The owner explicitly confirmed that Target Audience and Who May Participate are
+optional, requested removal of the event image-description field, and requested
+removal of Manage event and the bottom Close button from the information modal.
+This supersedes the earlier scheduled-event requirement for those two text fields.
+It does not change annual-observance authoring, RSVP, admission rules, membership,
+linked-program protection, attendance, selection or scoring.
+
+Cause and correction
+The form already allowed blank audience/participation text, but publication still
+required it, and the public list excluded records with either field blank. Both
+checks are corrected for scheduled Events. General/Specific category remains
+required before publication; uncategorized historical records retain their prior
+listing behavior. Blank optional details are omitted from scheduled-event detail
+displays rather than shown as missing-publication warnings. No participation rules
+or audience content were fabricated.
+
+Image-description handling
+The create/edit form no longer exposes or requires image_alt. The existing database
+field and audit coverage remain. New/replacement images get generic accessible
+text based on the event title. Existing descriptive text is preserved when the
+photo is unchanged. Image removal clears its text. Existing images with blank
+stored text use the same title-based template fallback and can be published.
+The fallback identifies the event; it does not infer what an image depicts.
+File validation, size/pixel limits, access-checked image routes, missing-file
+checks, atomic audit recording and upload rollback remain intact. Publication
+does not rewrite image fields, preserving the guarded writer's scope.
+
+Modal
+Manage event and the bottom Close button are removed. Authorized users retain
+Edit event. The top-right X, Escape, backdrop dismissal and keyboard focus behavior
+remain. The modal is centered on the full viewport at desktop and mobile sizes.
+
+Validation
+30 tests passed in 4.454 seconds using a fresh disposable native MySQL instance:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_optional_event_details events.test_list_actions events.test_simple_publication events.test_participation events.tests.EventWorkflowTests.test_image_validation_alt_text_reencoding_and_missing_image events.tests.EventWorkflowTests.test_event_image_rollback_replacement_and_removal_cleanup events.tests.EventWorkflowTests.test_event_specific_image_limits_and_extra_uploads events.tests.EventWorkflowTests.test_publication_withdrawal_cancellation_archive_and_images --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+Coverage includes publishing both General and Specific Events with both optional
+fields blank, public-list visibility, optional edits after publication, omitted
+image-description input, automatic text and audit, preserving existing text,
+photo replacement/removal, blank legacy image text, invalid/missing files, protected
+linked programs, permissions, CSRF, rollback and concurrent/duplicate publication.
+
+Chrome checks passed on desktop 1560x1100 and mobile 390x844: centered modal, only
+Edit event in its footer, top-right close, Tab focus trap, Escape/focus return,
+optional create/edit fields, no image-description input, no horizontal overflow
+or JavaScript errors. The real draft was viewed only; all business POSTs were
+blocked by the browser harness. Publication tests used disposable data.
+Screenshots: event-actions-desktop.png, event-information-desktop.png,
+event-information-mobile.png, event-editor-desktop.png.
+Private harness: .local/annual-calendar-20261028/verify-optional-details.cjs.
+Django system checks passed. makemigrations --check --dry-run with normal migration
+discovery reported no changes. git diff --check passed.
+
+Runtime
+The retained, identity-verified local server at http://127.0.0.1:8013/ was restarted.
+No migration or application-content write was needed. The assistant did not publish
+the user's draft, commit, push or deploy remotely. Earlier unfinished work remains.

@@ -1,0 +1,35 @@
+Direct Association Gmail replies - 5 November 2026
+
+Owner instruction
+The follow-up channel must use the Gmail in Association email settings. Staff type replies and send from the system without opening Gmail. This authorizes the scoped direct-email workflow and editable account connection; no member data, membership decision, program rule or selection policy is changed.
+
+Delivered behavior
+- Email is the default follow-up option and displays the saved Association address. The composer shows From and To. Reply in Gmail and the manual-sent checkbox were removed. Onsite follow-up remains available. Earlier externally sent reply records remain intact.
+- Settings accept an optional Google app password using a password input that never echoes it. Providing a password checks Gmail authentication over STARTTLS on smtp.gmail.com:587 before saving, without sending a test email. Authentication/connection failures preserve the previous settings and return safe messages.
+- Passwords are Fernet-encrypted in a non-editable database field, with a sender-bound payload and a domain-separated HKDF key derived from the existing generated server SECRET_KEY. Keep that key separate from database backups. SECRET_KEY_FALLBACKS supports planned key rotation; removing the decrypting key requires reconnection. Passwords are omitted from the change history and sending-attempt history; request/credential routines use Django sensitive-data decorators.
+- New mail uses the connected account from Settings even when the general development backend is file-based. An existing server-managed SMTP fallback is accepted only when its username matches the saved sender. Explicit locmem settings are only a synthetic test transport. File/console outboxes do not count as a working connection for new direct replies.
+- Changing to another address without its own password clears the connection and blocks sending. The same address can be reconnected with a new app password. Permission, current settings version, required reason and atomic audit controls remain enforced. A settings version captured in the composer prevents a previously opened form from silently using a newly changed sender.
+- Request recipient and message sender remain server-controlled. Durable jobs, one-claim sending, retry history, immutable earlier addresses, private notes and rollback are preserved. Queued jobs for an old account fail safely after switching accounts; they are never relabeled or sent using the new account. Earlier development-outbox messages are not automatically resent.
+- A successful provider response is labeled Accepted by email service, not guaranteed inbox delivery. Failed sends retain the reply and show retry guidance. Missing connection blocks a new reply before ticket/status/history writes.
+
+Setup for owner
+Community Assistance Desk Inbox > Association email settings: enter the real Gmail address and that account's 16-character Google app password, give a reason, then save. Google requires 2-Step Verification and some managed/security configurations do not offer app passwords. Enter the secret only in the private settings form, never source control or chat. After connection, type the reply in a ticket and click Send reply. Changing the account uses the same page.
+Google instructions: https://support.google.com/accounts/answer/185833?hl=en
+Official SMTP details: https://developers.google.com/workspace/gmail/imap/imap-smtp
+Cryptography reference: https://cryptography.io/en/latest/fernet/
+
+Validation
+Final run: all 60 tests passed in 10.102 seconds on a fresh disposable native MySQL database (santolan-g12-tests-68_yj41n). Coverage includes existing referrals/permissions/privacy/rate limits/concurrency/audit rollback, current Association approvals, connected account changes, encrypted credential/secret privacy, failed authentication, stale sender versions, sender/recipient binding, SMTP failure and retries, key rotation, and the additive migration preserving existing settings. The initial run passed 58/59; its single HTML-fragment assertion was corrected, with no application failure hidden.
+
+Browser checks covered settings connection and two different senders, direct replies in the same tab/popup, no Gmail compose link, credentials absent from returned HTML, disconnected-send rejection with text retained, and desktop/mobile layouts. Provider authentication and sending were replaced by local test doubles using fictional addresses; no real email was sent. Screenshots in this directory are synthetic and were visually inspected. The earlier retained cleanup browser harness also passed six theme/viewport combinations plus reply workflow checks.
+
+Commands:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test assistance.test_referrals assistance.test_referral_quick_actions assistance.test_referral_membership_approval assistance.test_referral_connection assistance.test_referral_connection_migration scripts.direct_gmail_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+
+Activation
+Added migration assistance.0006_referral_gmail_connection and installed/pinned cryptography 50.0.2. The retained local database intentionally has a model-synchronized schema without a migration ledger. After identity checks and a full native MySQL backup, only the tested migration's AddField operation was applied. No historical migrations were replayed. All 118 other tables retained identical row fingerprints; original settings address/version stayed unchanged and the new encrypted column is empty. Backup and preservation proof remain private under .local/direct-gmail-20261105/.
+
+System/database checks, migration drift (No changes detected), pip check, JavaScript syntax and git diff --check passed. Static assets were collected and the identity-checked website process refreshed at http://127.0.0.1:8013/. The database remained running.
+
+Remaining external setup
+The owner has not supplied/entered a real Gmail app password. The current account is not connected; actual provider authentication and recipient inbox delivery cannot be claimed. The settings form is ready for the owner to connect their chosen account. No real sender or ticket was changed during activation.

@@ -1,0 +1,11 @@
+{% if pending_emails %}<section class="onsite-help-card" id="pending-email-history">
+  <h2>Pending review and office emails</h2>
+  {% for notice in pending_emails %}<details class="pending-email-record"{% if forloop.first %} open{% endif %}>
+    <summary>{{ notice.delivery_label }} · {{ notice.created_at|date:'M j, g:i A' }}</summary>
+    {% if notice.is_office_invitation %}<p><strong>Office-verification invitation</strong></p>{% endif %}
+    <p>To: {{ notice.recipient }}</p><p class="pending-email-reason">{{ notice.reason }}</p>
+    {% include 'partials/email_delivery_help.html' with problem=notice.delivery_help %}
+    {% if notice.state == 'uncertain' or notice.state == 'sending' %}<p>Check Gmail before sending another message. This attempt has not been confirmed.</p>{% endif %}
+    {% if notice.can_retry %}<form method="post" action="{% url 'membership:pending_email_retry' intake.reference notice.pk %}">{% csrf_token %}<button type="submit" class="btn btn-outline-primary" name="confirm" value="1">{% if notice.is_office_invitation %}Retry office-verification email{% else %}Retry pending email{% endif %}</button></form>{% endif %}
+  </details>{% endfor %}
+</section>{% endif %}

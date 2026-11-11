@@ -1,0 +1,13 @@
+  <div class="builder-range-picker" hidden>
+    {% if not compact_event %}{% include 'partials/range_settings.html' %}{% endif %}
+    <div class="builder-calendar-body">
+    <div class="builder-calendar-nav"><button type="button" data-month-step="-1" aria-label="Previous month">&#8249;</button><div><label class="visually-hidden" for="schedule-month">Month</label><select id="schedule-month" data-calendar-month></select><label class="visually-hidden" for="schedule-year">Year</label><select id="schedule-year" data-calendar-year></select></div><button type="button" data-month-step="1" aria-label="Next month">&#8250;</button></div>
+    <table id="schedule-calendar" class="builder-calendar" role="grid" aria-multiselectable="true" aria-describedby="schedule-instructions"><caption class="visually-hidden" data-calendar-caption></caption><thead><tr><th scope="col"><abbr title="Monday">M</abbr></th><th scope="col"><abbr title="Tuesday">T</abbr></th><th scope="col"><abbr title="Wednesday">W</abbr></th><th scope="col"><abbr title="Thursday">T</abbr></th><th scope="col"><abbr title="Friday">F</abbr></th><th scope="col"><abbr title="Saturday">S</abbr></th><th scope="col"><abbr title="Sunday">S</abbr></th></tr></thead><tbody data-calendar-days></tbody></table>
+    {% if compact_event %}<div class="event-calendar-controls">{% endif %}
+    {% if not date_only %}<div class="builder-time-fields"><div><label for="schedule-start-time">Start time</label><input id="schedule-start-time" type="time" data-start-time value="09:00" step="60" aria-describedby="schedule-feedback"></div><div><label for="schedule-end-time">End time</label><input id="schedule-end-time" type="time" data-end-time value="17:00" step="60" aria-describedby="schedule-feedback"></div></div>{% endif %}
+    {% if compact_event %}{% include 'partials/range_settings.html' %}</div>{% endif %}
+    <p class="builder-range-feedback" id="schedule-feedback" data-range-feedback role="status"></p>
+    {% if annual_observance and allow_reset == 'true' %}<button type="button" class="btn btn-outline-secondary" data-clear-range>Keep current annual rule</button>{% endif %}
+    <p class="builder-auto-range">{% if date_only %}Selected dates repeat every year. Save your changes to keep this schedule.{% else %}Dates and times update automatically. Save your changes to keep this schedule.{% endif %}</p>
+    </div>
+  </div>

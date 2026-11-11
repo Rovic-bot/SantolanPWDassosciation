@@ -1,0 +1,16 @@
+{% for trace in traces %}
+<tr data-criterion="{{ trace.code }}"{% if trace.largest_contribution %} class="breakdown-leading"{% endif %}>
+  <th scope="row">{{ trace.name }} ({{ trace.code }}){% if trace.largest_contribution %}<span class="quiet-badge d-block">Largest contribution</span>{% endif %}</th>
+  {% if trace.included %}
+  <td>{{ trace.input_label }}{% if trace.input_label != trace.raw %}<small class="d-block text-secondary">Recorded code: {{ trace.raw }}</small>{% endif %}{% if trace.unit %}<small class="d-block text-secondary">{{ trace.unit }}</small>{% endif %}{% if trace.source_note %}<small class="d-block text-secondary">{{ trace.source_note }}</small>{% endif %}</td>
+  <td>{{ trace.encoded }}</td>
+  <td><span class="d-block small">{{ trace.direction_label }}</span><span class="breakdown-formula">{{ trace.formula }}</span>{% if trace.composite_ses %}<span class="d-block small">Income need I: {{ trace.income_need }}. Household 4Ps: {{ trace.participation }}. Internal multiplier: {{ trace.multiplier }}.</span><span class="d-block small">SES formula: {{ trace.formula_version }}. The main SES weight is applied separately.</span>{% endif %}<span class="d-block small">{% if trace.composite_ses %}Final normalized SES (no second normalization){% else %}Normalized value{% endif %}: {{ trace.normalized_display }}</span></td>
+  <td>{{ trace.normalized_percent }}</td><td>{{ trace.weight_percent }}%</td><td><strong>{{ trace.points }}</strong>
+    {% if trace.pool_position %}<span class="d-block small">100 × {{ trace.normalized_display }} × {{ trace.weight_display }} ≈ {{ trace.points }} points</span>
+    <p class="small mt-2 mb-0"><strong>{{ trace.pool_position }}</strong><br>Other applicants: {{ trace.pool_higher }} higher, {{ trace.pool_equal }} equal, {{ trace.pool_lower }} lower on this criterion.</p>{% endif %}
+  </td>
+  {% else %}
+  <td colspan="6" class="text-secondary">Not included in this calculation.</td>
+  {% endif %}
+</tr>
+{% endfor %}

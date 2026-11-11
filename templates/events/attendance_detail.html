@@ -1,0 +1,12 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{% if editing %}Attendance record{% else %}Record attendee{% endif %} · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container content-section text-break">
+<a class="workspace-back" href="{% url 'events:attendance_list' event.pk %}">← Event attendance</a>
+<p class="eyebrow mt-4">ADMINISTRATIVE ATTENDANCE</p><h1>{% if editing %}Attendance record{% else %}Record attendee{% endif %}</h1><h2 class="h4">{{ event.title }}</h2>
+<p>Record attendance after the event starts. New attendance requires a selected Verified Member from the linked Program Application. Historical attendance may be corrected with a reason. Keep notes limited to attendance and corrections.</p>
+{% include 'partials/workspace_messages.html' %}
+{% if editing %}<section class="record-section"><h2 class="h4">{{ attendance.attendee_name }}</h2><p>Reference: <strong>{{ attendance.short_reference }}</strong></p><p>{{ attendance.get_status_display }} · Recorded {{ attendance.recorded_at|date:'M j, Y, g:i A' }}</p>{% if attendance.member_id and perms.members.view_member %}<p><a href="{% url 'members:detail' attendance.member_id %}">View linked member</a></p>{% endif %}</section>{% endif %}
+{% if can_save %}<form method="post" class="membership-form record-editor">{% csrf_token %}{% include 'events/fields.html' %}<button class="btn btn-primary" type="submit">{% if editing %}Save attendance correction{% else %}Save attendee{% endif %}</button></form>{% endif %}
+{% if editing %}<section class="record-section mt-4"><h2 class="h4">Attendance history</h2>{% if perms.events.view_eventattendancelog %}{% for entry in history %}<article class="record-history"><p class="small text-secondary">{{ entry.occurred_at|date:'M j, Y, g:i A' }} · {{ entry.actor_label }} · {{ entry.action|capfirst }}</p><p>{{ entry.notes }}</p><dl>{% for field,change in entry.display_changes %}<dt>{{ field|capfirst }}</dt><dd><span class="text-secondary">Before:</span> {{ change.before|default:'—' }}<br><span class="text-secondary">After:</span> {{ change.after|default:'—' }}</dd>{% endfor %}</dl></article>{% endfor %}{% include 'partials/page_links.html' with page_obj=history pagination_label='Attendance history pages' %}{% else %}<p class="text-secondary">Viewing detailed attendance history requires a separate permission.</p>{% endif %}</section>{% endif %}
+</div>{% endblock %}

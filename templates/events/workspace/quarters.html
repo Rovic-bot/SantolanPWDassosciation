@@ -1,0 +1,28 @@
+{% if can_view_observances %}<section class="event-observances" id="annual-observances" aria-labelledby="annual-observances-title">
+  <header class="event-observances-heading">
+    <h2 id="annual-observances-title">Annual observances</h2>
+    {% if storage_ready and perms.events.add_annualobservance %}<a class="btn btn-primary" href="{% url 'events:observance_create' %}">Create annual observance</a>{% endif %}
+  </header>
+  {% if not storage_ready %}
+    <div class="event-empty event-glass"><h3>Setup pending</h3><p>Annual observance storage is awaiting its approved setup.</p></div>
+  {% else %}
+    <div class="event-quarter-grid">
+        {% for quarter in quarters %}
+          <section class="event-quarter event-glass" aria-labelledby="event-quarter-{{ quarter.number }}">
+            <header><h3 id="event-quarter-{{ quarter.number }}">Q{{ quarter.number }}</h3><span>{{ quarter.range }}</span></header>
+            {% for month in quarter.months %}
+              {% for row in month.rows %}
+                <a class="event-observance-row" href="{{ row.url }}">
+                  <span class="event-observance-month"><abbr title="{{ month.name }}">{{ month.abbr }}</abbr></span>
+                  <span><strong>{{ row.record.title }}</strong><small>{{ row.record.recurrence_rule }} · <span class="event-observance-status" data-status="{{ row.record.status }}">{{ row.record.get_status_display }}</span></small></span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              {% empty %}
+                <div class="event-observance-row event-observance-empty"><span class="event-observance-month"><abbr title="{{ month.name }}">{{ month.abbr }}</abbr></span><span>No saved observance</span></div>
+              {% endfor %}
+            {% endfor %}
+          </section>
+        {% endfor %}
+    </div>
+  {% endif %}
+</section>{% endif %}

@@ -1,0 +1,4 @@
+<nav class="workspace-actions document-configuration-tabs" aria-label="Document configuration">
+  {% if perms.documents.view_documenttype %}<a href="{% url 'admin:documents_documenttype_changelist' %}"{% if opts.model_name == 'documenttype' %} aria-current="page"{% endif %}>Document types</a>{% endif %}
+  {% if perms.documents.view_membershipdocumentrequirement %}<a href="{% url 'admin:documents_membershipdocumentrequirement_changelist' %}"{% if opts.model_name == 'membershipdocumentrequirement' %} aria-current="page"{% endif %}>Document requirements</a>{% endif %}
+</nav>

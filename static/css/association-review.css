@@ -1,0 +1,67 @@
+/* Keep membership review on the same form cards and field grid as onsite intake. */
+.association-review { overflow-wrap: anywhere; }
+.association-review-navigation, .association-review-summary { max-width: 1384px; margin-inline: auto; }
+.association-review-navigation { margin-bottom: 1.25rem; }
+.association-review-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.4rem; margin-bottom: 1.5rem; }
+.association-review-summary h1 { font-size: clamp(1.3rem, 2vw, 1.8rem); margin: 0 0 .5rem; }
+.association-review-summary .onsite-eyebrow { margin-bottom: .5rem; }
+.association-review-summary .registration-reference { color: var(--muted); font-size: .8rem; margin: 0; }
+.association-review-summary strong { color: var(--ink); }
+.association-review-introduction, .association-review-verification { padding: 1.4rem; }
+.association-review-introduction { margin-bottom: 1.5rem; }
+.association-review-invitation { margin-bottom: 1.5rem; }
+.association-review-invitation form { margin-top: 1rem; }
+.association-review-verification .form-check { display: flex; gap: .75rem; align-items: baseline; margin-top: 1rem; }
+.association-review-verification .form-check input { flex: 0 0 auto; }
+.association-review-verification .form-check label { font-size: .85rem; line-height: 1.6; }
+.association-review-introduction p, .association-review-verification p, .association-review-acknowledgement { color: var(--muted); font-size: .8rem; line-height: 1.7; margin: .75rem 0 0; }
+.association-review .record-editor { max-width: none; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.association-review .onsite-section h2 { line-height: 1.5; }
+.association-review-values { margin: 0; }
+.association-review-values > div { min-width: 0; }
+.association-review-values dt { color: var(--muted); font-size: .75rem; font-weight: 500; margin-bottom: .5rem; }
+.association-review-values dd { color: var(--ink); font-size: .86rem; margin: 0; padding: .7rem .8rem; background: var(--glass); border: 1px solid var(--line); border-radius: .75rem; }
+.association-review .onsite-guide a { color: var(--teal); text-underline-offset: .2em; }
+.association-review .onsite-guide li a { display: inline-block; }
+.association-review .onsite-guide li::before { flex: 0 0 1rem; white-space: nowrap; }
+.association-review .onsite-help-card .btn { display: flex; align-items: center; justify-content: center; width: 100%; white-space: normal; }
+.association-review-documents { padding-left: 1rem; margin: 0; }
+.association-review-documents li + li { margin-top: .6rem; }
+.association-review-history { margin-top: 1.5rem; }
+.association-review-history > summary { padding: 1.25rem 1.4rem; min-height: 48px; cursor: pointer; font-size: .9rem; font-weight: 600; }
+.association-review-history-body { border-top: 1px solid var(--glass-line); padding: 1.4rem; font-size: .8rem; }
+.association-review-history-body > details { border-bottom: 1px solid var(--glass-line); padding-block: .8rem; }
+.association-review-history-body summary { cursor: pointer; min-height: 44px; align-content: center; }
+.association-review-history-body .record-section { margin-block: 1rem; }
+.association-review-history-body .registration-data { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: .5rem 1rem; }
+.association-review-history-body .registration-data :is(dt, dd) { margin: 0; }
+.association-review-history-body > ol { padding-left: 1.2rem; margin-top: 1rem; }
+.association-review-history-body > ol > li + li { margin-top: .65rem; }
+.association-review :is(a, summary):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 639px) {
+  .association-review-summary, .association-review-introduction, .association-review-verification, .association-review-history-body { padding: 1.1rem; }
+  /* A three-action decision bar should not cover the form on a small screen. */
+  .association-review .onsite-form-actions { position: static; }
+  .association-review-history-body .registration-data { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
+  .association-review-history-body .registration-data dd { margin-bottom: .8rem; }
+}
+
+/* The compact review sequence uses equal-height cards in its desktop row. */
+.association-review-flow { margin: 0 0 1.5rem; }
+.association-review-flow-heading { margin-bottom: .9rem; }
+.association-review-flow-heading h2 { margin: 0 0 .35rem; font-size: 1.1rem; color: var(--ink); }
+.association-review-flow-heading p { margin: 0; color: var(--muted); font-size: .85rem; }
+.association-review-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 1rem; }
+.association-review .association-review-step { min-width: 0; margin: 0; padding: 1.25rem; }
+.association-review-step-number { display: inline-grid; place-items: center; width: 2rem; height: 2rem; margin-bottom: .75rem; border: 1px solid var(--line); border-radius: 50%; background: var(--stone); color: var(--ink); font-weight: 700; }
+.association-review .association-review-step h3 { margin: 0 0 .65rem; font-size: 1rem; color: var(--ink); }
+.association-review-step p, .association-review-step .form-check { font-size: .82rem; line-height: 1.65; overflow-wrap: anywhere; }
+.association-review-step p { color: var(--muted); }
+.association-review-step strong, .association-review-step label { color: var(--ink); }
+.association-review-step .form-check { margin-block: 1rem; }
+.association-review-step .btn { width: 100%; white-space: normal; min-height: 44px; }
+.association-review-step .form-text { margin: .75rem 0 0; }
+.association-review-pwd { padding: .6rem .75rem; border-radius: .6rem; background: var(--stone); }
+.association-review-step-status { border-left: 3px solid var(--teal); padding-left: .65rem; }
+.association-approval-controls { min-width: 0; margin: 0; padding: 0; border: 0; }
+@media (max-width: 1050px) { .association-review-steps { grid-template-columns: minmax(0, 1fr); } }

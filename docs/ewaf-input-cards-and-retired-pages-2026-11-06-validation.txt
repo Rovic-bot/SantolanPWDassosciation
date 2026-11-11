@@ -1,0 +1,63 @@
+EWAF applicant cards and retired auxiliary pages - 2026-11-06
+
+Owner request
+Remove the separate dataset-input review, dataset-policy review and calculation
+guide pages for all records, remove their buttons, and match applicant input
+cards to the supplied reference image.
+
+Implemented
+- Removed the input-review, policy-review, policy draft/list and calculation-guide
+  templates and the associated writable view implementations. The policy draft
+  list was part of the removed review workflow; its setup links are also gone.
+- Existing named URLs remain as authenticated, permission-checked bookmarks:
+  dataset input -> program ranking inputs; dataset policies -> Configuration
+  Vault; calculation guide -> program ranking, preserving a valid requested run.
+  Only GET/HEAD are accepted. POST cannot accept inputs, draft/approve policies,
+  apply shared rules or generate rankings through these retired URLs.
+- Removed all links to these screens from cards, table fallbacks, ranking tabs,
+  score breakdown, readiness notices, Configuration Vault and policy binding.
+  Updated the missing-input warning to reference member records/configuration.
+- Applicant cards now have eligibility pills, input-source badges, individually
+  bordered rows, SES income/4Ps details, colored readiness messages and equal
+  View applicant / Member record buttons. Composite inputs use the reference's
+  order: employment, household members, previous assistance, socioeconomic status.
+- Accepted manual inputs retain Verified labels; automatic records say Recorded;
+  excluded applicants show registered values with Pool excluded. Missing values
+  remain distinct from zero/No. The existing responsive grid uses three, two or
+  one column according to available viewport width and shared theme tokens.
+
+Preserved boundaries
+No policies, accepted input records, scores, rankings, selections or audits were
+deleted or rewritten. Scoring calculations, approvals, source validation and
+program binding services retain their existing rules. No schema/data migration.
+
+Validation
+- 24 tests passed (42.969 s): ewaf.test_retired_screens.RetiredScreensTests,
+  ewaf.test_input_presentation, and
+  ewaf.test_automatic_member_inputs.AutomaticMemberInputsTests.
+  Covered safe redirects, blocked submissions, permissions, cross-program run
+  identifiers, retained record counts and run payloads, missing/zero inputs,
+  private read-only card rendering, removed links and automatic ranking/release.
+  Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-3ptnjv7a/django.log
+- After the final warning-text correction, all 12 input-presentation tests passed
+  again (0.958 s). These overlap the 24 above, not 36 unique tests.
+  Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-jadxf6mr/django.log
+- All tests used fresh disposable MySQL through scripts/g12_test_runner.py and
+  scripts.registration_intake_test_runner.RegistrationIntakeTestRunner.
+- The first test invocation had one assertion scoped to the entire workspace,
+  which also contains existing applicant drawers. Scoped the Recorded/Verified
+  assertion to the requested input cards, then reran successfully.
+- Django system/database check and git diff --check passed. Search confirmed
+  no templates link to the retired routes and no views reference deleted pages.
+
+Local verification and activation
+- Collected static assets and updated the stylesheet cache key. Reloaded only
+  the verified local web process on 8013; retained its live MySQL connection.
+- Native Brave screenshot confirmed the new three-card desktop layout for
+  PRG000012, with bordered rows, Recorded badges and two footer buttons.
+  Further browser navigation was interrupted by user activity; no mobile or
+  light-theme visual validation is claimed.
+- Read-only server rendering checked all three owner-provided URLs and the
+  PRG000009 workspace. Twelve cards rendered, including accepted and excluded
+  states, with no retired links. SQL inspection found no INSERT/UPDATE/DELETE.
+- No real ranking, eligibility decision, selection, release or email was made.

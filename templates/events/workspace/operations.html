@@ -1,0 +1,4 @@
+<aside class="event-operations" aria-label="Event operations">
+  {% include 'events/workspace/calendar.html' %}
+  <section class="event-operation event-glass event-next"><p class="event-eyebrow">Next event</p>{% if next_event %}<time datetime="{{ next_event.record.starts_at|date:'c' }}">{{ next_event.record.starts_at|date:'d M' }}</time><h2>{{ next_event.record.title }}</h2><p>{{ next_event.record.starts_at|date:'g:i A' }} &middot; {{ next_event.record.location|default:'Location not set' }}</p><a class="btn btn-primary" href="{{ next_event.detail_url }}">Open event <span aria-hidden="true">&#8599;</span></a>{% else %}<h2>No upcoming published events</h2><p>Your next scheduled event will appear here.</p>{% endif %}</section>
+</aside>

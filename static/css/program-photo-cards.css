@@ -1,0 +1,233 @@
+/* Keep the approved 480px widths and 40px gaps, with compact, content-led heights.
+   Cards grow for longer text or expanded dates instead of clipping. */
+body.public-portal #program-browser .catalog-content {
+    width: 100%;
+    max-width: 95rem;
+    padding-inline: 0;
+    margin-inline: auto;
+}
+body.public-portal .catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 30rem)) !important;
+    justify-content: center;
+    gap: 2.5rem !important;
+    max-width: 95rem;
+    margin-inline: auto;
+}
+body.public-portal .catalog-card.catalog-photo-card,
+body.public-portal.portal-redesign .catalog-card.catalog-photo-card {
+    overflow: hidden;
+    min-height: 0;
+    padding: 0 !important;
+    border: 1px solid var(--edge) !important;
+    border-radius: 1.25rem !important;
+    background: var(--surface) !important;
+    box-shadow: 0 8px 16px #25221d16 !important;
+    color: var(--ink);
+}
+body.public-portal .catalog-card.catalog-photo-card .public-program-artwork {
+    position: relative;
+    flex: none;
+    width: 100%;
+    height: 13rem;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 0;
+    background: radial-gradient(ellipse at 22% 10%, var(--control-edge), transparent 70%), linear-gradient(145deg, var(--muted), var(--brand-primary));
+}
+body.public-portal .catalog-card.catalog-photo-card .public-program-artwork img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+body.public-portal .catalog-card.catalog-photo-card .public-program-initials {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    font-size: 3rem;
+    font-weight: 500;
+    line-height: 1;
+    color: #f4f2ec;
+}
+body.public-portal .catalog-card.catalog-photo-card .public-program-initials[hidden] { display: none; }
+body.public-portal .catalog-photo-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding: 1.25rem 1.875rem 1.125rem;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    min-height: 1.75rem;
+    margin: 0 0 1rem;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-category {
+    flex: 1 1 8rem;
+    margin: 0;
+    padding: 0;
+    color: var(--muted) !important;
+    font-size: .8125rem !important;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-status { flex: 0 1 auto; max-width: 100%; }
+body.public-portal .catalog-card.catalog-photo-card .catalog-status .quiet-badge {
+    display: inline-block;
+    padding: .25rem .625rem;
+    border: 1px solid var(--edge);
+    border-radius: .4rem;
+    background: var(--stone);
+    color: var(--ink-soft);
+    font-size: .8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    text-transform: none;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-status--open .quiet-badge {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+body.public-portal .catalog-card.catalog-photo-card h3 {
+    margin: 0 0 .5rem;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    letter-spacing: -.02em;
+    overflow-wrap: anywhere;
+}
+body.public-portal .catalog-card.catalog-photo-card h3 a { color: var(--ink); }
+body.public-portal .catalog-card.catalog-photo-card h3 a:hover { text-decoration: underline; }
+body.public-portal .catalog-card.catalog-photo-card :is(.catalog-photo-summary, .catalog-photo-description, .catalog-availability-note) {
+    color: var(--muted);
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-photo-description { display: inline; }
+body.public-portal .catalog-card.catalog-photo-card .catalog-availability-note { margin-top: .75rem; }
+body.public-portal .catalog-card.catalog-photo-card .catalog-card-bottom {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    padding: .75rem 0 0;
+    margin: auto 0 0;
+    border: 0;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-schedule { border: 0; width: 100%; }
+body.public-portal .catalog-card.catalog-photo-card .catalog-schedule summary {
+    display: block;
+    padding: 0 1rem 0 0;
+    color: var(--muted);
+    font-size: inherit;
+    line-height: inherit;
+    min-height: 2.75rem;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-chevron {
+    top: auto;
+    bottom: .6rem;
+    right: 0;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-schedule > p { color: var(--muted); font-size: 1rem; margin: .5rem 0; }
+body.public-portal .catalog-card.catalog-photo-card .catalog-card-link {
+    align-self: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: .75rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--edge);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink) !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 700;
+    text-align: left;
+}
+body.public-portal .catalog-card.catalog-photo-card .catalog-card-link:hover { text-decoration: underline; text-underline-offset: .2em; }
+body.public-portal .catalog-card.catalog-photo-card :is(a, summary):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+html[data-contrast=true] body.public-portal .catalog-card.catalog-photo-card { background: #fff !important; border-color: #000 !important; }
+html[data-contrast=true] body.public-portal .catalog-card.catalog-photo-card :is(h3 a, p, summary, .catalog-photo-description, .catalog-card-link, .catalog-category) { color: #000 !important; }
+html[data-contrast=true] body.public-portal .catalog-card.catalog-photo-card .catalog-status .quiet-badge { background: #fff; color: #000; border-color: #000; }
+html[data-contrast=true] body.public-portal .catalog-card.catalog-photo-card .catalog-card-link { border-color: #000; }
+
+/* Give the tracking action a compact target and space above the guide divider. */
+body.public-portal .catalog-guide-main > .catalog-tracking-button {
+    width: fit-content;
+    max-width: 100%;
+    min-height: 44px;
+    margin: 1rem 0;
+    padding: .625rem 1.25rem !important;
+    border: 1px solid #c5c0b8;
+    background: #faf9f6;
+    color: #1c1a18;
+    font-size: .875rem;
+    line-height: 1.4;
+    white-space: normal;
+    text-align: center;
+}
+body.public-portal .catalog-guide-main > .catalog-tracking-button:is(:hover, :focus-visible, :active) {
+    background: #e1ddd5;
+    border-color: #6b665f;
+    color: #1c1a18;
+}
+body.public-portal .catalog-guide-main > .catalog-tracking-button:focus-visible { outline: 2px solid #2a2826 !important; outline-offset: 3px; }
+html[data-contrast=true] body.public-portal .catalog-guide-main > .catalog-tracking-button { border-color: #000; background: #fff; color: #000; }
+html[data-contrast=true] body.public-portal .catalog-guide-main > .catalog-tracking-button:is(:hover, :focus-visible, :active) { background: #000; color: #fff; }
+
+/* Avoid the legacy navy hover fill and keep every pagination state consistent. */
+body.public-portal .catalog-pagination { gap: .25rem; }
+body.public-portal .catalog-pagination > :is(a, span) {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: .5rem .625rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-size: .875rem;
+    line-height: 1.5;
+    text-decoration: none;
+}
+body.public-portal.portal-redesign .catalog-pagination a:is(:hover, :focus-visible) {
+    background: var(--stone);
+    border-color: var(--edge);
+    color: var(--ink);
+}
+body.public-portal.portal-redesign .catalog-pagination a[aria-current="page"] {
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary);
+    color: #fff !important;
+}
+body.public-portal .catalog-pagination > [aria-disabled="true"] { color: var(--muted); }
+body.public-portal .catalog-pagination a:focus-visible { outline: 2px solid var(--ink) !important; outline-offset: 3px; }
+html[data-contrast=true] body.public-portal .catalog-pagination > :is(a, span) { color: #000; }
+html[data-contrast=true] body.public-portal .catalog-pagination a:is(:hover, :focus-visible, [aria-current="page"]) {
+    background: #000 !important;
+    border-color: #000;
+    color: #fff !important;
+}
+@media (max-width: 1279px) {
+    body.public-portal .catalog-grid { grid-template-columns: repeat(2, minmax(0, 30rem)) !important; }
+}
+@media (max-width: 767px) {
+    body.public-portal .catalog-grid { grid-template-columns: minmax(0, 30rem) !important; gap: 1.75rem !important; }
+    body.public-portal .catalog-photo-content { padding: 1.25rem; }
+    body.public-portal .catalog-card.catalog-photo-card .catalog-card-top { gap: .5rem .75rem; }
+}
+@media (forced-colors: active) {
+    body.public-portal .catalog-card.catalog-photo-card,
+    body.public-portal .catalog-card.catalog-photo-card .catalog-card-link { border-color: CanvasText !important; }
+}

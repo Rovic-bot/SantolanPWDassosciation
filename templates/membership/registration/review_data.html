@@ -1,0 +1,11 @@
+{% if submitted.profile_sections %}
+  {% for title, rows in submitted.profile_sections %}
+  <section class="onsite-section" id="review-section-{{ forloop.counter }}">
+    <header class="onsite-section-heading"><span class="onsite-section-number">{{ forloop.counter|stringformat:'02d' }}</span><h2>{{ title }}</h2></header>
+    <dl class="onsite-fields association-review-values">{% for label, value in rows %}<div><dt>{{ label }}</dt><dd>{{ value|linebreaksbr }}</dd></div>{% endfor %}</dl>
+  </section>
+  {% endfor %}
+  <p class="association-review-acknowledgement">Privacy notice and accuracy acknowledgement: {% if submitted.acknowledgement %}acknowledged at submission{% else %}not recorded{% endif %}.</p>
+{% else %}
+  <section class="onsite-section" id="review-section-1"><header class="onsite-section-heading"><span class="onsite-section-number">01</span><h2>Applicant information</h2></header><div class="association-review-history-body">{% include 'membership/registration/submitted_data.html' %}</div></section>
+{% endif %}

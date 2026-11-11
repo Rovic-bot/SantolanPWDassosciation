@@ -1,0 +1,27 @@
+<section class="receipt-card receipt-submitted" id="submitted-form" tabindex="-1" aria-labelledby="submitted-form-heading">
+  <div class="receipt-section-heading">{% include 'membership/registration/receipt_icon.html' with name='document' %}<div><h2 id="submitted-form-heading">Original submitted form</h2><p>Here is a summary of the information you submitted.</p></div></div>
+  {% if submitted.profile_sections %}
+    <div class="receipt-sections">
+    {% for title, rows in submitted.profile_sections %}
+      <details class="receipt-section" data-registration-section>
+        <summary>
+          {% if forloop.counter == 1 %}{% include 'membership/registration/receipt_icon.html' with name='user' %}{% elif forloop.counter == 2 %}{% include 'membership/registration/receipt_icon.html' with name='home' %}{% elif forloop.counter == 3 %}{% include 'membership/registration/receipt_icon.html' with name='family' %}{% elif forloop.counter == 4 %}{% include 'membership/registration/receipt_icon.html' with name='education' %}{% else %}{% include 'membership/registration/receipt_icon.html' with name='id' %}{% endif %}
+          <span class="receipt-section-title">{{ title }}</span>
+          <span class="receipt-section-preview">
+          {% if submitted.profile_kind == 'association_pdf_v1' %}
+            {% if forloop.counter == 1 %}{{ submitted.full_name }} <span>·</span> {{ submitted.gender|default:'Gender: Not provided' }} <span>·</span> Born {{ submitted.birthdate }}
+            {% elif forloop.counter == 2 %}{{ submitted.address }} <span>·</span> Mobile: {{ submitted.contact_number|default:'Not provided' }}
+            {% elif forloop.counter == 3 %}Family members: {{ submitted.family_members|default_if_none:'Not provided' }} <span>·</span> Spouse: {{ submitted.spouse_name|default:'Not provided' }}
+            {% elif forloop.counter == 4 %}{{ submitted.disability_type|default:'Disability: Not provided' }} <span>·</span> {{ submitted.education|default:'Education: Not provided' }}
+            {% else %}PWD ID: {{ submitted.pwd_number|default:'Not provided' }} <span>·</span> PhilHealth: {{ submitted.philhealth_number|default:'Not provided' }}{% endif %}
+          {% else %}{% for label, value in rows|slice:':2' %}{{ value }}{% if not forloop.last %} <span>·</span> {% endif %}{% endfor %}{% endif %}
+          </span>
+          <span class="receipt-section-arrow">{% include 'membership/registration/receipt_icon.html' with name='chevron' %}</span>
+        </summary>
+        <div class="receipt-section-body"><dl class="registration-data">{% for label, value in rows %}<dt>{{ label }}</dt><dd>{{ value|linebreaksbr }}</dd>{% endfor %}</dl></div>
+      </details>
+    {% endfor %}
+    </div>
+    <p class="receipt-acknowledgement">Privacy notice and accuracy acknowledgement: {% if submitted.acknowledgement %}acknowledged at submission{% else %}not recorded{% endif %}.</p>
+  {% else %}{% include 'membership/registration/submitted_data.html' %}{% endif %}
+</section>

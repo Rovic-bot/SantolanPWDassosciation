@@ -1,0 +1,74 @@
+Onsite reference lookup, profile photo and editing — November 5, 2026
+
+Requested behavior
+- An approved application's AMR reference opens the member's standalone page.
+- Remove Save as draft from onsite registration.
+- Use the uploaded 2x2 membership picture as the profile photo, otherwise initials.
+- Profile editing uses the onsite registration fields.
+
+Implementation
+The existing staff-only lookup now redirects approved applications directly to
+members:detail when the actor has members.view_member. Original AMR references,
+short aliases and reference digits remain supported. Pending/rejected records
+retain their registration review pages. No extra lookup by name or PWD ID was added.
+
+Removed both draft buttons, their temporary state and restore handlers. The
+normal review dialog, file checks, explicit save and no-JavaScript submit remain.
+The script version changed so already-open browsers receive the updated asset.
+
+Member portraits now also resolve the active photo_2x2 RegistrationAttachment
+retained by the approved intake's current revision. No photo is copied, moved,
+published, or backfilled. Existing 2x2 supporting documents take priority, and
+historical 1x1 portraits remain a fallback. Missing photos use existing initials.
+The original private attachment endpoint supports inline preview only for 2x2
+JPEG/PNG photos. Its existing authentication, document permissions, no-store
+headers, attachment ownership and audit-before-delivery behavior are preserved.
+Photo URLs are omitted when the staff member lacks source-document access.
+
+The existing MemberRegistrationForm already uses AssociationPDFForm and the
+shared onsite section/field templates. Verified field names, groups, choices,
+required fields, prefilling and saving, including family and assessment details.
+The required update reason, version checks and original registration history
+remain separate from the current member profile.
+
+Validation
+48 distinct focused Django tests passed across these runs:
+- Initial selection: 46 passed; two new photo tests had fixture/cleanup errors.
+  Corrected the pre-approval correction payload (exclude decision-only marker)
+  and avoided closing an already-consumed streaming response twice.
+- Reran all three photo tests successfully (exit code 0).
+
+Initial command:
+.venv/Scripts/python.exe scripts/g12_test_runner.py test membership.test_registration_decisions.RegistrationDecisionTests membership.test_registration_prefill membership.test_onsite_registration_alignment members.test_registration_portrait members.test_record_layout members.test_registration_edit --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput
+Initial log: %TEMP%/santolan-g12-tests-2671zspw/django.log
+Photo rerun: %TEMP%/santolan-g12-tests-_h3bhge5/django.log
+
+The new browser test passed with synthetic data:
+.venv/Scripts/python.exe scripts/g12_test_runner.py test scripts.member_registration_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput
+Evidence: %TEMP%/santolan-g12-tests-g71yvrsn/member-registration-browser
+Checks include review without drafts, full-page lookup (no popup), successful
+private image loading, initials fallback, exact edit fields, saved guardian
+correction with the original unchanged, and 1440/390/320-pixel editor layouts.
+No JavaScript errors. Its first run exposed a synthetic fixture name overwritten
+by the fixture's default approval data; the fixture was corrected and rerun.
+
+The older scripts.onsite_registration_browser_qa harness was updated to remove
+its draft interactions, preserve the AMR reference before approval, and expect
+the member-page destination. Its registry tab uses a synthetic intercepted URL.
+Two broader runs reached the onsite review/approved screens, but failed while
+saving screenshots through that harness's externally launched CDP browser:
+page.screenshot timed out after fonts loaded. Reducing captures to the viewport
+did not fully resolve the capture timeout. Do not treat this older harness as
+passing; its logs are under santolan-g12-tests-tzu9jm09 and -8pjru37e in TEMP.
+The separate direct-launch browser test above completed the requested lookup,
+photo, editing and responsive checks, including its screenshot captures.
+
+Screenshots in this directory contain only fictional test records and a solid
+color test image. No real person was approved or edited during validation.
+All database tests used fresh disposable MySQL and temporary private media;
+the model-synchronized baseline does not validate historical migrations.
+
+JavaScript syntax and git diff --check passed. The identity-checked local web
+process on port 8013 was refreshed and healthy. MySQL, existing uploads, records
+and sessions were retained. No migrations, deployment or permission grants ran
+against the user's application data.

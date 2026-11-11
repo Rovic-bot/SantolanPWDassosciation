@@ -1,0 +1,45 @@
+{% extends 'public/base.html' %}{% load static reference_codes %}
+{% block title %}Application received · Santolan PWD{% endblock %}
+{% block public_class %}pdao-receipt-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/pdao-receipt.css' %}?v=20261109-portal">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/pdao-receipt.js' %}?v=20261109-1" defer></script>{% endblock %}
+{% block content %}
+<div class="pdao-receipt-shell">
+  <a class="pdao-back" href="{% url 'core:membership' %}">{% include 'public/icon.html' with name='arrow' %} Membership &amp; PWD ID</a>
+  <section class="pdao-confirmation" aria-labelledby="pdao-received-title">
+    <div class="pdao-confirmation-copy">
+      <span class="pdao-received-label">{% include 'public/icon.html' with name='check' %} Application received</span>
+      <h1 id="pdao-received-title">Your next step<br>starts here.</h1>
+      <p class="pdao-receipt-lead">Your PDAO application was submitted to Admin for review.</p>
+      <p>Keep your reference and a copy of your form. Staff will email you about office verification or any information that needs correction.</p>
+      <p class="pdao-applicant" translate="no">{{ submitted.full_name }}</p>
+    </div>
+    <aside class="pdao-reference-card" aria-label="Your submission receipt">
+      <span class="pdao-reference-caption">PDAO application reference</span>
+      <p class="pdao-reference-number" translate="no">{{ reference|short_reference:'pdao' }}</p>
+      <dl><div><dt>Date received</dt><dd><time datetime="{{ received_at|date:'c' }}">{{ received_at|date:'M j, Y · g:i A' }}</time></dd></div><div><dt>Review updates</dt><dd translate="no">{{ submitted.email|default:'Contact the Help Desk' }}</dd></div></dl>
+      <a href="{% url 'membership:pdao_receipt_form' %}" class="btn btn-primary" data-pdao-receipt-print>{% include 'public/icon.html' with name='download' %}Print or save submitted form</a>
+      <p class="pdao-reference-note">Choose a printer or Save as PDF in the print dialog.</p>
+    </aside>
+  </section>
+  <section class="pdao-next" aria-labelledby="pdao-next-title">
+    <div class="pdao-section-heading"><span class="pdao-receipt-caption">After submitting</span><h2 id="pdao-next-title">What happens next</h2></div>
+    <ol>
+      <li><span class="pdao-step-number" aria-hidden="true">1</span><div><h3>Save your copy</h3><p>Keep your reference and submitted form for follow-up.</p></div></li>
+      <li><span class="pdao-step-number" aria-hidden="true">2</span><div><h3>Check your email</h3><p>Staff will invite you to the office for verification, or ask you to correct information.</p></div></li>
+      <li><span class="pdao-step-number" aria-hidden="true">3</span><div><h3>Visit the office</h3><p>Bring your signed form, 1×1 photo and required documents. Staff arrange forwarding to PDAO after verification.</p></div></li>
+    </ol>
+    <p class="pdao-boundary">This receipt is not membership approval or a PWD ID. PDAO makes the final decision.</p>
+  </section>
+  <details class="pdao-copy-preview">
+    <summary><span>View your submitted form</span>{% include 'public/icon.html' with name='arrow' %}</summary>
+    <p>Pasig PDAO · Version 4.0. Your saved form keeps its original print layout.</p>
+    <iframe title="Your submitted PDAO application" data-pdao-receipt-frame src="{% url 'membership:pdao_receipt_form' %}?preview=1"></iframe>
+    <a class="pdao-view-form" href="{% url 'membership:pdao_receipt_form' %}">Open printable form {% include 'public/icon.html' with name='arrow' %}</a>
+  </details>
+  <section class="pdao-finish" aria-labelledby="pdao-finish-title">
+    <div><h2 id="pdao-finish-title">Keep your information private.</h2><p>Save your copy before finishing. Close this receipt when using a shared device.</p></div>
+    <form method="post" action="{% url 'membership:pdao_finish' %}">{% csrf_token %}<button class="btn btn-outline-primary" type="submit">Finish and close private receipt {% include 'public/icon.html' with name='arrow' %}</button></form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+<form method="get" action="{% url 'membership:registration_lookup' %}" role="search" aria-label="Load online membership application" class="row g-3 align-items-end mb-3">
+  <div class="col-md-9"><label class="form-label" for="load-registration-reference">Membership application reference number</label>
+    <input class="form-control" id="load-registration-reference" name="reference" type="search" maxlength="40" required autocomplete="off" spellcheck="false" value="{{ reference_query }}" aria-describedby="load-reference-help{% if reference_error %} load-reference-error{% endif %}"{% if reference_error %} aria-invalid="true"{% endif %}>
+    <p class="form-text" id="load-reference-help">Enter the receipt's AMR reference, paste the reference from its QR code, or use the reference digits. Approved applications open the member record; pending applications open for review.</p>
+    {% if reference_error %}<p id="load-reference-error" role="alert">{{ reference_error }}</p>{% endif %}
+  </div><div class="col-md-3"><button class="btn btn-primary" type="submit">Load online application</button></div>
+</form>

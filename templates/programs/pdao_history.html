@@ -1,0 +1,40 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}PDAO approval history · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container content-section">
+  <a class="workspace-back" href="{% url 'programs:manage_detail' program.pk %}">← Program review</a>
+  <p class="eyebrow mt-4">MANUAL PDAO APPROVAL</p>
+  <h1>{{ program.name }}</h1>
+  {% include 'partials/workspace_messages.html' %}
+  <p>PDAO approval takes place outside this system. Signed/stamped letters are kept at the Association office; no digital copies are uploaded.</p>
+  <p class="text-secondary">This page records history only. Recording an entry does not authorize the selection/photo policy, change approved terms, or change application processing. Approval-based blocking and major-revision suspension are not yet implemented.</p>
+  <section class="record-section" aria-labelledby="approval-history-heading">
+    <h2 id="approval-history-heading">Approval recording history</h2>
+    <p>Entries are preserved in sequence. Corrections require a new entry explaining the correction. A recording sequence is not a version of approved program terms.</p>
+    {% for entry in history %}
+    <article class="record-history">
+      <h3 class="h5">Entry {{ entry.version }} · {{ entry.get_kind_display }}</h3>
+      {% if entry.kind == 'legacy' %}<p>Association attestation of prior approval; physical letter missing and replacement approval being obtained. This is not an official letter record.</p>{% endif %}
+      <dl>
+        <dt>PDAO approval date</dt><dd>{{ entry.approval_date|date:'M j, Y'|default:'Unknown — not recorded' }}</dd>
+        <dt>PDAO signatory</dt><dd>{{ entry.signatory|default:'Unknown — not recorded' }}</dd>
+        <dt>Recorded by</dt><dd>{{ entry.recorded_by_label }} · {{ entry.recorded_at|date:'M j, Y, g:i A' }} (Philippine time)</dd>
+        <dt>Program version when recorded</dt><dd>{{ entry.program_version_at_recording }} (context only)</dd>
+        <dt>Manual confirmation</dt><dd>Manual PDAO approval explicitly confirmed by the recording officer.</dd>
+        <dt>Reason / recording context</dt><dd>{{ entry.reason|linebreaksbr }}</dd>
+      </dl>
+    </article>
+    {% empty %}<p>No PDAO approval or legacy attestation has been recorded. Existing publication or policy authorization does not establish PDAO approval.</p>{% endfor %}
+    {% include 'partials/page_links.html' with page_obj=history pagination_label='PDAO history pages' %}
+  </section>
+  {% if form %}
+  <section class="record-section" aria-labelledby="record-approval-heading">
+    <h2 id="record-approval-heading">Record a new entry</h2>
+    <form method="post" class="membership-form record-editor">
+      {% csrf_token %}{% include 'programs/fields.html' %}
+      <button class="btn btn-primary" type="submit">Record manual approval / attestation</button>
+    </form>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

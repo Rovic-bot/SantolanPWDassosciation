@@ -1,0 +1,118 @@
+Santolan dashboard liquid-glass refinement — November 1, 2026
+
+Authorized scope
+The owner clarified that this task targets the existing Django /dashboard/ with
+live data, preserving /admin/ administration tools and the public website. There
+is no React/Vite/TypeScript project or production npm command in this repository.
+The existing Django templates, local SVG renderer and native MySQL are reused.
+No dependency, model, database field, migration, authentication or public-page
+change was introduced. Prior uncommitted work and Assets/ remain preserved.
+
+Presentation
+- Midnight navy and pale frosted-blue themes; translucent panels with blur and
+  saturation, reflective edges, restrained glows, colored accents and hover lift.
+- Sticky desktop glass top bar; compact, permission-aware sidebar disclosures;
+  responsive mobile navigation. Existing eight navigation groups remain reachable.
+- Server-rendered topbar component with Community overview, theme control and
+  View Public Site linking to /. Theme follows the OS until a saved choice exists;
+  explicit choice persists, works without storage, and updates across tabs.
+- Eight metrics; twelve chart panels with matching accessible data tables.
+- Cyan membership, violet/magenta disability rings, blue releases, green completion,
+  cyan/violet applications, orange/magenta program status, magenta scatter,
+  blue/violet age distribution, violet/blue eligibility, orange Desk closure,
+  magenta/blue release mix and cyan/blue event heatmap.
+- Existing Display preference control stays readable in both themes and high contrast.
+
+Live sources and definitions
+Official members, accepting programs, events and Desk request definitions remain.
+New members this year counts recorded joining dates from local January 1 through
+the current timestamp, including members archived since joining. This current-year
+snapshot remains independent of the selected activity dates.
+Pending photo verification counts that exact existing application status; it is
+not a newly invented collection of pending workflow stages. Completed applications
+counts the existing COMPLETED status in the submission-date cohort. The total
+application count remains visible in the application chart and completion summary.
+Completion bars show completed / submitted applications for each actual program,
+using current status and the selected submission cohort. They do not claim program
+closure, assistance delivery or invented completion rates for example categories.
+Release mix groups successful, non-voided receipts by recorded assistance_type and
+actual delivery dates. It counts releases, not currency values or selected people.
+Disability rings use each category's distinct member count / current members, so
+multiple classifications can overlap without creating a false pie partition.
+Program rings retain Draft/Published/Cancelled/Archived labels. Desk gauge shows
+Closed / all requests, retaining actual status labels, not inferred resolution.
+Scatter trend is least-squares across observed aggregate points within their x
+range; omitted with insufficient x variation. It is descriptive, not a prediction
+or selection rule. Coincident point labels wrap within the chart.
+
+Program filter
+The real GET filter lists programs only for staff with dashboard and program-view
+permissions. Invalid or unauthorized selections fail validation; direct aggregation
+also requires program-view permission. It scopes application, eligibility, release,
+program-status and capacity queries. Membership, ages, events and Desk requests
+remain association-wide, as explained in the form. Per-module permission gates,
+restricted/unavailable/error states, private data boundaries and existing date
+semantics remain. Dashboard queries only read records; no workflow service runs.
+
+Files changed in this refinement
+analytics/forms.py — permission-aware optional Program filter.
+analytics/services.py — dashboard-only read aggregates, filter scope and metrics.
+analytics/visualizations.py — twelve chart projections, sources, legends and tables.
+analytics/tests.py — aggregate, year boundary, filter/permission and rendering checks.
+core/views.py — pass the current user to the dashboard filter form only.
+static/css/dashboard.css — scoped glass themes, chart palettes and responsive styles.
+static/js/dashboard.js — rings, proportions, completion bars, trend and bounded labels.
+static/js/dashboard-theme.js — system preference, saved choice and existing button binding.
+templates/admin_portal/dashboard.html — filters, live header, metric/chart layout.
+templates/admin_portal/dashboard_topbar.html — new dashboard-only reusable top bar.
+templates/partials/workspace_header.html — opt-in dashboard topbar branch; default preserved.
+templates/analytics/chart.html — accurate theme-independent heatmap explanation.
+scripts/dashboard_themes_browser.cjs — extended browser checks and new evidence directory.
+docs/dashboard-glass-2026-11-01/ — this report and synthetic screenshots.
+
+Verification actually performed
+25 analytics tests passed in 1.349 seconds on a fresh, verified disposable native
+MySQL database; test database destroyed afterward. Runner:
+.venv/Scripts/python.exe scripts/g12_test_runner.py test analytics
+  --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  --noinput --verbosity 1
+Fixture aggregation and template rendering: 22 SELECT queries, 56.8ms in that run.
+
+node scripts/dashboard_themes_browser.cjs passed on final assets:
+- Eight metrics, eleven SVG charts and one HTML heatmap; all twelve tables and
+  chart values reconcile to synthetic aggregates.
+- 1440/1024/768/390/320 widths, no clipped chart labels or page-level overflow.
+- Date filter submission, keyboard table disclosures, empty activity periods.
+- OS light/dark first-visit behavior, OS changes, persisted user override and reload;
+  theme toggle still operates with localStorage blocked.
+- High contrast, reduced motion, 200% text at 320px, forced colors and no-JS tables.
+- Normal dark/light legend text >=4.5:1; high-contrast minimum 8.47:1.
+- No external requests, non-GET requests or JavaScript errors.
+
+Additional focused Display widget checks passed: minimum sampled text contrast
+8.52:1 dark, 5.31:1 light, 7.77:1 high contrast; desktop/mobile, keyboard Escape and
+focus restoration, 200% text access and forced colors.
+
+The actual retained-data view was rendered with a read-only SQL guard. Live data
+browser checks passed at 1440/1024/390/320 with all charts rendered, no overflow,
+clipped chart text or JS errors. Initial failures found overlapping scatter labels
+and a long 100% radial label; both were fixed before the successful final check.
+Current-record HTML/screenshots remain private under .local/. Committed evidence
+candidates in this directory contain synthetic data only.
+
+Django check --database default --settings=config.current_development_settings:
+no issues. JavaScript syntax and git diff --check passed.
+Django collectstatic --noinput completed with STATIC_ROOT overridden to the ignored
+.local/dashboard-glass-static-build directory. This is the actual static build;
+no TypeScript or Vite build is claimed, and no deployment was performed.
+
+Refreshed only the verified local web process to load changed cached templates;
+the original MySQL process and an existing SQL connection remained alive. GET /
+returns 200 without dashboard assets; /admin/ retains its native login redirect.
+The actual authenticated Brave dashboard was refreshed and inspected: live metrics,
+Program filter, twelve charts, Community overview and theme switch are present.
+
+Limits
+Full repository suite, representative user testing and actual screen-reader speech
+were not run. No production-scale performance or full WCAG certification claim.
+No selection, EWAF, publication, evidence, membership, release or audit rules changed.

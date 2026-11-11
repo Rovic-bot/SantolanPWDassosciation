@@ -1,0 +1,73 @@
+Admin Events simplification — 28 October 2026
+
+Owner-approved follow-up
+Remove the Annual calendar reference section, the Manage scheduled General and
+Specific Events link, and the Create observance button. Add Create event. Opening
+an existing observance must allow editing and publishing its update in one save.
+This replaces the withdraw/edit/republish instructions in the earlier annual
+calendar validation note. Earlier unfinished changes remain preserved.
+
+Implemented behavior
+- Admin Events shows the twelve-month saved calendar and Create event, linked to
+  the existing scheduled-event creation form with its existing permissions.
+- Authorized editors open an observance directly from its title. Save and publish
+  validates and publishes the complete edit atomically, returning to the calendar.
+- Existing change AND publication permissions are required; no permissions were
+  granted. Read-only users retain the detail view. Archived cards require the
+  existing explicit restore action before editing; ordinary draft/published cards
+  can be updated and published directly.
+- The edit form clearly explains immediate publication. Audience and participation
+  fields are required in this publishing flow. The reason remains recorded.
+- Current-version checks, row locking, photo validation, complete immutable
+  revision snapshots and audit records remain. Stale edits, invalid content,
+  missing photos and audit failure do not replace the current publication.
+- An edit creates one published revision with the real actor and time. Replaced
+  photos remain referenced by old revisions; newly uploaded files are cleaned up
+  when a write fails. Publication metadata supplied in form data is ignored.
+- History and withdrawal/archive controls are reachable from the editor. Existing
+  internal draft-creation services and routes remain compatible; the Create
+  observance button and reference-creation UI are removed from the Events page.
+
+Verification
+Tests used fresh disposable native MySQL databases through the guarded runner,
+never application data. Initial command:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_observance_updates events.test_observance_workflow.ObservanceWorkflowTests events.test_observance_workflow.ObservanceConcurrencyTests events.test_annual_calendar.AnnualCalendarTests events.test_participation events.test_observances.ObservanceAccessTests.test_authorized_viewer_sees_calendar_without_reference_or_write_controls --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+46 of 48 tests passed. The two failures were outdated public-layout assertions:
+the current redesigned calendar remains separate from scheduled-event filters,
+and scheduled-event audience details appear on the detail page rather than its
+summary card. These assertions were aligned with the already implemented October
+27 public redesign. Escaping is still asserted for both pages, including escaped
+audience and participation content on the detail page. Public rendering was not
+changed in this follow-up.
+
+After marking publication-required fields as required in the editor, all eleven
+direct-update tests and both adjusted participation tests passed on retry:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_observance_updates events.test_participation.EventParticipationTests.test_general_specific_and_observance_filters_keep_focus_distinct_from_permission events.test_participation.EventParticipationTests.test_public_audience_text_is_escaped_and_mutations_require_permissions --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+Result: 13 tests, OK. All 48 scoped behaviors passed across the initial and retry
+runs. Coverage includes HTTP publication, CSRF, required permissions, private
+history, immutable revisions, stale/concurrent updates, audit rollback and photo
+replacement/removal. Django system checks and git diff --check passed.
+
+Chrome verification
+Desktop 1560x1100 and mobile 390x844 checks passed for the simplified calendar,
+direct editor links, Create event destination, Save and publish, history controls,
+all twelve public observances, and no horizontal overflow or JavaScript errors.
+No business POST requests were sent to the retained development database during
+browser validation; publishing was exercised in disposable-database HTTP tests.
+Screenshots: admin-events-desktop.png, admin-events-mobile.png,
+observance-editor.png, observance-editor-mobile.png.
+Private harness: .local/annual-calendar-20261028/verify-updates.cjs
+
+Runtime and scope
+The identity-verified local system was restarted at http://127.0.0.1:8013/.
+No schema migration or application-content write was needed for this follow-up.
+No commit, push or remote deployment was performed.
+
+Follow-up: View events button
+At the owner's request, View events now appears beside Create event on the annual
+observance page. It uses the existing view_event permission and opens the separate
+scheduled Event list at /events/manage/; AnnualObservance records are not included
+in that queryset. Its existing Annual Observances link returns to the calendar.
+The retained server was restarted to refresh its cached template. Chrome confirmed
+the button destination and return link, with desktop/mobile checks passing. No
+business records were written and no new unit tests were needed for this link.

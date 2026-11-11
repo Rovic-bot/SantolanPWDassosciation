@@ -1,0 +1,13 @@
+{% autoescape off %}Hello {{ applicant_name }},
+
+Your information has been verified and your membership application has been approved.
+
+You are now a member of the Santolan PWD Association. Welcome to the Association!
+
+Your application reference: {{ reference }}.
+
+If you have questions about your membership, please reply to this email or contact the Association Help Desk.
+
+Thank you,
+Santolan PWD Association
+{% endautoescape %}

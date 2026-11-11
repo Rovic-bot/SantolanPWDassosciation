@@ -1,0 +1,59 @@
+Persistent EWAF applicant inputs and selection panel - 2026-11-06
+
+Owner request
+Show applicant inputs on the right beside the ranking, remove row Review buttons
+and the inputs section below the table. Owner clarified that Select for
+assistance should move into the right-side panel, not be removed.
+
+Implemented
+- Desktop ranking and a sticky, independently scrollable applicant panel share
+  one grid. The first visible ranked applicant is selected by default. Clicking
+  an applicant name or row updates the panel and selected-row highlight without
+  a modal. The old Review action column and drawer template are removed.
+- A labeled applicant selector also exposes pending/excluded/unranked applicants
+  whose inputs otherwise would not appear in the scored table. Current inputs,
+  source/status badges and member/application links retain their existing values.
+- The selected applicant's saved score and existing selection forms are in the
+  same panel. No viewing or switching action submits a beneficiary decision.
+  Permission, current-ranking, tie, registration-window, revision and capacity
+  checks remain in the existing services. Excluded applicants have no selection
+  form. Unranked applicants do not inherit another applicant's score/actions.
+- Invalid submissions retain their applicant and bound errors. Successful
+  selection returns to the same applicant. Filters reset the panel to a matching
+  row; empty results show an empty panel with an all-applicant selector.
+- Named links and GET forms work without JavaScript. Progressive row switching
+  refreshes server-rendered HTML with cancellation of superseded requests and
+  restores browser back/forward behavior. The small-screen layout stacks the
+  panel; row activation focuses it and scrolls it into view. Bottom space keeps
+  selection controls clear of the floating Display widget.
+- Score-breakdown links and retired input bookmarks lead to the same panel.
+  No schema, scoring, ranking, policy or stored decision changes.
+
+Validation
+28 tests passed in fresh disposable native MySQL (52.304 s):
+  ewaf.test_applicant_panel.ApplicantPanelTests
+  ewaf.test_ranking_freshness.RankingFreshnessTests
+  ewaf.test_retired_screens.RetiredScreensTests
+  ewaf.test_input_presentation
+Covered default/explicit applicant state, read-only GET, saved-run immutability,
+selection success and stale-revision errors, excluded/empty/unranked states,
+permissions, no retired links, unchanged eligible review reuse and release.
+Runner: scripts/g12_test_runner.py with
+scripts.registration_intake_test_runner.RegistrationIntakeTestRunner.
+Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-gfhyzm3i/django.log
+
+node --check static/js/ewaf-workspace.js, Django system/database check and
+git diff --check passed. The initial JS syntax check caught strict mode inside
+a destructured callback; moved the directive to file scope before UI verification.
+
+Native Brave verification on PRG000005:
+- Desktop shows ranking on the left and the applicant panel on the right.
+- Clicked Luis Testlima's row: name, household count, income, rank and highlighted
+  row updated from Ana to Luis without opening a popup.
+- Scrolled the panel independently to its selection controls. The existing stale
+  ranking remained blocked due to real source/eligibility issues, as before.
+- No actual beneficiary selection or other live record mutation was submitted.
+Mobile and light-theme rendering were not visually exercised in this pass.
+
+Collected assets and reloaded only the verified local web process on 8013,
+preserving its existing MySQL connection. Cache versions updated for JS and CSS.

@@ -1,0 +1,24 @@
+Main development address — October 28, 2026
+
+Owner confirmed http://127.0.0.1:8013/ as the main development system.
+
+The retained local connection manifest now records HTTP port 8013. Its server
+PID record adopts the already-running, identity-verified server on that port.
+Every other connection-manifest field is unchanged, including database identity,
+MySQL port, data directory, private media, credentials and instance ID. The old
+connection/server metadata was backed up privately under .local before updating.
+The private login instructions and README now use 8013. The legacy provisioning
+helper's starting HTTP port is also 8013; no provisioning was invoked.
+
+Start System.cmd delegates to scripts/run-current-development.ps1, which reads
+the retained manifest. Running that exact PowerShell launcher succeeded and
+reported 8013. current_development.py status reported Running: True, and its
+guarded database/configuration check passed. The public homepage, Admin login
+and instance-health endpoint returned HTTP 200 with MAIN-DEVELOPMENT identity.
+The health PID matches the recorded main server. git diff --check passed.
+
+No database records, uploads, credentials, schemas or migrations were changed.
+The older process on 8012 was not stopped; Windows denied that operation during
+the preceding task. It is no longer the configured main development address.
+Future startup/stop/restart commands target 8013 through the retained manifest.
+Existing unfinished source changes and the owner-defined milestone are preserved.

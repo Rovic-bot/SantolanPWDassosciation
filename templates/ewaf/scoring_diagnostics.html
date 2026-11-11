@@ -1,0 +1,14 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Applicant readiness diagnostics · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section" style="overflow-wrap:anywhere">
+<a class="workspace-back" href="{% url 'ewaf:scoring_policy' application.program_id %}">Program policy proposals</a>
+<h1>Applicant readiness diagnostics</h1><p>{{ application.public_reference }}</p>
+<p>DIAGNOSTIC ONLY — NOT AUTHORIZED FOR BENEFICIARY PROCESSING</p>
+<p>Readiness and provenance only. No applicant numerical score is produced or retained.</p>
+<p>Applicant mathematical readiness: unavailable. Numerical examples are isolated development fixtures.</p>
+<dl><dt>Eligibility evidence ready</dt><dd>{{ result.eligibility_ready|yesno:'Yes,No' }}</dd><dt>Criterion evidence complete</dt><dd>{{ result.evidence_complete|yesno:'Yes,No' }}</dd><dt>G14 mathematical evidence complete</dt><dd>{{ result.weight_evidence_complete|yesno:'Yes,No' }}</dd><dt>Effective authorization</dt><dd>Unavailable</dd><dt>Operational scoring</dt><dd>Unavailable</dd></dl>
+<h2>Current criterion findings</h2><ul>{% for row in result.criteria %}<li>{{ row.criterion }}: {{ row.state }} — {% if row.current %}current evidence{% else %}review required{% endif %}; assessment {{ row.assessment|default_if_none:'missing' }}</li>{% endfor %}</ul>
+<h2>Readiness reasons</h2><ul>{% for row in result.reasons %}<li style="overflow-wrap:anywhere">{{ row.code }}{% if row.source != None %} — {{ row.source }}{% endif %}</li>{% endfor %}</ul>
+{% if can_record %}<h2>Retain readiness findings</h2>{% include 'ewaf/evidence_form.html' with submit_label='Retain readiness diagnostic' %}{% endif %}
+<a href="{% url 'ewaf:scoring_history' application.pk %}">Diagnostic history</a>
+</div>{% endblock %}

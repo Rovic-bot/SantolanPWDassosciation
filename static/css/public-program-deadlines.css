@@ -1,0 +1,22 @@
+/* Shared registration notice for the public catalog and program detail page. */
+body.public-portal #main-content .program-closing-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    margin: .75rem 0;
+    padding: .625rem .75rem;
+    border: 1px solid var(--control-edge);
+    border-radius: .65rem;
+    background: var(--stone) !important;
+    color: var(--ink) !important;
+    font-size: .8rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+body.public-portal #main-content .program-closing-note[hidden] { display: none !important; }
+body.public-portal #main-content .program-closing-note :is(strong, span, time) { color: inherit !important; }
+body.public-portal #main-content .program-closing-note .portal-icon { flex: 0 0 1rem; width: 1rem; height: 1rem; margin-top: .15rem; }
+html[data-contrast="true"] body.public-portal #main-content .program-closing-note { background: #fff !important; color: #111 !important; border-color: #111; }
+@media (forced-colors: active) {
+    body.public-portal #main-content .program-closing-note { background: Canvas !important; color: CanvasText !important; border-color: CanvasText; }
+}

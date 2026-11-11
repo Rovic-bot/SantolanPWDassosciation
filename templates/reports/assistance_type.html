@@ -1,0 +1,8 @@
+<span class="report-assistance-type" data-type="{{ row.assistance_icon }}">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {% if row.assistance_icon == 'medical' %}<rect x="3" y="6" width="18" height="15" rx="2"/><path d="M9 6V3h6v3m-3 4v7m-3-3h6"/>
+  {% elif row.assistance_icon == 'food' %}<path d="M4 3v6a3 3 0 0 0 6 0V3M7 3v18M19 3c-4 2-4 8 0 9V3Zm0 9v9"/>
+  {% elif row.assistance_icon == 'device' %}<circle cx="14" cy="4" r="2"/><path d="m13 7-1 7h6l3 6M12 9H8m4 5a6 6 0 1 1-6-5"/>
+  {% else %}<path d="M3 18h4l3-3h5a2 2 0 0 1 0 4h-4m6-2 3-2 2 2-6 5H3M12 10l-4-4a3 3 0 0 1 4-4 3 3 0 0 1 4 4z"/>{% endif %}
+  </svg><span>{{ row.assistance }}</span>
+</span>

@@ -1,0 +1,13 @@
+{% extends "admin_portal/base.html" %}
+{% block title %}Testing workspace{% endblock %}
+{% block content %}
+<div class="container content-section">
+<h1>Explore the testing workspace</h1>
+<p>Change weights, review evidence, make human selections, record receipts and publish masked outcomes. All records and policy settings here are fictional.</p>
+<div class="row g-3 mb-4">{% for name, count in counts.items %}<div class="col-6 col-lg"><div class="card p-3"><strong>{{ count }}</strong><span>{{ name }}</span></div></div>{% endfor %}</div>
+<h2 class="h4">EWAF experiments</h2>
+<p>Open a lab, use the arrows to choose criterion priority, adjust its slider, then <strong>Review AHP result</strong>. Accept the calculated weights and save a new authorized version. Generate again to compare with History. Earlier calculations remain available.</p>
+<div class="row g-3">{% for program in labs %}<div class="col-md-6"><article class="card p-3 h-100"><h3 class="h5">{{ program.name }}</h3><p>{{ program.description }}</p><div class="d-flex flex-wrap gap-2"><a class="btn btn-primary" href="{% url 'ewaf:operational_workspace' program.pk %}">Configuration &amp; results</a><a class="btn btn-outline-secondary" href="{% url 'programs:applications' program.pk %}">Review applicants</a></div></article></div>{% endfor %}</div>
+<h2 class="h4 mt-4">Continue a workflow</h2><p>In an EWAF result row, select an outcome and record a reason (including the tie procedure where needed). Selection authorizes release under the existing workflow; it does not record receipt. Open <strong>Assistance Releases</strong>, choose the program and selected applicant, then record the actual fictional receipt. Use a reasoned void and replacement to correct a receipt.</p>
+<p>Use Reports &amp; Exports for member, application/eligibility, program and assistance data in CSV, Excel or PDF. Start/end dates support monthly and yearly reporting. To restart experimentation, close this port 8000 server and run <code>scripts/run-main-testing.ps1 -Restore</code>; this restores the baseline to a new database and retains this one.</p>
+</div>{% endblock %}

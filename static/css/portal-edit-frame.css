@@ -1,0 +1,17 @@
+.portal-edit-copy { white-space: pre-line; }
+body[data-portal-editing=true] [data-portal-field] { outline: 1px dashed #479dff; outline-offset: 4px; border-radius: 2px; cursor: text; }
+body[data-portal-editing=true] [data-portal-field]:focus { outline: 2px solid #208cff; background: rgb(32 140 255 / .12); }
+.portal-edit-picture { position: relative; min-width: 0; }
+.portal-edit-picture:has(> .make-hero-photo) { position: static; }
+.portal-edit-picture > .portal-picture-action { display: none; }
+body[data-portal-editing=true] .portal-edit-picture > .portal-picture-action { display: inline-flex; position: absolute; z-index: 8; top: 1rem; right: 1rem; padding: .5rem .75rem; border: 1px solid #a8cfff; border-radius: .5rem; background: #102142; color: #fff; font: 600 13px system-ui; box-shadow: 0 2px 12px #0005; cursor: pointer; }
+.portal-edit-picture:has(> .make-hero-photo) > .portal-picture-action { top: 8rem; }
+.portal-edit-picture:empty { min-height: 100px; }
+body[data-portal-editing=true] .portal-edit-picture[data-empty=true] { min-height: 100px; border: 1px dashed #479dff; border-radius: .7rem; margin: 1rem 0; }
+.portal-custom-picture { margin: 0; }
+.portal-custom-picture img { display: block; width: 100%; max-height: 460px; object-fit: cover; border-radius: 1rem; }
+
+/* Keep the Home image upload control above its decorative overlay. */
+body[data-portal-editing=true].home-page .home-landing > [data-portal-picture] { z-index: auto; pointer-events: none; }
+body[data-portal-editing=true].home-page .home-landing > [data-portal-picture] > img { position: absolute; inset: 0; z-index: -2; }
+body[data-portal-editing=true].home-page .home-landing > [data-portal-picture] > .portal-picture-action { pointer-events: auto; z-index: 10; }

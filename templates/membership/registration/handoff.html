@@ -1,0 +1,17 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Prepare membership approval · Santolan PWD{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}">{% endblock %}
+{% block content %}<div class="container content-section">
+{% include 'partials/member_navigation.html' %}
+<a href="{% url 'membership:registration_detail' intake.reference %}">← Registration review</a>
+<h1 class="mt-3">Prepare membership approval</h1><p>{{ intake.short_reference }}</p>
+<p>Complete the authorized onsite process first. Preparing this review does not approve membership or calculate EWAF. Applicant fields remain as submitted; record any corrections in the pending registration before continuing.</p>
+<p>Procedure references: identity {{ handoff_policy.identity_procedure_reference }}; requirements {{ handoff_policy.requirements_procedure_reference }}; assessment {{ handoff_policy.assessment_procedure_reference }}; identifier {{ handoff_policy.identifier_procedure_reference }}.</p>
+{% if form.pdf_profile %}<section aria-label="Submitted registration information">{% for title, rows in form.submitted_sections %}{% if rows %}<h2 class="h5 mt-3">{{ title }}</h2><dl>{% for label,value in rows %}<dt>{{ label }}</dt><dd>{{ value }}</dd>{% endfor %}</dl>{% endif %}{% endfor %}</section>{% endif %}
+<form method="post" enctype="multipart/form-data" class="record-editor">{% csrf_token %}
+{% if form.errors %}<div role="alert" class="alert alert-danger">Review the errors below. Nothing was approved.{{ form.non_field_errors }}</div>{% endif %}
+{% if form.pdf_profile %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}{% include 'membership/field.html' with field=form.control_number %}{% for field in form.document_fields %}{% include 'membership/field.html' %}{% endfor %}{% else %}{% include 'members/profile_form.html' %}{% endif %}
+<fieldset class="profile-section"><legend>Authorized onsite acceptance and assessment</legend>
+{% for field in form.acceptance_fields %}{% include 'membership/field.html' %}{% endfor %}</fieldset>
+<button class="btn btn-primary" type="submit">Save acceptance and prepare membership review</button>
+</form></div>{% endblock %}

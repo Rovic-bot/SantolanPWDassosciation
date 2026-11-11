@@ -1,0 +1,24 @@
+{% extends 'ewaf/workspace_base.html' %}
+{% block title %}EWAF & selection &middot; {{ program.name }}{% endblock %}
+{% block content %}<div class="container content-section ewaf-page">
+<a class="ewaf-back" href="{% url 'ewaf:operational_programs' %}">{% include 'ewaf/ui_icon.html' with icon='arrow-left' %} All EWAF programs</a>
+<header class="ewaf-page-header"><div><div class="ewaf-title-line"><h1>EWAF &amp; selection</h1><span class="ewaf-status">{{ program.get_status_display }}</span></div><p>{{ program.name }}{% if program.assistance_type %} &middot; {{ program.assistance_type }}{% endif %}</p></div>
+<div class="ewaf-header-actions"><a class="btn ewaf-secondary-button" href="{% if ewaf_vault_enabled %}{% url 'ewaf:vault' %}{% else %}{% url 'ewaf:operational_configuration' program.pk %}{% endif %}">{% include 'ewaf/ui_icon.html' with icon='lock' %} Configuration</a>
+{% if can_calculate %}<form method="post" id="generate-ranking-form">{% csrf_token %}<input type="hidden" name="action" value="GENERATE">{% for field in form.hidden_fields %}{{ field }}{% endfor %}<button class="btn btn-primary" {% if not ready %}disabled aria-describedby="calculation-readiness"{% endif %}>{% include 'ewaf/ui_icon.html' with icon='refresh' %} Generate EWAF Ranking</button></form>{% endif %}</div></header>
+{% if form.errors %}<div class="alert alert-danger" role="alert">{{ form.errors }}</div>{% endif %}
+{% if ranking_during_registration %}<p class="alert alert-info" role="status">Registration is open. You can rank and select currently eligible applicants within available slots. Recalculate when applications or their information change. Applications awaiting eligibility review are not ranked.</p>{% endif %}
+<div id="workspace-notice">{% if workspace_notice %}<p class="ewaf-brief-notice" id="calculation-readiness" role="status">{% include 'ewaf/ui_icon.html' with icon='info' %} {{ workspace_notice }}</p>{% endif %}</div>
+{% if not ewaf_vault_enabled %}{% include 'ewaf/workspace_configuration.html' with form=configuration_form %}{% endif %}
+{% include 'ewaf/workspace_tabs.html' with run=result.run invalid_calculation=result.invalid_calculation %}
+<div class="ewaf-applicant-layout" id="applicant-workspace"><div class="ewaf-ranking-main"><section id="results" aria-label="EWAF Ranking and human selection">
+{% if result.invalid_calculation %}<div class="ewaf-card ewaf-empty"><p>Saved scores are unavailable.</p></div>
+{% elif result %}{% include 'ewaf/workspace_results.html' with run=result.run rows=result.rows active=result.active problems=result.problems submitted=result.submitted can_decide=result.can_decide selection_waiting=result.selection_waiting %}
+{% else %}<div class="ewaf-card ewaf-empty"><h2>No calculation yet</h2><p>Generate a ranking when the applicant information and configuration are ready.</p></div>{% endif %}
+</section>
+{% include 'ewaf/unranked_applicants.html' %}
+</div>
+{% include 'ewaf/applicant_panel.html' with panel_row=result.selected_row %}
+</div>
+{% include 'ewaf/applicant_panels.html' %}
+
+</div>{% endblock %}

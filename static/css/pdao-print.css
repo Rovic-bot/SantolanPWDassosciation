@@ -1,0 +1,85 @@
+/* Numbered sections and two A4 pages follow the owner's editable PDAO form. */
+* { box-sizing: border-box; }
+body { --ink: #172338; --surface: #fff; --line: #c6cfda; margin: 0; background: #edf0f3; color: #111; font-family: Arial, sans-serif; }
+.pdao-embedded-preview .registration-controls { display: none; }
+.pdao-embedded-preview .pdao-preview { padding: 8px; }
+#pdao-preview-dialog .btn { min-height: 44px; padding: .6rem .9rem; border: 1px solid #185383; border-radius: .5rem; background: #185383; color: #fff; font: inherit; cursor: pointer; }
+#pdao-preview-dialog .btn:disabled { opacity: .5; cursor: wait; }
+.registration-controls { max-width: 210mm; margin: 1rem auto; padding: 1rem; font-size: 1rem; line-height: 1.5; }
+.registration-controls h1 { font-size: 1.5rem; }
+.registration-controls p { margin: .6rem 0; }
+.registration-controls .btn { display: inline-block; border: 1px solid #185383; background: #fff; color: #16466e; border-radius: .3rem; padding: .65rem .9rem; margin: .25rem .2rem .25rem 0; font: inherit; text-decoration: none; cursor: pointer; }
+.registration-controls .btn-primary { background: #185383; color: #fff; }
+.registration-controls :focus-visible, .pdao-preview:focus-visible { outline: 3px solid #a05200; outline-offset: 3px; }
+.pdao-receipt-reference { max-width: 210mm; margin: 0 auto 1rem; padding: 0 1rem; font-size: .8rem; overflow-wrap: anywhere; }
+.pdao-receipt-reference:empty { display: none; }
+.pdao-receipt-reference p { margin: 0; }
+.pdao-preview { overflow-x: auto; padding: 0 1rem 1rem; }
+.pdao-sheet { width: 210mm; min-height: 297mm; padding: 12mm 11.7mm 8mm; margin: 0 auto 1rem; background: #fff; font: 8.5pt/1.25 Arial, sans-serif; }
+.pdao-letterhead { display: grid; grid-template-columns: 20mm 1fr 20mm; align-items: center; gap: 3mm; text-align: center; margin-bottom: 4mm; font-size: 9pt; line-height: 1.4; }
+.pdao-letterhead img { width: 19mm; height: 19mm; object-fit: contain; }
+.pdao-row { display: grid; border-left: .3mm solid #111; }
+.pdao-row > .pdao-cell { border-left: 0; }
+.pdao-cell { padding: 1.5mm; border: .3mm solid #111; border-top: 0; min-width: 0; overflow-wrap: anywhere; }
+.pdao-cell > strong { display: block; margin-bottom: 1mm; font-size: 8.3pt; }
+.pdao-value { display: block; min-height: 3.7mm; font-weight: 600; overflow-wrap: anywhere; }
+.pdao-identity { display: grid; grid-template-columns: 1fr 27mm; border-top: .3mm solid #111; }
+.pdao-photo { grid-column: 2; grid-row: 1 / 4; align-self: stretch; display: flex; justify-content: center; align-items: center; text-align: center; border: .3mm solid #111; border-left: 0; border-top: 0; font-size: 9pt; min-height: 27mm; }
+.pdao-application-type { display: flex; flex-wrap: wrap; gap: 2mm; align-items: center; }
+.pdao-names { display: grid; grid-template-columns: 1fr 1fr 1fr 18mm; border-left: .3mm solid #111; }
+.pdao-names .pdao-cell { border-left: 0; }
+.disability-row { grid-template-columns: 1.35fr 1fr; }
+.address-row { grid-template-columns: 2fr 1fr; }
+.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.demographics-row { grid-template-columns: 1fr .55fr 1.35fr; }
+.employment-row { grid-template-columns: .9fr 1fr 1.5fr; }
+.identification-row { grid-template-columns: .6fr 1.3fr 1fr; }
+.pdao-options { display: grid; gap: 1mm; margin: 1.2mm 0; }
+.pdao-options.inline { display: flex; flex-wrap: wrap; column-gap: 4mm; }
+.pdao-options[data-pdao-options="disability_types"] { grid-auto-flow: column; grid-template-rows: repeat(5, auto); }
+.pdao-options[data-pdao-options="disability_cause_details"] { grid-auto-flow: column; grid-template-rows: repeat(3, auto); }
+.pdao-options[data-pdao-options="blood_type"] { grid-auto-flow: column; grid-template-rows: repeat(4, auto); }
+.pdao-options[data-pdao-options="civil_status"] { grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pdao-option { display: block; position: relative; padding-left: 3.6mm; font-size: 8pt; line-height: 1.25; overflow-wrap: anywhere; }
+.pdao-checkbox { position: absolute; top: .2mm; left: 0; width: 2.6mm; height: 2.6mm; border: .25mm solid #111; font: bold 9pt/2.3mm Arial, sans-serif; text-align: center; }
+.pdao-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.pdao-source-footer { display: flex; align-items: center; justify-content: space-between; gap: 3mm; margin-top: 3mm; border-top: .3mm solid #111; padding-top: 2mm; font-size: 8pt; text-align: center; }
+.pdao-source-footer img { width: 23mm; height: 11mm; object-fit: contain; }
+.pdao-family { border-collapse: collapse; width: 100%; table-layout: fixed; }
+.pdao-family th, .pdao-family td { border: .3mm solid #111; padding: 2.5mm 2mm; text-align: left; overflow-wrap: anywhere; height: 9mm; }
+.pdao-family th { font-size: 8pt; }
+.pdao-family td { font-weight: 600; }
+.pdao-section-title, .pdao-separated { border-top: .3mm solid #111; }
+.pdao-separated { margin-top: 3mm; }
+.pdao-consent p { margin: 2mm 0 5mm; line-height: 1.5; }
+.pdao-signatures { display: flex; justify-content: space-between; gap: 3mm; margin: 4mm 0 2mm; }
+.pdao-privacy { font-size: 8pt; margin: 2mm 0 4mm; }
+.pdao-requirements ul { margin: 1.5mm 0 0; padding-left: 3.5mm; }
+.pdao-requirements li { margin-bottom: 1.5mm; }
+.pdao-requirements p { margin: 1mm 0 0; }
+.pdao-inquiries { margin-top: 3mm; border-top: .3mm solid #111; font-size: 8pt; }
+.pdao-inquiries dl { display: grid; grid-template-columns: 43% 57%; margin: 0; gap: 1mm; }
+.pdao-inquiries dt { font-weight: bold; }
+.pdao-inquiries dd { margin: 0; overflow-wrap: anywhere; }
+@page { size: A4 portrait; margin: 0; }
+@media screen {
+  body.pdao-public-form { background: #e8e5df; color: #1c1a18; }
+  .pdao-public-form .registration-controls { border: 1px solid #fff; border-radius: 28px; padding: 24px; background: #f4f2ec; }
+  .pdao-public-form .registration-controls .btn { border-color: #9c9589; border-radius: 99px; background: #f4f2ec; color: #1c1a18; }
+  .pdao-public-form .registration-controls .btn-primary { background: #2a2826; color: #f4f2ec; border-color: #2a2826; }
+  .pdao-public-form .registration-controls .btn:hover { background: #ded8cc; color: #1c1a18; }
+  .pdao-public-form .registration-controls :focus-visible { outline-color: #2a2826; }
+}
+@media print {
+  #pdao-preview-dialog { display: none !important; }
+  .pdao-screen-only { display: none !important; }
+  body { background: #fff; }
+  .registration-controls { display: none !important; }
+  .pdao-receipt-reference { position: fixed; bottom: 2mm; left: 11.7mm; right: 11.7mm; padding: 0; margin: 0; font-size: 7pt; }
+  .pdao-preview { overflow: visible; padding: 0; }
+  .pdao-embedded-preview .pdao-preview { overflow: visible; padding: 0; }
+  .pdao-sheet { margin: 0; break-after: page; }
+  .pdao-sheet:last-child { break-after: auto; }
+  .pdao-cell, .pdao-family tr, .pdao-consent, .pdao-source-footer { break-inside: avoid; }
+}

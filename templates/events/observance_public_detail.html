@@ -1,0 +1,20 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}{{ observance.title }} · Santolan PWD{% endblock %}
+{% block resident_class %}section-events{% endblock %}
+{% block content %}
+<article><header class="page-hero"><div class="container resident-mast"><div>
+  <div class="page-location"><a href="{% url 'core:events' %}">← Events</a></div>
+  <p class="eyebrow">SPECIFIC EVENTS · ANNUAL OBSERVANCE</p><h1>{{ observance.title }}</h1>
+  <p class="page-intro">{{ observance.recurrence_rule }} · Every year</p>
+</div><div class="resident-mark" aria-hidden="true">{% include 'public/icon.html' with name='calendar' %}</div></div></header>
+<div class="container content-section"><div class="event-detail-grid">
+  <div class="announcement-copy resident-panel"><h2>About this observance</h2>{% if observance.image %}<img class="announcement-image" src="{% url 'events:observance_image' observance.pk %}" alt="{{ observance.image_alt }}">{% endif %}
+    <p>{{ observance.category_label }}</p>{{ observance.description|linebreaks }}
+    <p>Legal basis: {{ observance.legal_basis }}<br><a href="{{ observance.source_url }}" rel="external">Official source for {{ observance.title }}</a></p>
+  </div>
+  <aside class="event-details resident-aside"><h2>Audience and participation</h2>
+    {% include 'events/participation.html' with item=observance %}
+    <p>An observance describes an awareness focus. Confirm any scheduled local activity and its participation rules with the organizer.</p>
+  </aside>
+</div></div></article>
+{% endblock %}

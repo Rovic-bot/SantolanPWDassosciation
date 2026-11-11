@@ -1,0 +1,12 @@
+{% load portal_content %}
+<header class="result-cover">
+    <div class="result-cover-artwork" aria-hidden="true">
+        <span class="result-cover-initials">{{ announcement.title|title_initials }}</span>
+        {% if announcement.image_url %}<img src="{{ announcement.image_url }}" alt="" data-notice-image data-announcement-poster-image>{% endif %}
+    </div>
+    <div class="result-cover-top"><span class="result-published-badge">{% include 'public/icon.html' with name='check' %}Published result</span></div>
+    <div class="result-cover-copy">
+        {% if primary_heading %}<h1 id="{% if heading_id %}{{ heading_id }}{% else %}notice-title-{{ announcement.pk }}{% endif %}" translate="no">{{ announcement.title }}</h1>{% else %}<h3 id="{% if heading_id %}{{ heading_id }}{% else %}notice-title-{{ announcement.pk }}{% endif %}" translate="no">{{ announcement.title }}</h3>{% endif %}
+        <p class="result-cover-byline"><span>{% include 'public/icon.html' with name='calendar' %}<time datetime="{{ announcement.published_at|date:'c' }}">{{ announcement.published_at|date:'M j, Y' }}</time></span><span>{% include 'public/icon.html' with name='pin' %}{{ announcement.source_office }}</span></p>
+    </div>
+</header>

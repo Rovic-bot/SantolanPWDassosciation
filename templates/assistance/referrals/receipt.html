@@ -1,0 +1,11 @@
+{% extends 'public/resident_base.html' %}{% block title %}Request received · Santolan PWD{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Resources & Help' label='Request receipt' title='Your request was received' intro='Save your conversation reference to continue with the Association.' icon='check' only %}
+<div class="container content-section resident-columns"><section class="resident-panel"><h2>Request details</h2>{% if ticket.short_reference != ticket.reference %}<p class="eyebrow">Request reference</p><p class="h4 text-break">{{ ticket.short_reference }}</p>{% endif %}
+<h3>Private conversation reference</h3><p class="concern-private-reference">{{ ticket.reference }}</p><p>Keep this reference private. Next time, choose Continue a conversation and enter this reference to reopen your chat.</p>
+<form method="post" action="{% url 'assistance:referral_conversation_start' %}">{% csrf_token %}<button class="btn btn-primary">Open conversation</button></form>
+<dl>{% if ticket.subject %}<dt>Subject</dt><dd>{{ ticket.subject }}</dd>{% endif %}<dt>Type of assistance</dt><dd>{{ ticket.get_assistance_type_display }}</dd><dt>Email for acknowledgment and updates</dt><dd>{{ ticket.email }}</dd><dt>Email status</dt><dd>{{ delivery }}</dd></dl>
+</section><aside class="resident-aside"><h2>What happens next</h2><p>Read replies and send follow-up messages in your conversation. An acknowledgment email also contains your conversation reference. If it has not arrived, check your spam folder or contact the Help Desk. You do not need to submit another ticket.</p><p>{{ notice }}</p>
+<form method="post" action="{% url 'assistance:referral_finish' %}">{% csrf_token %}<button class="btn btn-primary">Finish and clear this session</button></form></aside></div>{% endblock %}

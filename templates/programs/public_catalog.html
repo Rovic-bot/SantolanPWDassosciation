@@ -1,0 +1,71 @@
+{% extends 'public/section_base.html' %}
+{% load static portal_content %}
+{% block title %}Assistance programs · Santolan PWD{% endblock %}
+{% block section_class %}program-catalog-page section-programs{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-catalog.css' %}?v=20261026-nav4">{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-photo-cards.css' %}?v=20261108-7">{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-program-deadlines.css' %}?v=20261110-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/public-program-deadlines.js' %}?v=20261110-1" defer></script>{% endblock %}
+{% block content %}
+<div data-public-browser="programs" id="program-browser">
+<div class="bento-program-heading">
+    <header class="section-hero section-photo-banner" aria-labelledby="section-title">
+        {% include 'public/section_banner_art.html' with tab='Programs' %}
+        <div class="section-banner-copy">
+        <p class="section-overline">{% portal_text "hero_eyebrow" %}Member services{% endportal_text %}</p>
+        <h1 id="section-title">{% portal_text "hero_title" %}Assistance programs{% endportal_text %}</h1>
+        <p class="section-lead">{% portal_text "hero_intro" %}Explore available programs, review requirements, and apply during the published application period.{% endportal_text %}</p>
+        </div>
+        <nav class="catalog-tabs" aria-label="Program filters">
+            {% for tab in period_filters %}{% if tab.value != 'unavailable' or tab.count or period == tab.value %}<a href="{{ tab.url }}" {% if period == tab.value %}aria-current="page"{% endif %}{% if tab.value == 'new' %} title="Published within the last hour"{% endif %} class="catalog-tab">{{ tab.label }} <span>({{ tab.count }})</span></a>{% endif %}{% endfor %}
+        </nav>
+    </header>
+    <aside class="bento-card bento-program-requirements" aria-labelledby="program-requirements-heading">
+        <h2 id="program-requirements-heading">Program requirements</h2>
+        <p>Each program has its own requirements and application period. Review the published details before you apply.</p>
+        <a class="btn btn-outline-primary" href="{% url 'core:resources' %}">Ask for guidance</a>
+
+    </aside>
+</div>
+<div class="container catalog-content">
+    <section aria-labelledby="browse-programs-heading" id="browse-programs">
+        <h2 class="visually-hidden" id="browse-programs-heading">{% portal_text "text_001" %}Browse programs{% endportal_text %}</h2>
+        {% if period == 'new' %}<p class="catalog-result-count">Programs published in the last hour, newest first.</p>{% endif %}
+        {% if query or category %}<div class="catalog-active-filters"><p>{% if query %}Search: <strong>“{{ query }}”</strong>{% endif %}{% if query and category %}<span aria-hidden="true"> · </span>{% endif %}{% if category %}Category: <strong>{{ category }}</strong>{% endif %}</p><a href="?period={{ period }}">Clear filters</a></div>{% endif %}
+        <div class="catalog-grid">
+            {% for program in page_obj %}{% include 'programs/public_card.html' %}{% empty %}
+            <div class="catalog-empty">
+                {% if query or category %}<h3>{% portal_text "text_002" %}No programs match your search.{% endportal_text %}</h3><p>{% portal_text "text_003" %}Try a different keyword or category, or browse all programs.{% endportal_text %}</p>
+                {% elif period == 'new' %}<h3>No programs published in the last hour.</h3><p>Newly published programs appear here for one hour. Browse all programs to see earlier publications.</p>
+                {% elif period == 'all' %}<h3>{% portal_text "text_004" %}There are no published programs to browse yet.{% endportal_text %}</h3><p>{% portal_text "text_005" %}Please check back for updates from the Association.{% endportal_text %}</p>
+                {% else %}<h3>{% portal_text "text_006" %}No programs match this category.{% endportal_text %}</h3><p>{% portal_text "text_007" %}Explore another application period or check back for updates.{% endportal_text %}</p>{% endif %}
+                {% if query or category or period != 'all' %}<a class="btn catalog-outline-button" href="?period=all">Browse all programs {% include 'programs/ui_icon.html' with name='arrow' %}</a>{% endif %}
+            </div>{% endfor %}
+        </div>
+        <div class="catalog-bottom">
+            <p class="catalog-result-count">{% if page_obj.paginator.count %}Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} program{{ page_obj.paginator.count|pluralize }}{% else %}0 programs{% endif %}</p>
+            {% if page_obj.has_other_pages %}<nav class="catalog-pagination" aria-label="Program pages">
+                {% if previous_page_url %}<a href="{{ previous_page_url }}" rel="prev">Previous</a>{% else %}<span aria-disabled="true">{% portal_text "text_008" %}Previous{% endportal_text %}</span>{% endif %}
+                {% for link in page_links %}{% if link.number == page_obj.number %}<a href="{{ link.url }}" aria-current="page" aria-label="Page {{ link.number }}">{{ link.number }}</a>{% elif link.url %}<a href="{{ link.url }}" aria-label="Page {{ link.number }}">{{ link.number }}</a>{% else %}<span>{{ link.number }}</span>{% endif %}{% endfor %}
+                {% if next_page_url %}<a href="{{ next_page_url }}" rel="next">Next</a>{% else %}<span aria-disabled="true">{% portal_text "text_009" %}Next{% endportal_text %}</span>{% endif %}
+            </nav>{% endif %}
+        </div>
+    </section>
+    <section class="catalog-guide" aria-labelledby="application-guide-heading">
+        <div class="catalog-guide-main">
+            <h2 id="application-guide-heading">{% portal_text "text_010" %}Before you apply{% endportal_text %}</h2>
+            <ol class="catalog-steps">
+                <li><span class="catalog-step-number" aria-hidden="true">1</span><div><h3>{% portal_text "text_011" %}Explore a program{% endportal_text %}</h3><p>{% portal_text "text_012" %}Review eligibility, requirements, and available slots.{% endportal_text %}</p></div></li>
+                <li><span class="catalog-step-number" aria-hidden="true">2</span><div><h3>{% portal_text "text_013" %}Submit your application{% endportal_text %}</h3><p>{% portal_text "text_014" %}Verified Association members can apply while applications are open.{% endportal_text %}</p></div></li>
+                <li><span class="catalog-step-number" aria-hidden="true">3</span><div>{% if program_tracking_enabled %}<h3>{% portal_text "text_015" %}Track your status{% endportal_text %}</h3><p>{% portal_text "text_016" %}Use your application reference number to check its status.{% endportal_text %}</p>{% else %}<h3>{% portal_text "text_017" %}Keep your reference{% endportal_text %}</h3><p>{% portal_text "text_018" %}Save your receipt for follow-up with the Association Help Desk.{% endportal_text %}</p>{% endif %}</div></li>
+            </ol>
+            {% if program_tracking_enabled %}<a class="btn catalog-outline-button catalog-tracking-button" href="{% url 'programs:tracking' %}" data-tracking-open>Track an application</a>{% endif %}
+        </div>
+        <p class="catalog-guide-note">{% portal_text "text_019" %}Submitting an application does not guarantee selection or assistance. Final decisions remain with authorized personnel.{% endportal_text %}</p>
+    </section>
+
+
+<section class="portal-supplies" aria-labelledby="community-support-heading"><figure class="portal-photo">{% portal_picture "picture_1" %}<picture><source type="image/webp" srcset="{% static 'images/community/assistance-supplies-640.webp' %} 640w, {% static 'images/community/assistance-supplies-1080.webp' %} 1080w" sizes="(min-width: 768px) 550px, 92vw"><img src="{% static 'images/community/assistance-supplies.jpg' %}" alt="Assistance supplies and wheelchairs prepared at a Santolan community activity." width="2048" height="1028" loading="lazy"></picture>{% endportal_picture %}<figcaption>{% portal_text "text_021" %}From a community activity: “Inclusion for All — Honoring Disability Rights,” 2026 National Disability Rights Week. Banner theme: “Rights First, Legislation Forward: Strategic Action for Equal Participation and Inclusive Development.”{% endportal_text %}</figcaption></figure><div><h2 id="community-support-heading">{% portal_text "text_022" %}Program requirements{% endportal_text %}</h2><p>{% portal_text "text_023" %}Each program has its own requirements and application period. Review the published details before you apply.{% endportal_text %}</p><p class="portal-small">{% portal_text "text_024" %}This community photograph is not an announcement of current availability.{% endportal_text %}</p><a class="text-link" href="{% url 'core:resources' %}">Ask for guidance {% include 'public/icon.html' with name='arrow' %}</a></div></section>
+</div>
+</div>
+{% endblock %}

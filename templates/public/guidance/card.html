@@ -1,0 +1,25 @@
+{% load portal_content %}
+{% with title_field="guidance_title_"|add:card.anchor excerpt_field="guidance_excerpt_"|add:card.anchor body_field="guidance_"|add:card.anchor %}
+<article data-guidance-card id="{{ card.anchor }}" aria-labelledby="guidance-title-{{ card.anchor }}" class="{% if card.anchor == 'member-update' %}[--surface:#e6dfd2] [--paper:#f4f2ec] [--stone:#f4f2ec] [--ink:#1c1a18] [--muted:#625d56] [--brand-primary:#1c1a18] [--teal-hover:#000] [--line:#8d867b] [--control-edge:#625d56] [&_*]:!text-portal-ink portal-contrast:[--surface:#fff] portal-contrast:[--ink:#111] portal-contrast:!border-2 {% endif %}group relative min-w-0 cursor-pointer rounded-[24px] !border !border-solid !border-portal-border bg-portal-card !p-6 shadow-portal transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1 hover:scale-[1.03] hover:!border-portal-control hover:shadow-portal-hover focus-within:z-10 focus-within:-translate-y-1 focus-within:scale-[1.03] focus-within:!border-portal-control focus-within:shadow-portal-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:!outline-portal-ink motion-reduce:!transform-none motion-reduce:!transition-none portal-motion:!transform-none portal-motion:!transition-none portal-contrast:!border-portal-ink portal-contrast:hover:!border-portal-ink portal-contrast:focus-within:!border-portal-ink portal-contrast:!shadow-none">
+  <details class="group" aria-labelledby="guidance-title-{{ card.anchor }}">
+  <summary class="block cursor-pointer list-none rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:!outline-portal-ink [&::-webkit-details-marker]:hidden">
+  <div class="!mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl !border !border-solid !border-portal-border bg-portal-inset !text-portal-action transition-colors duration-300 group-hover:bg-portal-canvas group-hover:!border-portal-control group-focus-within:bg-portal-canvas group-focus-within:!border-portal-control portal-contrast:!border-portal-ink portal-contrast:group-hover:!border-portal-ink portal-contrast:group-focus-within:!border-portal-ink">
+    {% include 'public/guidance/icon.html' with icon=card.anchor %}
+  </div>
+  <h3 id="guidance-title-{{ card.anchor }}" class="!mb-3 !mt-0 !text-xl !font-bold !leading-snug !tracking-tight !text-portal-ink transition-colors duration-300 group-hover:!text-portal-action group-focus-within:!text-portal-action">{% portal_text title_field %}{{ card.title }}{% endportal_text %}</h3>
+  <p class="!m-0 max-w-3xl !text-sm !leading-7 !text-portal-muted">{% portal_text excerpt_field %}{{ card.excerpt }}{% endportal_text %}</p>
+  </summary>
+  <div id="{{ card.anchor }}-details" tabindex="-1" class="focus-visible:outline focus-visible:outline-2 focus-visible:!outline-portal-ink" aria-label="{{ card.title }} details">
+    <div class="!mt-5 !border-0 !border-t !border-solid !border-portal-border !pt-5 !text-sm !leading-7 !text-portal-muted [&_p]:!mb-3 [&_p]:!text-sm [&_p]:!leading-7 [&_p]:!text-portal-muted [&_p:last-child]:!mb-0 portal-contrast:!border-portal-ink">
+      {% portal_block body_field %}{% if card.content.version %}<div translate="no">{% endif %}{{ card.content.body|linebreaks }}{% if card.content.version %}</div>{% endif %}{% endportal_block %}
+    </div>
+  </div>
+  </details>
+  {% if card.anchor == 'accessibility' %}
+    <button type="button" data-open-display hidden class="!mt-5 inline-flex min-h-[44px] max-w-full items-center !gap-3 rounded-lg !border-0 bg-transparent !p-0 text-left !text-sm font-semibold !leading-6 !text-portal-action transition-colors duration-300 hover:!text-portal-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:!outline-portal-ink">{{ card.action }}{% include 'public/guidance/arrow.html' %}</button>
+    <noscript><a href="#accessibility-details" class="!mt-5 inline-flex min-h-[44px] items-center !gap-3 !text-sm font-semibold !text-portal-action no-underline">{{ card.action }}{% include 'public/guidance/arrow.html' %}</a></noscript>
+  {% elif card.anchor != 'ewaf' and card.anchor != 'privacy' %}
+    <a href="{{ card.href }}" class="!mt-5 inline-flex min-h-[44px] max-w-full items-center !gap-3 rounded-lg !text-sm font-semibold !leading-6 !text-portal-action no-underline transition-colors duration-300 hover:!text-portal-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:!outline-portal-ink">{{ card.action }}{% include 'public/guidance/arrow.html' %}</a>
+  {% endif %}
+</article>
+{% endwith %}

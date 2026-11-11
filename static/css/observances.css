@@ -1,0 +1,20 @@
+/* Shared calendar: semantic month sections, no scripted date assumptions. */
+.observance-month-links { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 1rem 0 1.5rem; }
+.observance-month-links a { display: inline-flex; align-items: center; min-height: 44px; padding: .25rem; }
+.observance-calendar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.observance-month { min-width: 0; padding: 1.25rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface, #fff); overflow-wrap: anywhere; }
+.observance-month h3 { color: var(--teal); font-size: 1.125rem; margin: 0 0 1rem; scroll-margin-top: 7rem; }
+.observance-card h4 { font-size: 1.125rem; line-height: 1.5; margin: .5rem 0; }
+.observance-photo { display: block; width: 100%; height: auto; margin-bottom: 1rem; border-radius: .25rem; }
+.observance-preview { max-width: 42rem; }
+.observance-card + .observance-card { border-top: 1px solid var(--line); padding-top: 1rem; }
+.observance-category { font-size: .875rem; color: var(--muted); margin-bottom: .5rem; }
+.observance-source, .observance-empty { margin-bottom: 0; }
+.observance-source a { display: inline-block; padding-block: .5rem; min-height: 44px; text-decoration: underline; }
+.public-site #association-events-heading + nav + .announcement-public-list .announcement-entry h3 { font-size: clamp(1.7rem, 3vw, 2.5rem); }
+.public-site .announcement-entry h3 a { color: var(--ink); text-decoration: none; }
+.public-site .announcement-entry h3 a:hover { text-decoration: underline; }
+.observance-month-links a:focus-visible, .observance-month :focus-visible { outline: 3px solid var(--focus, #005749); outline-offset: 3px; }
+@media (max-width: 1100px) { .observance-calendar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .observance-calendar { grid-template-columns: minmax(0, 1fr); } }
+@media (forced-colors: active) { .observance-month { border-color: CanvasText; } }

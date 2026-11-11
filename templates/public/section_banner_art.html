@@ -1,0 +1,14 @@
+{% load static portal_content %}
+{% if tab == 'Events' %}
+  {% static 'images/community/activities.jpg' as banner_src %}
+{% elif tab == 'Programs' or tab == 'Resources & Help' %}
+  {% static 'images/community/assistance-supplies.jpg' as banner_src %}
+{% elif tab == 'Announcements' %}
+  {% static 'images/community/community-walk.jpg' as banner_src %}
+{% else %}
+  {% static 'images/community/gathering.jpg' as banner_src %}
+{% endif %}
+<div class="section-banner-art">
+  {% portal_picture "hero_picture" %}<img src="{{ banner_src }}" alt="" fetchpriority="high" decoding="async">{% endportal_picture %}
+</div>
+<div class="section-banner-shade" aria-hidden="true"></div>

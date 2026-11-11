@@ -1,0 +1,1 @@
+{% for metric in portfolio_metrics %}<article class="portfolio-metric" data-accent="{{ metric.accent }}"><span class="portfolio-index" aria-hidden="true">{{ forloop.counter|stringformat:'02d' }}</span><strong>{{ metric.value }}</strong><h2>{{ metric.label }}</h2><p>{{ metric.detail }}</p></article>{% endfor %}

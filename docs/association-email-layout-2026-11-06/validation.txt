@@ -1,0 +1,44 @@
+﻿Association email settings layout - 2026-11-06
+
+Owner request: use the supplied two-card reference layout, removing the password
+and reason-for-change fields.
+
+Implemented:
+- Account Configuration card with a full-width email field and Save Changes action.
+- Change History card with before/after addresses, timestamp, actor, and visible
+  log count. It shows up to 20 retained entries, with a limit notice when full.
+- Scoped workspace theme styles, responsive rows, labels and validation errors.
+- Email-only HTTP form; extra password/reason POST values are ignored. The
+  service records an automatic factual audit note. Old audit reasons are retained
+  in storage but are not displayed on this screen.
+- Existing service-level credential handling, RBAC, stale-version checks, atomic
+  audits, and sender-bound credential clearing remain intact. Changing the email
+  still disconnects the old account. This screen no longer provisions passwords;
+  sending still requires an existing matching connection/server-managed SMTP.
+- No migrations, real settings changes, or real email sends were performed.
+
+Validation:
+- 42 focused Django checks passed in 6.761s on fresh disposable native MySQL:
+  assistance.test_referral_connection, assistance.test_referrals, and
+  scripts.association_email_browser_qa. Includes email-only saves, ignored extra
+  fields, invalid/stale submissions, unchanged-address connection retention,
+  permissions, audit rollback, credentials and sending protections.
+- Browser rerun passed in 3.605s after fixing the harness to use the actual theme
+  toggle. Dark/light screenshots at 1600, 768 and 390 pixels, no horizontal page
+  overflow, no JavaScript errors, and successful email-only save/history checks.
+  Desktop dark and mobile light screenshots were visually inspected and copied
+  here; all addresses are synthetic.
+- JavaScript syntax and repository git diff --check passed.
+- The default .env database endpoint was unavailable; the identity-checked retained
+  development launcher check passed. Collected static assets and refreshed only
+  the verified web process at http://127.0.0.1:8013/, retaining its MySQL process.
+- New email-only browser harness supersedes the password-entry settings steps in
+  the historical scripts/direct_gmail_browser_qa harness. Provider connections
+  remain covered by focused service tests; actual provider delivery was not tested.
+
+Commands:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test assistance.test_referral_connection assistance.test_referrals scripts.association_email_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+.venv/Scripts/python.exe -B scripts/current_development.py check
+
+Final browser artifacts:
+C:\Users\rovic\AppData\Local\Temp\santolan-g12-tests-0x8327mt\association-email-browser

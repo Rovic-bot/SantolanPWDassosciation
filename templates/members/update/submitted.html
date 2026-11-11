@@ -1,0 +1,21 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Member update received · Santolan PWD{% endblock %}
+{% block resident_class %}section-membership member-update-complete-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-update-confirmation.css' %}?v=20261110-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/member-update-confirmation.js' %}?v=20261110-1" defer></script>{% endblock %}
+{% block content %}
+<section class="member-update-confirmation" data-member-update-confirmation aria-labelledby="member-update-received">
+  <div class="member-update-confirmation-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
+  <h1 id="member-update-received" tabindex="-1">{% if update.state == 'approved' %}Your update was approved{% elif update.state == 'needs_verification' %}Your information needs verification{% else %}Your update is awaiting review{% endif %}</h1>
+  <div id="member-update-confirmation-message">
+    {% if update.state == 'needs_verification' %}<p>Please visit the Association Help Desk for an interview or screening. You can apply for a new program once staff approve your updated information.</p>
+    {% elif update.state == 'approved' %}<p>Your verified changes have been applied to your member record.</p>
+    {% else %}<p>Your changes have been saved. An admin will review them before updating your member record.</p><p>Check your saved email for instructions to visit the barangay office.</p>{% endif %}
+  </div>
+  <form id="member-update-finish" method="post" action="{% url 'members:update_finish' %}">{% csrf_token %}<button class="btn btn-primary" type="submit">Finish and return home</button></form>
+</section>
+<dialog class="member-update-confirmation-dialog" data-member-update-confirmation-dialog aria-labelledby="member-update-received" aria-describedby="member-update-confirmation-message">
+  <button class="member-update-confirmation-close" type="submit" form="member-update-finish" aria-label="Close and return home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+  <div data-member-update-confirmation-body></div>
+</dialog>
+{% endblock %}

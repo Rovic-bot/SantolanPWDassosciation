@@ -1,0 +1,943 @@
+{
+  "candidates": [
+    {
+      "calculation": {
+        "complete": true,
+        "criteria": [
+          "SI",
+          "ES",
+          "PA",
+          "ND",
+          "PR"
+        ],
+        "effective_authorization": false,
+        "engine": "g15-minmax-wsm-1",
+        "label": "DIAGNOSTIC ONLY \u2014 NOT AUTHORIZED FOR BENEFICIARY PROCESSING",
+        "operational_ready": false,
+        "profile": "synthetic-fixed-bounds-1",
+        "reasons": [],
+        "score_0_1": "0",
+        "score_0_100": "0",
+        "settings": {
+          "Emax": 999,
+          "Emin": -999,
+          "display": "canonical text; no additional quantization",
+          "input_digits": 40,
+          "input_exponent": 40,
+          "numeric_chars": 120,
+          "output_chars": 1100,
+          "output_digits": 50,
+          "output_exponent": 999,
+          "precision": 50,
+          "rounding": "ROUND_HALF_EVEN",
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "Underflow"
+          ],
+          "weight_sum_tolerance": "1e-45"
+        },
+        "traces": [
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0",
+            "criterion": "SI",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0",
+            "criterion": "ES",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0",
+            "criterion": "PA",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0",
+            "criterion": "ND",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0",
+            "criterion": "PR",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0",
+            "weight": "0.2"
+          }
+        ],
+        "weight_sum_residual": "0"
+      },
+      "calculation_digest": "81578d31205e76fbbec4bebfa85e06b219a0a816917584353d1008a11caf7456",
+      "contract_digest": "922d87464aceb06002dec1dd339740f76a6dfae3369ac8d68cfefebd84ce64bf",
+      "id": "SYN-G16-A",
+      "input_digest": "c7e7e9cfd2f21a6d9965b7d3bfc69fc4872feae754597d8443824551c75d6ca5",
+      "inputs": {
+        "ES": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0"
+        },
+        "ND": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0"
+        },
+        "PA": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0"
+        },
+        "PR": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0"
+        },
+        "SI": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0"
+        }
+      }
+    },
+    {
+      "calculation": {
+        "complete": true,
+        "criteria": [
+          "SI",
+          "ES",
+          "PA",
+          "ND",
+          "PR"
+        ],
+        "effective_authorization": false,
+        "engine": "g15-minmax-wsm-1",
+        "label": "DIAGNOSTIC ONLY \u2014 NOT AUTHORIZED FOR BENEFICIARY PROCESSING",
+        "operational_ready": false,
+        "profile": "synthetic-fixed-bounds-1",
+        "reasons": [],
+        "score_0_1": "0.5",
+        "score_0_100": "50",
+        "settings": {
+          "Emax": 999,
+          "Emin": -999,
+          "display": "canonical text; no additional quantization",
+          "input_digits": 40,
+          "input_exponent": 40,
+          "numeric_chars": 120,
+          "output_chars": 1100,
+          "output_digits": 50,
+          "output_exponent": 999,
+          "precision": 50,
+          "rounding": "ROUND_HALF_EVEN",
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "Underflow"
+          ],
+          "weight_sum_tolerance": "1e-45"
+        },
+        "traces": [
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "SI",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "ES",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "PA",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "ND",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "PR",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          }
+        ],
+        "weight_sum_residual": "0"
+      },
+      "calculation_digest": "f1f5e812feae600811d1c7c2534287e04cbb13cd20702e23615a549e327221ea",
+      "contract_digest": "922d87464aceb06002dec1dd339740f76a6dfae3369ac8d68cfefebd84ce64bf",
+      "id": "SYN-G16-B",
+      "input_digest": "3c706cbd4735a7e8982049948f380397cb5933d8ae5693158bb2ac66c586dee9",
+      "inputs": {
+        "ES": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "ND": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "PA": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "PR": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "SI": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        }
+      }
+    },
+    {
+      "calculation": {
+        "complete": true,
+        "criteria": [
+          "SI",
+          "ES",
+          "PA",
+          "ND",
+          "PR"
+        ],
+        "effective_authorization": false,
+        "engine": "g15-minmax-wsm-1",
+        "label": "DIAGNOSTIC ONLY \u2014 NOT AUTHORIZED FOR BENEFICIARY PROCESSING",
+        "operational_ready": false,
+        "profile": "synthetic-fixed-bounds-1",
+        "reasons": [],
+        "score_0_1": "0.5",
+        "score_0_100": "50",
+        "settings": {
+          "Emax": 999,
+          "Emin": -999,
+          "display": "canonical text; no additional quantization",
+          "input_digits": 40,
+          "input_exponent": 40,
+          "numeric_chars": 120,
+          "output_chars": 1100,
+          "output_digits": 50,
+          "output_exponent": 999,
+          "precision": 50,
+          "rounding": "ROUND_HALF_EVEN",
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "Underflow"
+          ],
+          "weight_sum_tolerance": "1e-45"
+        },
+        "traces": [
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "SI",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "ES",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "PA",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "ND",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.1",
+            "criterion": "PR",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "0.5",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "0.5",
+            "weight": "0.2"
+          }
+        ],
+        "weight_sum_residual": "0"
+      },
+      "calculation_digest": "f1f5e812feae600811d1c7c2534287e04cbb13cd20702e23615a549e327221ea",
+      "contract_digest": "922d87464aceb06002dec1dd339740f76a6dfae3369ac8d68cfefebd84ce64bf",
+      "id": "SYN-G16-C",
+      "input_digest": "3c706cbd4735a7e8982049948f380397cb5933d8ae5693158bb2ac66c586dee9",
+      "inputs": {
+        "ES": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "ND": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "PA": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "PR": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        },
+        "SI": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "0.5"
+        }
+      }
+    },
+    {
+      "calculation": {
+        "complete": true,
+        "criteria": [
+          "SI",
+          "ES",
+          "PA",
+          "ND",
+          "PR"
+        ],
+        "effective_authorization": false,
+        "engine": "g15-minmax-wsm-1",
+        "label": "DIAGNOSTIC ONLY \u2014 NOT AUTHORIZED FOR BENEFICIARY PROCESSING",
+        "operational_ready": false,
+        "profile": "synthetic-fixed-bounds-1",
+        "reasons": [],
+        "score_0_1": "1",
+        "score_0_100": "100",
+        "settings": {
+          "Emax": 999,
+          "Emin": -999,
+          "display": "canonical text; no additional quantization",
+          "input_digits": 40,
+          "input_exponent": 40,
+          "numeric_chars": 120,
+          "output_chars": 1100,
+          "output_digits": 50,
+          "output_exponent": 999,
+          "precision": 50,
+          "rounding": "ROUND_HALF_EVEN",
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "Underflow"
+          ],
+          "weight_sum_tolerance": "1e-45"
+        },
+        "traces": [
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.2",
+            "criterion": "SI",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "1",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "1",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.2",
+            "criterion": "ES",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "1",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "1",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.2",
+            "criterion": "PA",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "1",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "1",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.2",
+            "criterion": "ND",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "1",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "1",
+            "weight": "0.2"
+          },
+          {
+            "category": null,
+            "complete": true,
+            "contribution": "0.2",
+            "criterion": "PR",
+            "direction": "benefit",
+            "encoding": null,
+            "lower": "0",
+            "normalized": "1",
+            "reasons": [],
+            "source_type": "synthetic",
+            "unit": "fixture",
+            "upper": "1",
+            "value": "1",
+            "weight": "0.2"
+          }
+        ],
+        "weight_sum_residual": "0"
+      },
+      "calculation_digest": "1fe0d0f47815e9a96a2885980acb89bcd8d59a593f8cf23d390d1326c9a453ea",
+      "contract_digest": "922d87464aceb06002dec1dd339740f76a6dfae3369ac8d68cfefebd84ce64bf",
+      "id": "SYN-G16-D",
+      "input_digest": "851bfd7ff560d24712dcc7a76595f65de122aa14f70c5bb35136efba9d423ac5",
+      "inputs": {
+        "ES": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "1"
+        },
+        "ND": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "1"
+        },
+        "PA": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "1"
+        },
+        "PR": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "1"
+        },
+        "SI": {
+          "source_type": "synthetic",
+          "unit": "fixture",
+          "value": "1"
+        }
+      }
+    }
+  ],
+  "contract": {
+    "context": {
+      "evaluation": "SYNTHETIC-EPOCH-1",
+      "scenario": "SYN-G16-EXAMPLE"
+    },
+    "criteria": [
+      "SI",
+      "ES",
+      "PA",
+      "ND",
+      "PR"
+    ],
+    "definitions": {
+      "ES": {
+        "bounds": {
+          "lower": "0",
+          "method": "fixed",
+          "upper": "1"
+        },
+        "direction": "benefit",
+        "encoding": null,
+        "source_type": "synthetic",
+        "unit": "fixture"
+      },
+      "ND": {
+        "bounds": {
+          "lower": "0",
+          "method": "fixed",
+          "upper": "1"
+        },
+        "direction": "benefit",
+        "encoding": null,
+        "source_type": "synthetic",
+        "unit": "fixture"
+      },
+      "PA": {
+        "bounds": {
+          "lower": "0",
+          "method": "fixed",
+          "upper": "1"
+        },
+        "direction": "benefit",
+        "encoding": null,
+        "source_type": "synthetic",
+        "unit": "fixture"
+      },
+      "PR": {
+        "bounds": {
+          "lower": "0",
+          "method": "fixed",
+          "upper": "1"
+        },
+        "direction": "benefit",
+        "encoding": null,
+        "source_type": "synthetic",
+        "unit": "fixture"
+      },
+      "SI": {
+        "bounds": {
+          "lower": "0",
+          "method": "fixed",
+          "upper": "1"
+        },
+        "direction": "benefit",
+        "encoding": null,
+        "source_type": "synthetic",
+        "unit": "fixture"
+      }
+    },
+    "direction": "LOW_FIRST",
+    "illustrative_capacity": 2,
+    "judgments": {
+      "criteria": [
+        "SI",
+        "ES",
+        "PA",
+        "ND",
+        "PR"
+      ],
+      "mode": "pairs",
+      "values": {
+        "ES:ND": "1",
+        "ES:PA": "1",
+        "ES:PR": "1",
+        "ND:PR": "1",
+        "PA:ND": "1",
+        "PA:PR": "1",
+        "SI:ES": "1",
+        "SI:ND": "1",
+        "SI:PA": "1",
+        "SI:PR": "1"
+      }
+    },
+    "pool_ids": [
+      "SYN-G16-A",
+      "SYN-G16-B",
+      "SYN-G16-C",
+      "SYN-G16-D"
+    ],
+    "scale": "0-1",
+    "score_engine": "g15-minmax-wsm-1",
+    "score_profile": "synthetic-fixed-bounds-1",
+    "score_settings": {
+      "Emax": 999,
+      "Emin": -999,
+      "display": "canonical text; no additional quantization",
+      "input_digits": 40,
+      "input_exponent": 40,
+      "numeric_chars": 120,
+      "output_chars": 1100,
+      "output_digits": 50,
+      "output_exponent": 999,
+      "precision": 50,
+      "rounding": "ROUND_HALF_EVEN",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow",
+        "Underflow"
+      ],
+      "weight_sum_tolerance": "1e-45"
+    },
+    "validation": {
+      "calculation": {
+        "CI": "0",
+        "CR": "0",
+        "CV": [
+          "5",
+          "5",
+          "5",
+          "5",
+          "5"
+        ],
+        "WSV": [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "column_totals": [
+          "5",
+          "5",
+          "5",
+          "5",
+          "5"
+        ],
+        "lambda_estimate": "5",
+        "normalized_matrix": [
+          [
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          [
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          [
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          [
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2"
+          ],
+          [
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2",
+            "0.2"
+          ]
+        ],
+        "weight_sum_residual": "0",
+        "weights": {
+          "ES": "0.2",
+          "ND": "0.2",
+          "PA": "0.2",
+          "PR": "0.2",
+          "SI": "0.2"
+        }
+      },
+      "canonical_input": {
+        "criteria": [
+          "SI",
+          "ES",
+          "PA",
+          "ND",
+          "PR"
+        ],
+        "mode": "pairs",
+        "values": {
+          "ES:ND": "1",
+          "ES:PA": "1",
+          "ES:PR": "1",
+          "ND:PR": "1",
+          "PA:ND": "1",
+          "PA:PR": "1",
+          "SI:ES": "1",
+          "SI:ND": "1",
+          "SI:PA": "1",
+          "SI:PR": "1"
+        }
+      },
+      "complete": true,
+      "consistency": "PASSED",
+      "criteria": [
+        "SI",
+        "ES",
+        "PA",
+        "ND",
+        "PR"
+      ],
+      "effective_authorization": false,
+      "engine": "g14-ahp-1",
+      "matrix": [
+        [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "1",
+          "1",
+          "1",
+          "1",
+          "1"
+        ]
+      ],
+      "method": "normalized-column-row-average",
+      "operational_ready": false,
+      "profile": "workbook-five-reference-1",
+      "reasons": [],
+      "reference": {
+        "CR_limit": "0.10",
+        "RI": "1.12",
+        "authority": "workbook_reference_not_Association_authorization",
+        "comparison": "<"
+      },
+      "settings": {
+        "display_policy": "full_precision_text_without_display_rounding",
+        "emax": 999,
+        "emin": -999,
+        "maximum_absolute_exponent": 40,
+        "negative_ci_policy": "report_anomaly_without_clamping",
+        "numeric_characters": 96,
+        "precision": 50,
+        "reciprocity_tolerance": "0.00000001",
+        "rounding": "ROUND_HALF_EVEN",
+        "significant_digits": 40,
+        "traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "Underflow"
+        ],
+        "weight_sum_tolerance": "1e-45"
+      },
+      "structurally_valid": true
+    }
+  },
+  "contract_digest": "922d87464aceb06002dec1dd339740f76a6dfae3369ac8d68cfefebd84ce64bf",
+  "fixture_id": "SYN-G16-EXAMPLE",
+  "manifest": [
+    {
+      "calculation_digest": "81578d31205e76fbbec4bebfa85e06b219a0a816917584353d1008a11caf7456",
+      "id": "SYN-G16-A",
+      "input_digest": "c7e7e9cfd2f21a6d9965b7d3bfc69fc4872feae754597d8443824551c75d6ca5"
+    },
+    {
+      "calculation_digest": "f1f5e812feae600811d1c7c2534287e04cbb13cd20702e23615a549e327221ea",
+      "id": "SYN-G16-B",
+      "input_digest": "3c706cbd4735a7e8982049948f380397cb5933d8ae5693158bb2ac66c586dee9"
+    },
+    {
+      "calculation_digest": "f1f5e812feae600811d1c7c2534287e04cbb13cd20702e23615a549e327221ea",
+      "id": "SYN-G16-C",
+      "input_digest": "3c706cbd4735a7e8982049948f380397cb5933d8ae5693158bb2ac66c586dee9"
+    },
+    {
+      "calculation_digest": "1fe0d0f47815e9a96a2885980acb89bcd8d59a593f8cf23d390d1326c9a453ea",
+      "id": "SYN-G16-D",
+      "input_digest": "851bfd7ff560d24712dcc7a76595f65de122aa14f70c5bb35136efba9d423ac5"
+    }
+  ],
+  "manifest_digest": "a7328da33689c5963513c8c2b44c40071546bf2f0a7c8f13f1d86586f120ec89",
+  "revision": 1,
+  "schema_version": 1
+}

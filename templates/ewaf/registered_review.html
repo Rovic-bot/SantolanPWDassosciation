@@ -1,0 +1,7 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Verify registered EWAF inputs{% endblock %}
+{% block content %}<div class="container content-section"><a href="{% url 'ewaf:operational_workspace' application.program_id %}">Back to program EWAF</a><h1>Verify registered EWAF inputs</h1>
+<p>{{ application.member.full_name }} &middot; {{ application.public_reference }}</p><p>Shared vault version {{ configuration.vault_revision_id }}. Approved assessment period: {{ configuration.policy.assessment_start }} to {{ configuration.policy.assessment_end }}.</p>
+<p>These values are read from accepted member records and verified assistance releases. Request a reviewed record update if information has changed. This review does not approve a beneficiary.</p>
+<table class="table"><caption>Current source values</caption><thead><tr><th>Criterion</th><th>Recorded value</th></tr></thead><tbody>{% for row in rows %}<tr><th>{{ row.name }}</th><td>{{ row.value|default_if_none:'Not recorded' }} <small>{{ row.unit }}</small></td></tr>{% endfor %}</tbody></table>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Accept verified inputs for EWAF</button></form></div>{% endblock %}

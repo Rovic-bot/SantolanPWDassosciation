@@ -1,0 +1,6 @@
+<article class="activity-detail-content" data-activity-detail data-kind="{{ activity.activity_kind }}">
+  <div class="activity-detail-title"><span class="activity-entry-icon">{% include 'admin/audit/activity_icon.html' with icon=activity.icon %}</span><div><span class="activity-badge">{{ activity.kind_label }}</span>{% if popup %}<h3>{{ activity.activity_label }}</h3>{% endif %}<p>{{ activity.area_label }}</p></div></div>
+  <dl><dt>Record</dt><dd>{{ activity.activity_record|default:'Record not available' }}</dd><dt>Administrator</dt><dd>{{ activity.activity_actor }}</dd><dt>Date and time</dt><dd><time datetime="{{ activity.activity_time|date:'c' }}">{{ activity.activity_time|date:'F j, Y, g:i:s A' }}</time><small>Philippine time</small></dd><dt>Section</dt><dd>{{ activity.area_label }}</dd></dl>
+  <section class="activity-notes" aria-label="Recorded notes"><h4>What happened</h4><p class="activity-note" data-activity-note>{{ note }}</p>{% if additional_note %}<div class="activity-additional-note"><strong>Additional note</strong><div>{{ additional_note|linebreaksbr }}</div></div>{% endif %}</section>
+  <p class="activity-original">Original audit record: {{ original_model }} #{{ activity.activity_id }}. Read only.</p>
+</article>

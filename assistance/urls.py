@@ -1,0 +1,36 @@
+from django.urls import path
+from . import views, referral_views, referral_conversation_views
+
+app_name = 'assistance'
+urlpatterns = [
+    path('referrals/', referral_views.information, name='referral_information'),
+    path('referrals/verify/', referral_views.verify, name='referral_verify'),
+    path('referrals/apply/', referral_views.apply, name='referral_apply'),
+    path('referrals/submitted/', referral_views.receipt, name='referral_receipt'),
+    path('referrals/finish/', referral_views.finish, name='referral_finish'),
+    path('referrals/conversation/verify/', referral_conversation_views.verify, name='referral_conversation_verify'),
+    path('referrals/conversation/start/', referral_conversation_views.start, name='referral_conversation_start'),
+    path('referrals/conversation/', referral_conversation_views.conversation, name='referral_conversation'),
+    path('referrals/conversation/updates/', referral_conversation_views.updates, name='referral_conversation_updates'),
+    path('referrals/conversation/page/<uuid:page_id>/', referral_conversation_views.conversation, name='referral_conversation_page'),
+    path('referrals/conversation/page/<uuid:page_id>/updates/', referral_conversation_views.updates, name='referral_conversation_page_updates'),
+    path('referrals/inbox/', referral_views.inbox, name='referral_inbox'),
+    path('referrals/inbox/new-count/', referral_views.new_concerns, name='referral_new_count'),
+    path('referrals/email-settings/', referral_views.email_settings, name='referral_email_settings'),
+    path('referrals/inbox/<uuid:pk>/', referral_views.detail, name='referral_detail'),
+    path('referrals/inbox/<uuid:pk>/updates/', referral_views.updates, name='referral_updates'),
+    path('referrals/evidence/<uuid:pk>/', referral_views.attachment, name='referral_attachment'),
+    path('referrals/email/<uuid:pk>/retry/', referral_views.retry, name='referral_retry'),
+    path('', views.queue, name='queue'),
+    path('releases/', views.release_programs, name='release_programs'),
+    path('releases/program/<uuid:pk>/', views.program_releases, name='program_releases'),
+    path('statuses/', views.statuses, name='statuses'),
+    path('statuses/<str:code>/', views.statuses, name='status_edit'),
+    path('<uuid:reference>/', views.detail, name='detail'),
+    path('<uuid:reference>/review/', views.action, {'action': 'review'}, name='review'),
+    path('<uuid:reference>/decision/', views.action, {'action': 'decision'}, name='decision'),
+    path('<uuid:reference>/release/', views.release, name='release'),
+    path('<uuid:reference>/release/<uuid:release_id>/email/retry/', views.retry_receipt_email, name='receipt_email_retry'),
+    path('<uuid:reference>/release/<uuid:release_id>/void/', views.void, name='void'),
+    path('<uuid:reference>/release/<uuid:release_id>/undo/', views.undo_receipt, name='undo_receipt'),
+]

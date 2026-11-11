@@ -1,0 +1,27 @@
+<header class="profile-header ui-panel member-reference-header">
+<div class="member-identity">
+{% if member_portrait %}<img class="profile-avatar" src="{% url 'members:document' application.member_id member_portrait.pk %}?preview=1" alt="Photograph of {{ application.member.full_name }}">{% elif can_view_photo and application.current_photo_id %}<img class="profile-avatar" src="{% url 'programs:photo' application.pk application.current_photo_id %}" alt="Photograph of {{ application.member.full_name }}">{% else %}<div class="profile-avatar avatar-empty">{% include 'programs/ui_icon.html' with name='person' %}<span>Photo unavailable</span></div>{% endif %}
+<div class="member-identity-text"><div class="member-title"><h2>{{ application.member.full_name }}</h2><span class="program-status status-{{ application.member.status }}">{{ application.member.status|title }} Member</span><span class="program-status status-{{ review_code }}">{{ review_result }}</span></div>
+<div class="member-identifiers"><span>Member ID: <strong>{{ application.member.control_number }}</strong><button type="button" class="copy-icon" aria-label="Copy control number" data-copy-value="{{ application.member.control_number }}" data-copy-status="member-copy-status">{% include 'programs/ui_icon.html' with name='copy' %}</button></span><span>Application No: <strong>{{ application.short_reference }}</strong><button type="button" class="copy-icon" aria-label="Copy application reference" data-copy-value="{{ application.short_reference }}" data-copy-status="member-copy-status" data-copy-message="Application reference copied.">{% include 'programs/ui_icon.html' with name='copy' %}</button></span></div>
+<p class="member-program">{{ program.name }}</p><span id="member-copy-status" class="copy-status" role="status" aria-live="polite"></span>
+</div></div>
+{% if perms.members.view_member %}<dl class="member-header-facts"><div><dt>Disability</dt><dd>{{ application.member.disability_labels|default:'Not recorded' }}</dd></div><div><dt>Barangay</dt><dd>{{ application.member.barangay|default:'Not recorded' }}</dd></div><div><dt>Household members</dt><dd>{{ household_members }}</dd></div></dl>{% endif %}
+</header>
+<div class="verification-card-grid">
+<article class="verification-card verification-result"><span class="summary-icon">{% include 'programs/ui_icon.html' with name='check' %}</span><div><h2>Verification Status</h2><strong>{{ review_result }}</strong><p>{{ review_explanation }}</p></div></article>
+{% if perms.members.view_member %}<article class="verification-card"><span class="summary-icon">{% include 'programs/ui_icon.html' with name='health' %}</span><div><h2>Disability Information</h2><strong>{{ application.member.disability_labels|default:'Not recorded' }}</strong><p>{{ application.member.get_disability_cause_display|default:'Cause not recorded' }} &middot; {{ application.member.get_disability_visibility_display|default:'Visibility not recorded' }}</p></div></article>
+<article class="verification-card"><span class="summary-icon">{% include 'programs/ui_icon.html' with name='home' %}</span><div><h2>Income &amp; Household</h2><strong>{{ household_income }}</strong><p>Monthly household income &middot; {{ household_members }} household members</p></div></article>{% endif %}
+</div>
+<nav class="member-section-nav" aria-label="Member information sections">
+{% if perms.members.view_member %}<a href="#overview">Member information</a><a href="#household-information">Household &amp; assistance</a>{% endif %}<a href="#documents">Submitted application</a><a href="#application-history">Application History</a>
+</nav>
+{% if perms.members.view_member %}
+<section id="household-information" class="member-info-card mb-4" aria-labelledby="household-information-title">
+<h2 id="household-information-title">Household and assistance</h2><p class="small text-secondary">{{ household_review_note }}</p>
+<dl class="information-pairs">{% for item in household_information %}<div><dt>{{ item.label }}</dt><dd>{{ item.value }}{% if item.note %}<p class="small text-secondary mb-0">{{ item.note }}</p>{% endif %}</dd></div>{% endfor %}</dl>
+</section>
+<div id="overview" class="ui-panel mb-4">
+<div class="section-heading"><h2 class="h4">Member information</h2><a href="{% url 'members:detail' application.member_id %}">Full member record</a></div>
+{% include 'members/profile_display.html' %}
+</div>
+{% endif %}

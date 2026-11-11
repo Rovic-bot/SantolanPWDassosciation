@@ -1,0 +1,24 @@
+/* A shared protected program profile, presented over its originating workspace. */
+html.program-dialog-open, html.program-dialog-open body { overflow: hidden; }
+.program-details-dialog { width: min(1120px, calc(100% - 5rem)); max-width: none; max-height: calc(100dvh - 4rem); padding: 0; margin: auto; border: 1px solid var(--glass-line); border-radius: 1.1rem; background: var(--dashboard-bg); color: var(--ink); box-shadow: 0 24px 90px rgb(0 0 0 / .4), inset 0 1px var(--glass-highlight); overflow: hidden; }
+.program-details-dialog[open] { display: flex; flex-direction: column; }
+.program-details-dialog::backdrop { background: rgb(2 8 20 / .7); backdrop-filter: blur(8px); }
+.program-dialog-toolbar { display: flex; align-items: center; gap: 1rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--glass-line); background: var(--glass); flex: 0 0 auto; }
+.admin-workspace .program-dialog-toolbar h2 { margin: 0; font-size: 1rem; font-weight: 650; line-height: 1.4; flex: 1; }
+.program-dialog-toolbar > a { color: var(--cyan); font-size: .78rem; display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; }
+.program-dialog-close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--glass); font-size: 1.7rem; line-height: 1; }
+.program-dialog-close:hover { border-color: var(--cyan); background: var(--glass-highlight); }
+.program-dialog-status { margin: 0; padding: .75rem 1.25rem; color: var(--muted); font-size: .85rem; }
+.program-dialog-status:empty { display: none; }
+.program-dialog-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.admin-workspace .program-details-dialog .program-profile { width: 100%; max-width: none; padding: 1.5rem clamp(1rem, 2vw, 2rem) 2rem; }
+.program-details-dialog .program-profile::before { height: min(800px, 100%); }
+.program-details-dialog .profile-back { display: none; }
+.program-details-dialog .profile-header { margin-bottom: 1.5rem; gap: 1rem; }
+.program-dialog-error { padding: 2rem; max-width: 640px; }
+.program-dialog-error p { color: var(--muted); line-height: 1.7; }
+.program-dialog-error button { min-height: 44px; }
+.program-details-dialog :is(a,button,summary):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 639px) { .program-details-dialog { width: calc(100% - 1.5rem); max-height: calc(100dvh - 1.5rem); border-radius: 1rem; } .program-dialog-toolbar { gap: .5rem; padding: .6rem .75rem; } .program-dialog-toolbar > a { font-size: .7rem; } .admin-workspace .program-dialog-toolbar h2 { font-size: .9rem; } }
+@media (forced-colors: active) { .program-details-dialog, .program-dialog-close { border-color: CanvasText; } }
+@media (prefers-reduced-motion: reduce) { .program-details-dialog, .program-details-dialog * { scroll-behavior: auto !important; } }

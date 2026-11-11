@@ -1,0 +1,26 @@
+/* Member updates reuse the onsite form, guide, controls and theme tokens. */
+.member-editor .member-edit-header,
+.member-editor .member-edit-identity { max-width: 1384px; margin-inline: auto; }
+.member-editor .member-edit-header { margin-bottom: 1.25rem; }
+.admin-workspace .member-editor .member-edit-header h1 { margin: 1.25rem 0 0; font-size: 1.5rem; }
+.member-editor .member-edit-identity .onsite-lookup-heading > div { min-width: 0; }
+.member-editor .member-edit-identity :is(h2, p, dd) { overflow-wrap: anywhere; }
+.member-editor .member-edit-identity dl { margin: 0; }
+.member-editor .member-edit-identity dt,
+.member-editor .member-edit-retained dt { color: var(--muted); font-size: .74rem; font-weight: 500; }
+.member-editor .member-edit-identity dd { color: var(--ink); margin: .3rem 0 0; font-size: .9rem; }
+.member-editor .member-edit-retained summary { padding: 1.25rem 1.4rem; color: var(--ink); font-size: .9rem; font-weight: 600; cursor: pointer; }
+.member-editor .member-edit-retained[open] summary { border-bottom: 1px solid var(--glass-line); }
+.member-editor .member-edit-retained dl { margin: 0; }
+.member-editor .member-edit-retained dd { color: var(--ink); margin: .35rem 0 0; font-size: .82rem; overflow-wrap: anywhere; }
+.member-editor .member-edit-documents ul { margin: 0; padding: 1.4rem 1.4rem 1.4rem 2.5rem; font-size: .82rem; }
+.member-editor .member-edit-documents li + li { margin-top: .75rem; }
+.member-editor .member-edit-documents a { overflow-wrap: anywhere; text-underline-offset: 3px; }
+@media (min-width: 640px) {
+  .member-editor .onsite-form-actions { padding-right: 1rem; }
+}
+@media (max-width: 639px) {
+  .member-editor .member-edit-retained summary { padding: 1.1rem; }
+  .member-editor .onsite-action-buttons > .btn { flex: 1 1 auto; }
+  .member-editor .onsite-action-buttons > a.btn { flex-grow: 0; }
+}

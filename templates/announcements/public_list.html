@@ -1,0 +1,40 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Announcements · Santolan PWD Association{% endblock %}
+{% block resident_class %}section-notices{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <div class="page-location"><a href="{% url 'core:home' %}">Home</a><span aria-hidden="true">/</span><span>Announcements</span></div>
+  <p class="eyebrow">THE COMMUNITY BOARD</p><h1>Announcements</h1>
+  <p class="page-intro">Official updates, program opportunities, and authorized program result notices.</p>
+</div></section>
+<div class="container content-section">
+  <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Announcement categories">
+    <a class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'core:announcements' %}" {% if not category %}aria-current="page"{% endif %}>All announcements</a>
+    {% for value,label in categories %}<a class="btn {% if category == value %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% url 'core:announcements' %}?category={{ value }}" {% if category == value %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+  {% if category == 'general' %}<p>Member services, community activities, and official updates from the Association, Barangay, PDAO, and other responsible offices.</p>{% endif %}
+  {% if category == 'programs' %}
+    <p>Explore available and upcoming programs. Follow a program link for current requirements, membership verification, and eligibility checks.</p>
+    <form method="get" class="row g-3 align-items-end mb-4">
+      <input type="hidden" name="category" value="programs">
+      <div class="col-md-5"><label for="disability" class="form-label">Disability classification</label><select id="disability" name="disability" class="form-select"><option value="">All classifications</option>{% for item in disabilities %}<option value="{{ item.pk }}" {% if disability == item.pk|stringformat:'s' %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-4"><label for="program-category" class="form-label">Program category</label><select id="program-category" name="program_category" class="form-select"><option value="">All program categories</option>{% for value in program_categories %}<option value="{{ value }}" {% if program_category == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+      <div class="col-md-3"><button class="btn btn-primary" type="submit">Filter programs</button></div>
+    </form>
+    <p class="small text-secondary">Programs open to every disability classification are included in each classification filter. Matching a filter does not establish eligibility or guarantee assistance.</p>
+  {% endif %}
+  {% if category == 'results' %}<p>Authorized notices link to Results for privacy-protected outcomes and explanations of the selection process. A result notice is separate from an actual assistance release.</p>{% endif %}
+  <div class="announcement-public-list">
+    {% for announcement in page_obj %}<article class="announcement-entry">
+      <time datetime="{{ announcement.published_at|date:'c' }}">{{ announcement.published_at|date:'F j, Y' }}</time>
+      <div><p class="small text-secondary">{{ announcement.category_label }} · {{ announcement.source_office }}</p>
+        <h2><a href="{% url 'announcements:detail' announcement.pk %}">{{ announcement.title }}</a></h2>
+        {% if announcement.program_category %}<p class="small">{{ announcement.program_category }}</p>{% endif %}
+        <p>{{ announcement.content|truncatechars:240 }}</p>
+        {% if announcement.destination %}<a class="text-link" href="{{ announcement.destination }}">{{ announcement.destination_label }} ↗</a>{% else %}<a class="text-link" href="{% url 'announcements:detail' announcement.pk %}" aria-label="Read {{ announcement.title }}">Read announcement ↗</a>{% endif %}
+      </div>
+    </article>{% empty %}<div class="empty-board"><h2>No announcements match this view.</h2><p>Published notices will appear here when available. Try another category or adjust the program filters.</p></div>{% endfor %}
+  </div>
+  {% include 'partials/page_links.html' %}
+</div>
+{% endblock %}

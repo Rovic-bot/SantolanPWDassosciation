@@ -1,0 +1,34 @@
+Announcements program overview and publication popup - 6 November 2026
+
+Requested behavior
+- Match the Assistance Releases workspace: program list on the left, selected
+  program overview on the right, and Review and publish in a popup.
+
+Implementation
+- Replaced the announcement program cards with selectable list rows and a sticky
+  overview containing applicant counts, slot usage, program dates and publication
+  status. Selection updates immediately from the rendered panels without a request.
+- Preserved the existing filters, pagination and applicant-only program scope.
+  Programs without applications remain excluded, including after resetting filters.
+- Review and publish opens the existing protected preview in a centered native
+  dialog. Escape, close and backdrop dismissal return to the selected overview.
+- Publication POST responses now refresh the popup and overview in place. Normal
+  non-dialog form submissions keep their existing redirect behavior.
+- Duplicate clicks are blocked while posting. An uncertain response offers a
+  read-only preview reload and never automatically repeats the publication POST.
+- Existing publication services, permissions, CSRF, preview versions, audit
+  rollback, public masking and visibility checks remain in force. No schema change.
+
+Validation
+- 28 focused tests passed in fresh disposable MySQL:
+  announcements.test_catalog, announcements.test_generation and
+  announcements.test_recorded_results.
+- Added a regression check for dialog publication returning a refreshed preview
+  and rejecting reuse of its previous preview token without another revision.
+- Django database check, JavaScript syntax checks and git diff --check passed.
+- Native browser verified program selection updating the right overview, Review
+  and publish opening the selected program's roster in a popup, and Escape closing
+  it while preserving the selected program and list URL.
+- Collected static assets and restarted only the retained local web process.
+- No live announcement was published during verification; publication writes ran
+  only against the disposable test database.

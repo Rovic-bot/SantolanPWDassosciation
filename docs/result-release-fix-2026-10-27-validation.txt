@@ -1,0 +1,87 @@
+Program result publication after confirmed assistance delivery
+October 27, 2026
+
+Reported error and confirmed cause
+The retained HM Focus program had 12 applicants, one SELECTED operational
+decision, and one corresponding confirmed release. That release correctly
+advanced Ben Testbravo's application to COMPLETED. Publication incorrectly used
+the fresh-calculation candidate check, which only accepts ELIGIBLE applicants,
+and displayed APPLICATION_NOT_CANDIDATE / APPLICATION_REVIEW_UNRESOLVED.
+The existing delivery validator independently accepted that same selection,
+release, native audit, version transition and retained ranking.
+
+Correction
+Operational selection and result publication now use current_result_run. With
+no program receipts, it retains the existing complete-pool current-run check.
+With receipts, it validates the immutable run and exact applicant pool and
+reuses delivery_selection's whole-pool checks. Only confirmed deliveries linked
+to that run and selection may explain the completed status and additional PA
+ledger entry. Every other source, configuration, weight, expiry, evidence or
+receipt-binding change still blocks use. Scores, accepted evidence and ledger
+records are never rewritten. New calculations still use actual ledger data.
+Remaining current decisions can be finalized after a member receives support.
+Published selection snapshots remain unchanged by valid fulfillment, while
+voiding or corrupting its receipt still withholds publication.
+
+Interface
+- Programs use the Program Management card grid on the results workspace.
+- Review and publish opens that program's lists below the grid.
+- Applicants appear on the left and selected applicants on the right; mobile
+  stacks the columns. Both show masked names and full application references.
+- Publish results is the explicit publication button.
+- When review is needed, the private lists remain visible and publication is
+  disabled. Internal application UUID/error codes are replaced with readable
+  guidance. These fallback lists never become an official publication source.
+- Existing explicit publication permissions, CSRF, stale-page tokens,
+  finalization notice, transaction rollback and immutable revisions remain.
+
+Tests executed
+All write tests used fresh verified loopback MySQL 8.4.11, isolated grants,
+test_g12_disposable, private test media, .env disabled and local-only messaging.
+Runner: scripts/g12_test_runner.py with
+--testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+--noinput --verbosity 1.
+
+Focused integration: 14 passed in 70.632s.
+Final regression: 68 passed in 195.614s; no failures or skips.
+Labels included three 12-member current-weight integration tests,
+ewaf.test_delivery, ewaf.test_operational, announcements.test_generation,
+announcements.test_participation, announcements.test_results and
+announcements.test_public_results.
+Coverage includes completed selection -> further selection -> publish;
+unchanged scores/releases/status; valid publication after delivery;
+voided or corrupted receipts; unrelated changed sources; changed weights;
+permissions; CSRF; stale requests; audit rollback; held ties; slot limits;
+concurrent decisions; historical publication; and masked/full-reference output.
+
+scripts/result_publication_browser.cjs exercised the actual disposable Admin
+workflow after confirmed delivery: choose another applicant, open the program
+grid, inspect all 12 applicants/two selected, click Publish results and verify
+the public announcement. Desktop alignment, mobile layout and no JavaScript
+errors passed. Screenshots: program-grid.png, preview-desktop.png,
+preview-mobile.png and published-results.png.
+
+Main system validation
+Restarted through scripts/restart-current-development.ps1 at
+http://127.0.0.1:8012/. scripts/selection_results_browser.cjs verified the
+reported HM program read-only: 12 applicants, one selected, complete references,
+masked names, no raw error codes, enabled Publish results and desktop/mobile
+layout. The affected-program-desktop.png screenshot was visually inspected.
+No result was published and no selection or release was created in this system.
+
+Before/after counts AND SHA-256 digests match for all 13 inspected models:
+Program 9; ProgramApplication 87; AssistanceLog 142; Member 12;
+AssistanceRelease 28; OperationalConfiguration 10; OperationalRun 10;
+OperationalDecision 1; Announcement 0; ProgramResultRevision 0;
+DatasetInputReview 60; SharedDatasetPolicy 10; VaultRevision 14.
+Login/session metadata can change during browser checks. Older databases were
+not opened. Guarded Django checks and makemigrations --check --dry-run passed;
+no migrations were applied. Python/Node syntax and git diff --check passed.
+
+Evidence and preservation
+result-release-fix-2026-10-27/ contains test logs, screenshots,
+database-preservation.json and source-changes.json (exact task-relative files).
+Private baseline/probe: .local/result-release-fix-20261027/.
+All unrelated unfinished work, historical calculations, the eight Admin groups,
+public navigation and owner-defined 70% milestone remain unchanged.
+No commit, push, merge, deployment or external publication was performed.

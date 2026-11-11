@@ -1,0 +1,77 @@
+Admin program results popup - October 27, 2026
+
+Requested behavior
+Review and publish now opens the selected program in a modal above the program
+grid. Applicants remain on the left and selected applicants on the right;
+names are masked and complete application references are retained. Mobile
+stacks the lists inside a scrolling body with the publication controls visible.
+Close, X and Escape return focus to the originating program card. Direct links
+and server-rendered validation responses use the same dialog. Without JavaScript,
+the direct program page retains an inline preview and standard form submission.
+
+Implementation
+Only the presentation layer changed. The existing protected preview is fetched
+from its normal program URL; the native CSRF form explicitly posts to that same
+program URL even while the browser remains on the program grid. Publishing still
+requires the existing permission, source freshness, expected token and version
+checks. The pending-applicant finalization notice remains above Publish results.
+No scoring, selection, delivery, disclosure or publication service was changed.
+
+Files changed in this task
+- templates/announcements/result_draft.html
+- templates/announcements/result_preview_dialog.html (new)
+- static/css/results-dialog.css (new)
+- static/js/results-dialog.js (new)
+- scripts/result_publication_browser.cjs
+- scripts/selection_results_browser.cjs
+- This validation note and docs/results-popup-2026-10-27/ evidence.
+
+Validation
+Fresh verified MySQL 8.4.11, isolated grants/media, .env disabled, local-only
+messaging; test database test_g12_disposable. Existing application databases
+were not used for publication tests. No historical migrations were applied.
+
+Command:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test
+  ewaf.test_current_weights.CurrentWeightTests.test_publish_after_confirmed_delivery_preserves_pool_and_release
+  announcements.test_generation announcements.test_participation
+  --testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+  --noinput --verbosity 1
+Result: 11 tests passed in 74.444 seconds, no skips.
+
+The integration browser exercised selection after a confirmed release, opening
+the popup without navigation, correct form destination, closing and reopening,
+12 applicants/two selected, desktop columns, mobile stacking, and actual
+publication. It checked masked names, full references and no JavaScript errors.
+Server tests also cover CSRF, stale publication, transaction/audit rollback,
+historical revisions and current selection sources.
+
+An initial read-only keyboard browser check failed because native Shift+Tab
+could leave the dialog. Added the same explicit Tab boundary handling used by
+the existing registration privacy dialog. The complete read-only check then
+passed, including both Tab directions, Escape/Close/X, focus return, direct
+links and desktop/mobile screenshots. After that change the full disposable
+publication integration was rerun: 1 test passed in 70.542 seconds, no skips.
+
+The retained development system was restarted using its guarded script and
+checked at http://127.0.0.1:8012/. The HM Focus popup displayed 12 applicants,
+one selected and an enabled Publish results button. Nothing was published in
+this instance. Screenshots were visually inspected. Django system checks,
+makemigrations --check --dry-run, Node syntax and git diff --check passed.
+
+Data preservation
+The initial whole-model comparison noticed VaultRevision count 14 -> 15.
+Inspection confirmed an additional DRAFT revision recorded at
+2026-10-27T10:50:55.039Z during the task. The original 14 rows still match their
+baseline SHA-256 digest. This concurrent draft was preserved, not reverted.
+All other 12 inspected models match both baseline counts and row digests:
+Program 9, ProgramApplication 87, AssistanceLog 142, Member 12,
+AssistanceRelease 28, OperationalConfiguration 10, OperationalRun 10,
+OperationalDecision 1, Announcement 0, ProgramResultRevision 0,
+DatasetInputReview 60 and SharedDatasetPolicy 10.
+Authentication/session metadata may change during login checks.
+
+Evidence includes screenshots, disposable test logs, source-changes.json and
+database-preservation.json. Existing unfinished work, the eight Admin groups,
+public behavior and accepted 70% milestone remain in place. No database
+migration, real publication, commit, push, merge or deployment was performed.

@@ -1,0 +1,47 @@
+{
+  "pa_dates": "clamped_inclusive",
+  "pa_scope": "all_programs",
+  "pa_units": "existing_unique_release",
+  "tie_rule": "hold_boundary",
+  "pa_months": 12,
+  "pool_rule": "current_eligible_v1",
+  "pa_history": "association_ledger",
+  "weight_use": "stored_vector",
+  "ses_measure": "income-4ps-multiplier-90-10-v1",
+  "input_domain": "composite_ses_values",
+  "method_rules": "dataset_composite_ses_full_constants_v1",
+  "missing_rule": "block",
+  "pa_knowledge": "recorded_by_cutoff",
+  "ranking_rule": "competition_exact",
+  "constant_rule": "full_contribution_v1",
+  "evidence_rule": "current_member_records_v1",
+  "income_period": "current_record",
+  "current_period": "current_record",
+  "four_ps_period": "current_record",
+  "ses_adjustment": "90_10",
+  "correction_rule": "reassess_recalculate",
+  "classification_rule": "none",
+  "unlisted_employment": "block",
+  "method": "ewaf-ses-4ps-es-pa-hm-dataset-v1",
+  "program_application": {
+    "scope": "all_compatible_unbound_programs",
+    "version": "shared-program-application-v1",
+    "cutoff_at": "",
+    "cutoff_rule": "application_close"
+  },
+  "fixed_scoring_version": "santolan-fixed-scoring-2026-11-10-v1",
+  "effective_from": "2026-11-10T00:00:00+08:00",
+  "effective_until": "9999-01-01T00:00:00+00:00",
+  "selection_rule": "reasoned_human_within_slots",
+  "classification_mode": "none",
+  "registration_inputs": {
+    "version": "member-employment-five-categories-2026-11-10",
+    "employment": {
+      "employed": "Employed",
+      "self_employed": "Self-Employed",
+      "student": "Student",
+      "retired": "Retired",
+      "unemployed": "Unemployed"
+    }
+  }
+}

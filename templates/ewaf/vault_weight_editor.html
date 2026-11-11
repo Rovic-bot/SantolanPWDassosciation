@@ -1,0 +1,32 @@
+<div id="weight-editor" class="vault-workbench" hidden>
+  <section class="vault-card vault-controls" aria-labelledby="weight-heading">
+    <header class="vault-card-heading">
+      <div class="vault-heading-title"><span class="vault-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h7m4 0h7M3 12h12m4 0h2M3 18h3m4 0h11"/><circle cx="12" cy="6" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></span><div><h2 id="weight-heading">Criterion Weights</h2><p>{% if active %}Version {{ active.revision }} &middot; Approved &amp; locked{% else %}Choose a proposal for your first approval{% endif %}</p></div></div>
+      <strong class="vault-total"><span>Total</span> <output id="weight-total">Not set</output></strong>
+    </header>
+    <p id="weight-origin" class="visually-hidden"></p>
+    <p id="weight-rules" class="vault-help">Adjust the sliders; use the arrows to change priority. Earlier weights stay fixed.</p>
+    <div id="weight-bars" class="vault-weight-grid"></div>
+    <footer class="vault-controls-footer"><div class="vault-formula"><span>Formula:</span> <output id="weight-summary" aria-live="polite" aria-atomic="true"></output></div><div class="vault-actions"><button type="button" id="reset-weights" class="btn btn-outline-secondary">Reset</button><button type="button" id="preview-weights" class="btn btn-primary">Calculate AHP Weights</button></div></footer>
+  </section>
+  <p id="weight-status" class="vault-calculation-status" role="status"></p>
+  <div class="vault-review-grid">
+    <section class="vault-card vault-calculation" aria-labelledby="weight-preview-heading">
+      <header class="vault-card-heading"><h2 id="weight-preview-heading">Calculated AHP Weights</h2><span id="weight-consistency" class="vault-consistency" aria-live="polite">Not calculated</span></header>
+      <div id="weight-preview" hidden>
+        <div class="vault-table-wrap"><table class="vault-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Proposed</th><th scope="col">Calculated</th></tr></thead><tbody id="weight-preview-rows"></tbody><tfoot><tr><th scope="row">Total</th><td>100.00%</td><td>100.00%</td></tr></tfoot></table></div>
+        <p class="vault-help vault-calculation-note">Calculated weights are used for ranking after approval.</p>
+        <p id="weight-adjustment" class="vault-help" hidden>AHP comparisons can adjust the proposed percentages.</p>
+      </div>
+      <p class="vault-preview-empty">Choose your weights to see the calculated AHP result.</p>
+    </section>
+    <section class="vault-card vault-approval" aria-labelledby="vault-approval-heading">
+      <header class="vault-card-heading"><h2 id="vault-approval-heading">Audit &amp; Approval</h2></header>
+      <label for="{{ form.reason.id_for_label }}">Version audit notes <span class="vault-required">(required)</span></label>
+      {{ form.reason }}{{ form.reason.errors }}
+      <p class="vault-help">{% if is_composite %}Approval creates a new version for subsequent four-criterion rankings.{% else %}Existing programs and rankings retain their saved versions.{% endif %}</p>
+      <div class="vault-approval-actions">{% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration disabled>{% include 'public/icon.html' with name='check' %} Approve &amp; Save Configuration</button>{% else %}<p class="vault-help">An authorized administrator must approve this configuration.</p>{% endif %}
+      {% if is_ses and can_configure and not is_composite %}<button name="action" value="DRAFT" class="btn btn-outline-primary" data-save-configuration disabled>Save weight draft</button><p class="vault-help">Save changed proposals as a draft before approving the reviewed version.</p>{% endif %}</div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+/* The ticket owns the available viewport; messages and details scroll inside it. */
+body.admin-workspace.referral-chat-page { display: flex; flex-direction: column; height: var(--referral-viewport-height, 100dvh); min-height: 0; overflow: hidden; }
+.referral-chat-page .workspace-topbar { display: none; }
+body.referral-chat-page #main-content { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+body.referral-chat-page .referral-detail-page { display: flex; flex: 1; width: 100%; max-width: none; min-height: 0; margin: 0; padding: .5rem .75rem !important; }
+body.referral-chat-page .referral-detail-page > .referral-ticket { flex: 1; height: 100%; min-height: 0; }
+.referral-chat-page .referral-ticket-header { padding: .8rem 1rem; }
+.referral-inbox-back { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); text-decoration: none; }
+.referral-inbox-back:hover { color: var(--ink); background: var(--stone); }
+.referral-inbox-back:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.referral-chat-page .referral-ticket-grid { position: relative; overflow: hidden; }
+.referral-chat-page .referral-ticket-main { overflow: hidden; }
+.referral-chat-page .referral-conversation { flex: 1 1 0; min-height: 0; max-height: none; overflow: auto; scrollbar-width: thin; }
+.referral-chat-page .referral-composer { padding: .6rem .85rem 0; }
+html body.referral-chat-page .referral-ticket .referral-editor textarea.form-control { height: 48px; min-height: 48px; max-height: 96px; resize: none; }
+.referral-chat-page .referral-reply-addresses { padding: .4rem .75rem; }
+.referral-chat-page .referral-composer-footer { padding: .5rem .65rem; }
+.referral-chat-page .referral-live-notice { min-height: 3.6rem; padding: .35rem 135px .5rem 0; margin: 0; }
+.referral-chat-page .referral-ticket-actions { padding-bottom: 4.5rem; }
+.referral-chat-page .referral-sidebar-scroll { overflow: auto; scrollbar-width: thin; }
+html body.referral-chat-page .referral-ticket .referral-email-history { max-height: none; overflow: visible; padding: .75rem 0; border-top: 1px solid var(--line); }
+.referral-panel-menu, .referral-panel-heading, .referral-panel-backdrop { display: none; }
+.referral-chat-page .referral-ticket-feedback { max-height: 20%; overflow: auto; }
+@media (max-width: 1099px) {
+  .referral-chat-page .workspace-sidebar { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .referral-chat-page .workspace-sidebar a.workspace-brand { padding: .5rem .75rem; font-size: .8rem; }
+  .referral-chat-page .workspace-brand small { display: none; }
+  .referral-chat-page .workspace-brand img { width: 32px; height: 32px; }
+  .referral-chat-page .workspace-menu { font-size: 0; padding: .5rem .75rem; gap: .5rem; border: 0; }
+  .referral-chat-page .workspace-menu::before { content: 'Menu'; font-size: .85rem; }
+  .referral-chat-page .workspace-navigation { position: absolute; top: 100%; left: 0; right: 0; max-height: calc(100dvh - 60px); overflow: auto; background: var(--surface); border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 899px) {
+  body.referral-chat-page .referral-detail-page { padding: .25rem !important; }
+  .referral-chat-page .referral-ticket { border-radius: 1rem; }
+  .referral-chat-page .referral-ticket-header { position: relative; padding: .65rem .75rem; gap: .6rem; }
+  .referral-chat-page .referral-ticket-header .referral-member-avatar--header { width: 2.2rem; height: 2.2rem; flex-basis: 2.2rem; }
+  .referral-chat-page .referral-ticket-meta time { display: none; }
+  .referral-chat-page .referral-title-line { gap: .3rem .5rem; }
+  .referral-chat-page .referral-ticket-meta { font-size: .6rem; }
+  .referral-chat-page .referral-ticket-grid, .referral-chat-page .referral-ticket-grid.is-sidebar-collapsed { grid-template-columns: minmax(0,1fr); }
+  .referral-chat-page .referral-ticket-sidebar, .referral-chat-page .is-sidebar-collapsed .referral-ticket-sidebar { position: absolute; inset: 0 0 0 auto; z-index: 5; width: min(380px, calc(100% - 16px)); min-height: 0; grid-template-rows: minmax(0,1fr); border-top: 0; border-left: 1px solid var(--line); transition: transform .28s cubic-bezier(.2,.7,.2,1), visibility .28s; }
+  .referral-chat-page .is-sidebar-collapsed .referral-ticket-sidebar { transform: translateX(100%); visibility: hidden; pointer-events: none; }
+  .referral-chat-page .referral-sidebar-content { transform: none; transition: none; opacity: 1; }
+  .referral-chat-page .referral-sidebar-scroll { display: block; padding: 1rem; }
+  .referral-chat-page .referral-sidebar-toggle { display: none; }
+  .referral-chat-page .referral-panel-menu:not([hidden]) { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); }
+  .referral-panel-menu svg { width: 22px; height: 22px; }
+  .referral-chat-page .referral-panel-heading { display: flex; align-items: center; justify-content: space-between; padding: .6rem 1rem; border-bottom: 1px solid var(--line); }
+  .referral-chat-page .referral-panel-heading h2 { margin: 0; font-size: .95rem; }
+  .referral-chat-page .referral-panel-heading button { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); font-size: 1.5rem; }
+  .referral-chat-page .referral-panel-backdrop:not([hidden]) { display: block; position: absolute; inset: 0; z-index: 4; border: 0; border-radius: 0; background: #0006; }
+  .referral-chat-page .is-sidebar-collapsed .referral-panel-backdrop { visibility: hidden; pointer-events: none; }
+  .referral-chat-page .referral-conversation { padding: 1rem; }
+  .referral-chat-page .referral-composer { padding: .5rem .5rem 0; }
+  .referral-chat-page .referral-composer-footer { flex-wrap: nowrap; }
+  .referral-chat-page .referral-composer-footer .btn { width: auto; flex: 0 0 44px; padding: .5rem; }
+  .referral-chat-page .referral-composer-footer [data-reply-submit-label] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .referral-chat-page .referral-composer-options > div { flex: 1; }
+  .referral-chat-page .referral-connection-notice { font-size: .7rem; max-height: 60px; overflow: auto; margin-bottom: .4rem; }
+}
+@media (max-height: 520px) {
+  .referral-chat-page .referral-ticket-header { padding-block: .3rem; }
+  .referral-chat-page .referral-ticket-meta { display: none; }
+  .referral-chat-page .referral-ticket .referral-live-notice { min-height: 2rem; font-size: .65rem; }
+}
+@media print {
+  body.admin-workspace.referral-chat-page { height: auto; overflow: visible; }
+  body.referral-chat-page #main-content, body.referral-chat-page .referral-detail-page, body.referral-chat-page .referral-ticket, .referral-chat-page .referral-ticket-grid, .referral-chat-page .referral-ticket-main, .referral-chat-page .referral-conversation { display: block; height: auto; overflow: visible; }
+  .referral-chat-page :is(.referral-composer,.referral-ticket-sidebar,.referral-panel-menu,.referral-panel-backdrop,.referral-inbox-back) { display: none; }
+}

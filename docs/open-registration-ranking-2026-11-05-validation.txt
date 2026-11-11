@@ -1,0 +1,155 @@
+Ranking during registration and application-list cleanup
+5 November 2026
+
+November 8 follow-up: the owner subsequently authorized Admin selection while
+registration is open. The preview-only selection restriction below is historical;
+see docs/open-registration-selection-2026-11-08/validation.md for the scoped
+change and retained ranking, eligibility, capacity and audit safeguards.
+
+Owner decisions and scope
+
+The owner requested removal of the Verification column from Program Applications
+& Eligibility and explicitly required ranking before registration ends, including
+fixing the reported evidence-digest error. The owner then selected "Use these
+local test rules" for Student -> the existing Unemployed employment score (4)
+and zero contribution from a criterion when all applicants have the same value,
+without changing or redistributing approved weights.
+
+These instructions supersede the closing-time calculation gate for the newly
+versioned local test policy. They do not establish institutional scoring policy,
+change the program dates, approve beneficiaries or alter existing scores.
+
+Implemented behavior
+
+Removed the Verification header and cells from the application table, including
+its mobile labels; the empty state now spans five columns. Eligibility review
+and the underlying identity requirements remain available in applicant review.
+
+The new current_eligible_v1 policy allows ranking while registration is open.
+It uses the currently eligible applicants with valid current member-record
+inputs. Pending eligibility applications remain in the saved manifest but do
+not enter the open-registration ranking. Missing or invalid inputs for an
+eligible applicant still block calculation. After registration closes, unresolved
+applications must be reviewed before the final complete-pool calculation.
+
+Each run freezes its observation instant and uses the earlier of that instant
+and its approved assessment cutoff for the actual-release history. Future dates
+or later-recorded releases cannot be counted as observations already made.
+Source tokens compare facts rather than elapsed microseconds between opening
+the page and clicking Generate. Repeated requests retain idempotency; new
+applicants or changed source facts require recalculation. Old runs replay from
+their saved member values, ledger inputs, observation time and weights.
+
+The zero_contribution_v1 constant rule and matching calculation-method choice
+are explicitly versioned. Equal-value criteria have normalized value zero and
+contribution zero for everyone, with no division by zero or weight redistribution.
+A single-person pool therefore has score zero. Normal formulas still apply to
+varying criteria. Exact competition ranks and existing tie handling remain.
+The Student mapping is explicit policy, not a modification of member profiles.
+Breakdowns and the calculation guide explain zero contributions.
+
+Open-registration rankings are provisional for beneficiary selection. Final
+selection still requires a new complete ranking after registration closing and
+the retained assessment cutoff. No selection, publication or actual release
+was performed as part of this work.
+
+Schedule digest defect
+
+An authorized schedule update created configuration 40 with a signed cutoff in
+Philippine time. MySQL returned the same instant in UTC, changing its string
+representation during digest replay. The retained digest and native audit exactly
+match the original Philippine-time representation; no evidence was fabricated.
+
+New bindings normalize the cutoff to UTC before signing. Historical payload
+validation can reconstruct only the exact previously signed Philippine-time
+representation of that same instant. All other fields, schema and native audit
+must still match. Changing the actual instant still fails. No stored digest,
+configuration or audit was overwritten or resealed.
+
+Eligibility after a date-only edit
+
+Both actual applicants' eligibility reviews predated the same date correction.
+Their reviewed member facts and non-date program terms were unchanged.
+A read-only witness now recognizes this narrow case using the exact program
+version difference, chronological date-only update logs, matching actor and
+signed predecessor/successor configurations, terms digests and date endpoints.
+It retains the original eligibility decision and audit rather than manufacturing
+a new review. Missing or altered witnesses, an unexplained version change,
+changed non-date terms or member versions continue to require review.
+
+Local application and preservation
+
+Used the normal permission-checked, transactional policy and binding services.
+Appended policy draft ID 21 and approved policy ID 22 (policy revision 20), based
+on policy 20. It retains weight binding 40 and the existing current-approved-
+Vault-weight capture behavior, original policy validity, program schedules,
+cutoffs, release scope, normal formulas and all prior history.
+
+Explicitly appended the new approved rules to the four compatible, unscored
+programs that used shared policy 20:
+
+  Program test 1: configuration 41, revision 4.
+  Programa testing: configuration 42, revision 5.
+  Saklay distribution: configuration 43, revision 4.
+  Create program 2: configuration 44, revision 4.
+
+New compatible programs inherit the shared policy through the existing workflow.
+Already calculated programs were preserved. Programa remains on configuration
+27 / policy 16 with its original saved runs.
+
+Private before/after snapshots and operation results are retained under
+.local/open-registration-ranking/. All existing policies, configurations, Vault
+approvals, programs, applications, input reviews, members, releases, calculations,
+decisions and their existing program/admin audit rows were compared field for
+field and remained unchanged. Only new policy/configuration rows and their normal
+audit entries were added. No working-database migration was run.
+
+Validation
+
+88 focused tests passed using a freshly initialized, isolated MySQL database:
+ewaf.test_rolling_pool, programs.test_schedule_updates,
+ewaf.test_automatic_member_inputs, ewaf.test_shared_application,
+programs.test_review_workspace and ewaf.test_readiness.
+Evidence: %TEMP%/santolan-g12-tests-yb25lxum/django.log.
+
+11 final checks passed after tightening the final-selection cutoff condition:
+three focused rolling-pool cases and the eight CompositeSesArithmeticTests.
+Evidence: %TEMP%/santolan-g12-tests-ojrwsp3m/django.log.
+These runs overlap and are not added together as independent tests.
+
+All used scripts/g12_test_runner.py with RegistrationIntakeTestRunner and
+--noinput. The disposable baseline synchronizes models; it does not execute or
+validate historical migrations. Covered behaviors include HTTP generation before
+closing, source freshness, pending applicants, zero/single-person pools, the
+Student mapping, exact weight preservation, permissions, failed audit rollback,
+idempotent requests, frozen replay, historical timezone signatures, date-only
+eligibility witnesses, and rejection of tampered audits or changed member data.
+
+An earlier new-test run exposed an approval-validation variable-shadowing bug;
+it was fixed before applying any new local policy. Two test-fixture issues were
+also corrected: using a nonexistent application status and seeding external
+approval into tests intended for externally-unbound schedule corrections.
+
+A broader historical regression attempt retained four unrelated harness issues:
+three old reranking tests still call the earlier verify(..., birthdate=...)
+interface, and one old composite UI test expects the calculation-guide link to
+be absent before generation, contrary to the retained current navigation.
+These older fixtures/expectations were not changed. Other cases from that run
+passed; the full repository suite and an updated end-to-end browser harness
+were not run. The final focused suites above pass.
+
+Actual local Programa testing verification:
+
+* Ranking and Program Applications & Eligibility authenticated renders return 200.
+* Generate EWAF Ranking is enabled while registration is still open.
+* Calculation preflight produces valid results for both current applicants.
+* The digest error, closing-time wait and missing-settings warnings are absent.
+* Verification header/cells are absent; Eligibility remains.
+* Both original eligibility reviews are retained with date-only audit witnesses.
+* A SQL guard and before/after snapshots confirm these checks write no data.
+* No ranking run or beneficiary decision was saved by the live verification.
+
+Only the identified local web process on port 8013 was refreshed; MySQL, saved
+data, sessions and private uploads were retained. Its instance health check
+passed. Django system/database checks, migration dry run (no changes), Python
+syntax checks and git diff --check passed. Existing unfinished work is preserved.

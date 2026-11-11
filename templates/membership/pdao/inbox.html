@@ -1,0 +1,85 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}PDAO Membership &middot; Membership Reviews{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/registration-inbox.css' %}?v=20261108-shared"><link rel="stylesheet" href="{% static 'css/pdao-claim.css' %}?v=20261109">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/pdao-claim.js' %}?v=20261109" defer></script>{% endblock %}
+{% block content %}
+<div class="container content-section registration-inbox" data-pdao-claim-root>
+  <h1 class="visually-hidden">PDAO membership applications</h1>
+  {% include 'partials/workspace_messages.html' %}
+
+  <div class="registration-inbox-notice">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M12 10v7M12 6v1" fill="none" stroke="white" stroke-width="2"/></svg>
+    <p><strong>Review and prepare applications for PDAO.</strong> PDAO makes the final PWD ID decision. These applications do not create Association memberships.</p>
+  </div>
+
+  <form method="get" data-auto-filter role="search" aria-label="Find PDAO application" class="registration-inbox-filters">
+    <div class="registration-inbox-search-row">
+      <div>
+        <label for="pdao-search" class="form-label">Search reference number or applicant name</label>
+        <div class="registration-inbox-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></svg>
+          <input class="form-control" type="search" id="pdao-search" name="q" value="{{ search_query }}" maxlength="200" autocomplete="off" spellcheck="false" placeholder="Search reference number or applicant name">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Find application</button>
+    </div>
+    <div class="registration-inbox-filter-row registration-inbox-filter-row--status">
+      <div>
+        <label for="pdao-state" class="form-label">Processing status</label>
+        <select name="state" id="pdao-state" class="form-select"><option value="">All statuses</option>{% for value,label in states %}<option value="{{ value }}"{% if value == state_query %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      </div>
+      <button class="btn btn-outline-primary" type="submit" data-auto-filter-select-submit>Apply filters</button>
+      <a class="registration-inbox-clear" href="{% url 'membership:pdao_inbox' %}">Clear</a>
+    </div>
+  </form>
+
+  <div class="registration-inbox-toolbar">
+    <nav class="registration-inbox-tabs" aria-label="PDAO processing status">
+      {% for tab in status_tabs %}<a href="{% querystring state=tab.value page=None %}"{% if state_query == tab.value %} aria-current="page"{% endif %}>{{ tab.label }} <span>{{ tab.count }}</span></a>{% endfor %}
+    </nav>
+    {% if perms.membership.add_pdaoregistration %}<div class="registration-inbox-actions">
+      <a data-workspace-tab class="btn btn-primary" href="{% url 'membership:pdao_onsite' %}">Onsite PDAO registration</a>
+    </div>{% endif %}
+  </div>
+  <p class="registration-inbox-hint">Enter a PDAO reference, its digits, or the original reference. Search before recording a new application to prevent duplicates.</p>
+
+  {% if can_bulk_claim %}
+    <form method="post" action="{% url 'membership:pdao_claim_notices' %}" id="pdao-claim-form" class="pdao-claim-toolbar">{% csrf_token %}
+      {{ claim_form.return_to }}{{ claim_form.query }}{{ claim_form.page }}
+      <div><h2>Notify applicants to claim their PWD ID</h2><p>Select the applications on this page whose cards are ready at the barangay office. Each applicant receives a separate email.</p></div>
+      <div class="pdao-claim-confirm form-check">{{ claim_form.confirmed }}<label class="form-check-label" for="{{ claim_form.confirmed.id_for_label }}">{{ claim_form.confirmed.label }}</label></div>
+      <div class="pdao-claim-toolbar-actions"><button type="submit" class="btn btn-primary" data-claim-submit{% if not claim_eligible_count %} disabled{% endif %}>Send PWD ID claim emails</button><span data-claim-count role="status" aria-live="polite">{{ claim_eligible_count }} available for notification on this page</span><a href="{% querystring %}">Refresh email status</a></div>
+      <details><summary>Message preview</summary><p>Your PWD ID is now ready for collection at the Barangay Santolan office. Please visit the barangay office to claim your PWD ID.</p><p>Each email also includes the applicant's name, application reference and Help Desk guidance.</p></details>
+    </form>
+  {% endif %}
+
+  <section class="registration-inbox-results" aria-label="PDAO application results">
+    <div class="table-responsive" tabindex="0" role="region" aria-label="PDAO application records">
+      <table class="table registration-inbox-table{% if state_query == 'forwarded' %} pdao-claim-table{% endif %}">
+        <caption class="visually-hidden">PDAO applications. Names and references are available only to authorized staff.</caption>
+        <colgroup>{% if can_bulk_claim %}<col class="pdao-claim-col-select">{% endif %}<col class="registration-inbox-col-applicant"><col class="registration-inbox-col-channel"><col class="registration-inbox-col-received"><col class="registration-inbox-col-status">{% if state_query == 'forwarded' %}<col class="pdao-claim-col-status">{% endif %}<col class="registration-inbox-col-action"></colgroup>
+        <thead><tr>{% if can_bulk_claim %}<th scope="col"><label data-claim-all-control hidden><input type="checkbox" data-claim-all aria-label="Select all available applications on this page"></label><span class="visually-hidden">Select application</span></th>{% endif %}<th scope="col">Applicant / reference</th><th scope="col">Application</th><th scope="col">Received</th><th scope="col">Processing status</th>{% if state_query == 'forwarded' %}<th scope="col">Claim email</th>{% endif %}<th scope="col">Action</th></tr></thead>
+        <tbody>
+          {% for registration in page_obj %}<tr>
+            {% if can_bulk_claim %}<td class="pdao-claim-selection"><input type="checkbox" name="applications" form="pdao-claim-form" value="{{ registration.pk }}:{{ registration.version }}" data-claim-select aria-label="Send claim notice to {{ registration.current_data.full_name }}, {{ registration.short_reference }}"{% if not registration.claim.can_send_claim_notice %} disabled{% endif %}></td>{% endif %}
+            <th scope="row"><span class="registration-inbox-name">{{ registration.current_data.full_name }}</span><span class="registration-inbox-reference">{{ registration.short_reference }}</span></th>
+            <td>{{ registration.current_data.application_type }}</td>
+            <td><time datetime="{{ registration.received_at|date:'c' }}">{{ registration.received_at|date:'j M Y' }} <span aria-hidden="true">&middot;</span> {{ registration.received_at|date:'g:i A' }}</time></td>
+            <td><span class="registration-inbox-status{% if registration.status == 'forwarded' %} registration-inbox-status--approved{% endif %}">{{ registration.get_status_display }}</span></td>
+            {% if state_query == 'forwarded' %}<td class="pdao-claim-delivery">{% if registration.claim.claim_notice %}<span data-state="{{ registration.claim.claim_notice.state }}">{{ registration.claim.claim_delivery_label }}</span>{% elif registration.claim.claim_recipient %}<span>Not yet notified</span>{% else %}<span>No valid email recorded</span>{% endif %}{% if registration.claim.claim_recipient %}<small>{{ registration.claim.claim_recipient }}</small>{% endif %}</td>{% endif %}
+            <td><a class="registration-inbox-review" href="{% url 'membership:pdao_detail' registration.pk %}">{% if registration.status == 'forwarded' %}View{% else %}Review{% endif %}<span class="visually-hidden"> {{ registration.current_data.full_name }}, {{ registration.short_reference }}</span><span aria-hidden="true">&rarr;</span></a></td>
+          </tr>{% empty %}<tr><td colspan="{% if can_bulk_claim %}7{% elif state_query == 'forwarded' %}6{% else %}5{% endif %}" class="registration-inbox-empty"><strong>No PDAO applications match this search.</strong><span>Try a PDAO reference, its digits, or applicant name, or clear the filters.</span></td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="registration-inbox-table-footer">
+      <p role="status">{% if page_obj.paginator.count %}Showing {{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ page_obj.paginator.count }}{% else %}Showing 0{% endif %} application{{ page_obj.paginator.count|pluralize }}</p>
+      <nav aria-label="PDAO application pages">
+        {% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}">Previous</a>{% else %}<span aria-disabled="true">Previous</span>{% endif %}
+        <span class="is-current" aria-current="page" aria-label="Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}">Next</a>{% else %}<span aria-disabled="true">Next</span>{% endif %}
+      </nav>
+    </footer>
+  </section>
+</div>
+{% endblock %}

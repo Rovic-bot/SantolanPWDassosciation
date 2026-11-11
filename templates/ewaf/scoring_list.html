@@ -1,0 +1,10 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Scoring-policy diagnostics · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section" style="overflow-wrap:anywhere">
+<h1>Scoring-policy diagnostics</h1>
+<p>DIAGNOSTIC ONLY — NOT AUTHORIZED FOR BENEFICIARY PROCESSING</p>
+<p>Private proposals and applicant evidence readiness. Operational scoring remains unavailable.</p>
+{% if development_available %}<p><a href="{% url 'ewaf:development_lab' %}">Fictional EWAF development (disposable session only)</a></p>{% endif %}
+<ul>{% for program in page %}<li><a href="{% url 'ewaf:scoring_policy' program.pk %}">{{ program.name }}</a></li>{% empty %}<li>No programs available.</li>{% endfor %}</ul>
+{% include 'ewaf/scoring_pages.html' %}
+</div>{% endblock %}

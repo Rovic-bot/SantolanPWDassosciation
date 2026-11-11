@@ -1,0 +1,24 @@
+<section class="program-detail-requirements" aria-labelledby="public-program-requirements-heading">
+    <div class="program-requirements-heading">
+        <h2 id="public-program-requirements-heading">Program requirements</h2>
+        <p>Review what you need to prepare before applying.</p>
+    </div>
+    {% if program.requirements %}<div class="program-requirements-instructions" translate="no">{{ program.requirements|linebreaks }}</div>{% endif %}
+    {% if requirements %}
+    <ol class="program-requirements-list">
+        {% for requirement in requirements %}
+        <li>
+            <span class="program-requirement-number" aria-hidden="true">{{ forloop.counter }}</span>
+            <div class="program-requirement-content">
+                <div class="program-requirement-heading">
+                    <h3 translate="no">{{ requirement.label }}</h3>
+                    <span class="program-requirement-necessity">{{ requirement.is_required|yesno:'Required,Optional' }}</span>
+                </div>
+                <p class="program-requirement-kind">{{ requirement.get_kind_display }}</p>
+                {% if requirement.instructions %}<div class="program-requirement-instructions" translate="no">{{ requirement.instructions|linebreaks }}</div>{% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ol>
+    {% elif not program.requirements %}<p class="program-requirements-empty">No additional program requirements have been published.</p>{% endif %}
+</section>

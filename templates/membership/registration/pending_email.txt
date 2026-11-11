@@ -1,0 +1,13 @@
+{% autoescape off %}Dear {{ applicant_name }},
+
+Your Santolan PWD Association membership application is still pending review.
+
+Application reference: {{ reference }}
+
+Message from the administrator:
+{{ reason }}
+
+Please follow the instructions above or contact the Association office / Help Desk if you need clarification. This message does not approve or decline your membership.
+
+Santolan PWD Association
+{% endautoescape %}

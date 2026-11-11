@@ -1,0 +1,49 @@
+/* The saved update opens in a compact popup; the same content works without JS. */
+.public-portal .member-update-confirmation {
+    width: min(36rem, 100%);
+    margin: clamp(2rem, 12vh, 7rem) auto;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1.75rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+.public-portal .member-update-confirmation h1 {
+    margin: 0 0 1rem;
+    color: var(--ink);
+    font-size: clamp(1.5rem, 4vw, 2rem) !important;
+    font-weight: 700;
+    line-height: 1.2 !important;
+    letter-spacing: -.025em;
+}
+.public-portal .member-update-confirmation p { margin: 0 0 1rem; color: var(--muted); line-height: 1.65; }
+.public-portal .member-update-confirmation form { margin: 1.5rem 0 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.public-portal .member-update-confirmation .btn { max-width: 100%; white-space: normal; }
+.member-update-confirmation-icon { display: grid; place-items: center; width: 4rem; height: 4rem; margin: 0 auto 1.5rem; border: 1px solid var(--line); border-radius: 50%; background: var(--stone); color: var(--ink); }
+.member-update-confirmation-icon svg { width: 2.25rem; height: 2.25rem; }
+.public-portal .member-update-confirmation-dialog {
+    position: fixed;
+    inset: 0;
+    width: min(36rem, calc(100% - 2rem));
+    max-width: calc(100% - 2rem);
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1.75rem;
+    box-shadow: 0 24px 80px #0005;
+}
+.member-update-confirmation-dialog::backdrop { background: #0009; backdrop-filter: blur(4px); }
+.public-portal .member-update-confirmation-dialog .member-update-confirmation { width: 100%; margin: 0; padding-top: 3.5rem; border: 0; }
+.public-portal .member-update-confirmation-close { position: absolute; top: .5rem; right: .5rem; display: grid; place-items: center; width: 44px; height: 44px; padding: .75rem; color: var(--ink); background: transparent; border: 1px solid transparent; border-radius: 50%; }
+.member-update-confirmation-close svg { width: 20px; height: 20px; }
+.public-portal .member-update-confirmation-close:hover { background: var(--stone); border-color: var(--line); }
+.member-update-confirmation-open { overflow: hidden; }
+html[data-contrast=true] .member-update-confirmation-dialog { box-shadow: none; }
+@media (prefers-reduced-transparency: reduce) { .member-update-confirmation-dialog::backdrop { backdrop-filter: none; background: #000c; } }

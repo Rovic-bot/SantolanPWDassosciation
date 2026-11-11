@@ -1,0 +1,3 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Eligibility states · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section"><h1>Eligibility states</h1><p>Workflow meanings are fixed. Historical labels remain in the audit history.</p><ul>{% for item in statuses %}<li>{{ item }}</li>{% endfor %}</ul><section class="record-section"><h2>Historical configuration changes</h2>{% include 'assistance/history.html' %}</section></div>{% endblock %}

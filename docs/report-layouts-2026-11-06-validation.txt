@@ -1,0 +1,27 @@
+Applications, Programs and Assistance report layouts - 2026-11-06
+
+Matched the supplied report references using rounded tables, thin dividers,
+compact typography, monospaced references/dates and colored status badges.
+Applications group selection and release/receipt details into seven columns,
+highlight recorded selections and retain distinct eligibility details when needed.
+Programs show assistance-type icons, dates, centered slot counts and status.
+Assistance shows colored initials, program/type, receipt date/reference and status.
+All reports share filtered pagination and responsive horizontal table scrolling;
+there is no inner vertical scrolling. Members retain their existing table layout.
+
+Presentation uses the already permission-scoped report rows. Filters, permissions,
+audit logging, ordering, 30-row pagination and CSV/Excel/PDF projections remain
+unchanged. Restricted decision/release values remain restricted. No decisions,
+receipts, member records or database schema were changed.
+
+Validation
+- Django check with current_development_settings and database default passed.
+- Three existing report tests passed in 2.250 seconds on disposable native MySQL:
+  reports_filters_privacy_exports_and_permissions;
+  reports_csv_formula_injection_and_invalid_filter;
+  excel_matches_filtered_csv_and_treats_formulas_as_text.
+- Artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-jyve9qv3
+- Static assets collected and web process restarted, preserving MySQL.
+- Native browser inspection was attempted but user input was detected while the
+  user was navigating other tabs. No visual verification is claimed for this update.
+- git diff --check passed.

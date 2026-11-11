@@ -1,0 +1,15 @@
+  <section class="referral-card referral-results" aria-label="Referral requests">
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Referral request table">
+      <table class="table referral-table"><caption class="visually-hidden">{{ page.paginator.count }} matching referral requests, latest member activity first</caption><colgroup><col class="referral-col-request"><col class="referral-col-member"><col class="referral-col-type"><col class="referral-col-status"><col class="referral-col-date"><col class="referral-col-action"></colgroup>
+        <thead><tr><th scope="col">Request</th><th scope="col">Member</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col" aria-sort="descending">Latest activity <span aria-hidden="true">⌄</span></th><th scope="col">Action</th></tr></thead>
+        <tbody>{% for ticket in page %}<tr data-ticket-id="{{ ticket.pk }}">
+          <th scope="row">{% include 'assistance/referrals/open_ticket.html' with subject_link=True %}<span class="referral-reference">{{ ticket.short_reference }}</span></th>
+          <td>{{ ticket.full_name }}<span class="referral-member-email">{{ ticket.email }}</span></td>
+          <td>{{ ticket.get_assistance_type_display }}</td><td>{% include 'assistance/referrals/status.html' %}</td>
+          <td><time datetime="{{ ticket.latest_activity|date:'c' }}">{{ ticket.latest_activity|date:'M j, Y' }}<br>{{ ticket.latest_activity|date:'g:i A' }}</time>{% if ticket.last_member_reply %}<span class="referral-reference">Member follow-up</span>{% endif %}</td>
+          <td>{% include 'assistance/referrals/open_ticket.html' with subject_link=False %}</td>
+        </tr>{% empty %}<tr><td colspan="6" class="referral-no-results">No requests match these filters. <a href="{% url 'assistance:referral_inbox' %}?status=all">Show all requests</a></td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    <div class="referral-table-footer"><p>{% if page.paginator.count %}Showing {{ page.start_index }}–{{ page.end_index }} of {{ page.paginator.count }} requests{% else %}Showing 0 requests{% endif %}</p><nav aria-label="Ticket pages">{% if page.has_previous %}<a class="referral-page-link" href="{% querystring page=page.previous_page_number %}" aria-label="Previous page">‹</a>{% else %}<span class="referral-page-link is-disabled" aria-disabled="true" aria-label="Previous page">‹</span>{% endif %}<span class="referral-page-link is-current" aria-current="page" aria-label="Page {{ page.number }}">{{ page.number }}</span>{% if page.has_next %}<a class="referral-page-link" href="{% querystring page=page.next_page_number %}" aria-label="Next page">›</a>{% else %}<span class="referral-page-link is-disabled" aria-disabled="true" aria-label="Next page">›</span>{% endif %}</nav></div>
+  </section>

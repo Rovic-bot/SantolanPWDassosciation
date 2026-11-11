@@ -1,0 +1,12 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Readiness history · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section" style="overflow-wrap:anywhere">
+<a class="workspace-back" href="{% url 'ewaf:scoring_diagnostics' application.pk %}">Current readiness</a>
+<h1>Readiness diagnostic history</h1><p>{{ application.public_reference }}</p>
+<p>DIAGNOSTIC ONLY — NOT AUTHORIZED FOR BENEFICIARY PROCESSING</p>
+{% for entry in entries %}<article><h2>Capture {{ entry.run.revision }}</h2><p>{{ entry.run.recorded_at }} · {{ entry.run.actor_label }}</p>
+<p>Integrity: {{ entry.valid|yesno:'Validated,Review required' }}. Current context: {{ entry.outdated|yesno:'Outdated,Matches current evidence' }}.</p>
+<p>{{ entry.run.reason }}</p>{% if entry.valid %}<ul>{% for row in entry.run.result.reasons %}<li style="overflow-wrap:anywhere">{{ row.code }} — {{ row.source|default_if_none:'pending' }}</li>{% endfor %}</ul>{% endif %}
+<p style="overflow-wrap:anywhere">Digest: {{ entry.run.digest }}</p></article>{% empty %}<p>No diagnostic captures.</p>{% endfor %}
+{% include 'ewaf/scoring_pages.html' %}
+</div>{% endblock %}

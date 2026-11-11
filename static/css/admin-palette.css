@@ -1,0 +1,146 @@
+/* Public portal cream/charcoal palette, scoped to the authenticated workspace. */
+@media screen {
+  html body.admin-workspace {
+    --dashboard-bg: #191817; --canvas: #191817; --surface: #242220; --stone: #35322e;
+    --ink: #f4f2ec; --muted: #c5c0b8; --body-text: #f4f2ec; --secondary-text: #c5c0b8;
+    --brand-navy: #f4f2ec; --brand-primary: #e6dfd2; --brand-royal: #f4f2ec;
+    --brand-bright: #f4f2ec; --brand-ice: #ded7ca; --brand-on-action: #1c1a18;
+    --line: #5d5851; --edge: #5d5851; --control-edge: #8d867b; --rim: #5d5851;
+    --teal: #e6dfd2; --teal-hover: #fff; --teal-wash: #35322e; --teal-light: #ded7ca;
+    --focus: #f4f2ec; --glass: #242220; --glass-line: #5d5851;
+    --glass-highlight: transparent; --glass-shadow: #0003;
+    --glow-blue: transparent; --glow-violet: transparent; --glow-orange: transparent;
+    --cyan: #91b9a8; --blue: #8eaabd; --violet: #baa3c7; --magenta: #bd8eaa;
+    --orange: #d2b07c; --green: #a7c6ad; --danger: #e7a39b;
+    --chart-track: #45413b; --chart-axis: #8d867b; --chart-label: #191817;
+    --chart-series-0: #91b9a8; --chart-series-1: #baa3c7; --chart-series-2: #d2b07c;
+    --chart-series-3: #8eaabd; --chart-series-4: #ca9b90; --chart-series-5: #bd8eaa;
+    --chart-series-6: #85b9bd; --chart-series-7: #b2bc8e; --chart-series-8: #a9a4cf;
+    --chart-series-9: #c7b7a2; --chart-series-10: #c19a79; --chart-series-11: #9fb0a7;
+    --heat-1: #364e46; --heat-2: #4c6b5e; --heat-3: #8caa97; --heat-4: #b5d0be;
+    --heat-1-ink: #f4f2ec; --heat-2-ink: #fff; --heat-3-ink: #191817; --heat-4-ink: #191817;
+    --bs-body-color-rgb: 244,242,236; --bs-body-bg-rgb: 36,34,32;
+    --bs-secondary-color-rgb: 197,192,184; --bs-emphasis-color-rgb: 244,242,236;
+    --bs-primary-rgb: 230,223,210; --bs-link-color-rgb: 230,223,210; --bs-link-hover-color-rgb: 244,242,236;
+    color: var(--ink); background: var(--dashboard-bg); color-scheme: dark;
+  }
+  html[data-dashboard-theme=light] body.admin-workspace,
+  html[data-contrast=true] body.admin-workspace {
+    --dashboard-bg: #e8e5df; --canvas: #e8e5df; --surface: #f4f2ec; --stone: #e1ddd5;
+    --ink: #1c1a18; --muted: #625d56; --body-text: #1c1a18; --secondary-text: #625d56;
+    --brand-navy: #1c1a18; --brand-primary: #2a2826; --brand-royal: #454039;
+    --brand-bright: #454039; --brand-ice: #e1ddd5; --brand-on-action: #f4f2ec;
+    --line: #d7d3cb; --edge: #d7d3cb; --control-edge: #81796e; --rim: #d7d3cb;
+    --teal: #1c1a18; --teal-hover: #534b3f; --teal-wash: #e1ddd5; --teal-light: #e1ddd5;
+    --focus: #534b3f; --glass: #f4f2ec; --glass-line: #d7d3cb; --glass-shadow: #302b220d;
+    --cyan: #2f625b; --blue: #456778; --violet: #6e567e; --magenta: #8a4f60;
+    --orange: #80591f; --green: #406545; --danger: #a43e35;
+    --chart-track: #d7d3cb; --chart-axis: #81796e; --chart-label: #fff;
+    --chart-series-0: #486f5f; --chart-series-1: #76617f; --chart-series-2: #8e681e;
+    --chart-series-3: #4c6f82; --chart-series-4: #925b47; --chart-series-5: #875669;
+    --chart-series-6: #3f7073; --chart-series-7: #65702f; --chart-series-8: #66628c;
+    --chart-series-9: #766651; --chart-series-10: #925d30; --chart-series-11: #536b60;
+    --heat-1: #d9e5dc; --heat-2: #a7c4b3; --heat-3: #527b65; --heat-4: #2f5141;
+    --heat-1-ink: #1c1a18; --heat-2-ink: #1c1a18; --heat-3-ink: #fff; --heat-4-ink: #fff;
+    --bs-body-color-rgb: 28,26,24; --bs-body-bg-rgb: 244,242,236;
+    --bs-secondary-color-rgb: 98,93,86; --bs-emphasis-color-rgb: 28,26,24;
+    --bs-primary-rgb: 42,40,38; --bs-link-color-rgb: 28,26,24; --bs-link-hover-color-rgb: 83,75,63;
+    color-scheme: light;
+  }
+  html[data-contrast=true] body.admin-workspace {
+    --dashboard-bg: #fff; --canvas: #fff; --surface: #fff; --stone: #eee;
+    --ink: #111; --muted: #333; --body-text: #111; --secondary-text: #333;
+    --brand-navy: #111; --brand-primary: #111; --brand-royal: #333; --brand-bright: #333;
+    --brand-on-action: #fff; --line: #555; --edge: #555; --rim: #555; --control-edge: #555;
+    --teal: #111; --focus: #111; --teal-wash: #eee; --glass: #fff; --glass-line: #555;
+    --glass-highlight: transparent; --glass-shadow: transparent;
+    --chart-track: #ddd; --chart-axis: #555;
+    --bs-body-color-rgb: 17,17,17; --bs-body-bg-rgb: 255,255,255;
+    --bs-secondary-color-rgb: 51,51,51; --bs-emphasis-color-rgb: 17,17,17;
+    --bs-primary-rgb: 17,17,17; --bs-link-color-rgb: 17,17,17; --bs-link-hover-color-rgb: 51,51,51;
+  }
+
+  /* Use paired foreground/background tokens for Bootstrap and native widgets. */
+  .admin-workspace :is(.text-muted,.text-secondary,.text-body-secondary) { color: var(--muted) !important; }
+  .admin-workspace :is(.text-body,.text-body-emphasis) { color: var(--ink) !important; }
+  .admin-workspace :is(input,textarea,select):disabled { color: var(--muted); opacity: 1; }
+  /* Feature pages used fixed neon gradients; pair all primary action states. */
+  html .admin-workspace :is(.btn-primary,.selection-primary,.portfolio-review-button) {
+    background: var(--brand-primary) !important; color: var(--brand-on-action) !important;
+    border-color: var(--brand-primary) !important; box-shadow: none !important;
+  }
+  html .admin-workspace :is(.btn-primary,.selection-primary,.portfolio-review-button):is(:hover,:active,:focus-visible) {
+    background: var(--brand-royal) !important; border-color: var(--brand-royal) !important;
+  }
+  html .admin-workspace :is(button:disabled,.btn.disabled,.report-page-disabled,.selector-chooseall:disabled,.selector-clearall:disabled) {
+    opacity: 1; color: var(--muted) !important; background-color: var(--stone) !important;
+  }
+  html .admin-workspace .builder-calendar button.outside-month:not(td.in-range button) { opacity: 1; color: var(--muted); }
+  .admin-workspace :is(.btn-primary,.dashboard-public-link,.selection-primary) :is(span,strong,svg) { color: inherit; }
+  .admin-workspace .workspace-topbar .dashboard-public-link { box-shadow: none; }
+  .admin-workspace .workspace-account strong::before { box-shadow: none; }
+  .admin-workspace .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23c5c0b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+  html:is([data-dashboard-theme=light],[data-contrast=true]) .admin-workspace .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23625d56' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+  .admin-workspace dialog::backdrop { background: #0009; }
+  .admin-workspace .referral-preview:hover .referral-preview-label { background: var(--stone); color: var(--ink); }
+  .admin-workspace :is(.builder-container,.onsite-container,.directory-container,.portfolio-container,.chooser-container,.event-workspace-container,.ewaf-selection,.release-portfolio)::before { background: none; }
+  .admin-workspace .onsite-id-mark { background: var(--brand-primary); color: var(--brand-on-action); }
+  .admin-workspace .member-report-avatar { background: var(--stone); color: var(--ink); }
+  .admin-workspace .association-email-settings .email-history-dot { background: var(--cyan); }
+  .admin-workspace .builder-range,
+  .admin-workspace .builder-range-modes [data-accent] { --range-fill: color-mix(in srgb,var(--range-accent) 10%,transparent); }
+  .admin-workspace .builder-date-band:is([data-band=registration],[data-band=event]) { background: color-mix(in srgb,var(--blue) 10%,transparent); }
+  .admin-workspace .builder-date-band[data-band=delivery] { background: color-mix(in srgb,var(--violet) 10%,transparent); }
+  .admin-workspace .builder-date-band[data-active=false] { background: var(--range-accent); }
+  html .admin-workspace .builder-calendar td:is(.range-start,.range-end) button { background: var(--range-accent); color: var(--chart-label); box-shadow: none; }
+  .admin-workspace .event-calendar-day.has-events { background: var(--brand-primary); color: var(--brand-on-action); }
+  .admin-workspace .event-calendar-day.has-events:hover { background: var(--brand-royal); }
+  .admin-workspace .directory-pagination [aria-current=page] { color: var(--brand-on-action); }
+  .admin-workspace .weight-range { accent-color: var(--teal); }
+  .admin-workspace .weight-range:focus-visible { outline-color: var(--focus); }
+  .admin-workspace .ewaf-breakdown .breakdown-selected > * { background-color: var(--teal-wash); }
+
+  /* The full record and its directory dialog have their own local tokens. */
+  html .admin-workspace .member-record {
+    --record-bg: var(--dashboard-bg); --record-card: var(--surface); --record-inset: var(--stone);
+    --record-edge: var(--line); --record-ink: var(--ink); --record-muted: var(--muted);
+    --record-accent: var(--stone); --record-accent-ink: var(--ink); --record-portrait: var(--stone);
+    --record-shadow: 0 3px 16px var(--glass-shadow);
+  }
+  .admin-workspace :is(.member-record-avatar,.member-photo-empty) { color: var(--ink); background: none; }
+  html .admin-workspace .member-identity-caption { background: var(--surface); color: var(--ink); border-color: var(--line); }
+  html .admin-workspace .member-identity-caption h1 { color: var(--ink); }
+  .admin-workspace .member-identity-caption p { color: var(--muted); }
+  .admin-workspace .member-registration-tabs button[aria-selected=true] { background: var(--brand-primary); color: var(--brand-on-action); }
+  html .admin-workspace.member-directory-workspace :is(.record-details-dialog,.record-dialog-toolbar) { background: var(--surface); }
+
+  /* Related muted hues keep categorical charts distinct on the neutral canvas. */
+  .admin-workspace :is(.analytics-overview,.overview-data-dialog) { --chart-area: color-mix(in srgb,var(--cyan) 18%,transparent); }
+  html .admin-workspace :is(.overview-section,.overview-data-dialog)[data-chart-id=membership-area] { --chart-tone-0: var(--cyan); }
+  .admin-workspace .overview-section[data-chart-id=membership-area] .overview-data-button::before { background: var(--cyan); }
+  html .admin-workspace :is(.overview-section,.overview-data-dialog)[data-chart-id=disability-bar] {
+    --chart-tone-0: var(--chart-series-0); --chart-tone-1: var(--chart-series-1); --chart-tone-2: var(--chart-series-2);
+    --chart-tone-3: var(--chart-series-3); --chart-tone-4: var(--chart-series-4); --chart-tone-5: var(--chart-series-5);
+    --chart-tone-6: var(--chart-series-6); --chart-tone-7: var(--chart-series-7); --chart-tone-8: var(--chart-series-8);
+    --chart-tone-9: var(--chart-series-9); --chart-tone-10: var(--chart-series-10); --chart-tone-11: var(--chart-series-11);
+  }
+  .admin-workspace :is(.overview-heatmap td,.overview-heat-swatch)[data-level='1'] { background: var(--heat-1); color: var(--heat-1-ink); }
+  .admin-workspace :is(.overview-heatmap td,.overview-heat-swatch)[data-level='2'] { background: var(--heat-2); color: var(--heat-2-ink); }
+  .admin-workspace :is(.overview-heatmap td,.overview-heat-swatch)[data-level='3'] { background: var(--heat-3); color: var(--heat-3-ink); }
+  .admin-workspace :is(.overview-heatmap td,.overview-heat-swatch)[data-level='4'] { background: var(--heat-4); color: var(--heat-4-ink); box-shadow: none; }
+  html[data-contrast=true] .admin-workspace .analytics-overview :is(.overview-section,.overview-data-dialog) {
+    --chart-tone-0: var(--cyan); --chart-tone-1: var(--violet); --chart-tone-2: var(--magenta);
+    --chart-tone-3: var(--blue); --chart-tone-4: var(--green); --chart-tone-5: var(--orange); --chart-axis: var(--control-edge);
+  }
+}
+@media (forced-colors: active) {
+  html:is([data-dashboard-theme], [data-contrast], :root) body.admin-workspace {
+    --dashboard-bg: Canvas; --surface: Canvas; --stone: Canvas; --glass: Canvas;
+    --ink: CanvasText; --muted: CanvasText; --line: CanvasText; --glass-line: CanvasText;
+    --teal: LinkText; --focus: Highlight; --brand-primary: ButtonFace; --brand-on-action: ButtonText;
+    --chart-series-0: CanvasText; --chart-series-1: CanvasText; --chart-series-2: CanvasText;
+    --chart-series-3: CanvasText; --chart-series-4: CanvasText; --chart-series-5: CanvasText;
+    --chart-series-6: CanvasText; --chart-series-7: CanvasText; --chart-series-8: CanvasText;
+    --chart-series-9: CanvasText; --chart-series-10: CanvasText; --chart-series-11: CanvasText;
+  }
+}

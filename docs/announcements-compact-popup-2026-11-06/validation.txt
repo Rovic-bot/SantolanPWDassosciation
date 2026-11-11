@@ -1,0 +1,45 @@
+﻿Announcements compact popup and hidden inline preview - 2026-11-06
+
+Request: remove the review-and-selection box beneath the Announcements programs
+and make the Review and publish popup smaller.
+
+Changes:
+- Workspace navigation removes noscript elements from fetched HTML before
+  importing it. DOMParser parses their contents with scripting disabled; importing
+  them activated the Announcements fallback style, which made the dialog display
+  as a full-width static block and hid its close controls even with JavaScript on.
+- Popup fragment loading also omits its noscript-only link. Actual no-JavaScript
+  direct links retain the original server-rendered fallback and publication form.
+- Results popup reduced from 1160px / 88dvh / 820px to 880px / 82dvh / 760px.
+  Mobile retains 85dvh and viewport margins. Tables stack for readability; the
+  body scrolls while header, close and publication actions remain reachable.
+- Versioned asset URLs refresh the changed navigation, popup script and CSS.
+- No publication, selection, privacy, authorization, audit or model logic changed.
+  No live results were published, and no migration was needed.
+
+Validation:
+Focused browser test passed in 3.912 seconds on fresh disposable native MySQL:
+- Real sidebar tab navigation retains the document and omits active fallback CSS.
+- No inline results panel before opening or after closing.
+- Review and publish opens a modal at 1600, 768 and 390 viewport widths, within
+  the width/height limits, with visible close/footer and no page overflow.
+- Name search, X, Escape, Back to program and reopening work.
+- Direct review with JavaScript disabled remains usable.
+- No JavaScript errors; no Announcement or ProgramResultRevision created.
+Desktop/mobile popup and closed-list screenshots were visually inspected.
+
+Command:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test scripts.announcement_dialog_browser_qa.AnnouncementDialogBrowserTests --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+Artifacts: %TEMP%/santolan-g12-tests-ty63cb77/announcement-dialog-browser
+
+An initial module-wide test discovery also imported the historical ProgramResultTests
+class: 15 legacy tests passed, while two retained assertions failed on old sidebar
+markup and removed preview wording. Those historical tests were not modified.
+The initial browser assertion also incorrectly counted the original document's
+inert head noscript element; corrected to check imported body elements/active
+fallback styles and wait for workspace navigation completion. The fixture import
+now uses the module to avoid unintentionally discovering the old class.
+
+Django retained-database check, JavaScript syntax checks and git diff --check passed.
+Collected static assets and refreshed only the identity-verified local web process
+at http://127.0.0.1:8013/, retaining the running MySQL instance and existing data.

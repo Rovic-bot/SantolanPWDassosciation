@@ -1,0 +1,36 @@
+.is-processing { cursor: progress !important; }
+.is-processing > span { vertical-align: middle; }
+.action-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-inline-end: .5em;
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  flex: 0 0 1em;
+  animation: action-spin .8s linear infinite;
+}
+.action-progress {
+  grid-column: 1 / -1;
+  flex-basis: 100%;
+  margin: .65rem 0;
+  padding: .65rem .85rem;
+  border-inline-start: 3px solid currentColor;
+  border-radius: .35rem;
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  font-size: .875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.action-announcement {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+@keyframes action-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .action-spinner { animation: none; } }
+html[data-motion=reduce] .action-spinner { animation: none; }

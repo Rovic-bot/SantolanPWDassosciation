@@ -1,0 +1,11 @@
+{% load static %}
+<dialog class="program-receipt-dialog" data-program-receipt-dialog aria-labelledby="receipt-dialog-heading">
+  <header class="program-receipt-toolbar"><h2 id="receipt-dialog-heading">Application receipt</h2><button type="button" data-receipt-close aria-label="Close application receipt">&times;</button></header>
+  <div data-receipt-body></div>
+  <div class="program-receipt-loading" data-receipt-loading hidden>
+    <p role="status" data-receipt-loading-status></p>
+    <div data-receipt-recovery hidden><button type="button" data-receipt-retry>Try again</button><a data-receipt-full-page>Open receipt page</a></div>
+  </div>
+</dialog>
+<script src="{% static 'js/program-receipt-image.js' %}?v=20261108-1" defer></script>
+<script src="{% static 'js/program-receipt.js' %}?v=20261108-2" defer></script>

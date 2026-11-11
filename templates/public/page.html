@@ -1,0 +1,12 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}{{ title }} · Santolan PWD Association{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><div class="page-location"><a href="{% url 'core:home' %}">Home</a><span aria-hidden="true">/</span><span>{{ title }}</span></div>
+  <p class="eyebrow">{{ eyebrow }}</p><h1>{{ title }}</h1><p class="page-intro">{{ intro }}</p>
+</div></section>
+<div class="container content-section"><div class="information-layout">
+  <section class="information-body" aria-labelledby="page-heading"><span class="information-marker" aria-hidden="true">↗</span><h2 id="page-heading">{{ heading }}</h2>{{ body|linebreaks }}<p class="information-note">{{ note }}</p></section>
+  <aside class="information-aside"><p class="eyebrow">OUR COMMUNITY, CONNECTED</p><h2>A place for everyone.</h2><p>Explore community information freely. No member account is needed.</p><a class="text-link" href="{% url 'core:membership' %}">Membership information <span aria-hidden="true">↗</span></a><a class="text-link" href="{% url 'core:home' %}">Return to the homepage <span aria-hidden="true">→</span></a></aside>
+</div></div>
+{% endblock %}

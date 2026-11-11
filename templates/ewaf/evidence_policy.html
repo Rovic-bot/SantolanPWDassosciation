@@ -1,0 +1,13 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Evidence definitions · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:evidence_queue' %}">Evidence applications</a>
+<h1>Record evidence definitions</h1><h2 class="h5">{{ program.name }}</h2>
+<p>Definitions are retained for review. Recording them does not approve a policy, change approved program terms or authorize calculation. Unresolved Association rules remain pending.</p>
+{% include 'ewaf/evidence_form.html' with submit_label='Record policy revision for review' %}
+<h2 class="mt-4">Retained revisions</h2>
+{% for revision in page %}<article class="record-history"><h3 class="h5">Revision {{ revision.revision }} · Recorded for review</h3>
+<p>{{ revision.recorded_at }} · {{ revision.actor_label }}</p><p>{{ revision.authority_reference }}</p><p>{{ revision.reason }}</p>
+<details><summary>Recorded definitions</summary><div style="overflow-wrap:anywhere">{{ revision.snapshot }}</div></details></article>{% empty %}<p>No policy definitions recorded.</p>{% endfor %}
+{% include 'partials/page_links.html' with page_obj=page pagination_label='Policy revision pages' %}
+</div>{% endblock %}

@@ -1,0 +1,17 @@
+{% load portal_content %}
+<section id="home-guidance" aria-labelledby="home-guidance-heading" data-contact-destination="{% url 'core:resources' %}#referral-support">
+  {# Keep the current high-contrast palette ahead of legacy inherited theme tokens. #}
+  <div class="isolate !my-6 rounded-[32px] !border !border-solid !border-portal-border bg-portal-canvas !px-5 !py-8 sm:!p-8 lg:!p-10 portal-contrast:!border-portal-ink portal-contrast:[--paper:#fff] portal-contrast:[--surface:#fff] portal-contrast:[--stone:#eee] portal-contrast:[--ink:#111] portal-contrast:[--muted:#333] portal-contrast:[--line:#555] portal-contrast:[--control-edge:#555] portal-contrast:[--brand-primary:#111] portal-contrast:[--teal-hover:#000]">
+    <header class="!mb-8 flex flex-wrap items-end justify-between !gap-4">
+      <div class="max-w-2xl">
+        <p class="!mb-3 !text-xs font-bold uppercase tracking-[0.18em] !text-portal-muted">A little guidance, whenever you need it</p>
+        <h2 id="home-guidance-heading" class="!m-0 !text-3xl !font-bold !leading-tight !tracking-tight !text-portal-ink sm:!text-4xl">{% portal_text "guidance_heading" %}Guidance and support{% endportal_text %}</h2>
+        <p class="!mb-0 !mt-3 max-w-xl !text-base !leading-7 !text-portal-muted">Find answers, understand the process, and get help taking your next step.</p>
+      </div>
+      <span id="application-information" class="sr-only" tabindex="-1">Application guidance is available through the Help Desk and frequently asked questions below.</span>
+    </header>
+    <div class="grid grid-cols-1 items-start !gap-6 md:grid-cols-2" aria-label="Guidance and support options">
+      {% for card in guidance_cards %}{% include 'public/guidance/card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>

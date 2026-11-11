@@ -1,0 +1,4 @@
+{% extends 'admin_portal/base.html' %}{% block title %}Document Verification{% endblock %}
+{% block content %}<div class="container content-section"><h1>Document Verification</h1><p>{{ member.full_name }} — {{ document.label }}</p><p><a href="{% url 'members:detail' member.pk %}">Member record and private documents</a></p>{% include 'partials/workspace_messages.html' %}
+<form method="post" novalidate>{% csrf_token %}{% include 'programs/fields.html' %}<button class="btn btn-primary" type="submit">Record manual document review</button></form>
+<h2>Retained review history</h2><ul>{% for item in history %}<li>{{ item.reviewed_at }} — {{ item.reviewer_label }} — {{ item.verified|yesno:'Verified,Not verified' }}: {{ item.reason }}</li>{% empty %}<li>No verification recorded.</li>{% endfor %}</ul></div>{% endblock %}

@@ -1,0 +1,75 @@
+/* Member records own the shared layout, typography, tabs and theme. */
+.pdao-record .member-record-profile-column { align-self: start; }
+.pdao-record .member-record-stat .pdao-status { font-size: .8rem; color: var(--record-accent-ink); }
+.pdao-record .member-registration-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pdao-record .member-registration-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pdao-print-link { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .6rem .85rem; font-size: .8rem; font-weight: 600; text-decoration: none; border: 1px solid var(--record-edge); border-radius: .7rem; background: var(--record-inset); }
+.pdao-wide { grid-column: 1 / -1; }
+.pdao-record .pdao-boundary-note { margin: 1.2rem 0 0; padding-top: .9rem; border-top: 1px solid var(--record-edge); font-size: .8rem; }
+.pdao-data-section { border-top: 1px solid var(--record-edge); }
+.pdao-data-section > summary { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem .8rem; padding: .85rem 0; min-height: 48px; cursor: pointer; font-size: .82rem; font-weight: 600; list-style: none; }
+.pdao-data-section > summary::-webkit-details-marker { display: none; }
+.pdao-data-section > summary::before { content: '+'; color: var(--record-accent-ink); font-size: 1.2rem; font-weight: 400; }
+.pdao-data-section[open] > summary::before { content: '−'; }
+.pdao-data-section > summary > span { font-size: .68rem; font-weight: 400; color: var(--record-muted); margin-left: auto; }
+.pdao-data-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: .5rem 0 1.2rem; }
+.pdao-record .pdao-data-grid { margin: 0; }
+.pdao-data-grid > div { min-width: 0; }
+.pdao-record .pdao-acknowledgement { color: var(--record-muted); font-size: .75rem; margin: .9rem 0 0; }
+.pdao-history-data { padding: .5rem .65rem 1rem; }
+.pdao-history-data > p, .pdao-history-empty { color: var(--record-muted); font-size: .75rem; margin-top: .75rem; }
+.pdao-progress { list-style: none; padding: 0; margin: 0 0 1.1rem; display: grid; gap: 1.1rem; }
+.pdao-progress li { display: flex; gap: .65rem; align-items: start; font-size: .8rem; }
+.pdao-progress li > span { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; flex: 0 0 1.6rem; border: 1px solid var(--record-edge); border-radius: 50%; font-size: .7rem; }
+.pdao-progress li[data-complete=true] > span { background: var(--record-accent); color: var(--record-accent-ink); border-color: var(--record-accent-ink); }
+.pdao-progress small { display: block; color: var(--record-muted); font-size: .69rem; line-height: 1.5; margin-top: .2rem; }
+.pdao-record .pdao-status-help { font-size: .8rem; border-top: 1px solid var(--record-edge); padding-top: 1rem; }
+.pdao-record .pdao-processing .btn { width: 100%; margin-top: .8rem; border-radius: .7rem; font-size: .78rem; white-space: normal; }
+.pdao-record .pdao-processing .form-check { margin: .8rem 0; font-size: .8rem; }
+.pdao-record .member-timeline-item .small { font-size: .7rem; }
+.pdao-record .member-history-card { max-height: 38rem; }
+.pdao-record .pdao-editor .member-disclosure-body > p { color: var(--record-muted); font-size: .8rem; }
+.pdao-record .registration-editor { border: 0; padding: 0; background: transparent; margin: 0; }
+.pdao-edit-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.pdao-inline-editor .onsite-field { min-width: 0; }
+.pdao-inline-editor .onsite-field-wide { grid-column: 1 / -1; }
+.pdao-inline-editor :is(fieldset, legend) { min-width: 0; float: none; }
+.pdao-inline-editor .form-label { display: block; margin: 0 0 .45rem; font-size: .75rem; color: var(--record-muted); }
+.pdao-inline-editor :is(input:not([type=hidden]):not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: .65rem .75rem; border: 1px solid var(--record-edge); border-radius: .65rem; background: var(--record-card); color: var(--record-ink); font: inherit; font-size: .85rem; }
+.pdao-inline-editor .form-text, .pdao-inline-editor .errorlist { font-size: .72rem; line-height: 1.6; margin-top: .4rem; }
+.pdao-inline-editor fieldset > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.pdao-inline-editor fieldset label { display: flex; align-items: start; gap: .5rem; font-size: .8rem; }
+.pdao-inline-editor input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; }
+.pdao-inline-editor > .btn { margin-top: 1rem; }
+.pdao-inline-editor :is(input, select, textarea):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.pdao-record .pdao-editor .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pdao-record .pdao-editor .form-label { font-size: .8rem; }
+.pdao-record .pdao-editor .profile-section > legend { font-size: .95rem; }
+.pdao-record :is(summary, a, button):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.pdao-record :is(#pdao-overview, #pdao-details, #pdao-history, #pdao-editor) { scroll-margin-top: 110px; }
+@container member-registration (max-width: 300px) {
+  .pdao-record .member-registration-tabs, .pdao-record .member-registration-fields, .pdao-edit-fields, .pdao-inline-editor fieldset > div { grid-template-columns: minmax(0, 1fr); }
+}
+@container (max-width: 620px) {
+  .pdao-record .member-history-card { max-height: 20rem; }
+  .pdao-record .pdao-editor .profile-grid, .pdao-data-grid { grid-template-columns: minmax(0, 1fr); }
+  .pdao-record .member-record-topbar { flex-wrap: wrap; }
+  .pdao-print-link { width: 100%; }
+  .pdao-record .member-record-nav { justify-content: start; flex-wrap: wrap; }
+}
+/* Manual review and retained email delivery status. */
+.pdao-registry-check { border-block: 1px solid var(--line); padding-block: 16px; margin-bottom: 16px; }
+.pdao-record .pdao-registry-check h3, .pdao-email-status h3 { font-size: .9rem; font-weight: 650; }
+.pdao-record .pdao-saved-number { overflow-wrap: anywhere; font-variant-numeric: tabular-nums; font-weight: 600; }
+.pdao-record #pdao-manual-review .btn { white-space: normal; width: 100%; }
+.pdao-record #pdao-manual-review .form-text { font-size: .8rem; line-height: 1.6; }
+.pdao-information-request { margin-top: 12px; }
+.pdao-information-request summary { list-style: none; }
+.pdao-information-request summary::-webkit-details-marker { display: none; }
+.pdao-information-request form { padding-top: 16px; }
+.pdao-information-request textarea { margin: 8px 0 12px; }
+.pdao-email-status article + article { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; }
+.pdao-email-status p, .pdao-email-status small, .pdao-email-status summary { font-size: .8rem; overflow-wrap: anywhere; }
+.pdao-email-status details { margin: 12px 0; }
+.pdao-email-status summary { cursor: pointer; min-height: 32px; }
+.pdao-email-body { max-height: 240px; overflow-y: auto; font-size: .8rem; line-height: 1.6; padding-block: 12px; }

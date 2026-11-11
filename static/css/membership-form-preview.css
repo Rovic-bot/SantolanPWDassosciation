@@ -1,0 +1,8 @@
+.form-preview { margin: 0; background: #e9e9e9; color: #111; }
+.form-preview .registration-content { max-width: none; margin: 0; padding: 1rem; }
+.form-preview .registration-controls { display: none; }
+.form-preview .association-print-form { padding: 4mm; box-sizing: content-box; }
+@media print {
+  .form-preview { background: #fff; }
+  .form-preview .association-print-form { padding: 0; box-sizing: border-box; zoom: 1 !important; }
+}

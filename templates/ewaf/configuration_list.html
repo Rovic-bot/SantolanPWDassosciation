@@ -1,0 +1,8 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Configuration drafts · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<h1>Configuration drafts and reference validation</h1>
+<p>Private preparatory records only. No draft, mathematical result or documentary reference authorizes scoring or beneficiary decisions.</p>
+{% for program in page %}<p><a href="{% url 'ewaf:configuration_detail' program.pk %}">{{ program.name }}</a></p>{% empty %}<p>No programs available.</p>{% endfor %}
+{% include 'partials/page_links.html' with page_obj=page pagination_label='Configuration program pages' %}
+</div>{% endblock %}

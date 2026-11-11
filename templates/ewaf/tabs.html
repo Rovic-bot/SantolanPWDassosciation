@@ -1,0 +1,6 @@
+<nav class="nav nav-tabs mb-4" aria-label="EWAF sections">
+{% with page=request.resolver_match.url_name %}
+<a class="nav-link {% if page != 'vault' and page != 'dataset_policies' and page != 'dataset_policy_review' %}active{% endif %}" {% if page != 'vault' and page != 'dataset_policies' and page != 'dataset_policy_review' %}aria-current="page" {% endif %}href="{% url 'ewaf:operational_programs' %}">EWAF Ranking</a>
+{% if ewaf_vault_enabled %}<a class="nav-link {% if page == 'vault' or page == 'dataset_policies' or page == 'dataset_policy_review' %}active{% endif %}" {% if page == 'vault' or page == 'dataset_policies' or page == 'dataset_policy_review' %}aria-current="page" {% endif %}href="{% url 'ewaf:vault' %}">Configuration Vault</a>{% endif %}
+{% endwith %}
+</nav>

@@ -1,0 +1,24 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Verified EWAF sources{% endblock %}
+{% block content %}<div class="container content-section">
+<a href="{% url 'programs:application_detail' program.pk application.pk %}">← Applicant eligibility review</a>
+<div class="section-heading"><div><h1>Verified EWAF sources</h1><p>{{ application.member.full_name }} · {{ program.name }}</p></div></div>
+{% include 'partials/workspace_messages.html' %}{% for error in errors %}<p class="alert alert-danger" role="alert">{{ error }}</p>{% endfor %}
+<div class="ui-panel"><h2 class="h4">Onsite records and actual assistance</h2>
+<dl><dt>ES — Employment Status</dt><dd>{{ application.member.get_employment_status_display|default:'Needs onsite review' }}</dd>
+<dt>ND — Number of Dependents</dt><dd>{{ application.member.dependents|default_if_none:'Needs onsite review' }}</dd>
+<dt>PA — Previous Assistance</dt><dd>{{ receipt_count }} confirmed, non-voided receipts in the retained ledger. Collection applies configuration {{ configuration.revision }}’s scope and observation period.</dd></dl>
+<p>These values come from saved records. Correct employment or dependents through authorized onsite member editing. Applications, selections and pending releases do not count as received assistance.</p></div>
+{% if form %}<section class="ui-panel mt-4"><h2 class="h4">SI — Socioeconomic evidence</h2>
+<p><strong>{{ si_rule.measure }}</strong> · {{ si_rule.unit }} · {{ si_rule.observation_period }}</p>
+<p>Authorized bounds: {{ si_rule.bounds.lower }} to {{ si_rule.bounds.upper }}. Direction: {{ si_rule.direction }}.</p>
+<p>{{ document.label }} <a href="{% url 'programs:document' program.pk application.pk document.pk %}?preview=1" target="_blank" rel="noopener">Preview protected document</a></p>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="review">{{ form.as_p }}<button class="btn btn-primary">Save evidence review</button></form></section>
+<section class="ui-panel mt-4"><h2 class="h4">Collect verified sources</h2><p>Complete the applicant’s identity and eligibility review, then collect the four sources. Changes create new assessment versions and make older current results stale.</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="collect"><input type="hidden" name="context" value="{{ context_token }}">
+<label for="source-reason" class="form-label d-block">Review remarks</label><textarea id="source-reason" name="reason" class="form-control" rows="3" required maxlength="2000"></textarea>
+<label class="my-3 d-block"><input type="checkbox" name="confirmed" required> I verified the onsite employment and dependent records and reviewed the current source information.</label>
+<button class="btn btn-primary">Collect SI, ES, PA and ND</button></form></section>{% endif %}
+<section class="ui-panel mt-4"><h2 class="h4">Retained source assessments</h2>{% for row in assessments %}{% if row %}<p>{{ row.criterion }}: {{ row.value }} {{ row.unit }} · {{ row.get_state_display }} · revision {{ row.revision }}</p>{% endif %}{% endfor %}</section>
+<details class="mt-4"><summary>Socioeconomic evidence review history</summary>{% for row in reviews %}<p>Revision {{ row.revision }} · {{ row.state }} · {{ row.recorded_at }} · {{ row.reason }}</p>{% empty %}<p>No evidence reviews recorded.</p>{% endfor %}</details>
+</div>{% endblock %}

@@ -1,0 +1,42 @@
+/* Scoped email settings use the workspace dark/light theme tokens. */
+.admin-workspace .association-email-settings { max-width: 1400px; margin-inline: auto; padding: 1.75rem 2rem 2.5rem; }
+.association-email-settings .email-settings-heading { margin-bottom: 1.5rem; }
+.association-email-settings .email-settings-heading > a { font-size: .8rem; }
+.admin-workspace .association-email-settings h1 { margin: .6rem 0 0; font-size: 1.8rem; }
+.association-email-settings .email-settings-card { min-width: 0; padding: 1.6rem; background: var(--surface); border: 1px solid var(--line); border-radius: 1rem; }
+.association-email-settings .email-settings-card + .email-settings-card { margin-top: 1.9rem; }
+.admin-workspace .association-email-settings h2 { margin: 0; color: var(--ink); font-size: .95rem; font-weight: 650; line-height: 1.5; letter-spacing: .035em; text-transform: uppercase; }
+.association-email-settings .email-settings-field { margin-top: 1.2rem; }
+.association-email-settings .email-settings-field label { display: block; margin-bottom: .4rem; color: var(--muted); font-weight: 500; }
+.admin-workspace .association-email-settings input[type=email], .admin-workspace .association-email-settings .password-input > input { width: 100%; min-height: 47px; padding: .65rem 1.1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--paper); color: var(--ink); font: 1rem/1.5 ui-monospace, Consolas, monospace; }
+.association-email-settings .email-settings-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-top: 1px solid var(--line); padding-top: .65rem; margin-top: 1.6rem; }
+.association-email-settings .email-connection-status { margin: 0; color: var(--muted); font-size: .75rem; }
+.admin-workspace .association-email-settings .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; margin-left: auto; min-height: 42px; padding: .6rem 1.4rem; border: 1px solid #2464eb; border-radius: .65rem; background: #2464eb; color: #fff; font-size: .875rem; font-weight: 600; }
+.admin-workspace .association-email-settings .btn-primary:hover { background: #1654db; border-color: #1654db; }
+.association-email-settings .btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.association-email-settings .email-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.association-email-settings .email-history-heading > span { color: var(--muted); font: .8rem/1.5 ui-monospace, Consolas, monospace; white-space: nowrap; }
+.association-email-settings .email-history-list { list-style: none; display: grid; gap: .9rem; padding: 0; margin: 0; }
+.association-email-settings .email-history-entry { display: flex; align-items: center; gap: 1rem; min-width: 0; min-height: 74px; padding: 1rem; background: var(--paper); border: 1px solid var(--line); border-radius: .7rem; font: .85rem/1.6 ui-monospace, Consolas, monospace; }
+.association-email-settings .email-history-dot { flex: 0 0 10px; height: 10px; border-radius: 50%; background: #5ba0ff; }
+.association-email-settings .email-history-initial .email-history-dot { background: var(--chart-axis); }
+.association-email-settings .email-history-addresses { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .6rem; min-width: 0; color: var(--muted); overflow-wrap: anywhere; }
+.association-email-settings .email-history-addresses strong { color: var(--cyan); font-weight: 600; }
+.association-email-settings .email-history-arrow { color: var(--chart-axis); }
+.association-email-settings .email-history-meta { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .5rem 1rem; margin-left: auto; color: var(--muted); font-size: .75rem; }
+.association-email-settings .email-history-meta time { white-space: nowrap; }
+.association-email-settings .email-history-actor { padding: .1rem .6rem; border-radius: .3rem; background: var(--stone); overflow-wrap: anywhere; }
+.association-email-settings .email-history-empty, .association-email-settings .email-history-limit { color: var(--muted); margin: 0; }
+.association-email-settings .email-history-limit { margin-top: 1rem; font-size: .75rem; }
+@media (max-width: 1100px) {
+  .association-email-settings .email-history-entry { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: .5rem 1rem; }
+  .association-email-settings .email-history-meta { grid-column: 2; justify-content: flex-start; margin-left: 0; }
+}
+@media (max-width: 600px) {
+  .admin-workspace .association-email-settings { padding: 1rem; }
+  .admin-workspace .association-email-settings h1 { font-size: 1.45rem; }
+  .association-email-settings .email-settings-card { padding: 1.1rem; }
+  .association-email-settings .email-settings-card + .email-settings-card { margin-top: 1.25rem; }
+  .association-email-settings .email-history-entry { padding: .8rem; }
+  .association-email-settings .email-history-meta { font-size: .7rem; }
+}

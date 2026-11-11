@@ -1,0 +1,69 @@
+{% extends 'public/section_base.html' %}
+{% load static %}
+{% load portal_content %}
+{% block title %}Announcements · Santolan PWD Association{% endblock %}
+{% block section_class %}announcement-board-page section-notices{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/announcement-board.css' %}?v=20261110-empty-icon">{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-announcement-cards.css' %}?v=20261111-result-swipe">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/public-announcement-cards.js' %}?v=20261109-portrait" defer></script>{% endblock %}
+{% block content %}
+{% include 'public/section_hero.html' with tab='Announcements' eyebrow='Community bulletin' title='Announcements' intro='Read Association news, program notices, and published results.' motif='notices' %}
+<div class="container notice-layout" data-public-browser="announcements"{% if category %} data-public-solo{% endif %} id="announcement-browser">
+    <div class="bulletin-topics">
+        <h2 id="notice-topics-heading">{% portal_text "text_001" %}Browse by topic{% endportal_text %}</h2>
+        <nav class="notice-topic-links" aria-label="Announcement categories">{% for topic in topic_links %}<a href="{{ topic.url }}"{% if category == topic.value %} aria-current="page"{% endif %}><span>{{ topic.label }}</span></a>{% endfor %}</nav>
+    </div>
+    <section class="notice-main" aria-labelledby="recent-notices-heading">
+        <div class="notice-list-heading">
+            <h2 id="recent-notices-heading">{% if query %}Search results{% elif category == 'announcements' %}Announcements{% elif category == 'results' %}Program results{% else %}Recent announcements{% endif %}</h2>
+            <form class="notice-search" method="get" action="{% url 'core:announcements' %}" role="search" aria-label="Find announcements">
+                {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+                <label class="visually-hidden" for="announcement-search">Search announcements</label>
+                <input id="announcement-search" type="search" name="q" value="{{ query }}" maxlength="200" placeholder="Search announcements">
+                <button type="submit" aria-label="Search announcements">Search {% include 'programs/ui_icon.html' with name='search' %}</button>
+            </form>
+        </div>
+        {% if category == 'results' %}<p class="notice-topic-intro">{% portal_text "text_004" %}Read the complete authorized results below. Member identities remain protected. A result notice is separate from an actual assistance release.{% endportal_text %}</p>{% endif %}
+        {% if query %}<div class="notice-filter-summary"><p>{% if query %}Results for <strong>“{{ query }}”</strong>{% else %}Program filters applied{% endif %}</p><a href="{{ clear_search_url }}">Clear filters</a></div>{% endif %}
+        <div class="notice-feed-layout">
+        <div class="public-swipe-carousel notice-swipe-carousel{% if category %} notice-solo-carousel{% endif %}{% if category == 'results' %} notice-results-carousel{% endif %}"{% if category == 'results' %} data-swipe-live{% endif %} data-swipe-carousel data-swipe-compact data-swipe-linked-cards data-swipe-rows="1" data-swipe-min-width="220" data-swipe-max-columns="{% if category %}1{% else %}4{% endif %}" data-swipe-pagination="announcement-pagination" data-swipe-start="{{ page_obj.start_index }}" data-swipe-total="{{ page_obj.paginator.count }}" role="region" aria-label="Announcement cards">
+        <div class="public-swipe-controls notice-carousel-toolbar" data-swipe-controls hidden>
+            <div><p class="notice-carousel-label">{% if category == 'results' %}Program results{% else %}Announcements{% endif %}</p><p class="public-swipe-hint">Swipe or drag to browse</p><p class="{% if not category %}visually-hidden{% else %}notice-solo-position{% endif %}" data-swipe-status role="status" aria-live="polite" aria-atomic="true"></p></div>
+            <div class="public-swipe-arrows"><button type="button" data-swipe-previous aria-label="{% if category == 'results' %}Previous program result{% else %}Previous announcements{% endif %}"><span aria-hidden="true">&lsaquo;</span></button><button type="button" data-swipe-next aria-label="{% if category == 'results' %}Next program result{% else %}Next announcements{% endif %}"><span aria-hidden="true">&rsaquo;</span></button></div>
+        </div>
+        <div class="notice-list public-swipe-viewport" data-swipe-viewport id="announcement-cards" tabindex="0" aria-label="Announcements. Use left and right arrow keys to browse.">
+            {% for announcement in page_obj %}{% if category %}{% include 'announcements/public_full_card.html' %}{% else %}<article class="notice-row" data-swipe-card{% if forloop.first and page_obj.number == 1 and not query and not category %} data-latest{% endif %}>
+                <div class="notice-card-artwork">
+                    <span class="notice-card-initials" aria-hidden="true">{{ announcement.title|title_initials }}</span>
+                    {% if announcement.image_url %}<img src="{{ announcement.image_url }}" alt="{{ announcement.image_alt }}" loading="lazy" data-notice-image>{% endif %}
+                </div>
+                <div class="notice-metadata">
+                    <span class="notice-card-icon" aria-hidden="true">{% if announcement.category == 'results' %}{% include 'public/icon.html' with name='check' %}{% elif announcement.category == 'programs' %}{% include 'public/icon.html' with name='heart' %}{% else %}{% include 'public/icon.html' with name='document' %}{% endif %}</span>
+                    {% if forloop.first and page_obj.number == 1 and not query and not category %}<strong class="latest-label">{% portal_text "text_005" %}Latest notice{% endportal_text %}</strong><span class="notice-category visually-hidden">{{ announcement.category_label }}</span>{% else %}<span class="notice-category">{{ announcement.category_label }}</span>{% endif %}
+                </div>
+                <div class="notice-copy">
+                    <h3 translate="no"><a href="{% url 'announcements:detail' announcement.pk %}" data-public-popup data-popup-label="Announcement details">{{ announcement.title }}</a></h3>
+                    <p class="notice-excerpt" translate="no">{{ announcement.content|truncatechars:100 }}</p>
+                </div>
+                <div class="notice-card-footer">
+                    <time datetime="{{ announcement.published_at|date:'c' }}" class="notice-date">{% include 'public/icon.html' with name='calendar' %}<span>{{ announcement.published_at|date:'M j, Y' }}</span></time>
+                    <a class="notice-action notice-row-action" href="{% url 'announcements:detail' announcement.pk %}" data-public-popup data-popup-label="Announcement details" aria-label="Read {{ announcement.title }}">Read more</a>
+                </div>
+            </article>{% endif %}{% empty %}<div class="notice-empty"><span class="notice-empty-icon">{% include 'programs/ui_icon.html' with name='search' %}</span><h3>{% if query %}No announcements match your search.{% else %}No announcements match this view.{% endif %}</h3><p>{% if query %}Try a different keyword or browse another topic.{% else %}Published notices will appear here when available. Try another category.{% endif %}</p>{% if category or query %}<a class="notice-action" href="{% url 'core:announcements' %}">Browse all announcements {% include 'programs/ui_icon.html' with name='arrow' %}</a>{% endif %}</div>{% endfor %}
+        </div>
+        <div class="notice-carousel-dots" data-swipe-dots role="group" aria-label="Announcement card groups on this page" hidden></div>
+        </div>
+        </div>
+        <div class="notice-list-footer">
+            <p>{{ page_obj.paginator.count }} notice{{ page_obj.paginator.count|pluralize }}</p>
+            {% if page_obj.has_other_pages %}<nav class="notice-pagination" id="announcement-pagination" aria-label="Announcement pages">
+                {% if previous_page_url %}<a href="{{ previous_page_url }}" rel="prev">Previous</a>{% else %}<span aria-disabled="true">{% portal_text "text_006" %}Previous{% endportal_text %}</span>{% endif %}
+                {% for link in page_links %}{% if link.number == page_obj.number %}<a href="{{ link.url }}" aria-label="Page {{ link.number }}" aria-current="page">{{ link.number }}</a>{% elif link.url %}<a href="{{ link.url }}" aria-label="Page {{ link.number }}">{{ link.number }}</a>{% else %}<span>{{ link.number }}</span>{% endif %}{% endfor %}
+                {% if next_page_url %}<a href="{{ next_page_url }}" rel="next">Next</a>{% else %}<span aria-disabled="true">{% portal_text "text_007" %}Next{% endportal_text %}</span>{% endif %}
+            </nav>{% endif %}
+        </div>
+    </section>
+
+</div>
+{% include 'public/detail_dialog.html' %}
+{% endblock %}

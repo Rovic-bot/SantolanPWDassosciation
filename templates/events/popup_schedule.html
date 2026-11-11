@@ -1,0 +1,10 @@
+<dl class="event-schedule event-poster-schedule">
+    <dt>When</dt>
+    <dd class="event-poster-when">
+        <div class="event-poster-time-row"><span class="event-poster-time-label">Start</span><time datetime="{{ event.starts_at|date:'c' }}">{{ event.starts_at|date:'M j, Y' }} <span class="event-poster-dot" aria-hidden="true">&bull;</span> {{ event.starts_at|date:'g:i A' }}</time></div>
+        <div class="event-poster-time-row"><span class="event-poster-time-label">End</span><time datetime="{{ event.ends_at|date:'c' }}">{{ event.ends_at|date:'M j, Y' }} <span class="event-poster-dot" aria-hidden="true">&bull;</span> {{ event.ends_at|date:'g:i A' }}</time></div>
+        <p class="event-poster-timezone">Philippine time (Asia/Manila)</p>
+    </dd>
+    <dt>Where</dt><dd translate="no">{{ event.location }}</dd>
+    <dt>Capacity</dt><dd>{% if event.capacity is not None %}{{ event.capacity }} participant{{ event.capacity|pluralize }} max{% else %}No capacity limit{% endif %}</dd>
+</dl>

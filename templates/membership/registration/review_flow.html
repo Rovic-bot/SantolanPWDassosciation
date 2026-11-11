@@ -1,0 +1,44 @@
+<section class="association-review-flow" aria-labelledby="membership-review-flow-heading" data-online-review-flow>
+  <header class="association-review-flow-heading"><h2 id="membership-review-flow-heading">Membership review flow</h2><p>Check PRPWD to unlock both actions: invite the applicant, or approve after onsite verification.</p></header>
+  <div class="association-review-steps">
+    <section class="onsite-section association-review-step" data-prpwd-review data-review-form="association-review-form" data-prpwd-url="{{ prpwd_lookup_url }}" data-saved-pwd="{{ revision.data.pwd_number }}" aria-labelledby="prpwd-review-heading">
+      <span class="association-review-step-number" aria-hidden="true">1</span>
+      <h3 id="prpwd-review-heading">Verify the PWD number</h3>
+      <p class="association-review-pwd">PWD No. <strong>{{ revision.data.pwd_number|default:'Not recorded' }}</strong></p>
+      {% if prpwd_lookup_url %}<button type="button" class="btn btn-outline-primary" data-prpwd-open>Open PRPWD and copy PWD No.</button>{% else %}<p role="alert">Configure the official PRPWD link before verification.</p><button type="button" data-prpwd-open hidden disabled>Open PRPWD</button>{% endif %}
+      <p class="form-text" data-prpwd-feedback role="status">Check PRPWD before confirming.</p>
+      {% if not office_invitation %}
+        <div class="form-check">{{ office_invitation_form.prpwd_verified }}<label for="{{ office_invitation_form.prpwd_verified.id_for_label }}">{{ office_invitation_form.prpwd_verified.label }}</label></div>
+      {% elif saved_prpwd_review %}<p class="association-review-step-status">Manual PRPWD check recorded before the invitation.</p>{% endif %}
+      <p class="form-text">No clear match? Leave pending.</p>
+    </section>
+    <section class="onsite-section association-review-step" id="office-verification-email" aria-labelledby="office-invitation-heading">
+      <span class="association-review-step-number" aria-hidden="true">2</span>
+      <h3 id="office-invitation-heading">Invite for office verification</h3>
+      <p>After confirming the PRPWD match, email the applicant to visit the barangay office with their requirements. Their application stays pending.</p>
+      <p>To: <strong>{{ pending_email_recipient|default:'No saved email address — save a correction first.' }}</strong></p>
+      {% if office_invitation_form.errors %}<div class="onsite-validation" role="alert">{{ office_invitation_form.errors }}</div>{% endif %}
+      {% if office_invitation %}
+        <p role="status"><strong>{{ office_invitation_label }}</strong></p>
+        {% include 'partials/email_delivery_help.html' with problem=office_invitation_help %}
+        {% if office_invitation_accepted %}<p>Awaiting the applicant’s office visit and staff verification.</p>{% else %}<p>Review the email status and retry controls below. If the applicant is already onsite, you can complete their verification and approval.</p>{% endif %}
+      {% elif can_send_office_invitation %}
+        <form method="post" id="office-invitation-form">{% csrf_token %}{% for field in office_invitation_form.hidden_fields %}{{ field }}{% endfor %}
+          <button type="submit" name="action" value="send_office_invitation" class="btn btn-primary" data-prpwd-invitation>Send office-verification email</button>
+        </form>
+      {% endif %}
+      {% if can_correct %}<p><a href="{% url 'membership:registration_correct' intake.reference %}">Correct saved information</a> before sending if needed.</p>{% endif %}
+    </section>
+    <section class="onsite-section association-review-step" aria-labelledby="office-confirmation-heading">
+      <span class="association-review-step-number" aria-hidden="true">3</span>
+      <h3 id="office-confirmation-heading">Approve membership</h3>
+      <p>Review the information and requirements below. Complete this step only after the applicant visits the office and you verify their information.</p>
+      <fieldset class="association-approval-controls" disabled aria-describedby="office-approval-help">
+        <legend class="visually-hidden">Office visit confirmation and membership approval</legend>
+        <div class="form-check">{{ editor_form.office_verification_confirmed }}<label for="{{ editor_form.office_verification_confirmed.id_for_label }}">{{ editor_form.office_verification_confirmed.label }}</label></div>
+        <button type="submit" form="association-review-form" name="action" value="approve_registration" class="btn btn-primary" data-prpwd-decision disabled>Approve membership and send confirmation</button>
+      </fieldset>
+      <p class="form-text" id="office-approval-help" role="status" tabindex="-1">After checking PRPWD, confirm the onsite visit to approve. An invitation email is optional.</p>
+    </section>
+  </div>
+</section>

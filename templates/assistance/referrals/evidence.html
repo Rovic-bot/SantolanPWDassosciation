@@ -1,0 +1,19 @@
+<section class="referral-card referral-evidence" aria-labelledby="evidence-heading">
+  <div class="referral-card-heading"><span class="referral-symbol">{% include 'assistance/referrals/icon.html' with name='paperclip' %}</span><div><h2 id="evidence-heading">Supporting evidence</h2></div></div>
+  {% if perms.assistance.view_referral_documents %}
+    {% for item in attachments %}
+    <article class="referral-attachment">
+      <a class="referral-preview" href="{% url 'assistance:referral_attachment' item.pk %}?view=inline" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ item.label }} (opens in a new tab)">
+        {% if item.content_type == 'image/jpeg' or item.content_type == 'image/png' %}
+          <img src="{% url 'assistance:referral_attachment' item.pk %}?view=inline" alt="Supporting evidence: {{ item.label }}" loading="lazy" decoding="async">
+          <span class="referral-file-type">{% if item.content_type == 'image/png' %}PNG{% else %}JPG{% endif %}</span>
+        {% else %}<span class="referral-document-art">{% include 'assistance/referrals/icon.html' with name='document' %}<span>PDF document</span></span>{% endif %}
+        <span class="referral-preview-label">{% include 'assistance/referrals/icon.html' with name='search' %}Preview</span>
+      </a>
+      <h3 title="{{ item.label }}">{{ item.label }}</h3>
+      <p class="referral-muted">{{ item.size|filesizeformat }} · Uploaded with the request</p>
+      <div class="referral-file-actions"><a class="btn btn-outline-primary" href="{% url 'assistance:referral_attachment' item.pk %}?view=inline" target="_blank" rel="noopener noreferrer">{% include 'assistance/referrals/icon.html' with name='external' %}View full size</a><a class="btn btn-primary" href="{% url 'assistance:referral_attachment' item.pk %}">{% include 'assistance/referrals/icon.html' with name='download' %}Download</a></div>
+    </article>
+    {% empty %}<div class="referral-empty-evidence">{% include 'assistance/referrals/icon.html' with name='paperclip' %}<h3>No evidence uploaded</h3><p>The member may provide it later by email or onsite.</p></div>{% endfor %}
+  {% else %}<p class="referral-muted mb-0">Evidence access requires separate permission.</p>{% endif %}
+</section>

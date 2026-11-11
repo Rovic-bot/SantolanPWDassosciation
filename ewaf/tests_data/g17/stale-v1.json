@@ -1,0 +1,572 @@
+{
+  "actors": {
+    "SYN-G17-OFFICER": {
+      "active": true,
+      "capability": "SIMULATE",
+      "scope": "SYN-G17-POOL"
+    },
+    "SYN-G17-READER": {
+      "active": true,
+      "capability": "READ_ONLY",
+      "scope": "SYN-G17-POOL"
+    }
+  },
+  "contexts": {
+    "SYN-G17-BASE": {
+      "binding_current": true,
+      "eligibility_current": true,
+      "evaluation_date": "2026-10-15",
+      "evidence": {
+        "SYN-G16-A": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-B": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-C": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-D": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        }
+      },
+      "pool_fixture": "base-v1",
+      "terms_current": true,
+      "unresolved": [],
+      "versions": {
+        "configuration": "SYN-G17-CONFIGURATION-1",
+        "evidence": "SYN-G17-EVIDENCE-1",
+        "evidence_policy": "SYN-G17-EVIDENCE-POLICY-1",
+        "governance": "SYN-G17-GOVERNANCE-1",
+        "inputs": "SYN-G17-INPUTS-1",
+        "ranking_policy": "SYN-G17-RANKING-POLICY-1",
+        "scoring_policy": "SYN-G17-SCORING-POLICY-1"
+      }
+    },
+    "SYN-G17-CORRECTED": {
+      "binding_current": true,
+      "eligibility_current": true,
+      "evaluation_date": "2026-10-15",
+      "evidence": {
+        "SYN-G16-A": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-B": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-C": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-D": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        }
+      },
+      "pool_fixture": "corrected-v2",
+      "terms_current": true,
+      "unresolved": [],
+      "versions": {
+        "configuration": "SYN-G17-CONFIGURATION-1",
+        "evidence": "SYN-G17-EVIDENCE-1",
+        "evidence_policy": "SYN-G17-EVIDENCE-POLICY-1",
+        "governance": "SYN-G17-GOVERNANCE-1",
+        "inputs": "SYN-G17-INPUTS-2",
+        "ranking_policy": "SYN-G17-RANKING-POLICY-1",
+        "scoring_policy": "SYN-G17-SCORING-POLICY-1"
+      }
+    },
+    "SYN-G17-STALE": {
+      "binding_current": true,
+      "eligibility_current": true,
+      "evaluation_date": "2026-10-15",
+      "evidence": {
+        "SYN-G16-A": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-B": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": false,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-C": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        },
+        "SYN-G16-D": {
+          "ES": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "ND": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PA": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "PR": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          },
+          "SI": {
+            "disputed": false,
+            "expires_on": "2026-10-15",
+            "findings": [],
+            "source_current": true,
+            "state": "VERIFIED"
+          }
+        }
+      },
+      "pool_fixture": "base-v1",
+      "terms_current": true,
+      "unresolved": [],
+      "versions": {
+        "configuration": "SYN-G17-CONFIGURATION-1",
+        "evidence": "SYN-G17-EVIDENCE-2",
+        "evidence_policy": "SYN-G17-EVIDENCE-POLICY-1",
+        "governance": "SYN-G17-GOVERNANCE-1",
+        "inputs": "SYN-G17-INPUTS-1",
+        "ranking_policy": "SYN-G17-RANKING-POLICY-1",
+        "scoring_policy": "SYN-G17-SCORING-POLICY-1"
+      }
+    }
+  },
+  "events": [
+    {
+      "at": "2026-10-15T01:00:00Z",
+      "context": "SYN-G17-BASE",
+      "type": "OBSERVE"
+    },
+    {
+      "actor": "SYN-G17-OFFICER",
+      "at": "2026-10-15T01:00:00Z",
+      "context": "SYN-G17-BASE",
+      "reason": "Invented G17 source-fixture demonstration.",
+      "trigger": "INITIAL",
+      "type": "BEGIN"
+    },
+    {
+      "at": "2026-10-15T01:00:00Z",
+      "attempt": 1,
+      "type": "FINISH"
+    },
+    {
+      "at": "2026-10-15T01:00:00Z",
+      "context": "SYN-G17-CORRECTED",
+      "type": "OBSERVE"
+    },
+    {
+      "actor": "SYN-G17-OFFICER",
+      "at": "2026-10-15T01:00:00Z",
+      "context": "SYN-G17-CORRECTED",
+      "reason": "Invented G17 source-fixture demonstration.",
+      "trigger": "INPUT_CORRECTION",
+      "type": "BEGIN"
+    },
+    {
+      "at": "2026-10-15T01:00:00Z",
+      "context": "SYN-G17-STALE",
+      "type": "OBSERVE"
+    },
+    {
+      "at": "2026-10-15T01:00:00Z",
+      "attempt": 2,
+      "type": "FINISH"
+    }
+  ],
+  "rules": {
+    "expiry": "INCLUSIVE_ASIA_MANILA_DATE",
+    "mode": "ILLUSTRATIVE_ONLY",
+    "pool": "COMPLETE_PINNED_POOL",
+    "promotion": "COMPLETE_UNCHANGED_GENERATION",
+    "repeat": "REUSE_CURRENT_CONTEXT_APPEND_ATTEMPT",
+    "revisions": "INPUT_CONFIGURATION_EVIDENCE_DATE",
+    "ties": "EXACT_GROUPS_ONLY"
+  },
+  "scenario_id": "SYN-G17-STALE-V1",
+  "schema_version": 1,
+  "scope": "SYN-G17-POOL"
+}

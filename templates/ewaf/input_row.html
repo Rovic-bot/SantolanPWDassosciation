@@ -1,0 +1,21 @@
+<tr>
+  <th scope="row">{{ row.member_name }}<small class="d-block">{{ row.reference }}</small></th>
+  <td>{{ row.status_label }}{% for issue in row.readiness_errors %}<p class="small">{{ issue }}</p>{% endfor %}</td>
+  <td>
+    {% if row.accepted_values %}
+      <strong class="d-block">{% if row.automatic_inputs %}Member record inputs{% else %}Accepted scoring inputs{% endif %}</strong>
+      {% for item in row.accepted_values %}<span class="d-block"><strong>{{ item.code }}:</strong> {{ item.value }} <small>{{ item.unit }}</small>{% if item.detail %}<small class="d-block">{{ item.detail }}</small>{% endif %}</span>{% endfor %}
+    {% elif row.registered_scoring_values %}
+      <strong class="d-block">Registered scoring inputs</strong>
+      {% for item in row.registered_scoring_values %}<span class="d-block"><strong>{{ item.code }}:</strong> {{ item.value }} <small>{{ item.unit }}</small>{% if item.detail %}<small class="d-block">{{ item.detail }}</small>{% endif %}</span>{% endfor %}
+    {% else %}
+      <strong class="d-block">From member registration</strong>
+      {% for item in row.registered_values %}<span class="d-block">{{ item.label }}: {{ item.value }}</span>{% endfor %}
+    {% endif %}
+    {% if row.input_status %}<p class="small mt-2">{{ row.input_status }}</p>{% endif %}
+  </td>
+  <td>
+    <a class="d-block" href="{% url 'programs:application_detail' program.pk row.application %}">View applicant</a>
+    <a class="d-block" href="{% url 'members:detail' row.member_id %}">Member record</a>
+  </td>
+</tr>

@@ -1,0 +1,9 @@
+<form method="get" action="{% url 'event_workspace' %}" class="event-filters event-glass" data-event-filters role="search" aria-label="Filter events">
+  <div class="event-filter-main">
+    <div><label for="event-search">Search events</label><input class="form-control" type="search" id="event-search" name="q" value="{{ query }}" maxlength="200" placeholder="Event title or location" autocomplete="off"></div>
+    <p class="event-result-count" aria-live="polite" aria-atomic="true"><strong data-event-count>{{ page_obj.paginator.count }}</strong><span data-event-count-label>matching event{{ page_obj.paginator.count|pluralize }}</span></p>
+  </div>
+  <div class="event-filter-footer"><details{% if status or period != 'upcoming' %} open{% endif %}><summary>Schedule &amp; status</summary><div class="event-extra-filters"><div><label for="event-period">Schedule</label><select id="event-period" name="period" class="form-select"><option value="upcoming"{% if period == 'upcoming' %} selected{% endif %}>Upcoming &amp; ongoing</option><option value="past"{% if period == 'past' %} selected{% endif %}>Past events</option><option value="all"{% if period == 'all' %} selected{% endif %}>All dates</option></select></div><div><label for="event-status">Publication status</label><select id="event-status" name="status" class="form-select"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div></div></details><a href="{% url 'event_workspace' %}" data-event-reset>Clear filters</a></div>
+  <input type="hidden" name="month" value="{{ calendar.month|date:'Y-m' }}"><input type="hidden" name="day" value="{{ selected_day|date:'Y-m-d' }}">
+  <p class="event-filter-feedback" role="status" data-event-feedback></p><button class="btn btn-primary" data-event-submit type="submit">Apply filters</button>
+</form>

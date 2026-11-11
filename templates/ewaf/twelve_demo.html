@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}EWAF Demo · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <p class="text-secondary">Separate local testing workspace</p>
+  <h1>EWAF demo: 12 fictional members</h1>
+  <p>The 12 members, 27 confirmed historical releases and five comparison programs are saved in this demo database. Your changes remain after restarting it.</p>
+  <div class="alert alert-info">Start with <strong>Balanced</strong>. Open its ranking, enter a test reason and choose <strong>Generate EWAF Ranking</strong> to save another calculation. Earlier calculations remain in history.</div>
+  <div class="table-responsive"><table class="table align-middle">
+    <caption>Each program contains the same 12 eligible applicants. New rankings use the latest shared weights.</caption>
+    <thead><tr><th>Scenario</th><th>Expected first place (original fixture)</th><th>Actions</th></tr></thead><tbody>
+    {% for item in demo_scenarios %}<tr>
+      <th>{{ item.name }}{% if item.primary %} <span class="badge text-bg-success">Start here</span>{% endif %}</th>
+      <td>{{ item.expected_top }}</td>
+      <td><a class="btn btn-primary btn-sm" href="{% url 'ewaf:operational_workspace' item.program_id %}">Open ranking</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'programs:manage_detail' item.program_id %}">Review program</a></td>
+    </tr>{% endfor %}
+    </tbody></table></div>
+  <p><a href="{% url 'ewaf:vault' %}">Open Configuration Vault</a></p>
+  <p>Approve new weights in the Configuration Vault, then open any of these programs and generate its ranking. All five programs use the latest approved four-criterion weights for new calculations. The expected winners above describe their original saved fixtures; earlier calculations remain available in history.</p>
+  <p>Employment assessments use the test-only assumption Employed = 1 and Unemployed = 4. All evidence, manual checks and approvals in this database are fictional. Normal review, permission and audit requirements still apply.</p>
+</div>
+{% endblock %}

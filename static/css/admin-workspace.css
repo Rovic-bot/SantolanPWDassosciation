@@ -1,0 +1,117 @@
+/* Bridge Django's own widgets to the shared workspace, without Bootstrap resets. */
+:root {
+  color-scheme: light;
+  --primary: var(--teal); --secondary: var(--ink); --accent: var(--teal-light);
+  --primary-fg: #fff; --body-fg: var(--ink); --body-bg: var(--surface);
+  --body-quiet-color: var(--muted); --body-medium-color: var(--muted); --body-loud-color: var(--ink);
+  --link-fg: var(--teal); --link-hover-color: var(--ink); --link-selected-fg: var(--teal);
+  --hairline-color: var(--line); --border-color: var(--line);
+  --darkened-bg: var(--stone); --selected-bg: var(--teal-wash); --selected-row: var(--teal-wash);
+  --button-fg: #fff; --button-bg: var(--teal); --button-hover-bg: #12594f;
+  --default-button-bg: var(--teal); --default-button-hover-bg: #12594f;
+  --close-button-bg: var(--muted); --close-button-hover-bg: var(--ink);
+  --delete-button-bg: var(--danger); --delete-button-hover-bg: #862c2c;
+  --error-fg: var(--danger); --font-family-primary: var(--font-sans);
+}
+.native-admin-workspace *, .native-admin-workspace *::before, .native-admin-workspace *::after { box-sizing: border-box; }
+.native-admin-workspace { margin: 0; line-height: 1.65; }
+.native-admin-workspace #container { min-width: 0; }
+.native-admin-workspace #main { display: block; margin-left: 252px; min-width: 0; }
+.native-admin-workspace #content-start { width: 100%; min-width: 0; }
+.native-admin-workspace #content { width: 100%; max-width: 1500px; padding: 2.5rem clamp(1.25rem,3vw,3rem) 5rem; margin: 0; }
+.native-admin-workspace #content-main { min-width: 0; }
+.native-admin-workspace #content h1 { font-size: clamp(1.8rem,2.5vw,2.6rem); font-weight: 600; margin: 0 0 2rem; color: var(--ink); }
+.native-admin-workspace #content > .eyebrow { margin: 0 0 .75rem; }
+.native-admin-workspace #content > h2 { font-size: 1.25rem; color: var(--muted); margin: -1rem 0 2rem; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.native-admin-workspace #container > nav { margin-left: 252px; }
+.native-admin-workspace div.breadcrumbs { padding: 1rem clamp(1.25rem,3vw,3rem) 0; background: transparent; color: var(--muted); font-size: .8rem; line-height: 1.65; }
+.native-admin-workspace div.breadcrumbs a { color: var(--teal); display: inline-block; min-width: 44px; min-height: 44px; align-content: center; padding-block: .25rem; }
+.native-admin-workspace #footer { padding: 0; }
+.native-admin-workspace .workspace-brand { color: #fff; }
+.native-admin-workspace .workspace-topbar a { color: var(--teal); }
+.native-admin-workspace .workspace-account form { margin: 0; }
+.native-admin-workspace .workspace-menu { font-family: inherit; line-height: 1.65; cursor: pointer; }
+.native-admin-workspace .workspace-account button { font-family: inherit; line-height: 1.65; cursor: pointer; }
+.native-admin-workspace .skip-to-content-link { position: fixed; z-index: 1000; }
+.native-admin-workspace .workspace-navigation.collapsing { height: 0; overflow: hidden; transition: height .35s ease; }
+.native-admin-workspace #content p,.native-admin-workspace #content li { font-size: .9rem; line-height: 1.65; }
+.native-admin-workspace #content .module { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.native-admin-workspace #content .module h2,.native-admin-workspace #content .module caption { background: var(--stone); color: var(--ink); font-size: .9rem; font-weight: 600; letter-spacing: 0; padding: 1rem; }
+.native-admin-workspace #content .module caption a { color: var(--ink); }
+.native-admin-workspace .object-tools { display: flex; flex-wrap: wrap; gap: .75rem; float: none; margin: -1rem 0 1.5rem; padding: 0; }
+.native-admin-workspace .object-tools li { float: none; height: auto; margin: 0; padding: 0; }
+.native-admin-workspace .object-tools a { display: inline-flex; align-items: center; min-height: 46px; background-color: var(--teal); border-radius: var(--radius-sm); padding: .75rem 1.2rem; color: #fff; font-size: .875rem; font-weight: 600; text-transform: none; letter-spacing: 0; }
+.native-admin-workspace .object-tools a.addlink { background-image: none; }
+.native-admin-workspace .object-tools a:hover { background-color: #12594f; }
+.native-admin-workspace #content #changelist { gap: 1.5rem; background: transparent; border: 0; min-height: 0; }
+.native-admin-workspace #changelist .changelist-form-container { min-width: 0; }
+.native-admin-workspace #changelist .results { border-block: 1px solid var(--line); background: var(--surface); }
+.native-admin-workspace #changelist table { border-collapse: collapse; }
+.native-admin-workspace #changelist table thead th { background: #edf0ec; color: var(--ink); font-size: .7rem; text-transform: uppercase; letter-spacing: .055em; padding: .5rem; }
+.native-admin-workspace #changelist table tbody th,.native-admin-workspace #changelist table tbody td { padding: 1rem; font-size: .875rem; line-height: 1.65; background: var(--surface); }
+.native-admin-workspace #changelist table tbody tr:hover > :is(td,th) { background: var(--teal-wash); }
+.native-admin-workspace #changelist table tbody th a { display: inline-flex; align-items: center; min-height: 44px; }
+.native-admin-workspace #toolbar { background: var(--surface); border: 1px solid var(--line); padding: 1.5rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; }
+.native-admin-workspace #toolbar form > div { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.native-admin-workspace #toolbar #searchbar { min-height: 48px; height: auto; width: min(28rem,100%); flex: 1 1 12rem; padding: .7rem .85rem; font-size: 1rem; }
+.native-admin-workspace #toolbar input[type=submit],.native-admin-workspace #content input[type=submit],.native-admin-workspace #content .button { min-height: 46px; height: auto; padding: .75rem 1.2rem; background: var(--teal); border: 1px solid var(--teal); border-radius: var(--radius-sm); color: #fff; box-shadow: none; font: 600 .875rem/1.5 var(--font-sans); cursor: pointer; }
+.native-admin-workspace #content :is(input[type=text],input[type=password],input[type=email],input[type=url],input[type=number],input[type=search],textarea,select) { min-height: 48px; max-width: 100%; padding: .7rem .85rem; border: 1px solid #8c9b98; border-radius: var(--radius-sm); font: 1rem/1.5 var(--font-sans); background: var(--surface); color: var(--ink); }
+.native-admin-workspace input::placeholder,.native-admin-workspace textarea::placeholder { color: var(--muted); opacity: 1; }
+.native-admin-workspace #changelist .actions { padding: 1rem; background: var(--surface); border-block: 1px solid var(--line); }
+.native-admin-workspace #changelist .actions label { font-size: .875rem; display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; max-width: 100%; }
+.native-admin-workspace #changelist-filter { flex-basis: 220px; margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.native-admin-workspace #changelist-filter h2 { text-transform: none; }
+.native-admin-workspace #changelist-filter a { display: inline-block; min-width: 44px; min-height: 44px; align-content: center; padding-block: .4rem; font-size: .875rem; }
+.native-admin-workspace #changelist-filter details { padding: .5rem 1rem; }
+.native-admin-workspace #changelist-filter summary { min-height: 44px; align-content: center; }
+.native-admin-workspace #changelist .paginator { background: transparent; border: 0; padding: 1.5rem 0; font-size: .875rem; }
+.native-admin-workspace .form-row { padding: 1.25rem; overflow: visible; }
+.native-admin-workspace .form-row::after { content: ''; display: table; clear: both; }
+.native-admin-workspace .aligned .form-row > div { width: 100%; min-width: 0; max-width: 100%; }
+.native-admin-workspace .form-row label { font-size: .9rem; font-weight: 600; }
+.native-admin-workspace .form-row .help { font-size: .875rem; line-height: 1.65; color: var(--muted); }
+.native-admin-workspace .submit-row { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 1.25rem; gap: .75rem; }
+.native-admin-workspace .submit-row a { min-height: 46px; height: auto; align-content: center; }
+.native-admin-workspace .selector { display: grid; grid-template-columns: minmax(0,1fr) 44px minmax(0,1fr); gap: .75rem; width: min(100%,65rem); float: none; }
+.native-admin-workspace .selector-available,.native-admin-workspace .selector-chosen { width: 100%; min-width: 0; float: none; }
+.native-admin-workspace .selector select { width: 100%; min-height: 12rem; }
+.native-admin-workspace .selector .selector-filter { display: flex; align-items: center; gap: .5rem; }
+.native-admin-workspace .selector .selector-filter input { width: 100%; min-width: 0; }
+.native-admin-workspace .selector .selector-chooser { float: none; align-self: center; justify-self: center; margin: 0; padding: 0; width: 44px; height: auto; }
+.native-admin-workspace .selector .selector-chooser li { padding: 0; }
+/* Keep the native arrow sprites at 24px inside a larger clickable area. */
+.native-admin-workspace .selector-add,.native-admin-workspace .selector-remove { box-sizing: content-box; padding: 10px; background-origin: content-box; background-clip: content-box; }
+.native-admin-workspace .selector-chooseall,.native-admin-workspace .selector-clearall { height: auto; min-height: 44px; padding: .5rem .75rem; line-height: 1.5; background-image: none; }
+.native-admin-workspace .selector-chosen-title { background: var(--teal-wash); color: var(--ink); }
+.native-admin-workspace .selector-chosen-title label { color: var(--ink); }
+.native-admin-workspace .related-widget-wrapper { min-width: 0; }
+.native-admin-workspace .related-widget-wrapper-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+.native-admin-workspace .related-widget-wrapper .selector { flex: 1 1 auto; min-width: 0; }
+.native-admin-workspace .workspace-empty { padding: 3rem 1.5rem; border-block: 1px solid var(--line); background: var(--surface); }
+.native-admin-workspace #content .workspace-empty h2 { font-size: 1.4rem; margin: 0 0 .75rem; padding: 0; background: none; }
+.native-admin-workspace .workspace-empty p { color: var(--muted); margin: 0; }
+.native-admin-workspace.dashboard #content { display: grid; grid-template-columns: minmax(0,1fr) minmax(220px,.4fr); gap: 1.5rem; }
+.native-admin-workspace.dashboard #content > :is(.eyebrow,h1) { grid-column: 1/-1; margin-bottom: 0; }
+.native-admin-workspace #content-related { float: none; width: 100%; margin: 0; }
+.native-admin-workspace .messagelist { margin: 1rem clamp(1.25rem,3vw,3rem) 0; padding: 0; }
+.native-admin-workspace .display-panel label { color: var(--ink); }
+.native-admin-workspace .display-panel select { height: auto; }
+@media(max-width:1099px) {
+  .native-admin-workspace #main,.native-admin-workspace #container > nav { margin-left: 0; }
+  .native-admin-workspace .workspace-navigation.collapse:not(.show) { display: none; }
+}
+@media(max-width:1199px) {
+  .native-admin-workspace.dashboard #content { grid-template-columns: minmax(0,1fr); }
+  .native-admin-workspace #changelist { flex-direction: column; }
+  .native-admin-workspace #changelist .changelist-form-container { width: 100%; }
+  .native-admin-workspace #changelist-filter { width: 100%; flex-basis: auto; }
+}
+@media(max-width:767px) {
+  .native-admin-workspace #content { padding-top: 1.5rem; }
+  .native-admin-workspace #toolbar { padding: 1rem; }
+  .native-admin-workspace .form-row { padding: 1rem; }
+  .native-admin-workspace .selector { grid-template-columns: minmax(0,1fr); }
+  .native-admin-workspace .selector .selector-chooser { width: 88px; height: 44px; }
+  .native-admin-workspace #content-related { width: 100%; margin: 1.5rem 0 0; }
+}
+@media print { .native-admin-workspace #main,.native-admin-workspace #container > nav { margin: 0; } }

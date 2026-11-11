@@ -1,0 +1,52 @@
+Event list actions and centered information modal — 28 October 2026
+
+Owner request
+Add a publication action to scheduled-event rows and open event information in
+a modal centered on the screen.
+
+Implemented
+- Events now has an Actions column with View details and, for authorized staff
+  on unpublished records, Publish event. Already published rows omit Publish.
+- Both the event title and View details open the same centered, scrollable
+  Bootstrap modal. It displays the title/status, optional photo, schedule,
+  location, capacity, audience, participation information and description.
+- The modal is rendered outside the main layout so the sidebar cannot shift
+  its center. Close, Escape and keyboard focus trapping/return work. Edit event
+  and Manage event links retain access to the existing authorized workflows.
+  Title/detail links retain normal review-page destinations without JavaScript.
+- Row publication uses the existing permission-checked, versioned, audited
+  publish_event action, with no reason field or extra confirmation. Success and
+  validation errors return to the Events list. The return target is a fixed
+  internal route, not an arbitrary submitted URL.
+- Existing required-content checks remain. The assistant did not publish the
+  real draft, supply missing content or change publication policy.
+
+Files
+templates/events/manage_list.html
+templates/events/information_modal.html
+events/views.py
+events/test_list_actions.py
+
+Validation
+13 tests passed in 0.959 seconds on fresh disposable native MySQL:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_list_actions events.test_simple_publication --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+Coverage includes list publication and its audit, successful/error redirects,
+duplicate/stale writes, invalid version, required details, permission checks,
+CSRF, audit rollback, concurrency, modal content escaping and read-only access.
+No tests used application data.
+
+Chrome checks passed at 1560x1100 and 390x844. Both modal triggers work without
+leaving the list. Modal-content center coordinates match the viewport center
+within three pixels in both dimensions. Tab stays inside the dialog, Escape
+closes it and restores focus, both close buttons work, and the mobile dialog
+fits the viewport. No horizontal page overflow or JavaScript errors occurred.
+All business POSTs were blocked during the live browser check. Publication was
+tested only against disposable data.
+Screenshots: event-actions-desktop.png, event-information-desktop.png,
+event-information-mobile.png.
+Private harness: .local/annual-calendar-20261028/verify-list-actions.cjs.
+Django system checks and git diff --check passed.
+
+The identity-verified retained development site was restarted at
+http://127.0.0.1:8013/. No schema migration, real event publication, commit, push
+or remote deployment was performed. Earlier unfinished work was preserved.

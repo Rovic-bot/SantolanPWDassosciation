@@ -1,0 +1,7 @@
+<div class="portfolio-layout" data-portfolio-results data-result-count="{{ page_obj.paginator.count }}">
+  <section class="portfolio-board" aria-label="Program board">
+    <div class="portfolio-program-grid">{% for program in page_obj %}{% include 'programs/portfolio/card.html' %}{% empty %}<div class="portfolio-empty"><span aria-hidden="true">⌕</span>{% if status == 'new' %}<h2>No newly published programs found</h2><p>Only programs published in the last hour appear here. Adjust your other filters or check back later.</p>{% else %}<h2>No programs found</h2><p>Adjust the search, category, or status filters.</p>{% endif %}<a class="btn btn-outline-secondary" href="{% url 'program_portfolio' %}" data-portfolio-reset>Clear filters</a></div>{% endfor %}</div>
+    {% if page_obj.paginator.count %}<nav class="portfolio-pagination" aria-label="Program pages"><span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span><div>{% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}" data-portfolio-page>← Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}" data-portfolio-page>Next →</a>{% endif %}</div></nav>{% endif %}
+  </section>
+  {% include 'programs/portfolio/operations.html' %}
+</div>

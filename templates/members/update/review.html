@@ -1,0 +1,42 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Review member update · Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-update-review.css' %}?v=20261110-1">{% endblock %}
+{% block content %}
+<div class="container content-section member-update-review">
+<a href="{% url 'members:detail' update.member_id %}">&larr; Member record</a>
+<h1>Review updated information</h1><p>{{ update.member.full_name }} · {{ update.member.control_number }}</p>
+{% include 'partials/workspace_messages.html' %}
+<div class="member-update-review-grid">
+  <div>
+    <section class="member-update-card" aria-labelledby="changed-information-heading">
+      <h2 id="changed-information-heading">Changed information</h2><p>Only the fields the member changed are listed below.</p>
+      {% if record_changed and update.state != 'approved' %}<p class="alert alert-info">The official record changed after this request. Compare its current information below before deciding. Fields outside this list will stay as they are.</p>{% endif %}
+      <dl class="member-update-comparison">{% for row in comparison %}<div><dt>{{ row.label }}</dt><dd><span>{% if update.state == 'approved' %}Previously submitted information{% else %}Current approved information{% endif %}</span><p>{% if update.state == 'approved' %}{{ row.submitted_before|default:'Not recorded' }}{% else %}{{ row.before|default:'Not recorded' }}{% endif %}</p></dd><dd><span>Member's requested update</span><p>{{ row.proposed|default:'Not recorded' }}</p></dd></div>{% endfor %}</dl>
+    </section>
+    <details class="member-update-card"><summary>Review history</summary><ul>{% for entry in update.actions.all %}<li><strong>{{ entry.actor_label }}</strong> · {{ entry.created_at|date:'M j, Y, g:i A' }}<p>{{ entry.reason }}</p></li>{% endfor %}</ul></details>
+  </div>
+  <aside class="member-update-card" aria-labelledby="review-decision-heading">
+    <p class="member-update-state">{{ update.get_state_display }}</p><h2 id="review-decision-heading">Verify and decide</h2>
+    {% if update.state == 'needs_verification' %}<p>New program applications are blocked until this update is approved.</p>{% elif update.state != 'approved' %}<p>Program access continues using the current approved record while this request is pending.</p>{% endif %}
+    {% if invitation %}<p><strong>Office invitation:</strong> {{ delivery_label }}</p>{% endif %}
+    {% include 'partials/email_delivery_help.html' with problem=delivery_help %}
+    {% if update.state != 'approved' and can_act %}
+    {% if perms.members.change_member %}
+    <form method="post">{% csrf_token %}{{ form.version }}{{ form.member_version }}
+      {{ form.non_field_errors }}{{ form.version.errors }}{{ form.member_version.errors }}
+      {% if not invitation %}<p>Send an email asking the member to visit the barangay office for an interview or screening.</p><button class="btn btn-primary" name="action" value="invite" type="submit">Verify this information</button>
+      {% elif can_retry %}<button class="btn btn-outline-secondary" name="action" value="retry" type="submit">Retry verification email</button>{% endif %}
+      {% if perms.members.change_member_status %}
+      <div class="mt-4 mb-4"><label class="form-label fw-semibold" for="{{ form.reason.id_for_label }}">{{ form.reason.label }}</label>{{ form.reason }}<div class="form-text" id="{{ form.reason.auto_id }}_helptext">{{ form.reason.help_text }}</div>{{ form.reason.errors }}</div>
+      {% if invitation_accepted %}<label class="member-update-confirm" for="{{ form.interview_confirmed.id_for_label }}">{{ form.interview_confirmed }}<span>{{ form.interview_confirmed.label }}</span></label>{{ form.interview_confirmed.errors }}
+      <button class="btn btn-primary" name="action" value="approved" type="submit">Approve updated information</button>{% endif %}
+      <button class="btn btn-outline-secondary mt-3" name="action" value="needs_verification" type="submit">Mark needs verification</button>
+      {% endif %}
+    </form>
+    {% endif %}
+    {% elif update.state == 'approved' %}<p>Approved {{ update.approved_at|date:'M j, Y, g:i A' }}. The verified changes are now in the member's record.</p>
+    {% else %}<p>This member is inactive or archived. Restore the appropriate membership status before reviewing this update.</p>{% endif %}
+  </aside>
+</div>
+</div>
+{% endblock %}

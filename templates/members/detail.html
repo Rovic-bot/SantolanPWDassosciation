@@ -1,0 +1,84 @@
+{% extends 'admin_portal/base.html' %}
+{% load static %}
+{% block title %}Member record &middot; Santolan PWD{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/member-record.css' %}?v=20261106-activity-disclosures"><link rel="stylesheet" href="{% static 'css/membership-review-dialogs.css' %}?v=20261108-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/member-record.js' %}?v=20261106-registration-tabs" defer></script><script src="{% static 'js/membership-review-dialogs.js' %}?v=20261109-member-print" defer></script>{% endblock %}
+{% block content %}
+<div class="container content-section membership-record member-record" data-record-content>
+  <div class="member-record-breadcrumbs">
+    {% include 'partials/member_navigation.html' %}
+    <a class="workspace-back" href="{% url 'members:list' %}">&larr; Member directory</a>
+  </div>
+  {% include 'partials/workspace_messages.html' %}
+  <div class="member-record-shell">
+    <header class="member-record-topbar">
+      <div class="member-record-brand">{% include 'members/record/icon.html' with name='profile' %}<span>Member record</span></div>
+      <nav class="member-record-nav" aria-label="Member record sections">
+        <a href="#member-record-overview">Overview</a><a href="#member-record-activity">Activity</a><a href="#member-record-history">History</a>
+        {% if original_registration_sections %}<a href="#member-record-registration">Registration information</a>{% endif %}
+      </nav>
+      <div class="member-record-tools">
+        {% if perms.members.change_member and not member.archived_at %}<a class="member-record-edit" href="{% url 'members:edit' member.pk %}">Edit profile {% include 'members/record/icon.html' with name='arrow' %}</a>{% endif %}
+        {% if perms.membership.view_membershipapplication %}<a class="member-record-tool" href="{% url 'members:registration_print' member.pk %}" data-membership-form-preview aria-haspopup="dialog" aria-label="Preview and print registration form" title="Preview and print registration form">{% include 'members/record/icon.html' with name='print' %}</a>{% endif %}
+      </div>
+    </header>
+    <div class="member-record-grid">
+      <div class="member-record-primary">
+      <aside class="member-record-profile-column" aria-label="Member identity and contact">
+        <section class="member-identity-card">
+          {% if portrait %}<img class="member-record-portrait" src="{{ portrait_url }}" alt="Membership photograph of {{ member.full_name }}">{% else %}<div class="member-record-avatar" aria-hidden="true">{{ record_summary.initials }}</div><span class="member-photo-empty">No profile photo</span>{% endif %}
+          <div class="member-identity-caption"><h1>{{ member.full_name }}</h1><p>{{ member.control_number }}</p></div>
+        </section>
+        <div class="member-record-stats">
+          <section class="member-record-stat"><h2>Member since</h2><p>{{ member.joined_at|date:'M Y' }}</p><span>{{ member.joined_at|date:'M j, Y' }}</span></section>
+          <section class="member-record-stat"><h2>Membership</h2><p><span class="member-state-dot" data-state="{{ record_summary.status }}" aria-hidden="true"></span>{{ record_summary.status_label }}</p><span>Association status</span></section>
+        </div>
+        <section class="member-record-card member-contact-card">
+          <h2>Contact details</h2>
+          <dl><div><dt>Mobile number</dt><dd>{{ member.contact_number|default:'Not recorded' }}</dd></div><div><dt>Email address</dt><dd>{{ member.email|default:'Not recorded' }}</dd></div><div><dt>Residential address</dt><dd>{{ member.address|default:'Not recorded'|linebreaksbr }}</dd></div></dl>
+        </section>
+        <section class="member-record-card member-links-card">
+          <h2>Association record</h2>
+          {% if record_summary.verification %}<p class="member-verification">{% include 'members/record/icon.html' %}{{ record_summary.verification }}</p>{% endif %}
+          <dl><div><dt>Last updated</dt><dd>{{ member.updated_at|date:'M j, Y' }}</dd></div></dl>
+          {% if reviews_available and perms.members.view_informationreview %}<a href="{% url 'members:reviews' member.pk %}">Private information reviews {% include 'members/record/icon.html' with name='arrow' %}</a>{% endif %}
+        </section>
+      </aside>
+      <div class="member-record-main-column">
+        {% if record_summary.update_url %}<section class="member-record-card"><h2>{{ record_summary.status_label }}</h2><p>This member has submitted changes for verification. Compare the previous and requested information before making a decision.</p><a class="btn btn-primary" href="{{ record_summary.update_url }}">Review updated information</a></section>{% endif %}
+        {% include 'membership/registration/approval_email_status.html' with email_card_class='member-record-card' %}
+        <section class="member-record-card member-overview-card" id="member-record-overview">
+          <div class="member-card-heading"><h2>Member overview</h2><span class="member-record-tag">Official record</span></div>
+          <dl class="member-overview-grid">
+            <div><dt>Date of birth</dt><dd>{{ member.birthdate|date:'M j, Y' }}</dd></div>
+            <div><dt>Sex / Gender</dt><dd>{{ member_overview.sex|default:'Not recorded' }}</dd></div>
+            <div><dt>Civil status</dt><dd>{{ member_overview.civil_status|default:'Not recorded' }}</dd></div>
+            <div><dt>Disability classification</dt><dd>{{ record_summary.classification }}</dd></div>
+            <div><dt>Employment</dt><dd>{{ member.get_employment_status_display|default:member.employment_information|default:'Not recorded' }}</dd></div>
+            {% if member_overview.show_family_members %}<div><dt>Family members</dt><dd>{{ member_overview.family_members|default_if_none:'Not recorded' }}</dd></div>{% endif %}
+            <div><dt>Household members</dt><dd>{{ member_overview.household_members|default_if_none:'Not recorded' }}</dd></div>
+            {% if not member_overview.show_family_members or member.dependents != None %}<div><dt>Dependents</dt><dd>{{ member.dependents|default_if_none:'Not recorded' }}</dd></div>{% endif %}
+          </dl>
+          <div class="member-document-heading"><h3>Membership documents</h3>{% if membership_documents.allowed %}<span>{{ membership_documents.current|length }} attached</span>{% endif %}</div>
+          {% if membership_documents.allowed %}
+            {% include 'members/record/document_tiles.html' with document_items=membership_documents.current %}
+            {% if membership_documents.previous %}<details class="member-document-history"><summary>Earlier document versions ({{ membership_documents.previous|length }})</summary>{% include 'members/record/document_tiles.html' with document_items=membership_documents.previous %}</details>{% endif %}
+          {% else %}<p class="member-record-empty">Document access requires a separate permission.</p>{% endif %}
+        </section>
+        {% if original_registration_sections %}
+        {% include 'members/record/registration.html' %}
+        {% endif %}
+      </div>
+      <div class="member-record-activity" id="member-record-activity">
+        {% include 'members/record/activity.html' %}
+      </div>
+      </div>
+      <aside class="member-record-support-column" aria-label="Record management and history">
+        {% include 'members/record/status.html' %}
+        {% include 'members/record/history.html' %}
+      </aside>
+    </div>
+  </div>
+</div>
+{% if perms.membership.view_membershipapplication %}{% include 'membership/registration/form_preview_dialog.html' with preview_title='Membership form preview' preview_frame_title='Approved membership registration preview' %}{% endif %}
+{% endblock %}

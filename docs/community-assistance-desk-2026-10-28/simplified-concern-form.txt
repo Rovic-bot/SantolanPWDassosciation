@@ -1,0 +1,42 @@
+Community Assistance Desk simplified concern form — 28 October 2026
+
+Owner-requested form: enter email once, subject, assistance type and concern;
+show one optional supporting-evidence input after Add supporting evidence is
+clicked; remove both Additional evidence inputs.
+
+The public form now presents those four main inputs and the existing required
+acknowledgment. Name/address/contact inputs are omitted; new tickets retain
+these values from the verified member on the server. The email remains separate
+from the member record and is entered once. Unexpected posted profile fields,
+extra evidence fields and multiple files in the single evidence field are
+rejected. The new submission fingerprint uses referral-v2. Existing tickets,
+references, fingerprints, attachments and email history are unchanged.
+
+The upload button uses the existing Bootstrap collapse behavior with an
+accessible expanded state. Upload validation errors reopen the evidence region.
+Without JavaScript, the optional upload remains available. Corrected the
+duplicate optional label and aligned the acknowledgment checkbox with its label.
+The service guidance now describes one optional supporting file.
+
+Validation
+All 43 referral and quick-action tests passed in 5.891 seconds, using a fresh
+isolated MySQL test_g12_disposable database. Coverage includes two-field member
+verification, single-email submission and private receipt/inbox, server-sourced
+profile values, tampered field rejection, extra/multiple-file rejection,
+upload errors, optional evidence, private downloads, email jobs, rollback,
+idempotency, concurrency and staff permissions/actions.
+
+Command:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test assistance.test_referrals assistance.test_referral_quick_actions --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+
+Chrome checks on the restarted local server verified the exact form fields,
+one email input, one upload initially hidden, keyboard/button activation,
+expanded-state accessibility, mobile overflow and no-JavaScript fallback.
+Only an existing fictional member was verified; the verification was cleared
+afterward. No concern or email was submitted and no JavaScript errors occurred.
+Screenshots: simplified-form.png, simplified-form-evidence.png,
+simplified-form-mobile.png. Probe:
+.local/community-assistance-desk-20261028/verify-simple-form.cjs
+
+Django system checks and git diff --check passed. No migration, commit, push or
+deployment occurred. Earlier unfinished changes were preserved.

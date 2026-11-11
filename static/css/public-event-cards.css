@@ -1,0 +1,41 @@
+/* Scheduled activities share a compact image-and-copy layout. */
+body.public-portal.portal-redesign.section-events #main-content > .portal-section { display: block; }
+body.public-portal.portal-redesign.section-events .portal-event-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)) !important; gap: 20px; }
+.public-portal .event-swipe-carousel { --swipe-columns: 2; margin-top: 0; }
+body.public-portal .event-swipe-carousel:not(.is-ready) .public-swipe-viewport { grid-template-columns: repeat(var(--swipe-columns), minmax(0, 1fr)); }
+body.public-portal.portal-redesign .event-swipe-carousel.is-ready .portal-event-card { position: absolute; }
+body.public-portal.portal-redesign .event-swipe-carousel .portal-event-card[hidden] { display: none; }
+body.public-portal.portal-redesign .event-swipe-carousel .portal-event-card-body { height: 100%; }
+@media (max-width: 991px) { .public-portal .event-swipe-carousel { --swipe-columns: 1; } }
+body.public-portal.portal-redesign.section-events .portal-event-card { --event-card-surface: #fff; --event-card-fade: #ffffffa0; display: block; position: relative; isolation: isolate; overflow: hidden; min-width: 0; padding: 0 !important; border: 1px solid var(--event-card-surface); background: var(--event-card-surface); border-radius: 30px; }
+.public-portal .event-card-photo { position: absolute; inset: 0 auto 0 0; width: 55%; z-index: -2; background: #e1ded5; }
+.public-portal .event-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+.public-portal .event-card-initials { display: grid; place-items: center; height: 100%; padding-right: 20%; color: #625a4a; font-size: 4rem; font-weight: 700; }
+.public-portal .event-photo-card:after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, transparent 10%, var(--event-card-fade) 34%, var(--event-card-surface) 49%); }
+body.public-portal.portal-redesign.section-events .portal-event-card .schedule-date { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; gap: 1px; width: 58px; height: auto; padding: 10px !important; border-radius: 15px !important; margin: 0; background: #242321; box-shadow: 0 4px 12px #0002; }
+.public-portal .portal-event-card .schedule-date strong { font-size: 1.5rem; line-height: 1.1; }
+.public-portal .portal-event-card .schedule-date span { font-size: .65rem; }
+body.public-portal.portal-redesign.section-events .portal-event-card-body { display: flex; flex-direction: column; min-height: 320px; padding: 24px 24px 24px 47%; gap: 0; }
+body.public-portal.portal-redesign.section-events .portal-event-card h3 { font-size: 1.25rem; margin: 0 0 8px; }
+.public-portal .event-card-description { font-size: .85rem; line-height: 1.5; margin-bottom: 14px; }
+.public-portal .portal-event-card-body .eyebrow { align-self: flex-start; font-size: .6rem; margin: 0 0 18px; }
+.public-portal .portal-event-card-body :is(.portal-event-card-date, .portal-event-card-location) { font-size: .8rem; margin-bottom: 8px; }
+body.public-portal.portal-redesign.section-events .event-read-details { margin: auto 0 0; align-self: flex-start; padding: 9px 16px; font-size: .8rem; }
+.public-portal .event-read-details::after { content: ''; position: absolute; inset: 0; border-radius: 30px; }
+.public-portal .event-read-details:focus-visible::after { outline: 3px solid #785b2e; outline-offset: -4px; }
+.public-portal .observance-card-section { margin-top: 28px; }
+.public-portal .observance-card-image { width: 100%; height: 100px; object-fit: cover; border-radius: 14px; margin-bottom: 16px; }
+.public-portal .observance-swipe-card h3 { font-size: 1.15rem; }
+.public-portal .observance-swipe-card { display: flex; flex-direction: column; }
+.public-portal .observance-swipe-card > .btn { align-self: flex-start; margin-top: auto; }
+@media (max-width: 575px) {
+    body.public-portal.portal-redesign.section-events .portal-event-card-body { padding: 170px 22px 22px; min-height: 0; }
+    .public-portal .event-card-photo { width: 100%; height: 150px; }
+    .public-portal .event-photo-card:after { background: linear-gradient(180deg, transparent 95px, var(--event-card-surface) 152px); }
+    .public-portal .event-card-initials { padding: 0; font-size: 3rem; }
+    body.public-portal.portal-redesign.section-events .event-read-details { margin-top: 12px; }
+}
+@media print {
+    body.public-portal.portal-redesign .event-swipe-carousel.is-ready .portal-event-card,
+    body.public-portal.portal-redesign .event-swipe-carousel .portal-event-card[hidden] { display: block !important; position: static; height: auto; }
+}

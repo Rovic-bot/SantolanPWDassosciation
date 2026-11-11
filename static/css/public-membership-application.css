@@ -1,0 +1,260 @@
+/* Shared public application layout: a single form surface and compact guide. */
+@media screen {
+  .public-portal.resident-page.membership-application-page {
+    --application-panel: #f8f7f5;
+    --application-field: #fff;
+    --application-ink: #172338;
+    --application-muted: #526178;
+    --application-line: #e0e5eb;
+    --application-edge: #d2dae5;
+    --application-focus: #235c9b;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-form-layout {
+    grid-template-columns: minmax(14rem, 1fr) minmax(0, 3fr);
+    gap: clamp(1.25rem, 2vw, 2rem);
+  }
+
+  .public-portal.resident-page.membership-application-page :is(.resident-form-rail, .resident-form-body) {
+    padding: clamp(1.25rem, 2.5vw, 2.75rem);
+    color: var(--application-ink);
+    background: var(--application-panel);
+    border: 1px solid #fff;
+    border-radius: 2rem;
+    box-shadow: 0 10px 30px #1c293605;
+    backdrop-filter: none;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-form-rail {
+    padding: clamp(1.25rem, 1.8vw, 2rem);
+    scrollbar-width: thin;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-form-rail h2 {
+    margin: 0 0 .65rem;
+    color: var(--application-ink);
+    /* The shared public heading size is marked important. */
+    font-size: 1.125rem !important;
+    font-weight: 700;
+    line-height: 1.4 !important;
+    letter-spacing: -.02em;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-form-rail :is(p, li) {
+    color: var(--application-muted);
+    font-size: .875rem;
+    line-height: 1.65;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-privacy-controls {
+    margin-block: 1.25rem;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-privacy-controls .btn {
+    min-height: 44px;
+    /* Override the shared public pill button on this compact guide only. */
+    padding: .65rem 1rem !important;
+    color: var(--application-ink);
+    background: var(--application-field) !important;
+    border: 1px solid var(--application-edge) !important;
+    border-radius: .75rem !important;
+    font-size: .875rem;
+    line-height: 1.4;
+    box-shadow: 0 2px 3px #17233806;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-index summary {
+    min-height: 44px;
+    padding-block: .75rem;
+    color: var(--application-ink);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-index a {
+    gap: .65rem;
+    min-height: 44px;
+    padding-block: .5rem;
+    border: 0;
+    color: var(--application-muted);
+    font-size: .875rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-index a span {
+    color: #647995;
+    font-size: .8125rem;
+    font-weight: 700;
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-index a:hover {
+    color: var(--application-focus);
+    text-decoration: underline;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .public-portal.resident-page.membership-application-page .application-required-note {
+    margin: 0 0 2.25rem;
+    color: var(--application-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-section {
+    min-inline-size: 0;
+    margin: 0 0 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    scroll-margin-top: 1.5rem;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-section > legend {
+    margin: 0 0 1.35rem;
+    padding: 0 0 .8rem;
+    border-bottom: 1px solid var(--application-line);
+    color: var(--application-ink);
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: -.015em;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-field {
+    min-width: 0;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-field .form-label {
+    margin-bottom: .5rem;
+    color: var(--application-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]), select, textarea) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 46px;
+    padding: .7rem .9rem;
+    border: 1px solid var(--application-edge);
+    border-radius: .75rem;
+    background: var(--application-field);
+    color: var(--application-ink);
+    font-size: 1rem;
+    line-height: 1.5;
+    color-scheme: light;
+    box-shadow: none;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--application-focus);
+    outline-offset: 2px;
+    border-color: var(--application-focus);
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor :is(input, select, textarea)[aria-invalid=true] {
+    border-color: #a52a39;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-field .form-text {
+    margin: .45rem 0 0;
+    color: var(--application-muted);
+    font-size: .8125rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-check {
+    color: var(--application-ink);
+    font-size: .9375rem;
+    line-height: 1.6;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor input[type=file] {
+    padding: .65rem .75rem;
+    font-size: .875rem;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor input[type=file]::file-selector-button {
+    padding: .5rem .65rem;
+    background: #edf1f6;
+    color: var(--application-ink);
+    border-color: var(--application-edge);
+  }
+
+  .public-portal.resident-page.membership-application-page .resident-form-body > p {
+    margin-bottom: 0;
+    font-size: .875rem;
+    line-height: 1.6;
+  }
+
+  .public-portal.resident-page.membership-application-page .registration-editor > .btn {
+    max-width: 100%;
+    white-space: normal;
+    border-radius: .85rem !important;
+  }
+
+  html[data-contrast=true] .public-portal.resident-page.membership-application-page {
+    --application-panel: #fff;
+    --application-field: #fff;
+    --application-ink: #111;
+    --application-muted: #333;
+    --application-line: #555;
+    --application-edge: #555;
+    --application-focus: #003e87;
+  }
+
+  html[data-contrast=true] .public-portal.resident-page.membership-application-page #main-content :is(.resident-form-rail, .resident-form-body) {
+    background: var(--application-panel);
+    color: var(--application-ink);
+    border-color: var(--application-edge);
+    box-shadow: none;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .public-portal.resident-page.membership-application-page .resident-form-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .public-portal.resident-page.membership-application-page :is(.resident-form-rail, .resident-form-body) {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .public-portal.resident-page.membership-application-page .profile-wide {
+    grid-column: auto;
+  }
+}

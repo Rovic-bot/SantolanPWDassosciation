@@ -1,0 +1,7 @@
+/* Layout adjustments apply only after an admin GET filter is enhanced. */
+.admin-workspace [data-auto-filter-ready] [hidden] { display: none !important; }
+.admin-workspace form[data-auto-filter-ready].row > div:not([hidden]) { flex: 1 1 14rem; width: auto; max-width: 100%; }
+.admin-workspace [data-auto-filter-ready] .registration-inbox-search-row { grid-template-columns: minmax(0, 1fr); }
+.admin-workspace [data-auto-filter-ready] .registration-inbox-filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)) auto; }
+@media (min-width: 992px) { .admin-workspace .referral-filters[data-auto-filter-ready] { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) minmax(0, 1.1fr); } }
+@media (max-width: 639px) { .admin-workspace [data-auto-filter-ready] .registration-inbox-filter-row { grid-template-columns: minmax(0, 1fr); } }

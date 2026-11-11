@@ -1,0 +1,12 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Private information reviews{% endblock %}
+{% block content %}<div class="container content-section">
+{% include 'partials/workspace_messages.html' %}
+<a href="{% url 'members:detail' member.pk %}">Back to member record</a>
+<h1>Private information reviews</h1><p>{{ member.full_name }}</p>
+{% if application %}<p>Program application: {{ application.short_reference }}. <a href="{% url 'programs:application_detail' application.program_id application.pk %}">Existing application review</a></p>{% endif %}
+<p>Concerns and findings remain separate from accepted information, eligibility, evaluation and selection. No calculation runs when a review is recorded.</p>
+<h2>Retained concerns</h2><ul>{% for item in page_obj %}<li><a href="{% url 'members:review_detail' item.pk %}">{{ item.get_kind_display }} · {{ item.created_at }} · {{ item.get_state_display }}</a></li>{% empty %}<li>No reviews available.</li>{% endfor %}</ul>
+{% include 'partials/page_links.html' with pagination_label='Private review pages' %}
+{% if perms.members.record_informationreview %}<h2>Record an onsite concern</h2><form method="post" novalidate>{% csrf_token %}{% include 'programs/fields.html' %}<button type="submit" class="btn btn-primary">Record private concern</button></form>{% endif %}
+</div>{% endblock %}

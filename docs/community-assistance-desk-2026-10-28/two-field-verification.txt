@@ -1,0 +1,36 @@
+Community Assistance Desk verification amendment — 28 October 2026
+
+The owner explicitly requested that the Community Assistance Desk membership
+check use only required Association control number and registered full name.
+This instruction supersedes the earlier four-field verification requirement
+for this service only. Program/event verification policy is unchanged.
+
+The referral VerificationForm now contains exactly those two required fields.
+The referral service accepts and matches only these inputs, preserving the
+existing case/whitespace normalization and generic failure message. Active,
+approved membership, recorded manual PRPWD verification, configured sender,
+attempt limits, session binding, expiry and submission-time source rechecks
+remain enforced. Historical snapshots and issued references are preserved.
+The concern form still collects its own contact information for follow-up.
+
+Existing referral test fixtures and the full HTTP journey now supply only
+control number and name. Added checks cover normalized matching, missing
+required inputs, and absence of birthdate/contact inputs in the verification
+form. No model or schema change is needed.
+
+The local server was restarted through the guarded development launcher.
+Chrome confirmed exactly two required visible verification inputs. Desktop
+and mobile public entry checks, private Admin navigation, Django system checks
+and git diff --check passed. Browser verification used login POST and reads
+only; no concern or email was submitted. Screenshot:
+member-verification-two-fields.png
+
+Browser probe: .local/community-assistance-desk-20261028/verify-two-fields.cjs
+
+All 42 referral and quick-action tests passed in 2.780 seconds on a fresh,
+isolated native MySQL test_g12_disposable database. This includes two-field
+verification followed by concern submission and receipt with CSRF enforcement,
+plus inactive membership, rate limits, private access, email jobs, idempotency,
+concurrency and staff-action regressions. No application database was used for
+these tests. Command:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test assistance.test_referrals assistance.test_referral_quick_actions --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1

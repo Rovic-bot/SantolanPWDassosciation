@@ -1,0 +1,8 @@
+<nav class="portal-month-links" aria-label="Observance months">{% for month in observance_months %}<a href="#observance-month-{{ month.number }}">{{ month.name|slice:':3' }}<span class="visually-hidden"> — {{ month.name }}</span></a>{% endfor %}</nav>
+<div class="portal-observances" data-observance-view="list" role="region" aria-label="Annual observances. Scroll to browse months." tabindex="0">
+{% for month in observance_months %}<section class="portal-month" aria-labelledby="observance-month-{{ month.number }}"><h3 id="observance-month-{{ month.number }}" tabindex="-1">{{ month.name }}</h3><div>
+{% for item in month.observances %}<article class="portal-observance"><p class="portal-small">{{ item.recurrence_rule }} · Every year</p><h4>{{ item.title }}</h4>
+{% if item.detail_url %}<a class="text-link" href="{{ item.detail_url }}">View observance details<span class="visually-hidden"> for {{ item.title }}</span> {% include 'public/icon.html' with name='arrow' %}</a>{% endif %}
+<details class="portal-disclosure"><summary>About this observance</summary><div>{% if item.image_url %}<img class="announcement-image" src="{{ item.image_url }}" alt="{{ item.image_alt }}" loading="lazy">{% endif %}<p>{{ item.description }}</p>{% include 'events/participation.html' %}<p>Legal basis / official reference: {{ item.legal_basis }}</p><a href="{{ item.source_url }}" rel="external">Official source<span class="visually-hidden"> for {{ item.title }}</span>{% if '.pdf' in item.source_url %} (PDF){% endif %}</a></div></details>
+</article>{% empty %}<p class="portal-small">No published observances for this month.</p>{% endfor %}</div></section>{% endfor %}
+</div>

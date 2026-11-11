@@ -1,0 +1,17 @@
+<section class="referral-composer" aria-label="Reply to member">
+  {% if not mail_connection.ready and can_reply %}<p class="referral-connection-notice" data-email-connection-notice{% if form.channel.value != 'email' %} hidden{% endif %}>Connect the Association email account to send email replies, or choose Online conversation. {% if perms.assistance.configure_referrals %}<a href="{% url 'assistance:referral_email_settings' %}">Email settings</a>.{% else %}Ask an administrator to update the email settings.{% endif %}</p>{% endif %}
+  <form method="post" action="{% url 'assistance:referral_detail' ticket.pk %}" data-referral-reply>{% csrf_token %}{{ form.version }}{{ form.sender_version }}
+    <div class="referral-editor">
+      <div class="referral-editor-panel">
+        <div class="referral-reply-addresses" data-email-addresses{% if form.channel.value != 'email' %} hidden{% endif %}><span>From: <strong data-referral-sender>{{ sender_email|default:'Not configured' }}</strong></span><span>To: <strong>{{ ticket.email }}</strong></span></div>
+        <div class="referral-reply-addresses" data-online-destination{% if form.channel.value == 'email' %} hidden{% endif %}>Online conversation only. No email will be sent.</div>
+        <label class="visually-hidden" for="{{ form.member_message.id_for_label }}">Reply or instructions for the member (required)</label>{{ form.member_message }}{{ form.member_message.errors }}
+      </div>
+      <footer class="referral-composer-footer">
+        <div class="referral-composer-options"><div><label class="visually-hidden" for="{{ form.channel.id_for_label }}">Send through</label>{{ form.channel }}{{ form.channel.errors }}</div></div>
+        <button class="btn btn-primary" type="submit" data-reply-submit><span data-reply-submit-label>Send reply</span>{% include 'assistance/referrals/icon.html' with name='send' %}</button>
+      </footer>
+    </div>
+    <p class="referral-live-notice" data-referral-live-notice role="status" aria-live="polite"></p>
+  </form>
+</section>

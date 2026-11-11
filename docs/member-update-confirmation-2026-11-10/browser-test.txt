@@ -1,0 +1,16 @@
+Phase 2B synthetic private media: C:\Users\rovic\AppData\Local\Temp\santolan-g12-tests-59pt4xq2\phase2b-private-media-xfbizshh
+Found 1 test(s).
+Creating test database for alias 'default'...
+
+Durable isolated test identity: ('test_g12_disposable', 'C:\\Users\\rovic\\AppData\\Local\\Temp\\santolan-g12-tests-59pt4xq2\\data\\', 52652, '455a81be-dcba-11f1-baff-581122e63603', '8.4.11', 'READ-COMMITTED') all tables InnoDB
+Phase 2B model-synchronized disposable baseline; no historical migrations applied.
+System check identified no issues (0 silenced).
+Passed member update from home card to verified prefill, staff comparison, office invitation, application block, reapproval and no-JavaScript access.
+
+.
+----------------------------------------------------------------------
+Ran 1 test in 16.234s
+
+OK
+Destroying test database for alias 'default'...
+

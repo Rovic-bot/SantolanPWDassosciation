@@ -1,0 +1,18 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Evidence history · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:evidence_readiness' application.pk %}">Current readiness diagnostics</a>
+<h1>Evidence assessment history</h1><p>{{ application.public_reference }}</p>
+<p>Corrections append a new finding. Earlier verified findings never replace a later disputed, rejected or outdated review.</p>
+{% for review in page %}<article class="record-history"><h2 class="h5">{{ review.criterion }} · Revision {{ review.revision }} · {{ review.get_state_display }}</h2>
+<p>{{ review.recorded_at }} · {{ review.actor_label }} · Policy revision {{ review.policy.revision }}</p>
+<p>{% if review.value is None %}Missing value{% else %}{{ review.value }} {{ review.unit }}{% endif %} · {{ review.source_type }}</p>
+<p>{{ review.reason }}{% if review.disputed %} · Disputed{% endif %}</p>
+<p>Observation: {{ review.observation_start|default:'Not recorded' }} to {{ review.observation_end|default:'Not recorded' }} · Expiry: {{ review.expires_on|default:'Not established' }}</p>
+<details><summary>Provenance references</summary><div style="overflow-wrap:anywhere">{{ review.source_manifest }}</div></details></article>{% empty %}<p>No criterion assessments recorded.</p>{% endfor %}
+{% include 'partials/page_links.html' with page_obj=page pagination_label='Assessment history pages' %}
+<h2>Retained diagnostic snapshots</h2>
+{% for snapshot in snapshots %}<article class="record-history"><h3 class="h5">Snapshot {{ snapshot.pk }}</h3><p>{{ snapshot.recorded_at }} · {{ snapshot.actor_label }}</p><p>{{ snapshot.reason }}</p><p>Processing authorization unavailable.</p>
+<details><summary>Historical diagnostic findings</summary><div style="overflow-wrap:anywhere">{{ snapshot.result.reasons }}</div></details></article>{% empty %}<p>No readiness snapshots retained.</p>{% endfor %}
+<nav aria-label="Readiness snapshot pages">{% if snapshots.has_previous %}<a href="?snapshots={{ snapshots.previous_page_number }}">Previous snapshots</a>{% endif %} Page {{ snapshots.number }} of {{ snapshots.paginator.num_pages }} {% if snapshots.has_next %}<a href="?snapshots={{ snapshots.next_page_number }}">Next snapshots</a>{% endif %}</nav>
+</div>{% endblock %}

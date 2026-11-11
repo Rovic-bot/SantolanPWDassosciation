@@ -1,0 +1,133 @@
+/* Shared charcoal-and-cream stacks; only explicitly marked sections are enhanced. */
+body.public-portal.portal-redesign :is(section, div, details).public-stack-panel {
+    padding: 2.75rem 1.75rem 1.5rem !important;
+    border: 1px solid var(--brand-primary) !important;
+    border-radius: 30px;
+    background: linear-gradient(145deg, var(--brand-primary), var(--ink)) !important;
+    color: var(--surface);
+}
+body.public-portal.portal-redesign .public-stack-panel :is(.public-stack-heading, .public-faq-summary h2) {
+    margin: 0;
+    color: var(--surface) !important;
+    font-size: clamp(1.6rem, 2.4vw, 2.2rem) !important;
+    line-height: 1.2;
+    text-align: center;
+}
+body.public-portal.portal-redesign .public-stack-hint { margin: .65rem 0 0; color: #c6c1b8; font-size: .8rem; text-align: center; }
+body.public-portal .public-swipe-carousel.public-card-stack { margin-top: 1rem; }
+body.public-portal .public-card-stack .about-background-source { padding: 1.75rem; border-radius: 1.5rem; background: var(--surface); color: var(--ink); }
+body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-viewport {
+    display: block;
+    position: relative;
+    height: calc(var(--stack-card-height, 340px) + 3.5rem);
+    overflow: hidden;
+    perspective: 1200px;
+    border-radius: 1.5rem;
+    touch-action: pan-y pinch-zoom;
+    cursor: grab;
+}
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: 1.5rem;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--stack-card-width);
+    height: var(--stack-card-height);
+    margin: 0;
+    transform: translate(calc(-50% + var(--stack-x) + var(--stack-drag, 0px)), -50%) rotateY(var(--stack-angle)) scale(var(--stack-scale));
+    transform-origin: center;
+    transition: transform 320ms ease, opacity 220ms ease, box-shadow 320ms ease;
+    box-shadow: 0 12px 26px #0002;
+}
+body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: #1c1a18;
+    opacity: var(--stack-shade, 0);
+    pointer-events: none;
+    transition: opacity 320ms ease;
+}
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card[data-stack-active="true"] { box-shadow: 0 20px 36px #0004; }
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card h3 { margin: 0 0 1rem; font: 700 1.1rem/1.35 Arial, Helvetica, sans-serif; color: var(--ink); }
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card :is(p, li) { font-size: .875rem; line-height: 1.65; color: var(--muted); }
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card .btn { display: inline-flex; justify-content: center; align-items: center; gap: .35rem; min-height: 44px; margin-top: auto; padding: .75rem .875rem !important; font-size: .8rem; line-height: 1.4; }
+.public-card-stack .public-swipe-card .btn .portal-icon { width: 1rem; height: 1rem; flex: none; }
+body.public-portal .public-swipe-carousel.public-card-stack.is-measuring .public-swipe-card { height: auto; transform: none; transition: none; visibility: hidden !important; }
+body.public-portal .public-swipe-carousel.public-card-stack.is-resizing .public-swipe-card { transition: none; }
+body.public-portal .public-swipe-carousel.public-card-stack.is-dragging .public-swipe-viewport { cursor: grabbing; user-select: none; }
+body.public-portal .public-swipe-carousel.public-card-stack.is-dragging .public-swipe-card { transition: none; }
+.public-card-stack .public-stack-controls { display: flex; align-items: center; justify-content: center; gap: .5rem; width: fit-content; max-width: 100%; margin: .25rem auto 0; }
+.public-card-stack .public-stack-controls[hidden] { display: none; }
+.public-card-stack .public-stack-dots { display: flex; flex-wrap: wrap; justify-content: center; min-width: 0; }
+.public-card-stack .public-stack-arrow { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 1px solid #f4f2ec40; border-radius: 50%; background: transparent; color: #f4f2ec; }
+.public-card-stack .public-stack-arrow .portal-icon { width: 18px; height: 18px; }
+.public-card-stack [data-stack-previous] .portal-icon { transform: rotate(180deg); }
+.public-card-stack .public-stack-arrow:hover { background: #f4f2ec20; }
+.public-card-stack .public-stack-dot { display: grid; place-items: center; flex: 0 0 24px; width: 24px; min-height: 44px; padding: 0; border: 0; background: transparent; color: #8b857b; }
+.public-card-stack .public-stack-dot::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.public-card-stack .public-stack-dot[aria-current="true"] { color: #f4f2ec; }
+.public-card-stack .public-stack-dot[aria-current="true"]::before { width: 8px; height: 8px; }
+.public-card-stack .public-stack-dot:hover { color: #fff; }
+body.public-portal .public-swipe-carousel.public-card-stack :is(.public-stack-controls button, .public-swipe-viewport):focus-visible { outline: 2px solid #f4f2ec !important; outline-offset: 2px; }
+body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card:focus-visible { outline: 3px solid var(--muted) !important; outline-offset: -5px; }
+@media (max-width: 575px) {
+    body.public-portal.portal-redesign :is(section, div, details).public-stack-panel { padding: 1.75rem .875rem 1rem !important; }
+    body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card { padding: 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card,
+    body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card::after { transition: none; }
+}
+@media screen {
+    html[data-contrast="true"] body.public-portal.portal-redesign :is(section, div, details).public-stack-panel {
+        --ink: #000;
+        --muted: #000;
+        --surface: #fff;
+        --brand-primary: #000;
+        background: #000 !important;
+    }
+    html[data-contrast="true"] body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card { background: #fff; border-color: #000; }
+    html[data-contrast="true"] body.public-portal .public-swipe-carousel.public-card-stack .public-swipe-card :is(h3, p, li) { color: #000; }
+}
+@media (forced-colors: active) {
+    .public-card-stack .public-stack-arrow { border-color: ButtonText; }
+    .public-card-stack .public-stack-dot::before { forced-color-adjust: none; background: ButtonText; }
+    .public-card-stack .public-stack-dot[aria-current="true"]::before { background: Highlight; }
+}
+@media print {
+    body.public-portal.portal-redesign :is(section, div, details).public-stack-panel { background: #fff !important; border-color: #000 !important; color: #000; }
+    body.public-portal.portal-redesign .public-stack-panel :is(.public-stack-heading, .public-faq-summary h2) { color: #000 !important; }
+    body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-viewport { display: block; height: auto; overflow: visible; }
+    body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-card { display: block; position: static; width: auto; height: auto; margin: 1rem 0; transform: none; opacity: 1 !important; visibility: visible !important; box-shadow: none; break-inside: avoid; }
+    body.public-portal .public-swipe-carousel.public-card-stack.is-enhanced .public-swipe-card::after { display: none; }
+    body.public-portal.portal-redesign :is(.public-stack-controls, .public-stack-hint) { display: none; }
+}
+
+/* Keep section labels and disclosure controls readable on the dark surround. */
+body.public-portal.portal-redesign .public-stack-panel > .eyebrow { display: table; margin: 0 auto 1rem; }
+body.public-portal.portal-redesign .public-stack-panel .public-faq-summary { color: var(--surface); }
+body.public-portal.portal-redesign .public-stack-panel .public-faq-summary h2 { text-align: left; }
+body.public-portal.portal-redesign .public-stack-panel .public-faq-intro { color: #c6c1b8; }
+body.public-portal.portal-redesign .public-stack-panel .public-stack-heading-link { display: block; width: fit-content; margin: .75rem auto 0; color: var(--surface); font-size: .875rem; }
+body.public-portal .public-card-stack .public-swipe-card h3:not(:first-child) { margin-top: 1.5rem; }
+body.public-portal .public-card-stack .public-swipe-card > .text-link { margin-top: auto; padding-top: 1rem; font-size: .8rem; line-height: 1.5; }
+body.public-portal .public-card-stack .public-swipe-card > .text-link .portal-icon { flex: none; width: 1rem; height: 1rem; }
+body.public-portal .public-card-stack .public-swipe-card .eyebrow { font-size: .75rem; line-height: 1.4; }
+body.public-portal .public-swipe-carousel.public-card-stack--small .public-swipe-card { padding: 1.25rem; border-radius: 1.25rem; }
+body.public-portal .public-swipe-carousel.public-card-stack--small .public-swipe-card h3 { font-size: 1rem; margin-bottom: .75rem; }
+html[data-motion="reduce"] body.public-portal .public-card-stack .public-swipe-card,
+html[data-motion="reduce"] body.public-portal .public-card-stack .public-swipe-card::after { transition: none; }
+@media print {
+    body.public-portal.portal-redesign .public-stack-panel :is(.public-stack-heading-link, .public-faq-summary, .public-faq-intro) { color: #000; }
+}

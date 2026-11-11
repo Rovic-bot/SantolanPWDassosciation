@@ -1,0 +1,17 @@
+<div class="directory-grid{% if not directory_members %} directory-grid-empty{% endif %}" data-directory-results data-result-count="{{ page_obj.paginator.count }}">
+  <section class="directory-records" aria-label="Member records">
+    {% if disability_error %}<p class="alert alert-warning" role="alert">{{ disability_error }}</p>{% endif %}
+    {% if directory_members %}
+    <div class="directory-list-heading" aria-hidden="true"><span>Member</span><span>Disability</span><span>Status</span><span>Joined</span></div>
+    <ul class="directory-member-list" aria-label="Select a member to preview">{% for member in directory_members %}{% include 'members/directory/row.html' %}{% endfor %}</ul>
+    <nav class="directory-pagination" aria-label="Member directory pages"><span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span><div>{% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}" data-directory-page>← Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}" data-directory-page>Next →</a>{% endif %}</div></nav>
+    {% else %}
+    <div class="directory-empty"><span class="directory-empty-mark" aria-hidden="true">⌕</span><h2>No records found</h2><p>Try a different name, control number, status, or disability type.</p><a class="btn btn-outline-secondary" href="{% url 'member_directory' %}?status=" data-clear-directory-filters>Clear filters</a></div>
+    {% endif %}
+  </section>
+  <div class="directory-preview-column">
+    {% if can_register_member %}<div class="directory-actions"><a class="btn btn-primary directory-register" href="{% url 'onsite_registration' %}">Register new member</a></div>{% endif %}
+    {% if selected_member %}{% include 'members/directory/panel.html' %}{% endif %}
+  </div>
+  {{ directory_members|json_script:'member-directory-data' }}
+</div>

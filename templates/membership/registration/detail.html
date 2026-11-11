@@ -1,0 +1,86 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Association membership review · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} onsite-registration-workspace{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/registration.css' %}">{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/onsite-registration.css' %}?v=20261104-tabs"><link rel="stylesheet" href="{% static 'css/association-review.css' %}?v=20261110-prpwd-unlock"><link rel="stylesheet" href="{% static 'css/membership-review-dialogs.css' %}?v=20261108">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/prpwd-review.js' %}?v=20261110-prpwd-unlock" defer></script><script src="{% static 'js/membership-review-dialogs.js' %}?v=20261109-member-print" defer></script>{% endblock %}
+{% block content %}
+<div class="container onsite-container association-review">
+  <div class="association-review-navigation">
+    <a class="workspace-back" href="{% url 'membership:encode' %}">← Enter another reference number</a>
+  </div>
+  {% include 'partials/workspace_messages.html' %}
+  <header class="onsite-section association-review-summary">
+    <div><p class="onsite-eyebrow">Association membership review</p><h1>{{ revision.data.full_name }}</h1><p class="registration-reference">Application reference <strong>{{ intake.short_reference }}</strong></p></div>
+    <a class="btn btn-outline-secondary" href="{% url 'membership:registration_inbox' %}">Back to membership reviews</a>
+  </header>
+  {% if registration_pending and can_decide and office_verification_required %}{% include 'membership/registration/review_flow.html' %}{% endif %}
+  <div class="onsite-workspace-grid">
+    <div class="onsite-form-column">
+      <p class="onsite-privacy"><span aria-hidden="true">●</span><strong>Private staff workspace</strong><span>Required fields are marked *.</span></p>
+      {% if registration_pending %}
+        <div class="onsite-section association-review-introduction">
+          <h2>Review application</h2>
+          {% if intake.channel == 'online' %}<p role="status">Online application loaded. The fields below contain the applicant’s submitted information. Confirm the details with the applicant and their PWD ID Card, then enter or confirm the required PWD No.</p>{% endif %}
+          {% if can_decide %}<p>{% if office_verification_required %}Check the PWD number in PRPWD first. You can then send an office invitation, or approve and send confirmation after verifying the applicant onsite.{% else %}Review the applicant's details, then approve or decline the registration.{% endif %} {% if editor_form.uses_pwd_number %}The PWD No. below becomes the member number on approval.{% else %}Enter the assigned member number when approving.{% endif %}</p>{% else %}<p>You can view this registration. An administrator with membership decision and PRPWD verification permissions can record the decision.</p>{% endif %}
+        </div>
+        {% if can_decide %}
+        <form method="post" class="onsite-form record-editor registration-editor" id="association-review-form">
+          {% csrf_token %}
+          {% for field in editor_form.hidden_fields %}{{ field }}{% endfor %}
+          {% if editor_form.errors %}<div class="onsite-validation" role="alert" id="registration-errors" tabindex="-1"><h2>Please review the following</h2>{{ editor_form.non_field_errors }}<ul>{% for field in editor_form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+          {% include 'membership/registration/review_sections.html' with sections=editor_form.editor_sections form=editor_form %}
+          {% if editor_form.assigned_member_number %}<section class="onsite-section"><header class="onsite-section-heading"><h2>Member number</h2></header><div class="onsite-fields">{% include 'membership/onsite/field.html' with field=editor_form.assigned_member_number %}</div></section>{% endif %}
+          <p class="association-review-acknowledgement">Privacy notice and accuracy acknowledgement: {% if revision.data.acknowledgement %}acknowledged at submission{% else %}not recorded{% endif %}.</p>
+    {% if editor_form.uses_pwd_number and not office_verification_required %}
+    <section class="onsite-section association-review-verification" data-prpwd-review data-prpwd-url="{{ prpwd_lookup_url }}" aria-labelledby="prpwd-review-heading">
+      <h3 class="h5" id="prpwd-review-heading">PRPWD verification</h3>
+      <p>Check the applicant's PWD No. in PRPWD, then return here. Approve membership records a verified result; Not approved records a result that was not verified.</p>
+      {% if prpwd_lookup_url %}<button type="button" class="btn btn-outline-primary" data-prpwd-open>Open PRPWD and copy PWD No.</button>{% else %}<p role="alert">Configure the official PRPWD link before recording a verification result.</p><button type="button" data-prpwd-open hidden disabled>Open PRPWD</button>{% endif %}
+      <p class="form-text mt-2" data-prpwd-feedback role="status">Return here after checking the PWD No. in PRPWD. Opening the page does not verify the applicant.</p>
+      <p class="form-text">If PRPWD is unavailable or the result is unclear, leave this registration pending and return later.</p>
+    </section>
+    {% endif %}
+          <div class="onsite-form-actions">
+            <div class="onsite-action-note">{% if office_verification_required %}Final approval creates the member record and sends a separate email confirming Association membership.{% else %}Approval saves your corrections and creates the member record.{% endif %} Declining saves the decision without creating a member.</div>
+            <div class="onsite-action-buttons">
+      {% if not office_verification_required %}<button type="submit" name="action" value="approve_registration" class="btn btn-primary"{% if editor_form.uses_pwd_number %} data-prpwd-decision{% endif %}>Approve membership{% if office_verification_required %} and send confirmation{% endif %}</button>{% endif %}
+      <button type="submit" name="action" value="decline_registration" class="btn btn-outline-danger" formnovalidate{% if editor_form.uses_pwd_number %} data-prpwd-decision{% endif %}>{% if editor_form.uses_pwd_number %}Not approved{% else %}Decline registration{% endif %}</button>
+      <button class="btn btn-outline-secondary" type="button" data-pending-open aria-haspopup="dialog" aria-controls="membership-pending-dialog">Leave pending</button>
+            </div>
+          </div>
+        </form>
+        {% else %}<div class="onsite-form association-review-readonly">{% include 'membership/registration/review_sections.html' with sections=submitted_form.profile_sections form=submitted_form %}</div>{% endif %}
+      {% else %}
+        <section class="onsite-section association-review-introduction" aria-label="Membership decision">
+  {% if application.status == 'approved' %}
+  <p role="status"><strong>Approved.</strong> This applicant is now a member.</p>
+  <p>{% if approved_with_pwd_number %}PWD No.{% else %}Assigned member number{% endif %}: <strong>{{ application.control_number }}</strong></p>
+  {% if perms.members.view_member %}<p><a class="btn btn-primary" href="{% url 'members:detail' application.member.pk %}">Open member record</a></p>{% endif %}
+  {% else %}<p role="status"><strong>Declined.</strong> This registration did not create a member.</p>{% endif %}
+  <p>Decided by {{ application.decided_by|default:'Former administrator' }} on {{ application.decided_at }}.</p>
+  {% if application.prpwd_verified_at %}<p>PRPWD: <strong>{{ application.prpwd_verified|yesno:'manually verified,not verified' }}</strong> — recorded by {{ application.prpwd_verified_by|default:'Former administrator' }} on {{ application.prpwd_verified_at }}.</p>{% endif %}
+        </section>
+        <div class="onsite-form association-review-readonly">{% include 'membership/registration/review_data.html' with submitted=revision.data %}</div>
+      {% endif %}
+      <details class="onsite-section association-review-history"><summary>Registration history</summary><div class="association-review-history-body">
+{% for previous in revisions %}<details><summary>Revision {{ previous.number }} · {{ previous.recorded_at|date:'M j, Y, g:i A' }}</summary>{% include 'membership/registration/submitted_data.html' with submitted=previous.data %}<p>{{ previous.reason }}</p></details>{% endfor %}
+<ol>{% for action in history %}<li>{{ action.occurred_at|date:'M j, Y, g:i A' }} — {{ action.action }} — {{ action.actor_label|default:'Submission session' }} · revision {{ action.revision.number }}{% if action.reason %}<p>{{ action.reason }}</p>{% endif %}</li>{% endfor %}</ol>      </div></details>
+    </div>
+    <aside class="onsite-guide" aria-label="Application status and review guide">
+      {% include 'membership/registration/approval_email_status.html' %}
+      {% include 'membership/registration/pending_email_status.html' %}
+      <section class="onsite-record-status"><span>Application status</span><strong>{% if registration_pending %}Pending review{% elif application.status == 'approved' %}Approved{% else %}Declined{% endif %}</strong><small>{% if intake.channel == 'online' %}Online application{% else %}Onsite registration{% endif %}</small></section>
+      <nav class="onsite-guide-card" aria-label="Application sections"><p class="onsite-eyebrow">In this application</p><h2>Review sections</h2><ol>
+        {% if not registration_pending and revision.data.profile_sections %}{% for title, rows in revision.data.profile_sections %}<li><a href="#review-section-{{ forloop.counter }}">{{ title }}</a></li>{% endfor %}
+        {% elif registration_pending and can_decide %}{% for title, fields in editor_form.editor_sections %}<li><a href="#review-section-{{ forloop.counter }}">{{ title }}</a></li>{% endfor %}
+        {% elif submitted_form.profile_sections %}{% for title, fields in submitted_form.profile_sections %}<li><a href="#review-section-{{ forloop.counter }}">{{ title }}</a></li>{% endfor %}
+        {% else %}<li><a href="#review-section-1">Applicant information</a></li>{% endif %}
+      </ol></nav>
+      <section class="onsite-help-card"><h2>Submitted form</h2><p>Open the retained application for viewing or printing.</p><a class="btn btn-outline-primary" href="{% url 'membership:registration_form' intake.reference revision.number %}" data-membership-form-preview aria-haspopup="dialog" aria-controls="membership-form-dialog">View / print submitted form</a></section>
+      {% if attachments %}<section class="onsite-help-card"><h2>Supporting documents</h2><ul class="association-review-documents">{% for attachment in attachments %}<li><a href="{% url 'membership:registration_document' attachment.pk %}">{{ attachment.slot }}{% if attachment.alternative %} — {{ attachment.alternative }}{% endif %}</a></li>{% endfor %}</ul></section>{% endif %}
+    </aside>
+  </div>
+</div>
+{% include 'membership/registration/review_dialogs.html' %}
+{% endblock %}

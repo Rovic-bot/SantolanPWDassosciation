@@ -1,0 +1,4 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Program eligibility · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs resident-message{% endblock %}
+{% block content %}<section class="page-hero"><div class="container"><p class="eyebrow">PROGRAM ELIGIBILITY</p><h1>Application cannot continue.</h1><p>{{ program.name }}</p></div></section><div class="container content-section"><p role="alert">{{ error }}</p><a href="{% url 'programs:detail' program.pk %}">Return to program details</a></div>{% endblock %}

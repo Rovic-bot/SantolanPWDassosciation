@@ -1,0 +1,51 @@
+Selection certificates after Publish Results - 6 November 2026
+
+Authorized scope
+- The owner requested that Announcements > Review and publish > Publish results email a personalized copy of the supplied certificate to every selected member.
+- The owner confirmed that no domain is owned/configured yet. The open Resend account showed no domains and no API keys. No credential was created, no real announcement was published, and no real member email was sent during implementation or testing.
+
+Implemented behavior
+- Recorded publication and private certificate jobs commit atomically. Only applications in the exact published selected-member rows receive a job. No eligibility, scores, selections, releases, or public result fields are changed by delivery.
+- One immutable certificate per program application prevents duplicate certificates on repeated publication. Each contains the member's saved full name, published program name and local publication date. The original DOCX remains unchanged; its copy is packaged with the application.
+- The application-provided email takes precedence; otherwise the onsite member email is used. Missing/invalid addresses remain pending with a correction message. A never-attempted job can pick up a corrected address through Retry pending certificates. Submitted payloads remain fixed for idempotent retry.
+- One publication queues the selected members together. Background delivery sends separate recipient-only requests with DOCX attachments. The Resend batch API does not support attachments. Requests are paced at 0.6 seconds; 429 failures are retained for retry.
+- Private status/downloads require current publication permissions. Certificate bytes and attempt history are retained in the database, not public media. Public result payloads contain no email addresses or certificate URLs.
+- Resend acceptance is labeled as acceptance, not confirmed inbox delivery. Failures have sanitized explanations. Retries use the same provider idempotency key and payload; uncertain requests cannot automatically retry after 23 hours because Resend's protection expires at 24 hours. Check the Resend dashboard before any manual resend in that case.
+- A queued job survives restart. A management command can drain queued jobs; blocked/failed jobs are retried explicitly in the preview after setup/correction. Already accepted certificates are never automatically resent. A selection must still be part of current published results before an attempt.
+- Announcement and delivery history do not backfill past publications. An authorized administrator must explicitly publish results to create the first jobs for previously published programs.
+
+Resend setup still needed
+1. Own a domain and verify its email DNS records in Resend. A public website is not required. A regular Gmail address and Resend's test domain cannot be used for these member deliveries.
+2. Create a sending-only API key and store it outside Git. Set RESEND_API_KEY and RESEND_FROM_EMAIL to an address on the verified domain, then CERTIFICATE_RESEND_ENABLED=True. These settings are in .env.example without credentials.
+3. For the retained local launcher, set these environment variables in the shell that starts/restarts scripts/current_development.py. The launcher passes them only with explicit CERTIFICATE_RESEND_ENABLED=True/1; the ordinary .env remains excluded from this retained instance. Normal deployments read the environment/.env through config/settings.py.
+4. Restart the application. Existing pending jobs remain visible; use Retry pending certificates after setup. New Publish Results actions automatically queue new selected members.
+5. For a scheduled worker or recovery, run manage.py send_program_certificates --limit 100 under the same intended database/environment. Set CERTIFICATE_EMAIL_BACKGROUND=False if an external worker owns dispatch. The normal development default starts a worker after commit. No scheduler/service was deployed by this task.
+- Replies use the saved Association email when available. The Resend From address is configured separately because it must belong to the verified domain.
+
+Validation
+- 36 focused tests passed (58.929 seconds): certificate workflow/adapter/privacy, additive migration preservation, existing recorded result publication and local mail environment safeguards.
+  .venv/Scripts/python.exe -B scripts/g12_test_runner.py test announcements.test_certificate_delivery announcements.test_certificate_migration announcements.test_recorded_results scripts.test_mail_environment --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+  Isolated artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-0psye179
+- Two browser tests passed (8.300 seconds): new certificate publication and prior compact-dialog/sidebar regression, including desktop/mobile, private download, repeat publication, status refresh, close/Escape and no-JavaScript fallback. No external email/network calls were allowed in the browser fixture.
+  Isolated artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-h5j1enc8
+- After adding concurrent-worker coverage, placeholder escaping protection and long-text fit, 18 focused tests/browser checks passed (7.669 seconds). Two simultaneous workers produced one provider request and one accepted attempt. Refreshed screenshots use explicit AJAX completion waits.
+  .venv/Scripts/python.exe -B scripts/g12_test_runner.py test announcements.test_certificate_delivery scripts.certificate_publication_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+  Isolated artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-mg53q6st
+- Native MySQL disposable instances only; the real application database was not used for tests. All test email requests were mocked. No live Resend API acceptance or inbox delivery has been verified, because the account lacks a verified domain and API key.
+- Original and personalized DOCX pages rendered with the packaged render_docx.py and inspected. A temporary official LibreOffice administrative extraction supplied the converter missing from the Windows runtime. Standard, long-program, and maximum-length fictional names/programs were checked. Long text and the full date remain on one page; the original template is byte-identical. No office converter is needed at application runtime because the attachment is DOCX.
+- Django configuration/database check passed; full makemigrations --check --dry-run reports no changes; git diff --check passed. The legacy working tree contains unrelated line-ending warnings, preserved without mass formatting.
+
+Retained local activation
+- Verified the known port-8013 instance and its native MySQL identity, stopped only its recognized web process, and made a complete 9,538,893-byte native backup before schema changes.
+- Applied only tested announcements.0006_selection_certificate_email directly to the model-synchronized retained database. Historical migrations were neither replayed nor faked.
+- All 125 prior tables retained identical columns and row fingerprints. The two new certificate tables were empty on activation. No historical notification was created or sent.
+- Private backup/preservation evidence: .local/certificate-resend-20261106/before-certificate.sql and preservation.json. Configuration check and collectstatic succeeded; the website is running again at http://127.0.0.1:8013/.
+- Screenshots and sample-certificate.docx contain fictional test data only.
+- Final read-only check: retained website running; certificate jobs 0; delivery attempts 0; Resend setup pending. No migration drift.
+- Automatic approval review rejected the optional recursive cleanup of the downloaded/extracted QA converter. It remains under ignored .local/certificate-resend-20261106/libreoffice; no workaround deletion was attempted. This converter is not an application runtime requirement.
+
+Primary API references checked
+https://resend.com/docs/api-reference/emails/send-email
+https://resend.com/docs/api-reference/emails/send-batch-emails
+https://resend.com/docs/dashboard/emails/idempotency-keys
+https://resend.com/docs/knowledge-base/403-error-resend-dev-domain

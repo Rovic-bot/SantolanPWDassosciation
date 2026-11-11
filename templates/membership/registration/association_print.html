@@ -1,0 +1,112 @@
+{% load reference_codes %}{% firstof reference_kind 'association' as display_kind %}
+{% load static %}
+{# Print layout transcribed from Santolan_PWD_Membership_Form.docx. Only retained declarations belong here. #}
+<section class="association-print-form" aria-label="Membership form print copy">
+  <div class="membership-letterhead">
+    <img src="{% static 'images/association-logo.png' %}" alt="Association logo" width="86" height="86">
+    <div><strong>ALYANSA NG TAONG MAY KAPANSANAN NG<br>BARANGAY SANTOLAN INC.</strong>
+      <div>150 Evangelista Ave. cor. M. De Leon East, Ilaya Park, Santolan, Pasig City 1610</div>
+      <div>Email Address: bagongalyansasantolanpwd2011@gmail.com Cell No# 09059177976</div>
+      <b>SEC Reg. No. 20250902116732-14</b>
+    </div>
+    <img src="{% static 'images/membership-form/barangay.png' %}" alt="Barangay Santolan logo" width="86" height="86">
+  </div>
+  <h2 class="membership-form-title">MEMBERSHIP FORM</h2>
+  <div class="membership-intake-block">
+    <div>
+      <p class="membership-registered"><b>DATE REGISTERED:</b> __________________________</p>
+      <div class="membership-requirements"><b>DOCUMENT REQUIREMENTS</b> (from accompanying checklist)<br>
+        <span class="membership-requirement"><span class="membership-checkbox"></span> 1 PC. LONG BROWN ENVELOPE</span>
+        <span class="membership-requirement"><span class="membership-checkbox"></span> 4 PCS. PHOTOCOPY OF PWD ID</span>
+        <span class="membership-requirement"><span class="membership-checkbox"></span> 2 PCS. PHOTOCOPY OF VOTER’S CERTIFICATE</span>
+        <span class="membership-requirement"><span class="membership-checkbox"></span> 2 PCS. PHOTOCOPY OF BIRTH/MARRIAGE CERTIFICATE</span>
+        <span class="membership-requirement"><span class="membership-checkbox"></span> 4 PCS. 2×2 PICTURES WITH WHITE BACKGROUND</span>
+      </div>
+    </div>
+    <div class="membership-photo-box">2X2<br>PHOTO</div>
+  </div>
+  <table class="membership-form-grid" aria-label="Submitted membership information">
+    <colgroup>{% for column in '123456789012345678901234' %}<col>{% endfor %}</colgroup>
+    <tbody>
+      {% if submitted.name_as_recorded %}<tr><td colspan="24">{% include 'membership/registration/print_field.html' with label='NAME AS RECORDED' value=submitted.name_as_recorded %}</td></tr>{% endif %}
+      <tr>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='LAST NAME' value=submitted.last_name %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='FIRST NAME' value=submitted.first_name %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='MIDDLE NAME' value=submitted.middle_name %}</td>
+      </tr>
+      <tr>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='HOUSE NO. AND STREET' value=submitted.house_street %}</td>
+        <td colspan="5">{% include 'membership/registration/print_field.html' with label='BARANGAY' value=submitted.barangay %}</td>
+        <td colspan="5">{% include 'membership/registration/print_field.html' with label='CITY' value=submitted.city %}</td>
+        <td colspan="3">{% include 'membership/registration/print_field.html' with label='REGION' value=submitted.region %}</td>
+        <td colspan="3">{% include 'membership/registration/print_field.html' with label='ZIP CODE' value=submitted.zip_code %}</td>
+      </tr>
+      {% if submitted.address_as_recorded %}<tr><td colspan="24">{% include 'membership/registration/print_field.html' with label='ADDRESS AS RECORDED' value=submitted.address_as_recorded %}</td></tr>{% endif %}
+      <tr>
+        <td colspan="16">{% include 'membership/registration/print_field.html' with label='MOBILE NOS.' value=submitted.contact_number %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='EMAIL' value=submitted.email %}</td>
+      </tr>
+      <tr>
+        <td colspan="6">{% include 'membership/registration/print_field.html' with label='DATE OF BIRTH (MM/DD/YY)' value=submitted.birthdate date_value=True %}</td>
+        <td colspan="2">{% include 'membership/registration/print_field.html' with label='AGE' value=submitted.age %}</td>
+        <td colspan="16"><div class="membership-field-label">CIVIL STATUS: (Pls. CHECK ONE)</div>
+          <div>{% include 'membership/registration/print_choice.html' with label='SINGLE' expected='Single' selected=submitted.civil_status %} {% include 'membership/registration/print_choice.html' with label='MARRIED' expected='Married' selected=submitted.civil_status %} {% include 'membership/registration/print_choice.html' with label='WIDOWER' expected='Widower' selected=submitted.civil_status %}</div>
+          <div>{% include 'membership/registration/print_choice.html' with label='SEPARATED' expected='Separated' selected=submitted.civil_status %} {% include 'membership/registration/print_choice.html' with label='CO-HABITATION' expected='Co-habitation' selected=submitted.civil_status %}</div>
+          {% if submitted.civil_status_as_recorded %}<div class="membership-recorded-value">Recorded: {{ submitted.civil_status_as_recorded }}</div>{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='NATIONALITY:' value=submitted.nationality %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='GENDER:' value=submitted.gender %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='NO. OF FAMILY MEMBER:' value=submitted.family_members %}</td>
+      </tr>
+      <tr>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='SPOUSE NAME:' value=submitted.spouse_name %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='CONTACT NO.' value=submitted.spouse_contact %}</td>
+        <td colspan="8" rowspan="2"><div class="membership-field-label">4P’S MEMBER: (Pls. CHECK)</div><div class="membership-four-ps">{% include 'membership/registration/print_choice.html' with label='YES' expected='Yes' selected=submitted.four_ps_member %} {% include 'membership/registration/print_choice.html' with label='NO' expected='No' selected=submitted.four_ps_member %}</div></td>
+      </tr>
+      <tr>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='PARENT/GUARDIAN:' value=submitted.guardian_name %}</td>
+        <td colspan="8">{% include 'membership/registration/print_field.html' with label='CONTACT NO.' value=submitted.guardian_contact %}</td>
+      </tr>
+      <tr class="membership-section-label"><td colspan="24">TYPE OF DISABILITY: (PLS. SPECIFY CHECK ONE ONLY)</td></tr>
+      <tr class="membership-disability">
+        <td colspan="8">
+          {% include 'membership/registration/print_choice.html' with label='PHYSICAL / ORTHOPEDIC' expected='Physical / Orthopedic' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='LEARNING AND BEHAVIORAL' expected='Learning and Behavioral' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='SPEECH' expected='Speech' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='HEARING' expected='Hearing' selected=submitted.disability_type %}
+        </td>
+        <td colspan="8">
+          {% include 'membership/registration/print_choice.html' with label='PSYCHOSOCIAL' expected='Psychosocial' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='INTELLECTUAL' expected='Intellectual' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='CANCER (R.A. 11215)' expected='Cancer (R.A. 11215)' selected=submitted.disability_type %}
+        </td>
+        <td colspan="8">
+          {% include 'membership/registration/print_choice.html' with label='MENTAL DISABILITY' expected='Mental Disability' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='VISUAL DISABILITY' expected='Visual Disability' selected=submitted.disability_type %}
+          {% include 'membership/registration/print_choice.html' with label='RARE DISEASE (R.A. 10747)' expected='Rare Disease (R.A. 10747)' selected=submitted.disability_type %}
+        </td>
+      </tr>
+      {% if submitted.disability_type_as_recorded %}<tr><td colspan="24" class="membership-recorded-value">Disability as recorded: {{ submitted.disability_type_as_recorded }}</td></tr>{% endif %}
+      <tr class="membership-section-label"><td colspan="24">ISSUED ID:</td></tr>
+      <tr>
+        <td colspan="12">{% include 'membership/registration/print_field.html' with label='PWD NO.' value=submitted.pwd_number %}</td>
+        <td colspan="12">{% include 'membership/registration/print_field.html' with label='VRR/VOTER’S CERTIFICATION NO.' value=submitted.voter_certification_number %}</td>
+      </tr>
+      <tr>
+        <td colspan="12">{% include 'membership/registration/print_field.html' with label='DATE ISSUED:' value=submitted.date_issued date_value=True %}</td>
+        <td colspan="12">{% include 'membership/registration/print_field.html' with label='PHIL. HEALTH ID NO.' value=submitted.philhealth_number %}</td>
+      </tr>
+      <tr class="membership-section-label"><td colspan="24">EDUCATIONAL ATTAINMENT:</td></tr>
+      <tr class="membership-education">
+        <td colspan="8">{% include 'membership/registration/print_choice.html' with label='ELEMENTARY' expected='Elementary' selected=submitted.education %}{% include 'membership/registration/print_choice.html' with label='COLLEGE UNDERGRADUATE' expected='College Undergraduate' selected=submitted.education %}</td>
+        <td colspan="8">{% include 'membership/registration/print_choice.html' with label='HIGH SCHOOL' expected='High School' selected=submitted.education %}{% include 'membership/registration/print_choice.html' with label='VOCATIONAL' expected='Vocational' selected=submitted.education %}</td>
+        <td colspan="8">{% include 'membership/registration/print_choice.html' with label='COLLEGE GRADUATE' expected='College Graduate' selected=submitted.education %}</td>
+      </tr>
+      {% if submitted.education_as_recorded %}<tr><td colspan="24" class="membership-recorded-value">Education as recorded: {{ submitted.education_as_recorded }}</td></tr>{% endif %}
+      <tr><td colspan="24" class="membership-signature-cell"><div class="membership-signature-line"></div>SIGNATURE OVER PRINTED NAME</td></tr>
+    </tbody>
+  </table>
+  <div class="membership-print-reference">Registration reference: {{ reference|short_reference:display_kind }}{% if revision_number %} · Revision {{ revision_number }}{% endif %}<br>{% if member_number %}Approved member registration · Member number: {{ member_number }}{% if approved_at %} · Approved {{ approved_at|date:'m/d/Y' }}{% endif %}{% else %}Submitted information only. Membership approval requires authorized onsite review.{% endif %}</div>
+</section>

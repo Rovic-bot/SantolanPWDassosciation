@@ -1,0 +1,9 @@
+<dialog class="program-details-dialog" id="program-details-dialog" aria-labelledby="program-dialog-title"{% if event_dialog %} data-event-dialog-shell{% endif %}>
+  <header class="program-dialog-toolbar">
+    <h2 id="program-dialog-title">{% if event_dialog %}Manage event{% else %}Program details{% endif %}</h2>
+    <a href="#" data-program-full-page>Open full page <span aria-hidden="true">&#8599;</span></a>
+    <button type="button" class="program-dialog-close" data-program-dialog-close aria-label="{% if event_dialog %}Close event details{% else %}Close program details{% endif %}" autofocus><span aria-hidden="true">&#215;</span></button>
+  </header>
+  <p class="program-dialog-status" data-program-dialog-status role="status"></p>
+  <div class="program-dialog-content" data-program-dialog-content></div>
+</dialog>

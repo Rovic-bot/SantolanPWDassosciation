@@ -1,0 +1,12 @@
+{% extends 'events/workspace/base.html' %}
+{% block content %}
+<div class="container event-workspace-container" data-event-workspace data-owner="{{ request.user.pk }}">
+  {% if can_view_events %}
+  <h1 class="visually-hidden">Community events</h1>
+  {% include 'partials/workspace_messages.html' %}
+  {% include 'events/workspace/filters.html' %}
+  {% include 'events/workspace/results.html' %}
+  {% else %}<h1 class="visually-hidden">Annual observances</h1>{% endif %}
+  {% include 'events/workspace/quarters.html' %}
+</div>
+{% endblock %}

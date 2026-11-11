@@ -1,0 +1,8 @@
+{% extends 'members/update/base.html' %}
+{% block update_content %}
+<form method="post" autocomplete="off" class="record-editor registration-editor">{% csrf_token %}{{ form.request_key }}
+<p class="form-text application-required-note">Your saved information is filled in below. Edit only what needs to change. Required fields are marked *.</p>
+{% include 'membership/registration/fields.html' with public_profile_layout=True resident_anchors=True %}
+<button class="btn btn-primary" type="submit">Submit updated information</button></form>
+<form method="post" action="{% url 'members:update_finish' %}" class="mt-3">{% csrf_token %}<button class="btn btn-outline-secondary" type="submit">Close my information</button></form>
+{% endblock %}

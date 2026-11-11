@@ -1,0 +1,41 @@
+/* Layout from Santolan_PWD_Membership_Form.docx; the source document is unchanged. */
+.association-print-form { display: none; color: #000; background: #fff; font: 9pt/1.12 "Times New Roman", Times, serif; overflow-wrap: anywhere; }
+.membership-letterhead { display: grid; grid-template-columns: 22mm 1fr 22mm; align-items: center; gap: 2mm; text-align: center; font-size: 8pt; }
+.membership-letterhead img { width: 22mm; height: 22mm; object-fit: contain; }
+.membership-letterhead strong { display: block; font-size: 10.5pt; margin-bottom: 1mm; }
+.association-print-form .membership-form-title { margin: 3mm 0 5mm; padding: 0; text-align: center; font: bold 22pt/1.1 "Times New Roman", Times, serif; color: #000; letter-spacing: normal; }
+.membership-intake-block { display: grid; grid-template-columns: 1fr 50.8mm; align-items: center; gap: 3mm; margin-bottom: 2mm; break-inside: avoid; }
+.association-print-form .membership-registered { margin: 0 0 5mm; font-size: 9pt; }
+.membership-requirements { font-size: 8pt; }
+.membership-requirement { display: block; margin-top: .5mm; }
+.membership-photo-box { width: 50.8mm; height: 50.8mm; border: 1pt solid #000; display: flex; flex-direction: column; justify-content: center; text-align: center; font-size: 10pt; }
+.membership-form-grid { border-collapse: collapse; table-layout: fixed; width: 100%; border: 1pt solid #000; font: inherit; }
+.membership-form-grid col { width: 4.1666667%; }
+.membership-form-grid tr { break-inside: avoid; }
+.membership-form-grid td { border: .75pt solid #000; padding: 1.1mm; vertical-align: top; overflow-wrap: anywhere; }
+.membership-field-label { font-size: 8.5pt; }
+.membership-field-value { min-height: 5mm; padding-top: .5mm; font: bold 9pt/1.15 Arial, sans-serif; white-space: pre-wrap; }
+.membership-checkbox { display: inline-block; position: relative; box-sizing: border-box; width: 2.4mm; height: 2.4mm; border: .65pt solid #000; vertical-align: -.25mm; flex: 0 0 2.4mm; }
+.membership-checkbox.is-checked::after { content: "×"; position: absolute; inset: 0; text-align: center; font: bold 9pt/2mm Arial, sans-serif; }
+.membership-choice { display: inline-block; margin-right: 3mm; font-size: 8.5pt; }
+.membership-four-ps { margin-top: 5mm; text-align: center; }
+.membership-section-label td { padding-top: .7mm; padding-bottom: .7mm; }
+.membership-disability td, .membership-education td { border-left: 0; border-right: 0; }
+.membership-disability .membership-choice, .membership-education .membership-choice { display: flex; align-items: baseline; gap: 1mm; margin: .5mm 0; }
+.membership-form-grid .membership-signature-cell { height: 15mm; text-align: center; vertical-align: bottom; }
+.membership-signature-line { border-top: .6pt solid #000; width: 72mm; max-width: 100%; margin: 0 auto 1mm; }
+.membership-print-reference { margin-top: 1.5mm; font: 7pt/1.15 Arial, sans-serif; break-inside: avoid; }
+/* A4 paper preview uses the same dimensions and typography as the printout. */
+.association-print-preview { overflow-x: auto; }
+.association-print-preview .association-print-form { display: block; width: 184.6mm; margin: 1.5rem auto; outline: 1px solid #d5dce1; box-shadow: 0 2px 10px #0000000d; }
+.membership-recorded-value { font: 8.5pt/1.2 Arial, sans-serif; }
+@media print {
+    @page { size: A4 portrait; margin: 12.7mm; }
+    body.association-print-page { margin: 0 !important; padding: 0 !important; }
+    .association-print-page .skip-link,
+    .association-print-page .registration-content > :not(.association-print-form) { display: none !important; }
+    .association-print-page #main-content,
+    .association-print-page .registration-content { width: 100%; max-width: none; margin: 0 !important; padding: 0 !important; }
+    .association-print-form, .association-print-preview .association-print-form { display: block; width: 100%; margin: 0; outline: none; box-shadow: none; }
+    .association-print-preview { overflow: visible; }
+}

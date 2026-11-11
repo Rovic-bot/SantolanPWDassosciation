@@ -1,0 +1,25 @@
+# Portal display and editor refinements - 9 November 2026
+
+Implemented the owner's four UI requests in the existing Django portal. The repository instructions, current specification, development guide, implementation impact, and relevant dated UI validation were checked. No business rules, calculations, permissions, publication decisions, records, or migrations were changed.
+
+## Changes
+
+- Removed the Content Management editor's visible introductory header, public-portal link, and page tabs. Its accessible heading, Edit/Preview controls, Save/Discard controls, and permission checks remain. Pages are selected through the navigation inside the actual preview. Unsaved-change confirmation still applies.
+- Adjusted the Home photo gradient to fade from opaque warm cream on the left to a clear photograph on the right. The corresponding dark gradient protects text contrast in dark mode.
+- Added Dark mode to Display preferences. Public pages use warm charcoal surfaces and cream text, including forms, detail dialogs, and controls. The public preference persists and is applied before paint. The Admin Display control uses the existing Admin theme and synchronizes with its existing switch; public and Admin theme choices remain separate. High contrast takes precedence over the public dark theme and returning from it restores dark mode. The staff sign-in page does not show an inactive theme control.
+- Added the public-only Tagalog/English button. Local translation catalogs cover built-in navigation, guidance, controls, dates, common public form instructions, labels, and dynamically inserted detail content. The language choice persists, updates the document language, and works with selected-text reading. Per the owner's clarification, custom program/event titles, descriptions, announcements, and CMS copy retain their original wording. Inputs, option values, references, and stored content are not rewritten. No external translation provider is loaded or contacted.
+- Added category icons, compact labels, aligned action pills, a preparation label for unavailable guides, and a neutral active-card outline to Guides and resources. All seven cards retain their destinations and compact reading width. Carousel heights respond to translated copy without clipping or a measurement animation.
+
+## Verification
+
+- Nine existing `core.tests.test_portal_editor` tests passed in fresh disposable native MySQL through `scripts/g12_test_runner.py`. Test directory: `santolan-g12-tests-p37h6oqw`. The retained application database was not used as a test database.
+- Read-only Chrome checks passed at 1440, 768, 390, and 320px across Home, About, Resources, Events, and Programs. Every card was reached and checked for text overflow. Largest text, Display panel bounds, English restoration, saved preferences, dark/high-contrast switching, and selected Tagalog text reading passed.
+- Public membership, PDAO, application-tracking, and referral-verification form values and option values remained identical across language changes. No form was submitted. Synthetic `translate="no"` and CMS-copy examples remained unchanged.
+- Computed text contrast checks passed on nine main public routes, six form/program-detail routes, and open event/announcement dialogs. Screenshots were visually inspected. These are targeted checks, not a complete WCAG audit or assistive-technology certification.
+- The actual editor and eight preview templates were rendered to local temporary files without saving sessions, then served through browser GET interception. Preview navigation, Save/Discard readiness, rejection/acceptance of unsaved-change confirmation, public-only language controls, and Admin theme synchronization passed. No content save or authentication request was sent to the live instance. This browser check complements the isolated backend tests.
+- Speech behavior was checked through a browser speech mock; audible Tagalog output depends on the browser's installed voices and was not manually tested.
+- Changed templates compiled successfully. JavaScript syntax checks, the configured Django/database check, and `git diff --check` passed. No browser JavaScript errors were recorded.
+
+The identity-verified local web process was refreshed after checking for in-progress membership/certificate emails. MySQL remained running. Existing unfinished repository work was preserved. Temporary source snapshots, rendered Admin previews, and QA harnesses remain under ignored `.local/portal-display-20261109/`.
+
+Evidence: [browser checks](checks.json), [main-page contrast](dark-contrast-diagnostic.json), [form contrast](dark-forms-contrast.json), [dialog contrast](dialog-contrast.json), [Home gradient](home-gradient.png), [compact guides](resources-light-1440.png), [mobile Tagalog guides](resources-dark-tagalog-320.png), [mobile Display controls](display-320.png), and [editor toolbar](editor-toolbar.png). Earlier unnumbered resource/form screenshots are diagnostic; use the linked final layout screenshots.

@@ -1,0 +1,29 @@
+Program eligibility decision emails — November 6, 2026
+
+Owner-authorized behavior
+- Eligible, Needs Information, and Ineligible in Application review trigger a notification after the corresponding human decision successfully commits.
+- Eligible remarks are optional. Needs Information requires an explanation of the information needed; Ineligible requires the reason. Both server-side form/service validation and browser validation enforce this, including whitespace-only input.
+- Recipient precedence is the submitted application_confirmation.applicant_email, then the registered member email populated from onsite registration. With neither, the decision is saved and no message is sent. Invalid saved addresses do not silently redirect messages to another address.
+- Each message contains the program, eligibility outcome, issued application reference, and supplied remarks. Eligible messages distinguish eligibility from beneficiary selection and actual assistance. No scores, disability details, attachments, or public tracking links are added.
+
+Delivery and privacy
+- Uses the existing Association Gmail connection from Community Assistance Desk email settings, including encrypted credentials and sender-bound connection checks. No second provider or credential store was introduced.
+- Notification content, recipient/source, sender, decision version, requesting administrator, and each delivery attempt are retained privately. One job is allowed per application version. The send is registered with transaction.on_commit and claims its job before contacting the provider.
+- Failed delivery preserves the decision. Authorized reviewers can retry the saved email without changing eligibility. Retries retain the original recipient/message, enforce current application version, reject already accepted/in-flight messages, and record an audit event. An unconfirmed attempt may be manually retried after five minutes with a duplicate-delivery notice. Queued messages superseded by application changes are skipped.
+- A provider success is labeled Accepted by email service, not proof of inbox delivery. Synthetic memory capture is labeled as a test outbox. Provider response bodies and secrets are not retained in attempt logs.
+- The review page shows the chosen address/source and latest notification state. The public application email field explains the notification/fallback behavior. Existing eligibility, evidence, selection, release, and permission rules remain.
+
+Validation
+- 46 Django tests passed in 25.088 seconds: programs.test_decision_email, programs.test_decision_email_migration, programs.test_direct_review, programs.test_configured_application, assistance.test_referral_connection, and assistance.test_retired_detail.
+- Tests ran only through scripts/g12_test_runner.py and RegistrationIntakeTestRunner on fresh, identity-verified disposable MySQL. Artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-a14xbacb/django.log.
+- Coverage includes all outcomes, recipient priority/fallback/missing/invalid cases, conditional remarks, transaction rollback, duplicate/stale requests, concurrent single-claim sending, transport failure/retry, sender binding, CSRF/permissions, cross-application access, immutable email history, and additive migration preservation. All mail was captured or mocked; no real recipient was emailed.
+- node scripts/decision_remarks_dom_test.cjs passed: required explanations, whitespace rejection, invalid-submit blocking, and optional Eligible remarks without network requests.
+- Django system checks, template compilation, JavaScript syntax, and git diff --check (core.safecrlf=false) passed. Migration drift check reported No changes detected; the unrelated default development connection was offline during its history probe.
+- Read-only live review-page inspection confirmed the required-remarks help and the application-email recipient guidance. No decision button was submitted during the live check.
+
+Local activation
+- Added programs.0006_application_decision_email, containing only two new models and their constraints. Its exact operations were rehearsed on disposable MySQL.
+- The retained port-8013 database uses a model-synchronized schema without a migration ledger. After identity checks, stopping only the recognized web process, and a complete native MySQL backup, the tested additive migration was applied directly; historical migrations were not replayed or faked.
+- All 119 existing tables retained identical columns and row fingerprints. The two new notification tables were empty at activation. No historical notifications were created or sent.
+- Private backup and preservation evidence: .local/decision-email-20261106/before-decision-email.sql and preservation.json. Backup size: 9,331,232 bytes.
+- Static assets were collected and the local website restarted. The existing Association email connection was configured; actual inbox delivery was deliberately not tested on real members.

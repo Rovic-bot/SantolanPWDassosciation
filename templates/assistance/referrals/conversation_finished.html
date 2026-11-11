@@ -1,0 +1,8 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Conversation finished · Community Assistance Desk{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Community Assistance Desk' label='Conversation finished' title='This conversation has finished' intro='The Association has closed this concern. Its conversation reference can no longer be used.' icon='check' only %}
+<div class="container content-section"><section class="resident-panel"><h2>Have another concern?</h2><p>Submit a new concern to start a new conversation and receive a new reference.</p><a class="btn btn-primary" href="{% url 'assistance:referral_verify' %}">Start a new concern</a></section></div>
+{% endblock %}

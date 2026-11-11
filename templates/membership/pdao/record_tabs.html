@@ -1,0 +1,38 @@
+<section class="member-record-card member-registration-card" id="pdao-details" data-registration-tabs>
+  <header class="member-registration-heading">
+    <div><h2>{% include 'members/record/icon.html' with name='document' %} Application details</h2><p>{% if can_edit %}Edit the application information below, then save your reviewed details.{% else %}Review the information recorded on the application.{% endif %}</p></div>
+    <span class="member-record-tag">{% if review_history %}Latest saved review{% else %}Submitted information{% endif %}</span>
+  </header>
+  {% if can_edit %}
+  <form method="post" id="pdao-review-form" class="record-editor registration-editor pdao-inline-editor" autocomplete="off">
+    {% csrf_token %}{{ editor_form.version }}{{ editor_form.action }}
+    {% if editor_form.errors %}<div class="alert alert-danger" role="alert"><h3>Check the application details</h3>{{ editor_form.non_field_errors }}<ul>{% for field in editor_form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+    <div class="member-registration-tabs" role="tablist" aria-label="PDAO application categories" hidden>
+      {% for title, fields in editor_form.profile_sections %}<button type="button" role="tab" id="pdao-tab-{{ forloop.counter }}" aria-controls="pdao-panel-{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-registration-tab="{{ forloop.counter }}">{{ title }}</button>{% endfor %}
+    </div>
+    {% for title, fields in editor_form.profile_sections %}
+    <section class="member-registration-panel" id="pdao-panel-{{ forloop.counter }}" data-registration-panel="{{ forloop.counter }}" aria-labelledby="pdao-heading-{{ forloop.counter }}">
+      <h3 id="pdao-heading-{{ forloop.counter }}" data-registration-heading>{{ title }}</h3>
+      <div class="pdao-edit-fields">{% for field in fields %}{% include 'membership/onsite/field.html' %}{% endfor %}</div>
+    </section>
+    {% endfor %}
+    <p class="pdao-acknowledgement">Save corrections before printing or forwarding. Changing a ready form returns it to Received for another review.</p>
+    <button class="btn btn-primary" type="submit">Save reviewed details</button>
+  </form>
+  {% else %}
+  {% if submitted.profile_sections %}
+  <div class="member-registration-tabs" role="tablist" aria-label="PDAO application categories" hidden>
+    {% for title, rows in submitted.profile_sections %}
+    <button type="button" role="tab" id="pdao-tab-{{ forloop.counter }}" aria-controls="pdao-panel-{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-registration-tab="{{ forloop.counter }}">{{ title }}</button>
+    {% endfor %}
+  </div>
+  {% for title, rows in submitted.profile_sections %}
+  <section class="member-registration-panel" id="pdao-panel-{{ forloop.counter }}" data-registration-panel="{{ forloop.counter }}" aria-labelledby="pdao-heading-{{ forloop.counter }}">
+    <h3 id="pdao-heading-{{ forloop.counter }}" data-registration-heading>{{ title }}</h3>
+    <dl class="member-registration-fields">{% for label, value in rows %}<div><dt>{{ label }}</dt><dd>{{ value|linebreaksbr }}</dd></div>{% endfor %}</dl>
+  </section>
+  {% endfor %}
+  <p class="pdao-acknowledgement">Privacy notice and accuracy acknowledgement: {% if submitted.acknowledgement %}acknowledged at submission{% else %}not recorded{% endif %}.</p>
+  {% else %}{% include 'membership/pdao/record_data.html' %}{% endif %}
+  {% endif %}
+</section>

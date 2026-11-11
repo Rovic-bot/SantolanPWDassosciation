@@ -1,0 +1,48 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Registration submitted · Santolan PWD{% endblock %}
+{% block public_class %}registration-page registration-receipt-page{% if submitted.profile_kind == 'association_pdf_v1' %} association-print-page{% endif %}{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/registration.css' %}"><link rel="stylesheet" href="{% static 'css/registration-receipt.css' %}?v=20261026-reference-qr">{% if submitted.profile_kind == 'association_pdf_v1' %}<link rel="stylesheet" href="{% static 'css/membership-print.css' %}?v=20261026">{% endif %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script>{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}
+<article class="container content-section registration-content registration-receipt">
+  {% include 'membership/registration/receipt_breadcrumb.html' %}
+  {% include 'membership/registration/confirmation.html' %}
+  <div class="receipt-layout">
+    <div class="receipt-card receipt-guidance">
+      {% include 'membership/registration/receipt_steps.html' %}
+      <section class="receipt-bring" aria-labelledby="receipt-bring-heading">
+        <div class="receipt-section-heading">
+          {% include 'membership/registration/receipt_icon.html' with name='document' %}
+          <div><h2 id="receipt-bring-heading">What to bring</h2><p>Bring your completed membership form and these requirements to the Association Help Desk.</p></div>
+        </div>
+        <ul class="receipt-checklist">
+          <li>{% include 'membership/registration/receipt_icon.html' with name='check' %}<span>Your PWD ID Card for onsite verification</span></li>
+          {% for item in receipt_requirements %}<li>{% include 'membership/registration/receipt_icon.html' with name='check' %}<span>{{ item.label }}</span></li>{% endfor %}
+          <li>{% include 'membership/registration/receipt_icon.html' with name='info' %}<span>Submission does not guarantee membership approval.</span></li>
+        </ul>
+        <details class="receipt-instructions"><summary>Instructions provided with your form</summary>{{ onsite_instructions|linebreaks }}</details>
+      </section>
+    </div>
+    <aside class="receipt-card receipt-visit" aria-labelledby="receipt-visit-heading">
+      <h2 id="receipt-visit-heading">{% include 'membership/registration/receipt_icon.html' with name='pin' %}Visit information</h2>
+      <div class="receipt-visit-details">
+        <div>{% include 'membership/registration/receipt_icon.html' with name='pin' %}<dl><dt>Help Desk location</dt><dd>Barangay Santolan PWD Association Help Desk</dd><dd><a href="{% url 'core:contact' %}">Contact / Help Desk details</a></dd></dl></div>
+        <div>{% include 'membership/registration/receipt_icon.html' with name='clock' %}<dl><dt>Submission status</dt><dd>{% include 'membership/registration/receipt_status.html' %}</dd><dd class="receipt-muted">Your membership is pending verification and approval.</dd></dl></div>
+        <div>{% include 'membership/registration/receipt_icon.html' with name='calendar' %}<dl><dt>Date received</dt><dd><time datetime="{{ received_at|date:'c' }}">{{ received_at|date:'M j, Y, g:i A' }}</time></dd><dd class="receipt-muted">Submitted form version<br>{{ form_version }}</dd></dl></div>
+      </div>
+      <div class="receipt-actions registration-controls">
+        <button type="button" class="btn btn-primary" data-registration-print>{% include 'membership/registration/receipt_icon.html' with name='print' %}Print / Save as PDF</button>
+        <a class="btn receipt-view" href="#submitted-form" data-registration-view>{% include 'membership/registration/receipt_icon.html' with name='eye' %}View submitted form</a>
+        <div class="receipt-print-note">{% include 'membership/registration/receipt_icon.html' with name='info' %}<p>Use your browser's print dialog to save as PDF or print a copy for your records.{% if submitted.profile_kind == 'association_pdf_v1' %} Choose A4, 100% scale, and turn off headers and footers.{% endif %}</p></div>
+      </div>
+    </aside>
+  </div>
+  {% include 'membership/registration/receipt_data.html' %}
+  <div class="receipt-finish registration-controls">
+    <p>Using a shared device? Save your reference number and QR code, collect your printout and finish to close access to your private form.</p>
+    <form method="post" action="{% url 'membership:registration_finish' %}">{% csrf_token %}<button type="submit" class="btn receipt-view">Done — show my reference number</button></form>
+  </div>
+  {% if submitted.profile_kind == 'association_pdf_v1' %}{% include 'membership/registration/association_print.html' %}{% endif %}
+</article>
+{% endblock %}

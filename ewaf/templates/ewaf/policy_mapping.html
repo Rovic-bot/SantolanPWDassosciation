@@ -1,0 +1,3 @@
+<div class="workflow-form" aria-label="Approved category scores">
+{% for row in widget.rows %}<div><label for="{{ widget.attrs.id }}_key_{{ row.index }}">Category {{ forloop.counter }}</label><input class="form-control" id="{{ widget.attrs.id }}_key_{{ row.index }}" name="{{ widget.name }}_key_{{ row.index }}" value="{{ row.key }}"></div><div><label for="{{ widget.attrs.id }}_value_{{ row.index }}">Approved score</label><input class="form-control" id="{{ widget.attrs.id }}_value_{{ row.index }}" name="{{ widget.name }}_value_{{ row.index }}" value="{{ row.value }}" inputmode="decimal"></div>{% endfor %}
+</div>

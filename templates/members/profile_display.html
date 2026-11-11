@@ -1,0 +1,8 @@
+<div class="profile-display">
+{% for title, fields in profile_sections %}
+<section class="profile-section">
+  <h2 class="h4">{{ title }}</h2>
+  <dl class="profile-grid">{% for label,value in fields %}<div><dt>{{ label }}</dt><dd>{{ value|default_if_none:'Not recorded'|linebreaksbr }}</dd></div>{% endfor %}</dl>
+</section>
+{% endfor %}
+</div>

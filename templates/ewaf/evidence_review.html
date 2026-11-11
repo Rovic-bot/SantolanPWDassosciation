@@ -1,0 +1,22 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Evidence review · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:evidence_readiness' application.pk %}">Readiness diagnostics</a>
+<h1>{{ criterion }} evidence review</h1><p>{{ application.public_reference }} · {{ application.program.name }}</p>
+<p>A verified finding records the officer's evidence review. Operational acceptance remains blocked pending policy and processing authorization.</p>
+{% if latest %}<h2 class="h5">Latest finding</h2><p>{{ latest.get_state_display }} · Revision {{ latest.revision }} · {% if latest.value is None %}Missing value{% else %}{{ latest.value }} {{ latest.unit }}{% endif %}</p>{% endif %}
+<h2 class="h5">Recorded source</h2>
+{% if criterion == 'SI' %}<p>Recorded income category: {{ application.member.income_category_label|default:'Not recorded' }}{% if application.member.income_category %} ({{ application.member.income_category }}){% endif %}. Use the income_category source only with a documented category definition and authorized numeric encoding.</p><p>Separate exact monthly income: {{ application.member.monthly_income|default_if_none:'Not recorded' }}. A bracket is not an exact amount or 4Ps/Listahanan evidence.</p>
+{% elif criterion == 'ES' %}<p>Recorded employment status: {{ application.member.get_employment_status_display|default:'Not recorded' }}{% if application.member.employment_status %} ({{ application.member.employment_status }}){% endif %}. Verify this using an explicit employment_status definition and authorized encoding. Unmapped categories cannot calculate.</p><p>Retained employment text: {{ application.member.employment_information|default:'Not recorded' }}</p>
+{% elif criterion == 'ND' %}<p>Recorded dependents: {{ application.member.dependents }}. A recorded zero still requires explicit review.</p>
+{% elif criterion == 'PA' %}<p>The server captures successful releases across this member's programs. The diagnostic count has no approved counting period or external-history coverage.</p>
+{% else %}<p>Record a finding against documented program requirements and a separately referenced relevance rubric. Relevance cannot override ineligibility.</p>{% endif %}
+<h2 class="h5">Supporting document reviews</h2>
+<p>Use only evidence types explicitly mapped to this criterion and source in the recorded policy. A current unrelated document cannot verify a finding.</p>
+{% if criterion_rule %}<details><summary>Recorded criterion definitions and evidence mappings</summary><pre class="text-wrap text-break">{{ criterion_rule }}</pre></details>{% endif %}
+{% if criterion == 'PR' %}<p>Verified relevance requires every item in the recorded program rubric, current supporting review IDs, and explicit attestation. Missing rubric definitions remain pending.</p>{% endif %}
+{% for document in documents %}<p>Document {{ document.id }}: {% if document.review %}review {{ document.review.id }} · {{ document.review.verified|yesno:'Verified,Rejected' }} · expiry {{ document.review.expires_on|default:'Not recorded' }}{% else %}Needs review{% endif %}</p>{% empty %}<p>No supporting document reviews available.</p>{% endfor %}
+{% if policy %}<p>Evidence policy revision {{ policy.revision }} · Recorded for review</p>
+{% include 'ewaf/evidence_form.html' with submit_label='Append evidence finding' %}
+{% else %}<p role="status">A permitted officer must record evidence definitions before a finding can be retained.</p>{% endif %}
+</div>{% endblock %}

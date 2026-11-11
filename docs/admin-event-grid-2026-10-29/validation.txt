@@ -1,0 +1,36 @@
+Admin Events picture cards — 2026-10-29
+
+Authorized scope
+Replace the admin scheduled Events table with a responsive grid of cards that
+shows each event's uploaded picture. Preserve filters, publication actions,
+pagination, and the centered event information modal.
+
+Implementation
+- templates/events/manage_list.html renders image, category, status, title,
+  start time, location, description excerpt, and actions for each event.
+- Images use the existing permission-checked events:preview_image endpoint,
+  including for drafts. Events without pictures use a calendar placeholder.
+- static/css/admin-events.css provides three, two, or one columns by viewport
+  width. Images are contained within their frame without cropping.
+- View details opens the existing centered modal. Publish event retains its
+  permission checks, CSRF token, version field, and return-to-list behavior.
+
+Validation
+- Existing events.test_list_actions: 4 tests passed on an isolated disposable
+  native MySQL test database. Updated the layout assertion for card actions.
+- Development Django system check: no issues.
+- git diff --check: passed.
+- Chrome checked the retained development site with its one real event card,
+  centered modal, Escape/focus return, and search/empty results.
+- Unsaved synthetic fixtures rendered through the actual Django template
+  exercised pictures, no picture, draft/published/cancelled states, and a long
+  title. Fixture pictures were supplied by browser interception only.
+- Checked 1440, 820, 390, and 320 pixel widths: expected 3/2/1 columns, decoded
+  images, contained image sizing, publication controls, and no horizontal
+  overflow. Also checked enlarged text at 320 pixels and mobile modal closing.
+- No JavaScript errors or business POSTs during browser verification.
+- Screenshots: live-admin-cards.png, synthetic-admin-cards-1440.png,
+  synthetic-admin-cards-820.png, and synthetic-admin-cards-390.png.
+
+No application event records were created, changed, or published for these
+checks. No schema changes, migrations, commits, or remote deployment.

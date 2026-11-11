@@ -1,0 +1,76 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Pending Association registrations · Santolan PWD{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/registration-inbox.css' %}?v=20261108-shared">{% endblock %}
+{% block content %}
+<div class="container content-section registration-inbox">
+  <h1 class="visually-hidden">Association membership applications</h1>
+
+  <div class="registration-inbox-notice">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M12 10v7M12 6v1" fill="none" stroke="white" stroke-width="2"/></svg>
+    <p><strong>Online submission is not membership.</strong> Applicants must present their reference and required documents onsite for verification.</p>
+  </div>
+
+  <form method="get" data-auto-filter role="search" aria-label="Find pending Association registration" class="registration-inbox-filters">
+    <div class="registration-inbox-search-row">
+      <div>
+        <label for="registration-search" class="form-label">Search reference number or applicant name</label>
+        <div class="registration-inbox-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></svg>
+          <input class="form-control" type="search" id="registration-search" name="q" value="{{ search_query }}" maxlength="200" autocomplete="off" spellcheck="false" placeholder="Search reference number or applicant name"{% if reference_error %} aria-invalid="true" aria-describedby="registration-search-error"{% endif %}>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Find application</button>
+    </div>
+    <div class="registration-inbox-filter-row registration-inbox-filter-row--status">
+      <div>
+        <label for="registration-state" class="form-label">Processing status</label>
+        <select name="state" id="registration-state" class="form-select"><option value="">All statuses</option>{% for value,label in states %}<option value="{{ value }}"{% if value == state_query %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      </div>
+      <button class="btn btn-outline-primary" type="submit" data-auto-filter-select-submit name="tab" value="{{ active_tab }}">Apply filters</button>
+      <a class="registration-inbox-clear" href="{% url 'membership:registration_inbox' %}">Clear</a>
+    </div>
+    {% if reference_error %}<p id="registration-search-error" class="registration-inbox-error" role="alert">{{ reference_error }}</p>{% endif %}
+    {% if filter_error %}<p class="registration-inbox-error" role="alert">{{ filter_error }}</p>{% endif %}
+    {% if reference_search and not reference_error %}<p class="registration-inbox-search-note">Exact reference search takes precedence over filters and shows the matching registration across all statuses.</p>{% endif %}
+  </form>
+
+  <div class="registration-inbox-toolbar">
+    <nav class="registration-inbox-tabs" aria-label="Registration status">
+      <a href="{% querystring tab='awaiting' page=None reference=None q=tab_search_query state=state_query channel=None %}"{% if active_tab == 'awaiting' %} aria-current="page"{% endif %}>Awaiting onsite verification <span>{{ tab_counts.awaiting }}</span></a>
+      <a href="{% querystring tab='completed' page=None reference=None q=tab_search_query state=state_query channel=None %}"{% if active_tab == 'completed' %} aria-current="page"{% endif %}>Completed <span>{{ tab_counts.completed }}</span></a>
+      <a href="{% querystring tab='all' page=None reference=None q=tab_search_query state=state_query channel=None %}"{% if active_tab == 'all' %} aria-current="page"{% endif %}>All registrations <span>{{ tab_counts.all }}</span></a>
+    </nav>
+    {% if can_encode %}<div class="registration-inbox-actions">
+      <a class="btn btn-primary" href="{% url 'membership:registration_encode' 'walk_in' %}">Record walk-in intake</a>
+    </div>{% endif %}
+  </div>
+  <p class="registration-inbox-hint">Enter a short reference, its digits, or the original reference. Search before recording a new application to prevent duplicates.</p>
+
+  <section class="registration-inbox-results" aria-label="Registration results">
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Association registration records">
+      <table class="table registration-inbox-table">
+        <caption class="visually-hidden">Association registrations. Names and references are available only to authorized staff.</caption>
+        <colgroup><col class="registration-inbox-col-applicant"><col class="registration-inbox-col-channel"><col class="registration-inbox-col-received"><col class="registration-inbox-col-status"><col class="registration-inbox-col-action"></colgroup>
+        <thead><tr><th scope="col">Applicant / reference</th><th scope="col">Channel</th><th scope="col">Received</th><th scope="col">Verification</th><th scope="col">Action</th></tr></thead>
+        <tbody>
+          {% for intake in page_obj %}<tr>
+            <th scope="row"><span class="registration-inbox-name">{{ intake.submitted.full_name }}</span><span class="registration-inbox-reference">{{ intake.short_reference }}</span></th>
+            <td>{{ intake.get_channel_display }}</td>
+            <td><time datetime="{{ intake.received_at|date:'c' }}">{{ intake.received_at|date:'j M Y' }} <span aria-hidden="true">·</span> {{ intake.received_at|date:'g:i A' }}</time></td>
+            <td><span class="registration-inbox-status registration-inbox-status--{{ intake.inbox_status_style }}">{{ intake.inbox_status }}</span></td>
+            <td><a class="registration-inbox-review" href="{% url 'membership:registration_detail' intake.reference %}">{% if intake.inbox_completed %}View{% else %}Review{% endif %}<span class="visually-hidden"> {{ intake.submitted.full_name }}, {{ intake.short_reference }}</span><span aria-hidden="true">→</span></a></td>
+          </tr>{% empty %}<tr><td colspan="5" class="registration-inbox-empty"><strong>No accessible registration matches this search.</strong><span>Try an AMR reference, its digits, or applicant name, or clear the filters.</span></td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <footer class="registration-inbox-table-footer">
+      <p role="status">{% if page_obj.paginator.count %}Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}{% else %}Showing 0{% endif %} {% if active_tab == 'awaiting' %}pending application{% elif active_tab == 'completed' %}completed registration{% else %}registration{% endif %}{{ page_obj.paginator.count|pluralize }}</p>
+      <nav aria-label="Registration pages">
+        {% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number channel=None %}">Previous</a>{% else %}<span aria-disabled="true">Previous</span>{% endif %}
+        <span class="is-current" aria-current="page" aria-label="Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}">{{ page_obj.number }}</span>
+        {% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number channel=None %}">Next</a>{% else %}<span aria-disabled="true">Next</span>{% endif %}
+      </nav>
+    </footer>
+  </section>
+</div>
+{% endblock %}

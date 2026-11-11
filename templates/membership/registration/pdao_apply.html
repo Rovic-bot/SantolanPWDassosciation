@@ -1,0 +1,28 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}PDAO PWD ID form · Santolan PWD{% endblock %}
+{% block public_class %}registration-page membership-application-page pdao-application-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-membership-application.css' %}?v=20261108-1">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/registration.css' %}">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script>{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}
+{% url 'core:membership' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Membership & PWD ID' label='PDAO · Print preparation' title='Prepare your PWD ID application' intro='Prepare a printable copy to sign and bring to your onsite visit.' icon='members' only %}
+<div class="container content-section resident-form-layout">
+<div class="resident-form-rail">
+
+<details class="resident-prep"><summary>Printing, privacy and requirements</summary><p>Complete the fields from the supplied Pasig City PDAO Version 4.0 form. Submit below to prepare a printable copy, then sign and bring it with your requirements for in-person verification.</p>
+
+<p>Attach your 1×1 photo and sign the printed form. Leave unknown or inapplicable optional fields blank; do not guess medical details or identification numbers. Age is calculated from your date of birth.</p>
+<section aria-labelledby="pdao-privacy"><h2 class="h4" id="pdao-privacy">Privacy information</h2><p>Your entries are sent to this system only to display the printable form in this response. They are not saved as a registration record, stored in your session, or forwarded to PDAO. Print or save your copy before leaving. On a shared device, close this tab and protect or remove saved copies after use.</p><p>The supplied PDAO form includes its own consent statement for PDAO collection, processing, storage and retention. Read it on the printout and ask PDAO about its privacy practices before signing and submitting onsite.</p></section>
+<p><a href="{% url 'core:membership' %}#pdao-requirements-heading">Requirements, procedures and verification</a> · <a href="{% url 'membership:blank_form' 'pdao' %}">Download blank PDAO form (PDF)</a></p>
+</details>
+{% include 'public/form_directory.html' %}
+</div>
+<div class="resident-form-body"><p><strong>This prepares your form for printing.</strong> It does not submit an application to PDAO, place it in the Association membership inbox, create a reference number, or issue a PWD ID.</p>
+<form method="post" autocomplete="off" class="record-editor registration-editor">{% csrf_token %}
+<p class="form-text">Fields marked * are required to prepare this copy. Other fields can be completed with assistance onsite.</p>
+{% include 'membership/registration/fields.html' with public_profile_layout=True resident_anchors=True %}
+<button class="btn btn-primary" type="submit">Submit and prepare printable PDAO form</button></form>
+</div>
+</div>{% endblock %}

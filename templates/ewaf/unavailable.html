@@ -1,0 +1,3 @@
+{% extends 'admin_portal/base.html' %}
+{% load workspace_navigation %}
+{% block content %}<div class="container content-section"><div class="workspace-page-heading"><div><p class="eyebrow">EWAF &amp; SELECTION</p><h1>Historical EWAF information</h1></div></div><section class="empty-board"><h2>Historical records are preserved</h2><p>{{ notice }}</p>{% operational_ewaf_access as can_use_operational %}{% if can_use_operational %}<a class="btn btn-primary" href="{% url 'ewaf:operational_programs' %}">Open four-criterion EWAF</a>{% endif %} <a class="btn btn-outline-primary" href="{% url 'programs:manage_list' %}">Return to programs</a></section></div>{% endblock %}

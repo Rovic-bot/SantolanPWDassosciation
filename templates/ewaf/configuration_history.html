@@ -1,0 +1,17 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Configuration history · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:configuration_detail' program.pk %}">Current diagnostics</a>
+<h1>Configuration and review history</h1><p>{{ program.name }}</p>
+<p>All records are preparatory and non-effective. Historical findings never become active configurations.</p>
+{% for row in page %}<p><a href="?revision={{ row.pk }}">Draft revision {{ row.revision }}</a> · {{ row.recorded_at }} · {{ row.actor_label }}</p>{% endfor %}
+{% include 'ewaf/configuration_pages.html' with page_obj=page parameter='page' pagination_label='Draft revision pages' %}
+{% if current %}<h2>Draft revision {{ current.revision }}</h2><p>{{ current.reason }}</p>
+<details><summary>Recorded judgments and source context</summary><div class="text-break">{{ current.judgments }}<br>{{ current.source_context }}</div></details>
+<h2>Mathematical validation history</h2>{% for row in validations %}<article><h3 class="h5">Validation {{ row.revision }} · {{ row.result.consistency }}</h3><p>{{ row.actor_label }} · {{ row.recorded_at }} · {{ row.reason }}</p><details><summary>Reproducible calculation evidence</summary><div class="text-break">{{ row.result }}</div></details></article>{% empty %}<p>Not evaluated.</p>{% endfor %}
+{% include 'ewaf/configuration_pages.html' with page_obj=validations parameter='validations' pagination_label='Validation pages' %}
+<h2>Review history</h2>{% for row in reviews %}<article><h3 class="h5">Review {{ row.revision }} · {{ row.get_finding_display }}</h3><p>{{ row.actor_label }} · {{ row.recorded_at }}</p><p>{{ row.reason }}</p><p>{{ row.correction_requests }}</p></article>{% empty %}<p>Review pending.</p>{% endfor %}
+{% include 'ewaf/configuration_pages.html' with page_obj=reviews parameter='reviews' pagination_label='Review pages' %}
+<h2>Documentary authority evidence</h2>{% for row in authorities %}<article><h3 class="h5">Evidence {{ row.revision }} · Non-effective</h3><p>{{ row.actor_label }} · {{ row.recorded_at }}</p><p>{{ row.authority_reference }}</p><p>{{ row.stated_scope }}</p><p>{{ row.reason }}</p></article>{% empty %}<p>No documentary authority evidence recorded.</p>{% endfor %}
+{% include 'ewaf/configuration_pages.html' with page_obj=authorities parameter='authorities' pagination_label='Authority evidence pages' %}
+{% endif %}</div>{% endblock %}

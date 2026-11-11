@@ -1,0 +1,18 @@
+<article class="catalog-card catalog-photo-card">
+    {% include 'programs/public_artwork.html' %}
+    <div class="catalog-photo-content">
+    <div class="catalog-card-top"><p class="catalog-category">{{ program.assistance_type }}</p><div class="catalog-status catalog-status--{{ program.public_application_status }}">{% include 'programs/availability_label.html' with compact=True %}</div></div>
+    <h3 translate="no"><a href="{% url 'programs:detail' program.pk %}">{{ program.name }}</a></h3>
+    {% include 'programs/closing_notice.html' %}
+    <div class="catalog-photo-summary">
+        <details class="catalog-schedule">
+            <summary>Application period: <span>{% if program.registration_opens_at|date:'Y' != program.registration_closes_at|date:'Y' %}{{ program.registration_opens_at|date:'M j, Y' }}{% else %}{{ program.registration_opens_at|date:'M j' }}{% endif %} – {{ program.registration_closes_at|date:'M j, Y' }}</span>. {% if program.description %}<span class="catalog-photo-description" translate="no">{{ program.description|truncatewords:22 }}</span>{% endif %}<span class="catalog-chevron" aria-hidden="true"></span></summary>
+            <p>{% if program.public_application_status == 'upcoming' %}Scheduled opening{% else %}Application period starts{% endif %} <time datetime="{{ program.registration_opens_at|date:'c' }}">{{ program.registration_opens_at|date:'F j, Y, g:i A' }}</time><br>Application period ends <time datetime="{{ program.registration_closes_at|date:'c' }}">{{ program.registration_closes_at|date:'F j, Y, g:i A' }}</time> (Philippine time)</p>
+        </details>
+    </div>
+    {% if program.public_application_status == 'unavailable' %}<p class="catalog-availability-note">The required application arrangements are incomplete. Please contact the Association Help Desk.</p>{% endif %}
+    <div class="catalog-card-bottom">
+        <a class="catalog-card-link" href="{% url 'programs:detail' program.pk %}" aria-label="View {{ program.name }}">{% if program.public_application_status == 'open' %}View requirements{% else %}View program details{% endif %} {% include 'programs/ui_icon.html' with name='arrow' %}</a>
+    </div>
+    </div>
+</article>

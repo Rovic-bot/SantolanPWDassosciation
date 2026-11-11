@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "policy_id": "shared-hi-si-es-pa-hm",
+  "revision": 1,
+  "version": "HI-SI-ES-PA-HM-DRAFT-001",
+  "previous_digest": null,
+  "status": "DRAFT_FOR_REVIEW",
+  "method": "ewaf-hi-si-es-pa-hm-dataset-v1",
+  "authorization": null,
+  "weight_authorization_reference": null,
+  "source": {
+    "path": "EWAF_Computation_Download/Computation_Updated_HI_SI_ES_PA_HM.docx",
+    "sha256": "b8b2af991278a19f2a42bce7e84100d06ae86541f691372cc715415c0002d6eb",
+    "extraction": "docs/shared-ewaf-policy-2026-10-25/source-extraction.txt",
+    "authority": "Document example and current owner instruction to prepare a draft; no operational authorization."
+  },
+  "document_rules": {
+    "criteria": ["HI", "SI", "ES", "PA", "HM"],
+    "employment_encoding": {
+      "status": "DOCUMENT_RULE_FOR_REVIEW",
+      "source": "Numbered Table 9; extraction P70-P74, XML table 11",
+      "mapping": {"Full-Time Worker": 1, "Part-Time Worker": 2, "Seasonal Worker": 3, "Unemployed": 4},
+      "unlisted_categories": "UNRESOLVED; never coerce another category into this mapping."
+    },
+    "normalization": {
+      "status": "DOCUMENT_METHOD_FOR_REVIEW",
+      "source": "P81-P107; numbered Tables 11-13",
+      "method": "dataset-minmax-v1",
+      "bounds_source": "complete_accepted_eligible_pool_at_evaluation",
+      "numerical_bounds": null,
+      "increasing_formula": "(x - minimum) / (maximum - minimum)",
+      "inverse_formula": "(maximum - x) / (maximum - minimum)",
+      "constant_column": "UNRESOLVED; stop calculation until an applicable rule is authorized."
+    },
+    "directions": {
+      "status": "DISCLOSED_EXAMPLE_FOR_REVIEW",
+      "source": "P84-P91; numbered Table 12. Inverse HI/PA is explicitly an example extension.",
+      "values": {"HI": "inverse", "SI": "increasing", "ES": "increasing", "PA": "inverse", "HM": "increasing"}
+    },
+    "aggregation": {
+      "status": "DOCUMENT_RULE_FOR_REVIEW",
+      "source": "P106, P110-P124",
+      "formula": "sum(decimal_weight[j] * normalized_input[j])",
+      "presentation": "100 * weighted_sum; multiply by 100 only once",
+      "rounding": "Preserve full calculation precision; round displayed values only."
+    },
+    "safeguards": {
+      "status": "DOCUMENT_AND_EXISTING_ENGINE_SAFEGUARDS",
+      "source": "P74, P76-P78, P103-P107, P132-P144",
+      "missing_stale_disputed": "Block usable calculation; unknown is never zero.",
+      "si_evidence": "4Ps status and document count do not assign SI points; do not duplicate HI as SI.",
+      "pool_change": "Freeze the new complete pool, recalculate its bounds and every affected result, and preserve the prior run.",
+      "eligibility": "Eligibility precedes scoring; HM is not historical ND; relevance remains outside the weighted sum.",
+      "selection": "Scores and ranks do not automatically select beneficiaries or record actual assistance.",
+      "history": "Preserve exact policy, weight, source, input, bounds, calculation and human-decision history."
+    }
+  },
+  "proposals": {
+    "si_rubric": {
+      "status": "PROPOSED_NOT_AUTHORIZED",
+      "title": "Reviewed barriers to essential needs",
+      "decision": "SI_RUBRIC_AUTHORITY",
+      "description": "A trained, authorized assessor assigns one level after a documented assessment. This is a new proposal, not a rubric supplied by the DOCX.",
+      "domains": ["Food access", "Stable housing and essential utilities", "Access to necessary care and daily support"],
+      "levels": [
+        {"value": 1, "description": "Accepted assessment confirms no unmet barrier in the listed domains during the assessment period."},
+        {"value": 2, "description": "Occasional shortfall in at least one domain, without a recurrent or current critical barrier."},
+        {"value": 3, "description": "A recurrent unmet barrier in one domain, without a current critical barrier or recurrent barriers in two domains."},
+        {"value": 4, "description": "A current critical unmet barrier in any domain, or recurrent unmet barriers in at least two domains."}
+      ],
+      "application": "Consider levels 4, 3, 2, then 1; choose the highest supported level. Missing or disputed assessment receives no level. Review must define occasional, recurrent and critical before adoption.",
+      "overlap_control": "Do not add points for income amount, employment category, household count, past releases, disability label, 4Ps membership, or number of documents. Assess the documented barriers themselves.",
+      "review_needed": "Association authority must approve or replace this rubric, assessor qualifications, evidence standards, operational definitions, correction process and consistency checks."
+    },
+    "assessment_periods": {
+      "status": "PROPOSED_NOT_AUTHORIZED",
+      "decision": "ASSESSMENT_PERIODS",
+      "HI": "Monthly average over the three complete calendar months before the program application closing date; income composition remains unresolved.",
+      "SI": "Assess the same three-month period and current barriers at a common documented evaluation cutoff.",
+      "ES": "Accepted employment category at the common evaluation cutoff; mixed, changing and unlisted categories remain unresolved.",
+      "HM": "Accepted household composition at the common evaluation cutoff.",
+      "cutoff": "Use one timezone-aware program evaluation cutoff; freeze it with the pool. Review evidence freshness and changes after closing before adoption."
+    },
+    "household_definition": {
+      "status": "PROPOSED_NOT_AUTHORIZED",
+      "decision": "HOUSEHOLD_DEFINITION",
+      "description": "Include the applicant and people who usually share the same dwelling and food or essential-expense budget. This is a household count, not a dependent count.",
+      "review_needed": "Define usual residence, temporary absence, shared housing with separate budgets, split households, caregivers, boarders and institutional living."
+    },
+    "pa_scope": {
+      "status": "PROPOSED_NOT_AUTHORIZED",
+      "decision": "PA_SCOPE_AND_HISTORY",
+      "description": "Count confirmed, non-voided actual assistance releases across Association programs during the 12 calendar months ending at the common evaluation cutoff.",
+      "interval": "Proposed interval: cutoff shifted back 12 calendar months, inclusive, through cutoff, inclusive; leap-day/month-end behavior needs a recorded rule.",
+      "excluded": ["Applications", "Selections without delivery", "Referral tickets", "Event attendance", "Voided releases"],
+      "review_needed": "Decide release-unit/deduplication rules, external assistance, legacy imports and incomplete history. No retained rows alone cannot establish a complete zero-release history."
+    },
+    "ranking_convention": {
+      "status": "PROPOSED_NOT_AUTHORIZED",
+      "decision": "RANKING_AND_TIES",
+      "description": "Descending exact score, competition ranks 1, 2, 2, 4. Equal exact scores share a rank and tie group. Display rounding never decides a tie.",
+      "boundary_ties": "Hold the unresolved capacity-boundary tie for an authorized human procedure. No hidden winner from name, submission time, database ID or row order.",
+      "selection": "Retain a separate human selection record within authorized slots; ranking does not publish recipients or record release."
+    }
+  },
+  "unresolved_decisions": [
+    {"code": "DOCUMENT_RULE_ADOPTION", "status": "OPEN", "question": "Authorize or revise the documented ES mapping, dataset method, disclosed directions and weighted sum for this new operational version."},
+    {"code": "SI_RUBRIC_AUTHORITY", "status": "OPEN", "question": "Who may adopt the proposed SI assessment, and which rubric, assessor qualifications, definitions, calibration and correction procedure are authorized?"},
+    {"code": "CONSTANT_COLUMNS", "status": "OPEN", "question": "What happens when maximum equals minimum, including a single eligible applicant? No zero, maximum, midpoint or weight redistribution is adopted."},
+    {"code": "INCOME_SOURCE_RULES", "status": "OPEN", "question": "Specify gross/net basis; wages, self-employment, irregular work, pensions, remittances, benefits, one-off transfers, in-kind income and exclusions; prevent duplicates and define zero/negative adjustments."},
+    {"code": "EMPLOYMENT_UNLISTED", "status": "OPEN", "question": "Define self-employed, informal, retired, student, unpaid caregiver, unable-to-work, multiple-job and changing categories without silently mapping them to unemployed."},
+    {"code": "EVIDENCE_ACCEPTANCE", "status": "OPEN", "question": "Authorize evidence types and accessible alternatives, acceptance/rejection/dispute handling, freshness, reviewer authority, unavailable evidence and re-review. Raw registration fields are not accepted inputs."},
+    {"code": "HISTORY_COMPLETENESS", "status": "OPEN", "question": "Define evidence of complete PA coverage, missing legacy/external history and a justified zero. Determine treatment of unverified prior assistance without imputing zero."},
+    {"code": "ASSESSMENT_PERIODS", "status": "OPEN", "question": "Adopt or replace the proposed three-month assessment periods and common cutoff, including income averaging, evidence freshness, date boundaries and post-closing changes."},
+    {"code": "HOUSEHOLD_DEFINITION", "status": "OPEN", "question": "Adopt a household definition and decide ambiguous living arrangements, temporary absence and membership changes."},
+    {"code": "PA_SCOPE_AND_HISTORY", "status": "OPEN", "question": "Adopt scope/window and define qualifying release units, installments, duplicates, external/imported records and month-end date handling."},
+    {"code": "RANKING_AND_TIES", "status": "OPEN", "question": "Adopt competition ranking and authorize the human procedure and audit requirements for capacity-boundary ties."},
+    {"code": "COMPLETE_POOL_AND_CORRECTIONS", "status": "OPEN", "question": "Define evaluation closure and the complete eligible inventory, unresolved cases, late corrections, full-pool recalculation and treatment of already selected/published cases."},
+    {"code": "WEIGHT_AUTHORITY", "status": "OPEN", "question": "Identify a separately authorized immutable weighting method/version applicable to this new engine. Existing source/weight-only approvals and illustrative ratio matrices do not authorize this method. No weights are reapproved here."},
+    {"code": "PRECISION_AND_CLASSIFICATION", "status": "OPEN", "question": "Review exact-rational comparisons and half-even two-decimal display. Decide whether classification is omitted or separately authorized; document example bands are not activated."},
+    {"code": "POLICY_AUTHORITY_AND_EFFECTIVITY", "status": "OPEN", "question": "Identify institutional approver, program scope, effective dates, audit evidence and explicit adoption/migration rules. No approved record is created by this draft."}
+  ],
+  "readiness_contract": {
+    "policy": "Complete and authorize definitions, encodings, methods, source/evidence rules, edge cases, ranking, weight reference, authority and scope. Numerical dataset bounds are not required at this stage.",
+    "applicant_data": "At evaluation, freeze the complete accepted eligible inventory, cutoff, accepted evidence identities/versions and verified history coverage; then compute the shared numerical bounds. Missing, stale, disputed or unresolved inputs stop a usable run.",
+    "operational": "Both readiness checks, a valid immutable approved policy binding, accepted-evidence integration and explicit operational enablement are required. This draft satisfies none of the authorization requirements."
+  },
+  "versioning_contract": {
+    "draft_revision": "Append a new revision with predecessor digest; never edit or overwrite a retained revision.",
+    "approval": "A separate authorized service must record a complete immutable policy version and its audit/effective scope. There is no approval or activation operation in this draft implementation.",
+    "program_binding": "A program using the new engine must reference the exact approved policy ID, revision and content digest plus its authorized weight-version reference. A mutable latest-draft pointer is forbidden.",
+    "rebind": "Draft edits and newer shared versions cannot rebind programs. Any later authorized rebind is explicit, audited and versioned; preserve prior links and runs and apply the approved correction rules.",
+    "run_snapshot": "Retain the bound policy and weight snapshots/digests, complete pool/evidence versions, cutoff, computed bounds, directions, exact traces and separate human decisions. Replay from these snapshots, never from the current shared draft."
+  }
+}

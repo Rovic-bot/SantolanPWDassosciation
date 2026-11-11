@@ -1,0 +1,27 @@
+Community Assistance Desk and program detail fixes ? 5 November 2026
+
+Scope requested by owner
+- Allow the Association sender email to be changed at any time from the inbox.
+- Remove How selection works and Identity evidence copy from Admin program details.
+- Display the saved program schedule and capacity alongside all existing builder details.
+- Remove the listed document guidance/checklist/privacy/file-limit block from onsite registration.
+- Diagnose and fix Jon Lastest failing Community Assistance Desk verification.
+
+Implementation
+The existing protected Association email settings route is linked again below the inbox filters. Existing permission, version, reason and audit controls apply. Settings clearly explain that a sender address does not connect a mailbox. The retained local instance uses the file-based outbox and has no SMTP credentials. No sender was changed and no real email was sent. The owner clarified they want to edit the address themselves whenever needed. Reply in Gmail remains available using the browser's signed-in account.
+
+The assistance desk previously required successful legacy manual PRPWD fields for every member. The later owner-authorized onsite-edit-decision-v1 workflow intentionally creates approved Association members without those fields (docs/simple-registration-2026-10-25/validation.md). The affected member has that exact linked, audited approval. Verification now recognizes either the existing legacy PRPWD approval or an Association registration approval action linked to the same application, workflow, approving actor and application reference. Active/nonarchived and approved/dated membership, exact normalized control number/name, rate limits and session grants remain required. Approval provenance is included in the grant snapshot. Existing grants need fresh verification after this deployment; receipts and issued references remain unchanged. No PRPWD status or member record was fabricated or altered.
+
+Admin program details now show registration opening/closing, program start/end, correction deadline, beneficiary slots and the EWAF setting in Philippine time. Missing optional values display Not specified. Existing identity, purpose/benefit, type, disability types, requirements and history remain. Removed selection/evidence paragraphs stay in stored policy and historical audits and continue to apply to applications. Public program guidance is unchanged. Onsite upload controls, validation and required fields remain; the no-upload onsite-presentation guidance is retained.
+
+Validation
+- 81 distinct backend tests passed across the final broad run and focused fixture rerun: referrals, quick actions, current approval compatibility, email-setting permissions, program details/publication and onsite field alignment. The 5-test focused final run passed in 1.064 seconds (santolan-g12-tests-3gvvg1mw); the broad run passed 80/81 before correcting the new synthetic contact fixture (santolan-g12-tests-8cef5toc). Together with the browser harness, 82 distinct checks passed.
+- Browser harness passed 14 full-page and 12 popup layouts, both themes, publication/withdrawal, blocked EWAF, history and keyboard checks on fictional disposable records. Desktop/mobile screenshots visually inspected and copied here.
+- Read-only retained-database check confirms the affected member satisfies the corrected predicate and PRPWD remains unrecorded. No actual ticket was submitted.
+- Django system/database checks passed; migration drift: No changes detected.
+- git diff --check passed. No migrations or static-asset changes.
+- First combined run: 76/82 passed, including browser; five new-test setup errors from colliding fixture helper names and one overly broad assertion including retained history were corrected. The second run exposed a blank optional mobile number in the new synthetic fixture; it now supplies a phone number like the affected retained member. The existing concern ticket model still requires stored address/contact details, which is an unchanged limitation for members missing those details. No application failure was hidden.
+
+All test database writes use scripts/g12_test_runner.py with the verified disposable native MySQL database test_g12_disposable. Existing unfinished Git work is preserved; pre-edit copies are under .local/desk-program-fixes-20261105/before/.
+
+The identity-checked local website process was refreshed at http://127.0.0.1:8013/. The retained MySQL process stayed running; no application data was changed.

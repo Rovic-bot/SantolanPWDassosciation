@@ -1,0 +1,8 @@
+{% url 'ewaf:operational_breakdown' program.pk as breakdown_url %}
+<nav class="nav nav-tabs mb-4" aria-label="Program EWAF sections">
+  {% if not ewaf_vault_enabled %}<a class="nav-link" href="{% url 'ewaf:operational_workspace' program.pk %}#configuration">Weights</a>{% endif %}
+  <a class="nav-link" href="{% url 'ewaf:operational_workspace' program.pk %}#readiness">Applicants</a>
+  <a class="nav-link{% if active_section != 'breakdown' %} active{% endif %}"{% if active_section != 'breakdown' %} aria-current="page"{% endif %} href="{% url 'ewaf:operational_workspace' program.pk %}{% if run %}?run={{ run.pk }}{% endif %}#results">EWAF Ranking and selection</a>
+  {% if run %}{% if breakdown_url %}<a class="nav-link{% if active_section == 'breakdown' %} active{% endif %}"{% if active_section == 'breakdown' %} aria-current="page"{% endif %} href="{{ breakdown_url }}?run={{ run.pk }}{% if selected %}&amp;applicant={{ selected.application }}{% endif %}">Scoring Explanation</a>{% endif %}
+  {% endif %}
+</nav>

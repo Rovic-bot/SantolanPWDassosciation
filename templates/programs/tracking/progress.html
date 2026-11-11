@@ -1,0 +1,18 @@
+{% extends 'public/resident_base.html' %}{% load reference_codes %}
+{% block title %}Application progress · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container resident-mast"><div><p class="eyebrow">PROGRAM APPLICATION TRACKING</p><h1>Application progress</h1><p class="page-intro">{{ progress.program_name }}</p></div><div class="resident-mark" aria-hidden="true">{% include 'public/icon.html' with name='search' %}</div></div></section>
+<div class="container content-section resident-columns"><section class="resident-panel"><h2>Your application</h2>
+  <p>Application Reference Number: <strong>{{ progress.reference|short_reference:'program' }}</strong></p>
+  <p>Submitted: <time datetime="{{ progress.submitted_at|date:'c' }}">{{ progress.submitted_at|date:'F j, Y, g:i A' }}</time> (Philippine time)</p>
+  <section class="record-section" aria-labelledby="progress-heading"><h2 id="progress-heading">{{ progress.status_label }}</h2><p>{{ progress.explanation }}</p></section>
+  {% if progress.program_cancelled %}<p>The program is marked as cancelled. Contact the Association Help Desk for guidance.</p>{% endif %}
+</section><aside class="resident-aside"><h2>Next steps</h2>
+  <p>{{ progress.next_steps }}</p>
+  <p>Published outcomes are available in <a href="{% url 'core:announcements' %}?category=results">Program Results announcements</a>.</p>
+  <p>For your next steps or private clarification, <a href="{% url 'core:contact' %}">contact the Association Help Desk</a> and keep your reference ready. Personal assessments and supporting documents are not displayed here.</p>
+  <div class="workspace-actions"><a href="{% url 'programs:tracking_progress' %}">Refresh progress</a></div>
+  <form method="post" action="{% url 'programs:tracking_finish' %}" class="mt-3">{% csrf_token %}<button class="btn btn-primary" type="submit">Finish tracking</button></form>
+</aside></div>
+{% endblock %}

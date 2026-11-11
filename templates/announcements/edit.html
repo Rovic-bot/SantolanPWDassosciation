@@ -1,0 +1,13 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} announcement · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% if editing %}{% url 'announcements:manage_detail' announcement.pk %}{% else %}{% url 'announcements:manage_list' %}{% endif %}">← Announcements</a>
+<p class="eyebrow mt-4">COMMUNITY BOARD</p><h1>{% if editing %}Edit announcement{% else %}Create announcement{% endif %}</h1>
+{% if announcement.status == 'published' %}<div class="alert alert-warning">Saving changes withdraws this notice to a private draft. Review and approve it again before publishing.</div>{% else %}<p class="text-secondary">Save your draft, review it, then approve publication when it is ready.</p>{% endif %}
+<p>For <strong>General</strong>, complete the title and announcement text below. For <strong>Programs</strong>, choose a published program; its current name and overview supply the preview. Title, text, and images below are only used for General notices.</p>
+<form method="post" enctype="multipart/form-data" class="membership-form record-editor" data-input-examples="announcements">{% csrf_token %}{{ form.non_field_errors }}
+{% for field in form %}{% if field.is_hidden %}{{ field }}{{ field.errors }}{% elif field.name == 'remove_image' %}<div class="form-check mb-4">{{ field }}<label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field.errors }}</div>{% else %}{% include 'membership/field.html' %}{% endif %}{% endfor %}
+{% if editing and announcement.image %}<p><a class="text-link" href="{% url 'announcements:preview_image' announcement.pk %}">View current image ↗</a></p>{% endif %}
+<p class="small text-secondary">Image limit: {{ image_limit_mb }} MB. Include any essential information from the image in the announcement text.</p>
+<div class="workspace-actions"><button class="btn btn-primary" type="submit">{% if editing %}Save changes{% else %}Save draft{% endif %}</button><a href="{% url 'announcements:manage_list' %}">Cancel</a></div></form>
+</div>{% endblock %}

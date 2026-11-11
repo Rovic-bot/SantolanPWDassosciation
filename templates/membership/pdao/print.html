@@ -1,0 +1,6 @@
+{% extends 'membership/registration/pdao_print.html' %}{% load static %}
+{% block pdao_body_class %}{% if embedded_preview %}pdao-embedded-preview{% endif %}{% endblock %}
+{% block pdao_extra_head %}{% if not embedded_preview %}<link rel="stylesheet" href="{% static 'css/membership-review-dialogs.css' %}?v=20261108-1"><script src="{% static 'js/pdao-review.js' %}?v=20261108-inline" defer></script>{% endif %}{% endblock %}
+{% block pdao_controls %}<p><strong>PDAO application ready to print.</strong> Preview the form, then choose a printer or Save as PDF. Arrange forwarding separately after the applicant signs.</p><a class="btn btn-primary" data-pdao-preview-open href="{% url 'membership:pdao_print' registration.pk %}?preview=1">Print or save PDF</a> <a class="btn btn-outline-primary" href="{% url 'membership:pdao_detail' registration.pk %}">Return to PDAO review</a>{% endblock %}
+{% block pdao_reference %}<p class="text-break">Admin receipt reference: {{ registration.short_reference }} · {{ registration.received_at|date:'M j, Y H:i' }}</p>{% endblock %}
+{% block pdao_footer %}{% if not embedded_preview %}{% include 'membership/pdao/preview_dialog.html' %}{% endif %}{% endblock %}

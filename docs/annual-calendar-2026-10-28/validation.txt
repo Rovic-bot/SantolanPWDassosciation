@@ -1,0 +1,84 @@
+Annual Events Calendar — 28 October 2026
+
+Follow-up: the owner subsequently requested direct editing with automatic
+publication on save and a simpler admin page. The withdraw/edit/republish UI
+instructions below are superseded by ../admin-events-2026-10-28/validation.txt.
+The installation and preservation evidence below remains unchanged.
+
+Authorization and result
+The owner explicitly requested publication of the twelve supplied annual
+observances, with administrator editing and separate custom event publishing.
+All twelve are now published in the retained local development system at
+http://127.0.0.1:8013/events/ and recur every year without annual duplication.
+Earlier unfinished EWAF, sidebar, Community Assistance Desk and header changes
+were preserved. No commit, push or remote deployment was performed.
+
+Implementation
+- Reused AnnualObservance and its permission-checked, versioned, audited
+  create/edit/publish/withdraw workflow. Public reads never write calendar data.
+- Added May's Global Accessibility Awareness Day and the Third Thursday rule.
+- Added atomic publish_annual_calendar service and management command. Stable
+  per-month identifiers make repeat installation preserve edited content and
+  publication states. Conflicting existing titles fail without partial writes.
+- Existing entries are never silently republished after withdrawal or archiving.
+- Administrators use Events > Annual Observances; withdraw a published entry to
+  draft, edit/save, then publish again. Separate scheduled events retain their
+  existing creation, dates, participation and publication controls.
+- Month/week observances retain their recurrence wording. No ambiguous third-week
+  date boundaries, attendance requirements, venues or scheduled activities were
+  invented.
+
+Installation for a normally migrated database
+Back up the destination database first, apply checked-in migrations including
+events.0008_annual_calendar_third_thursday, then run:
+python manage.py publish_annual_calendar --username <authorized-admin> --notes <publication-reason>
+The migration changes recurrence choices and their database constraint; publication
+uses the command so an authorized administrator and reason are recorded.
+
+Retained local development database
+This guarded runtime intentionally has no django_migrations table. Its existing
+schema was preserved; only the observance_recurrence check constraint was expanded.
+No historical migrations were applied or faked. A complete SQL backup was captured
+before the change and before/after fingerprints confirmed a stable backup source.
+Backup: .local/annual-calendar-20261028/before-calendar.sql (private, not committed)
+Bytes: 6090864
+SHA-256: 8d94a983df5068626f1106f79eb4d906366913c8cb2f39f7db93d249d05a1a8c
+All 116 unrelated tables retained identical schemas/rows according to the
+preservation check. Installation produced 12 published cards, 24 revisions and
+24 audit entries. A repeat installation created no cards or extra audit entries.
+Private activation evidence: .local/annual-calendar-20261028/preservation.json
+
+Verification
+Native MySQL disposable test database; never application data:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test events.test_annual_calendar events.test_observances.ObservanceReferenceTests events.test_observance_workflow.ObservanceWorkflowTests events.test_observance_workflow.ObservanceConcurrencyTests --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+The first run passed 35 of 36 scoped tests. One new test contained duplicate title
+keyword arguments; this test-only error was corrected, and that exact test passed
+on retry. All 36 scoped behaviors passed across the initial run and retry.
+Coverage includes permissions, all twelve public cards, recurrence across years,
+idempotent installation, retained administrator edits and withdrawals, atomic
+audit rollback, duplicate conflicts, publication concurrency, and the 0007-to-0008
+migration preserving existing rows while allowing May's new recurrence.
+System checks passed. With normal migration discovery enabled, makemigrations
+--check --dry-run reported no changes. git diff --check passed.
+
+Chrome browser check passed at desktop and 390x844 mobile widths: twelve monthly
+cards, May recurrence/details, no horizontal overflow, administrator list and
+withdraw control, May editor reference, and separate scheduled-event creation
+form. No JavaScript errors or business POST requests occurred during the browser
+check. Screenshots in this directory:
+- public-calendar-desktop.png
+- public-calendar-mobile.png
+- may-details.png
+- admin-calendar.png
+Browser harness: .local/annual-calendar-20261028/verify.cjs
+
+Source review
+The owner supplied the calendar. Existing official reference links were retained;
+May's official source was added to the approved source hosts. Key sources checked:
+https://accessibility.day/spread-awareness/
+https://ncda.gov.ph/disability-laws/proclamations/proclamation-no-711/
+https://ldr.senate.gov.ph/executive-issuance/proclamation-no-184
+https://ncda.gov.ph/disability-laws/proclamations/proclamation-no-1157/
+June remains described as a national health observance, not a PWD-specific event.
+December remains December 3 as specified in the proclamation body; the NCDA page
+heading has a date typo and was not used to override that legal text.

@@ -1,0 +1,34 @@
+{% load reference_codes %}
+<section class="receipt-card receipt-confirmation" aria-labelledby="registration-confirmation-heading">
+  <div class="receipt-heading">
+    <span class="receipt-success" aria-hidden="true">{% include 'membership/registration/receipt_icon.html' with name='check' %}</span>
+    <div class="receipt-heading-copy">
+      <h1 id="registration-confirmation-heading">Registration submitted</h1>
+      <p role="status">Your form has been received for Admin review. Check your email for an invitation to visit the <strong>Barangay Santolan office</strong> and verify your information with the PWD Association Help Desk. You are not yet a member. After office verification and final Admin approval, a separate email will confirm your Association membership.</p>
+      <p><strong>Bring your PWD ID Card</strong> and your reference number or QR code, together with the required membership documents.</p>
+    </div>
+    <div class="receipt-heading-status">
+      {% include 'membership/registration/receipt_status.html' %}
+      <p>Your membership is pending verification and approval.</p>
+    </div>
+  </div>
+  <div class="receipt-reference-box">
+    <div class="receipt-reference-copy">
+      <h2>Your reference number</h2>
+      <p class="registration-reference" id="registration-reference"><strong>{{ reference|short_reference:'association' }}</strong></p>
+      <p class="receipt-reference-hint" id="reference-copy-feedback" role="status" aria-live="polite">Keep this number and QR code for your visit, or take a screenshot.</p>
+      <div class="receipt-reference-actions registration-controls">
+        <button type="button" class="btn receipt-copy" data-registration-copy="registration-reference" hidden>
+          {% include 'membership/registration/receipt_icon.html' with name='copy' %}<span data-copy-label>Copy number</span>
+        </button>
+        <button type="button" class="btn receipt-view" data-registration-print-reference hidden>
+          {% include 'membership/registration/receipt_icon.html' with name='print' %}Print / save reference slip
+        </button>
+      </div>
+    </div>
+    {% if reference_qr %}<figure class="receipt-qr">
+      <img src="{{ reference_qr }}" alt="QR code for membership reference {{ reference_display }}" width="192" height="192">
+      <figcaption>This QR code contains your reference number. Show it to Admin to load your registration.</figcaption>
+    </figure>{% endif %}
+  </div>
+</section>

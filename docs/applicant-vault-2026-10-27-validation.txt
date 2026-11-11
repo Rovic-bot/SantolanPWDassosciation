@@ -1,0 +1,121 @@
+Applicant information and repeated Vault approval - October 27, 2026
+
+Owner-requested behavior
+The Program Applications & Eligibility applicant view now uses the shared Member
+Directory profile presentation. Its household summary shows monthly household
+income, household members, employment, reviewed household 4Ps participation and
+previous assistance, using ordinary information labels. The exact accepted
+application values come from the existing reviewed-input and release services.
+Required program documents are expanded, including missing requirements and
+private preview/download controls. Review/eligibility services remain unchanged.
+
+The previous summary read income_category_label and dependents. Current
+registration records instead contain household_monthly_income and
+household_members, so the old summary incorrectly showed Not recorded.
+Iris now displays PHP 37,000.00, 5 members, Full-Time Worker, Verified No and 2
+releases. Her registered employment remains Employed and is shown separately;
+no production mapping from Employed to Full-Time Worker was introduced.
+
+Privacy and source rules
+The shared member profile requires member-view permission. Accepted inputs use
+the existing operational viewing permissions and current evidence validation.
+Unresolved or stale reviews fall back to labeled registered information;
+unverified 4Ps is never converted into Verified No. Unconfirmed assistance
+coverage stays pending, rather than becoming zero. Accepted PA is replayed from
+the official ledger under the existing period/cutoff and coverage findings.
+Member records, registration snapshots, documents and accepted reviews are not
+rewritten to populate this screen. Protected document routes remain in use.
+
+Approval failure and correction
+Retained draft versions 15 and 16 proposed HM 67.15%, ES 17.91%, SES 7.47%,
+PA 7.47%. The comparisons passed AHP consistency, but the old 50-digit decimal
+calculation stored a weight total of 1 + 10^-50. The existing one-sided storage
+contract consequently rejected approval. The visible draft action did not fix
+that precision problem.
+
+New composite approvals use slider-ratio-projection-exact-ahp-v2. The discrete
+Saaty projection, priority order, column normalization, row averages, n=4,
+RI=0.90 and CR<0.10 check remain. Matrix arithmetic and consistency now use exact
+fractions; each final positive weight is serialized once at 50 significant
+digits with downward rounding. This satisfies the unchanged stored-total
+contract without rescaling coefficients. Scores use those exact approved
+decimal strings. The precision version and proposal are retained for replay.
+
+Historical projection-v1, ses_math, household_math, four_criterion_development,
+dataset score calculations and validate_weight_total are unchanged. Existing
+versions are never recomputed under the new precision version. The workbook's
+formula/cache evidence was consulted; broken row-average references and pasted
+sample weights are not used as live formulas or policy.
+
+The current editor no longer exposes Save weight draft. Edit -> Calculate AHP
+weights -> Approve configuration works repeatedly; automatic preview also
+enables approval after an edit. Existing internal draft/approval audit records
+remain atomic. Approval still requires authorization, a current signed preview,
+reason and valid consistent weights. The latest approved composite weights are
+used by new rankings across existing and new compatible programs. Program
+evidence, eligibility, deadlines, cutoffs, prior runs and published decisions
+are not rewritten or automatically regenerated.
+
+Executed validation
+All mutating tests used scripts/g12_test_runner.py and
+--testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+--noinput --verbosity 1. Each run verified a fresh loopback native MySQL 8.4.11
+instance, restricted test_g12_disposable grants, isolated media, disabled .env
+loading and local-only messaging. Historical migrations were prohibited.
+
+Initial focused run: 23 tests, 22 passed. One new restricted-view fixture lacked
+accounts.access_dashboard and received the correct 403; the fixture was fixed
+to test an authorized application viewer without member access.
+
+Scoped regression: 118 tests in 517.407s, 117 passed. The sole failure was an
+older browser assertion reading the applicant table before the results popup
+finished loading (0 rows instead of 12). Updated that harness to wait for the
+open popup, then reran its complete five-weight/two-program workflow:
+1 test passed in 131.927s. Thus all 118 distinct cases pass across the regression
+and corrected focused rerun, with no unresolved failures or skips.
+
+Regression labels: ewaf.test_current_ahp, ewaf.test_current_weights,
+ewaf.test_vault, ewaf.test_composite_ses, ewaf.test_shared_application,
+ewaf.test_ses_workflow, programs.test_checklist_navigation,
+programs.test_reference_ui and programs.test_inline_document_review.
+
+Coverage includes the exact rejected proposal, 250 deterministic weight
+adjustments, old precision replay, repeated HTTP and browser approvals without
+manual draft saves, independently checked scores/ranks, shared weights across
+two prepared programs, historical run preservation, signature/version tampering,
+stale requests, authority changes, audit rollback, ties, publication after
+confirmed delivery, all 12 applicant profiles, privacy and document controls.
+
+Chrome/Playwright checks passed on desktop and mobile. The new disposable
+journey edited/approved weights twice and generated the existing program's
+ranking. The retained development check used reads and unsaved previews only;
+all other POST actions were blocked by its harness. It confirmed Iris's exact
+values, member profile sections, expanded requirements, enabled approval for
+the retained problem proposal and absence of the draft button. Screenshots
+were visually inspected. Existing slider DOM checks, syntax checks, guarded
+Django system checks, makemigrations --check --dry-run and git diff --check
+passed. The full project suite was not run.
+
+Preservation and handoff
+Development remains http://127.0.0.1:8012/ with the retained dedicated database.
+The first read-only verification matched all 13 business-model counts and
+complete-row SHA-256 digests against the start-of-task baseline:
+Program 9, ProgramApplication 87, AssistanceLog 142,
+Member 12, AssistanceRelease 28, OperationalConfiguration 10, OperationalRun 10,
+OperationalDecision 12, Announcement 1, ProgramResultRevision 1,
+DatasetInputReview 60, SharedDatasetPolicy 10, VaultRevision 16.
+During final verification, a separate interactive approval added Vault draft 17
+and locked version 18 at 11:33:17 UTC. Both use the corrected v2 precision and
+pass retained integrity validation. The strict whole-model check reported this
+concurrent addition; all original 16 Vault rows still match their baseline
+digest, and every other inspected model still matches. The new approval was
+preserved. Final VaultRevision count is 18; it was not restored to 16.
+Authentication/session and private-access audit metadata may change on reads.
+This task created no main-development approval, calculation, selection or
+publication. The read-only browser guard permits only login and unsaved previews.
+
+Exact task-relative source files are listed in the adjacent source-changes.json;
+database-preservation.json, logs and screenshots retain the validation evidence.
+The original unfinished Git work, eight Admin groups, Public Portal behavior
+and accepted 70% milestone are preserved. No migration, commit, push, merge,
+deployment or real program decision was performed.

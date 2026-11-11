@@ -1,0 +1,14 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Private review findings{% endblock %}
+{% block content %}<div class="container content-section">
+{% include 'partials/workspace_messages.html' %}
+<a href="{% url 'members:reviews' record.member_id %}">Back to member reviews</a>
+<h1>{{ record.get_kind_display }}</h1><p>{{ record.member.full_name }}</p>
+<p role="status">{{ record.get_state_display }}</p>
+<dl><dt>Reason for review</dt><dd>{{ record.get_trigger_display }}</dd><dt>Applicant declaration</dt><dd>{{ record.get_declaration_display }}</dd><dt>Concern</dt><dd>{{ record.concern|linebreaksbr }}</dd><dt>Identity procedure recorded</dt><dd>{{ record.identity_basis|linebreaksbr }}</dd></dl>
+<p>Findings do not update accepted evidence, renew verification dates, change scores or reopen a final case. Use the existing authorized source-review process for any accepted correction.</p>
+{% if record.application %}<p><a href="{% url 'programs:application_detail' record.application.program_id record.application_id %}">Existing application review</a></p>{% endif %}
+<h2>Retained history</h2>{% for item in page_obj %}<article class="record-section"><h3 class="h5">{{ item.occurred_at }} · {{ item.actor_label }}</h3><p>{{ item.reason|linebreaksbr }}</p><dl><dt>Previous information as recorded</dt><dd>{{ item.previous_values|default:'Not recorded'|linebreaksbr }}</dd><dt>Reported information</dt><dd>{{ item.reported_values|default:'Not recorded'|linebreaksbr }}</dd><dt>Reviewer findings</dt><dd>{{ item.findings|default:'Not recorded'|linebreaksbr }}</dd><dt>Observation / effective dates</dt><dd>{{ item.observed_on|default:'Not recorded' }} / {{ item.effective_on|default:'Not recorded' }}</dd></dl></article>{% endfor %}
+{% include 'partials/page_links.html' with pagination_label='Review history pages' %}
+{% if perms.members.record_informationreview %}<h2>Add review findings</h2><form method="post" novalidate>{% csrf_token %}{% include 'programs/fields.html' %}<button type="submit" class="btn btn-primary">Retain review note</button></form>{% endif %}
+</div>{% endblock %}

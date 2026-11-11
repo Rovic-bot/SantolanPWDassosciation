@@ -1,0 +1,9 @@
+<section class="record-section" aria-labelledby="association-requirements-heading">
+  <h2 id="association-requirements-heading" class="h4">Association Membership Requirements</h2>
+  <p>Bring your completed <strong>Membership Application Form</strong> and the five items listed on the supplied Association PDF to the Barangay Santolan PWD Association Help Desk:</p>
+  <ol id="association-requirements" class="ps-3">
+    {% for item in association_requirements %}
+    <li class="mb-3"><strong>{{ item.label }}</strong>{% if item.note %}<p class="mb-0">{{ item.note }}</p>{% endif %}</li>
+    {% endfor %}
+  </ol>
+</section>

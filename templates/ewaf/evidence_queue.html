@@ -1,0 +1,11 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Criterion evidence · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<h1>Criterion evidence and readiness</h1>
+<p>Private staff review of declarations, verification findings and missing evidence. Scoring and ranking remain unavailable.</p>
+{% for application in page %}<article class="record-history">
+<h2 class="h5"><a href="{% url 'ewaf:evidence_readiness' application.pk %}">{{ application.public_reference }}</a></h2>
+<p>{{ application.program.name }} · {{ application.get_status_display }}</p></article>
+{% empty %}<p>No applications recorded.</p>{% endfor %}
+{% include 'partials/page_links.html' with page_obj=page pagination_label='Evidence application pages' %}
+</div>{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'admin_portal/base.html' %}
+{% load static %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}">{% endblock %}
+{% block title %}Application review · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section membership-record">
+{% include 'partials/member_navigation.html' %}
+<a href="{% url 'membership:review_home' %}">← Membership Reviews</a>
+<div class="d-flex flex-wrap align-items-center gap-3 mt-3 mb-2"><h1 class="mb-0">{{ application.full_name }}</h1><span class="quiet-badge status-{{ application.status }}">{{ application.get_status_display }}</span></div>
+<p class="text-secondary small">Reference {{ application.short_reference }} · Submitted {{ application.submitted_at }}</p>
+<details class="mb-4"><summary>Association membership checklist</summary>{% include 'membership/association_requirements.html' %}</details>
+{% for message in messages %}<div class="alert alert-success" role="status">{{ message }}</div>{% endfor %}
+{% if verification_form.errors or decision_form.errors %}<div class="alert alert-danger" role="alert">{{ verification_form.non_field_errors }}{{ decision_form.non_field_errors }}{% for field in verification_form %}{{ field.errors }}{% endfor %}{% for field in decision_form %}{{ field.errors }}{% endfor %}</div>{% endif %}
+{% if application.status == 'approved' and perms.members.view_member %}<p><a class="text-link" href="{% url 'members:detail' application.member.pk %}">Open official member record ↗</a></p>{% endif %}
+<div class="row g-4"><div class="col-lg-7">
+{% if perms.documents.view_membershipapplicationdocument %}{% for document in documents %}{% if document.requirement.capture_key == 'photo_1x1' %}<img class="profile-portrait" src="{% url 'membership:document' document.pk %}?preview=1" alt="Onsite 1×1 photograph of {{ application.full_name }}">{% endif %}{% endfor %}{% endif %}
+{% include 'members/profile_display.html' %}
+<section class="card p-4 mb-4"><h2 class="h4">Supporting documents</h2><p class="small text-secondary">Requirements are preserved as they were at submission.</p><ul class="ps-3 mb-0">{% for document in documents %}<li class="mb-2">{{ document.label }} {% if perms.documents.view_membershipapplicationdocument %}— <a href="{% url 'membership:document' document.pk %}">Download {{ document.label }}</a> &middot; <a href="{% url 'membership:document' document.pk %}?preview=1" target="_blank" rel="noopener">Preview</a>{% else %}— uploaded (document access required){% endif %}</li>{% endfor %}{% for item in missing_documents %}<li>{{ item.label }} — {% if item.required %}required document missing{% else %}optional, not supplied{% endif %}</li>{% endfor %}{% if not application.requirements_snapshot %}<li>No supporting documents were requested.</li>{% endif %}</ul></section>
+{% if perms.membership.view_membershipevent %}<section class="card p-4"><h2 class="h4">Application activity</h2><ol class="ps-3 mb-0">{% for event in application.events.all %}<li class="mb-2">{{ event.description }}<br><small class="text-secondary">{{ event.occurred_at }} · {{ event.actor_label|default:'Public submission' }}</small></li>{% endfor %}</ol></section>{% endif %}
+</div><div class="col-lg-5">
+<section class="card p-4 mb-4" id="prpwd-verification"><h2 class="h4">PRPWD Verification</h2>
+<dl class="record-facts"><dt>Member name</dt><dd>{{ application.full_name }}</dd><dt>Association control number</dt><dd><code>{{ application.control_number }}</code></dd><dt>PWD ID / registry identifier</dt><dd>Not recorded in this membership form.</dd></dl>
+<button type="button" class="btn btn-outline-primary" data-copy-value="{{ application.control_number }}" data-copy-status="control-copy-status">Copy Control Number</button><p id="control-copy-status" class="small" role="status" aria-live="polite"></p>
+{% if perms.membership.verify_membershipapplication and policy.prpwd_url %}<p><a class="btn btn-outline-primary" href="{{ policy.prpwd_url }}" target="_blank" rel="noopener noreferrer">Open PRPWD Verification</a></p>{% endif %}
+<p class="form-text">The Association control number is not a PWD ID. Use the identifier requested by the official page, then record the verification outcome here.</p>
+<p>Result: <strong>{{ application.prpwd_verified|yesno:'Verified,Not verified,Not yet checked' }}</strong></p>
+{% if application.prpwd_verified_at %}<p class="small">Recorded by {{ application.prpwd_verified_by|default:'Former administrator' }} on {{ application.prpwd_verified_at }}</p><p>{{ application.verification_notes|linebreaksbr }}</p>{% endif %}
+{% if application.status == 'pending' %}
+{% if not policy.prpwd_url %}<p class="alert alert-warning">The official PRPWD link needs configuration.</p>{% endif %}
+{% if perms.membership.verify_membershipapplication and perms.membership.decide_membershipapplication %}
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="approve">{{ approval_form.version }}{{ approval_form.version.errors }}{{ approval_form.non_field_errors }}
+<div class="form-check my-3">{{ approval_form.verified }}<label class="form-check-label" for="{{ approval_form.verified.id_for_label }}">{{ approval_form.verified.label }}</label>{{ approval_form.verified.errors }}</div>
+<button class="btn btn-primary" type="submit" {% if not policy.prpwd_url %}disabled{% endif %}>Approve membership</button>
+</form>{% else %}<p class="text-secondary">PRPWD verification and membership approval permissions are required to approve this application.</p>{% endif %}
+{% else %}<hr><p><strong>{{ application.get_status_display }}</strong> by {{ application.decided_by|default:'Former administrator' }} on {{ application.decided_at }}</p><p>{{ application.decision_notes|linebreaksbr }}</p>{% if application.status == 'approved' %}<p class="mb-0">An official member record has been created.</p>{% endif %}{% endif %}
+</section></div></div></div><script src="{% static 'js/admin-review.js' %}?v=20261111-processing" defer></script>{% endblock %}

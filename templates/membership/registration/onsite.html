@@ -1,0 +1,4 @@
+{% extends 'admin_portal/base.html' %}{% block title %}Onsite observations · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section"><a href="{% url 'membership:registration_detail' intake.reference %}">← Pending registration</a><h1>Onsite observations</h1>
+<p>Procedure: {{ procedure }}. Record only what was actually observed. Sighted does not mean authentic, current, registry verified or membership approved.</p><p>The physical envelope is recorded here without an upload. Socioeconomic assessment, manual PRPWD and the authorized membership decision remain separate.</p>
+<form method="post">{% csrf_token %}{% include 'membership/registration/fields.html' %}<button class="btn btn-primary" type="submit">Save onsite observations</button></form></div>{% endblock %}

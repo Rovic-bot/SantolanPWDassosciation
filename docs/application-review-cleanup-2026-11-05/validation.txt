@@ -1,0 +1,30 @@
+Application review cleanup - 5 November 2026
+
+The owner requested removal of Application History and record actions,
+Eligibility history, Identity review history, and Close application, explaining
+that PWD verification is a manual search through the configured PRPWD link.
+
+Removed the application history/action panel, its history navigation link,
+and explanatory text pointing to that panel. The application review page keeps
+submitted application information, configured requirements, and the separate
+program eligibility decision. Manual PRPWD verification stays in its existing
+membership workflow; its link is configured in the retained local system.
+
+This is a presentation change. Protected historical records, audits, private
+evidence, membership checks, and existing review services were not deleted or
+changed. No registry integration, automatic verification, or data migration.
+All earlier unfinished work was preserved. Before copies are in
+.local/application-review-cleanup-20261105/before/.
+
+Validation:
+- 19 existing tests passed in isolated native MySQL (exit 0):
+  programs.test_direct_review, programs.test_configured_application,
+  scripts.program_application_browser_qa, using g12_test_runner.py with
+  RegistrationIntakeTestRunner. No application data or real emails were used.
+- Rendered synthetic application HTML contains none of the four removed labels,
+  the history panel ID, or its navigation link.
+- Chrome browser review and eligibility submission passed at desktop/mobile
+  widths. Synthetic screenshots alongside this file show the updated page.
+- Django/database check and git diff --check passed.
+- Refreshed the identified local web server at http://127.0.0.1:8013/ and confirmed
+  its health. The retained database and private uploads were preserved.

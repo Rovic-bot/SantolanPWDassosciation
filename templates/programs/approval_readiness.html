@@ -1,0 +1,10 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}PDAO reconciliation · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'programs:manage_list' %}">← Programs</a>
+<h1>PDAO reconciliation readiness</h1>
+<p>Approval enforcement: {{ enforcement_enabled|yesno:'Enabled,Disabled' }}. This report does not activate enforcement or create approvals.</p>
+<p>Every operating program needs an officer's explicit review. A recorded binding still requires the cutover preflight to check that its terms match. A closed application period does not establish that processing has finished.</p>
+{% for program in page_obj %}<article class="record-history"><h2 class="h5"><a href="{% url 'programs:terms_review' program.pk %}">{{ program.name }}</a></h2><p>{{ program.get_status_display }} · {% if program.explicit_binding %}Explicit binding recorded — current-term check required before cutover{% else %}Needs authorized review{% endif %}</p></article>{% empty %}<p>No programs recorded.</p>{% endfor %}
+{% include 'partials/page_links.html' with pagination_label='Reconciliation pages' %}
+</div>{% endblock %}

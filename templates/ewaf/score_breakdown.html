@@ -1,0 +1,80 @@
+{% extends 'ewaf/workspace_base.html' %}
+{% block title %}Score breakdown &middot; {{ program.name }}{% endblock %}
+{% block content %}<div class="container content-section ewaf-page ewaf-breakdown">
+<a class="ewaf-back" href="{% url 'ewaf:operational_programs' %}">{% include 'ewaf/ui_icon.html' with icon='arrow-left' %} All EWAF programs</a>
+<header class="ewaf-page-header"><div><div class="ewaf-title-line"><h1>Score breakdown</h1><span class="ewaf-status">{{ program.get_status_display }}</span></div><p>{{ program.name }}{% if program.assistance_type %} &middot; {{ program.assistance_type }}{% endif %}</p></div><a class="btn ewaf-secondary-button" href="{% if ewaf_vault_enabled %}{% url 'ewaf:vault' %}{% else %}{% url 'ewaf:operational_configuration' program.pk %}{% endif %}">{% include 'ewaf/ui_icon.html' with icon='lock' %} Configuration</a></header>
+{% include 'ewaf/workspace_tabs.html' with active_section='breakdown' %}
+{% if invalid_calculation %}<p class="alert alert-danger" role="alert">This saved calculation could not be verified. Its score breakdown is unavailable.</p>
+{% elif not run %}<section class="ewaf-card ewaf-empty"><h2>No calculation yet</h2><p>Generate a ranking after the applicant pool is ready.</p><a class="btn btn-primary" href="{% url 'ewaf:operational_workspace' program.pk %}">Go to Generate EWAF</a></section>
+{% else %}<div data-score-notice>{% include 'ewaf/ranking_notice.html' %}</div>
+{% if selected %}
+<div class="ewaf-breakdown-toolbar"><form method="get" data-auto-filter class="ewaf-applicant-picker"><input type="hidden" name="run" value="{{ run.pk }}"><label for="breakdown-applicant">Applicant</label><div><select class="form-select" id="breakdown-applicant" name="applicant">{% for applicant in applicants %}<option value="{{ applicant.application }}"{% if applicant.application == selected.application %} selected{% endif %}>#{{ applicant.rank }} &middot; {{ applicant.member_name }}</option>{% endfor %}</select><button class="btn ewaf-secondary-button ewaf-picker-submit">Show breakdown</button></div></form><div class="ewaf-calculation-label">Calculation {{ run.revision }} &middot; {% if active %}<span class="ewaf-verified">{% include 'ewaf/ui_icon.html' with icon='tick' %} Verified</span>{% else %}Saved calculation{% endif %}</div></div>
+<div class="ewaf-breakdown-grid">
+<div class="ewaf-score-deck" data-score-deck>
+<div class="ewaf-score-stack">
+<div class="ewaf-score-preview" data-score-preview aria-hidden="true" inert></div>
+<section class="ewaf-card ewaf-person-score" id="applicant-score-card" data-score-swipe data-score-applicant="{{ selected.application }}" data-score-run="{{ run.pk }}" tabindex="0" aria-label="Applicant score summary" aria-keyshortcuts="ArrowLeft ArrowRight">
+  <div class="ewaf-person-meta"><span>{% include 'ewaf/ui_icon.html' with icon='chart' %} <span data-score-rank>Rank {{ selected.rank }} of {{ pool_size }}</span></span><span>{% include 'ewaf/ui_icon.html' with icon='check' %} {% if active %}Eligible{% else %}Saved score{% endif %}</span></div>
+  <h2 data-score-name>{{ selected.member_name }}</h2><p class="ewaf-muted" data-score-member>Member &middot; {{ selected.member_number }}</p>
+  <div class="ewaf-score-visual">
+    <div class="ewaf-score-gauge" role="img" aria-label="Total EWAF score: {{ selected.score }} percent">
+      <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <circle class="ewaf-score-gauge-track" cx="100" cy="100" r="88"/>
+        <circle class="ewaf-score-gauge-value" cx="100" cy="100" r="88" pathLength="100" stroke-dasharray="{{ selected.score }} 100"{% if selected.score == '0.00' %} style="visibility:hidden"{% endif %}/>
+      </svg>
+      <div class="ewaf-score-gauge-label"><p class="ewaf-big-score"><b data-score-total>{{ selected.score }}</b><span>%</span></p><p class="ewaf-muted">Total EWAF score</p></div>
+    </div>
+  </div>
+  <p class="ewaf-comparison-counts" data-score-comparison>{{ selected.higher }} higher &middot; {{ selected.tied_others }} tied &middot; {{ selected.lower }} lower</p>
+</section>
+</div>
+<nav class="ewaf-score-navigation" data-score-navigation aria-label="Member score cards" hidden>
+  <button type="button" class="ewaf-deck-arrow" data-score-step="-1" aria-label="Previous member">&larr;</button>
+  <div class="ewaf-score-dots" data-score-dots></div>
+  <button type="button" class="ewaf-deck-arrow" data-score-step="1" aria-label="Next member">&rarr;</button>
+</nav>
+{{ score_deck_members|json_script:'score-deck-members' }}
+</div>
+<section class="ewaf-card ewaf-contributions" aria-labelledby="points-heading"><div class="ewaf-card-title"><h2 id="points-heading">Points by criterion</h2><small>Out of 100</small></div>
+{% for trace in selected.traces %}<div class="ewaf-point-row" data-points-criterion="{{ trace.code }}" data-points-final="{{ trace.points }}"><div><span>{% include 'ewaf/ui_icon.html' with icon=trace.icon %} {{ trace.short_name }}</span><strong><span data-points-value aria-hidden="true">{{ trace.points }}</span><span class="visually-hidden">{{ trace.points }} out of 100</span></strong></div><div class="ewaf-point-track" aria-hidden="true"><span{% if trace.largest_contribution %} class="ewaf-leading-bar"{% endif %} style="width:{{ trace.points }}%"></span></div></div>{% endfor %}
+<p class="ewaf-footnote">{% include 'ewaf/ui_icon.html' with icon='info' %} Rounded contributions may not add up to the displayed total.</p></section>
+</div>
+<div data-score-details>
+<details class="ewaf-card ewaf-details" open><summary>{% include 'ewaf/ui_icon.html' with icon='document' %} Calculation details {% include 'ewaf/ui_icon.html' with icon='chevron' %}</summary>
+<div class="ewaf-card-body"><div class="ewaf-calculation-meta"><span>{% include 'ewaf/ui_icon.html' with icon='history' %} Calculation {{ run.revision }}</span><span>{% include 'ewaf/ui_icon.html' with icon='lock' %} Configuration {{ run.configuration.revision }}{% if run.snapshot.approved_weights %} &middot; Vault v{{ run.snapshot.approved_weights.id }}{% elif run.configuration.uses_dataset_scoring %} &middot; Vault v{{ run.configuration.validation.weight_version }}{% endif %}</span><time datetime="{{ run.recorded_at|date:'c' }}">{{ run.recorded_at|date:'j M Y, g:i A' }}</time></div>
+{% if selected.missing_criterion_names %}<p class="alert alert-info">This saved calculation does not include {{ selected.missing_criterion_names }}. Missing criteria have no saved input, weight or score.</p>{% endif %}
+<div class="ewaf-calculation-table-card">
+  <div class="table-responsive" tabindex="0" role="region" aria-label="Accepted inputs and criterion points">
+    <table class="table ewaf-detail-table">
+      <caption class="visually-hidden">Accepted scoring information for {{ selected.member_name }}; the largest contribution is highlighted.</caption>
+      <thead><tr><th scope="col">Criterion</th><th scope="col">Accepted Input</th><th scope="col">Weight</th><th scope="col">Points Breakdown</th></tr></thead>
+      <tbody>{% for trace in selected.display_traces %}
+        <tr{% if trace.largest_contribution %} class="ewaf-detail-leading"{% endif %}>
+          <th scope="row">
+            <span class="ewaf-criterion-title">{% include 'ewaf/ui_icon.html' with icon=trace.icon %} {{ trace.ui_label }}</span>
+            <small>{% if trace.code == 'SES' %}Socioeconomic status proxy{% elif trace.code == 'ES' %}Job categorization{% elif trace.code == 'PA' %}Historical assistance records{% elif trace.code == 'HM' %}Household member count{% elif trace.code == 'HI' %}Monthly household income{% elif trace.code == 'SI' %}Socioeconomic indicator{% endif %}</small>
+          </th>
+          {% if trace.included %}
+          <td><span class="ewaf-accepted-value{% if trace.code == 'ES' %} ewaf-employment-category{% elif trace.unit == 'PHP/month' %} ewaf-income-value{% endif %}">{{ trace.ui_input }}</span>{% if trace.composite_ses %}<small>4Ps: {{ trace.participation }}</small>{% endif %}</td>
+          <td class="ewaf-detail-weight"><strong>{{ trace.weight_percent }}%</strong><span class="ewaf-weight-track" aria-hidden="true"><span style="width:{{ trace.weight_percent }}%"></span></span></td>
+          <td class="ewaf-detail-points"><strong>{{ trace.points }}</strong></td>
+          {% else %}<td colspan="3" class="ewaf-detail-missing">Not included</td>{% endif %}
+        </tr>
+      {% endfor %}</tbody>
+    </table>
+  </div>
+  <div class="ewaf-calculation-footer"><span class="ewaf-points-formula"><span>Formula:</span> <code>Points = normalized value &times; weight &times; 100</code></span><span class="ewaf-precision-note">Saved precision determines rank.</span></div>
+</div>
+<details class="ewaf-formulas"><summary>{% include 'ewaf/ui_icon.html' with icon='document' %} View normalization formulas {% include 'ewaf/ui_icon.html' with icon='chevron' %}</summary><div class="ewaf-formula-body"><h3>Why rank {{ selected.rank }}?</h3><p>Rank is 1 + the number of strictly higher full-precision scores: <strong>1 + {{ selected.higher }} = {{ selected.rank }}</strong>. {{ selected.tied_others }} other applicants have the same exact score; {{ selected.lower }} have a lower score.</p>
+<div class="table-responsive" tabindex="0" role="region" aria-label="Criterion score breakdown"><table class="table breakdown-table"><caption>Recorded inputs and normalization for {{ selected.member_name }}</caption><thead><tr><th>Criterion</th><th>Recorded input</th><th>Encoded value</th><th>Normalization</th><th>Criterion score /100</th><th>Weight</th><th>Points /100</th></tr></thead><tbody>{% include 'ewaf/breakdown_criterion_rows.html' with traces=selected.display_traces %}</tbody></table></div>
+{% if selected.legacy_traces %}<details><summary>Historical criteria included in this saved score</summary><p>These original factors contribute {{ selected.legacy_points }} points. Number of Dependents (ND) is different from Number of Household members (HM).</p><div class="table-responsive" tabindex="0" role="region" aria-label="Historical criterion scores"><table class="table breakdown-table"><caption>Original historical criteria</caption><thead><tr><th>Criterion</th><th>Recorded input</th><th>Encoded value</th><th>Normalization</th><th>Criterion score /100</th><th>Weight</th><th>Points /100</th></tr></thead><tbody>{% include 'ewaf/breakdown_criterion_rows.html' with traces=selected.legacy_traces %}</tbody></table></div></details>{% endif %}
+<details class="mt-3"><summary>Full-precision calculation details</summary><p>Saved total (0&ndash;1): <code class="text-break">{{ selected.score_exact }}</code><br>Saved total (0&ndash;100): <code class="text-break">{{ selected.score_0_100 }}</code></p><dl>{% for trace in selected.traces %}<dt>{{ trace.code }} &middot; {{ trace.name }}</dt><dd class="text-break">Normalized value: {{ trace.normalized }}<br>Weight: {{ trace.weight }}<br>Weighted contribution (0&ndash;1): {{ trace.contribution }}</dd>{% endfor %}</dl></details>
+</div></details></div></details>
+<details class="ewaf-card ewaf-details ewaf-comparison" open><summary>{% include 'ewaf/ui_icon.html' with icon='chart' %} Compare applicants {% include 'ewaf/ui_icon.html' with icon='chevron' %}</summary><div class="table-responsive" tabindex="0" role="region" aria-label="Applicant score comparison"><table class="table ewaf-comparison-table"><caption class="visually-hidden">Calculation {{ run.revision }} &middot; {{ pool_size }} scored applicants &middot; contribution points out of 100</caption><thead><tr><th>Rank</th><th>Applicant</th>{% for criterion in criteria %}<th><abbr title="{{ criterion.name }}">{% if criterion.code == 'SES' %}SES{% elif criterion.code == 'PA' %}Prior aid{% elif criterion.code == 'HM' %}Household{% elif criterion.code == 'ES' %}Employment{% else %}{{ criterion.code }}{% endif %}</abbr></th>{% endfor %}{% if selected.legacy_traces %}<th>Historical criteria ({{ selected.legacy_codes }})</th>{% endif %}<th>Total</th></tr></thead><tbody>
+{% for row in comparison_rows %}<tr{% if row.application == selected.application %} class="ewaf-comparison-selected" aria-current="true"{% endif %}><td>{{ row.rank }}{% if row.tied_others %} <span class="ewaf-tie">Tie</span>{% endif %}</td><th scope="row"><a data-workspace-tab href="{% querystring applicant=row.application run=run.pk %}">{{ row.member_name }}</a></th>{% for trace in row.display_traces %}<td>{% if trace.included %}{{ trace.points }}{% else %}&mdash;{% endif %}</td>{% endfor %}{% if selected.legacy_traces %}<td>{{ row.legacy_points }}</td>{% endif %}<td><strong>{{ row.score }}</strong></td></tr>{% endfor %}
+</tbody></table></div><footer class="ewaf-card-footer"><span>Saved contribution points &middot; {{ pool_size }} applicants</span>{% if comparison_rows.paginator.num_pages > 1 %}<nav aria-label="Score comparison pages">{% if comparison_rows.has_previous %}<a href="{% querystring run=run.pk page=comparison_rows.previous_page_number %}">Previous</a>{% endif %} Page {{ comparison_rows.number }} of {{ comparison_rows.paginator.num_pages }} {% if comparison_rows.has_next %}<a href="{% querystring run=run.pk page=comparison_rows.next_page_number %}">Next</a>{% endif %}</nav>{% endif %}</footer></details>
+{% if selected.missing_criterion_names %}<p class="ewaf-footnote">A dash means the criterion was not included in this saved calculation; it does not mean a zero score.</p>{% endif %}
+<p class="ewaf-footnote">{% include 'ewaf/ui_icon.html' with icon='info' %} Scores support review. Final selection is an admin decision.</p>
+</div>
+<details class="ewaf-card ewaf-details ewaf-saved-calculations"><summary>{% include 'ewaf/ui_icon.html' with icon='history' %} Saved calculations {% include 'ewaf/ui_icon.html' with icon='chevron' %}</summary><form method="get" data-auto-filter class="ewaf-card-body ewaf-saved-picker"><label for="breakdown-run">Saved calculation</label><select class="form-select" id="breakdown-run" name="run">{% for entry in calculation_history %}<option value="{{ entry.pk }}"{% if entry.pk == run.pk %} selected{% endif %}>Calculation {{ entry.revision }} &middot; {{ entry.recorded_at|date:'j M Y, g:i A' }}</option>{% endfor %}</select><button class="btn ewaf-secondary-button">Open calculation</button></form></details>
+{% endif %}{% endif %}</div>{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'programs/portfolio/base.html' %}
+{% block content %}
+<div class="container portfolio-container" data-program-portfolio>
+  <header class="portfolio-toolbar">
+    <h1 class="visually-hidden">Program portfolio</h1>
+    {% if perms.programs.add_program %}<div class="portfolio-actions"><a class="btn btn-primary" href="{% url 'program_builder' %}">Create program <span aria-hidden="true">↗</span></a></div>{% endif %}
+  </header>
+  {% include 'partials/workspace_messages.html' %}
+  <section class="portfolio-metrics" aria-label="Portfolio summary" data-portfolio-metrics>{% include 'programs/portfolio/metrics.html' %}</section>
+  {% include 'programs/portfolio/filters.html' %}
+  {% include 'programs/portfolio/results.html' %}
+</div>
+{% endblock %}

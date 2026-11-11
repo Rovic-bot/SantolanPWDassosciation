@@ -1,0 +1,99 @@
+/* Scoped to the staff inbox; registration and decision forms keep their styles. */
+.admin-workspace .registration-inbox { max-width: 1500px; padding-top: 1rem; color: #203147; --inbox-muted: #546780; --inbox-border: #dce5eb; --inbox-teal: #11665e; }
+.registration-inbox > nav[aria-label="Member management"] { gap: 1rem !important; border-bottom: 1px solid var(--inbox-border); padding-bottom: 0; margin-bottom: 1.6rem !important; }
+.registration-inbox > nav[aria-label="Member management"] .btn { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: .75rem .4rem; color: var(--inbox-muted); font-weight: 400; }
+.registration-inbox > nav[aria-label="Member management"] .btn[aria-current="page"] { color: var(--inbox-teal); border-bottom-color: var(--inbox-teal); font-weight: 650; }
+.registration-inbox-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .35rem 1.25rem; margin-bottom: 1rem; }
+.registration-inbox-heading > div { display: contents; }
+.registration-inbox-heading h1 { font-size: clamp(1.65rem, 2.3vw, 2.1rem); letter-spacing: -.035em; line-height: 1.2; font-weight: 750; margin: 0 0 .35rem; }
+.registration-inbox-heading p { grid-column: 1 / -1; grid-row: 2; color: var(--inbox-muted); margin: 0; font-size: .95rem; line-height: 1.6; }
+.registration-inbox-steps { grid-column: 2; grid-row: 1; display: flex; flex-wrap: wrap; gap: .8rem; margin: 0; padding: 0; list-style: none; font-size: .76rem; color: var(--inbox-muted); }
+.registration-inbox-steps li { display: flex; align-items: center; gap: .6rem; }
+.registration-inbox-steps li + li::before { content: '→'; margin-right: .1rem; font-size: 1rem; }
+.registration-inbox-steps li > span { display: grid; place-items: center; flex: 0 0 1.9rem; height: 1.9rem; border-radius: 50%; border: 1px solid #dfe8ef; background: #edf3f7; color: #334b64; font-weight: 600; }
+.registration-inbox-notice { display: flex; align-items: flex-start; gap: .85rem; padding: .85rem 1rem; margin-bottom: 1rem; border: 1px solid #cee4f6; border-radius: .4rem; background: #eef6fc; }
+.registration-inbox-notice > svg { color: #287fb4; flex: 0 0 1.2rem; margin-top: .1rem; }
+.registration-inbox-notice p { margin: 0; color: #395a7b; font-size: .85rem; line-height: 1.6; }
+.registration-inbox-notice strong { font-weight: 600; }
+.registration-inbox-filters { margin-bottom: 1rem; padding: 1.15rem 1.25rem 1.35rem; border: 1px solid var(--inbox-border); border-radius: .45rem; background: #fff; }
+.registration-inbox-search-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 23%); gap: 1rem; align-items: end; margin-bottom: .95rem; }
+.registration-inbox-filter-row { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(8rem, .34fr) minmax(5rem, .3fr); gap: 1rem; align-items: end; }
+.admin-workspace .registration-inbox-filter-row.registration-inbox-filter-row--status { grid-template-columns: minmax(0, 1fr) auto auto; }
+.admin-workspace [data-auto-filter-ready] .registration-inbox-filter-row.registration-inbox-filter-row--status { grid-template-columns: minmax(0, 1fr) auto; }
+.registration-inbox-filters .form-label { font-size: .8rem; font-weight: 600; margin-bottom: .4rem; color: #30455e; }
+.registration-inbox-filters :is(.form-control, .form-select) { min-height: 42px; border-color: #c6d2de; font-size: .85rem; border-radius: .35rem; background-color: #fff; }
+.registration-inbox-search { position: relative; }
+.registration-inbox-search > svg { position: absolute; left: .8rem; top: 50%; transform: translateY(-50%); color: #3d526b; pointer-events: none; }
+.admin-workspace .registration-inbox-search input { padding-left: 2.7rem; }
+.registration-inbox-search input::placeholder { color: #63768d; opacity: 1; }
+.registration-inbox .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: .55rem 1.1rem; border-radius: .35rem; font-size: .84rem; font-weight: 600; }
+.registration-inbox .btn-primary { background: linear-gradient(120deg, #176e65, #185f58); border-color: #17665e; color: #fff; }
+.registration-inbox .btn-primary:hover { background: #104f49; }
+.registration-inbox .btn-outline-primary { color: var(--inbox-teal); border-color: #92b9b5; background: #fff; }
+.registration-inbox .btn-outline-primary:hover { background: #ecf5f3; border-color: var(--inbox-teal); }
+.registration-inbox-clear { display: grid; place-items: center; min-height: 42px; color: var(--inbox-teal); font-size: .84rem; text-underline-offset: .2em; }
+.registration-inbox-error { margin: .85rem 0 0; color: #b42328; font-size: .85rem; }
+.registration-inbox-search-note { margin: .85rem 0 0; color: var(--inbox-muted); font-size: .8rem; }
+.registration-inbox-toolbar { display: flex; align-items: end; justify-content: space-between; gap: .7rem 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--inbox-border); }
+.registration-inbox-tabs { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; }
+.registration-inbox-tabs a { display: flex; align-items: center; gap: .65rem; padding: .9rem .7rem; border-bottom: 2px solid transparent; color: var(--inbox-muted); font-size: .83rem; text-decoration: none; }
+.registration-inbox-tabs a[aria-current="page"] { color: var(--inbox-teal); border-bottom-color: var(--inbox-teal); font-weight: 650; }
+.registration-inbox-tabs a:hover { background: #edf5f3; }
+.registration-inbox-tabs a > span { padding: .05rem .45rem; border-radius: .35rem; font-size: .73rem; background: #e9eef2; color: #354f66; }
+.registration-inbox-tabs a[aria-current="page"] > span { background: #e5f0ed; color: #205c56; }
+.registration-inbox-actions { display: flex; flex-wrap: wrap; gap: .6rem; padding-bottom: .45rem; }
+.registration-inbox-hint { margin: .65rem 0 .85rem; color: var(--inbox-muted); font-size: .78rem; }
+.registration-inbox-results { border: 1px solid var(--inbox-border); border-radius: .5rem; background: #fff; overflow: hidden; }
+.registration-inbox-table { width: 100%; min-width: 850px; table-layout: fixed; margin: 0; font-size: .8rem; }
+.registration-inbox-col-applicant { width: 38%; }
+.registration-inbox-col-channel { width: 13%; }
+.registration-inbox-col-received { width: 20%; }
+.registration-inbox-col-status { width: 17%; }
+.registration-inbox-col-action { width: 12%; }
+.registration-inbox-table > :not(caption) > * > * { padding: .65rem 1.3rem; vertical-align: middle; border-color: #e4ebf0; background: transparent; color: inherit; box-shadow: none; overflow-wrap: anywhere; }
+.registration-inbox-table thead th { padding-block: .8rem; background: #fbfcfd; text-transform: uppercase; letter-spacing: .085em; font-size: .62rem; font-weight: 700; color: #344c67; }
+.registration-inbox-table tbody th { font-weight: 400; }
+.registration-inbox-table tbody tr:hover { background: #f8fbfa; }
+.registration-inbox-name { display: block; color: #172636; font-weight: 650; font-size: .86rem; line-height: 1.4; }
+.registration-inbox-reference { display: block; margin-top: .12rem; color: var(--inbox-muted); font-size: .78rem; font-weight: 400; overflow-wrap: anywhere; }
+.registration-inbox-status { display: inline-block; padding: .3rem .8rem; border: 1px solid #f5d79c; border-radius: .4rem; background: #fff4da; color: #775016; font-size: .73rem; line-height: 1.45; }
+.registration-inbox-status--approved { color: #15594a; border-color: #c5e4d9; background: #eaf6f0; }
+.registration-inbox-status--rejected { color: #8f3438; border-color: #ebcbcd; background: #fcf0f1; }
+.registration-inbox-review { display: inline-flex; align-items: center; gap: .7rem; min-height: 32px; color: var(--inbox-teal); font-weight: 600; text-underline-offset: .2em; }
+.registration-inbox-review > span[aria-hidden] { font-size: 1rem; }
+.registration-inbox-table .registration-inbox-empty { text-align: center; padding: 2.5rem 1.5rem; color: var(--inbox-muted); }
+.registration-inbox-empty > * { display: block; }
+.registration-inbox-empty strong { color: #30455e; margin-bottom: .4rem; }
+.registration-inbox-table-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; padding: .6rem 1.1rem; }
+.registration-inbox-table-footer p { margin: 0; color: var(--inbox-muted); font-size: .78rem; }
+.registration-inbox-table-footer nav { display: flex; gap: .4rem; }
+.registration-inbox-table-footer nav > * { display: grid; place-items: center; min-width: 2rem; min-height: 2.25rem; padding: .35rem .75rem; border: 1px solid #e0e7ed; border-radius: .35rem; font-size: .75rem; text-decoration: none; }
+.registration-inbox-table-footer nav > a { color: var(--inbox-teal); }
+.registration-inbox-table-footer nav > [aria-disabled] { color: #6a7d91; background: #fcfdfe; }
+.registration-inbox-table-footer nav > .is-current { color: #185d54; border-color: #b9dcd5; background: #eaf3f0; }
+.registration-inbox :is(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid #308779; outline-offset: 3px; }
+@media (max-width: 1399px) {
+  .registration-inbox-heading { grid-template-columns: minmax(0, 1fr); }
+  .registration-inbox-steps { grid-column: 1; grid-row: 3; margin-top: .5rem; }
+}
+@media (max-width: 991px) {
+  .registration-inbox-filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .registration-inbox-search-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .registration-inbox-toolbar { align-items: stretch; }
+  .registration-inbox-actions { padding-top: .5rem; }
+}
+@media (max-width: 575px) {
+  .admin-workspace .registration-inbox-filter-row.registration-inbox-filter-row--status,
+  .admin-workspace [data-auto-filter-ready] .registration-inbox-filter-row.registration-inbox-filter-row--status { grid-template-columns: minmax(0, 1fr); }
+  .admin-workspace .registration-inbox { padding-top: .6rem; }
+  .registration-inbox-heading h1 { font-size: 1.65rem; }
+  .registration-inbox-steps { display: grid; gap: .5rem; }
+  .registration-inbox-steps li + li::before { content: none; }
+  .registration-inbox-filters { padding: 1rem; }
+  .registration-inbox-search-row, .registration-inbox-filter-row { grid-template-columns: minmax(0, 1fr); gap: .75rem; }
+  .registration-inbox-actions { width: 100%; }
+  .registration-inbox-actions > .btn { flex: 1 1 12rem; }
+  .registration-inbox-tabs { gap: 0; width: 100%; }
+  .registration-inbox-tabs a { padding: .65rem .5rem; }
+  .registration-inbox-table-footer { padding: .8rem; }
+}

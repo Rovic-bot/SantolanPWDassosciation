@@ -1,0 +1,74 @@
+<div data-announcement-results data-selected-id="{{ selected_id }}">
+  <nav class="announcement-view-switch" aria-label="Announcement sections">
+    <a class="btn {% if announcement_section == 'announcements' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% querystring section='announcements' selected=None review=None page=None notice_page=None %}"{% if announcement_section == 'announcements' %} aria-current="page"{% endif %}>Announcements</a>
+    <a class="btn {% if announcement_section == 'results' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{% querystring section='results' selected=None review=None page=None notice_page=None %}"{% if announcement_section == 'results' %} aria-current="page"{% endif %}>Program results</a>
+  </nav>
+<div class="selection-layout">
+  <section class="selection-board announcement-lists" aria-label="Announcements and program results">
+    {% if announcement_section == 'announcements' %}
+    <div class="selection-queue selection-glass">
+      <h2 class="announcement-list-heading">Announcements</h2>
+      <ul class="selection-rows">
+        {% for notice in notice_page %}
+        <li class="selection-row announcement-notice-row" data-announcement-row="{{ notice.overview_id }}" data-selected="{{ notice.overview_selected|yesno:'true,false' }}">
+          <div class="selection-identity">
+            <span class="selection-state announcement-publication" data-publication="{{ notice.status }}">{{ notice.get_status_display }}</span>
+            <h2><a data-announcement-select="{{ notice.overview_id }}" href="{% querystring selected=notice.overview_id %}#announcement-program-overview"{% if notice.overview_selected %} aria-current="true"{% endif %}>{{ notice.display_title }}</a></h2>
+            <small>{{ notice.category_label }} announcement</small>
+            <p class="announcement-notice-excerpt">{{ notice.overview_text|truncatechars:150 }}</p>
+          </div>
+          <div class="announcement-notice-date"><span>{% if notice.published_at %}Published{% else %}Updated{% endif %}</span><time datetime="{% if notice.published_at %}{{ notice.published_at|date:'c' }}{% else %}{{ notice.updated_at|date:'c' }}{% endif %}">{% if notice.published_at %}{{ notice.published_at|date:'M j, Y' }}{% else %}{{ notice.updated_at|date:'M j, Y' }}{% endif %}</time></div>
+        </li>
+        {% empty %}<li class="selection-empty"><p>No announcements match your filters.</p></li>{% endfor %}
+      </ul>
+      {% if notice_page.has_other_pages %}<nav class="pagination-bar announcement-notice-pagination" aria-label="Announcement pages">{% if notice_page.has_previous %}<a href="{% querystring notice_page=notice_page.previous_page_number %}">Previous announcements</a>{% endif %}<span>Page {{ notice_page.number }} of {{ notice_page.paginator.num_pages }}</span>{% if notice_page.has_next %}<a href="{% querystring notice_page=notice_page.next_page_number %}">Next announcements</a>{% endif %}</nav>{% endif %}
+    </div>
+    {% else %}
+    <div class="selection-queue selection-glass announcement-program-list">
+      <h2 class="announcement-list-heading">Program results</h2>
+      {% if page_obj %}<div class="selection-columns" aria-hidden="true"><span>Program</span><span>Applicants</span><span>Allocated</span><span>Slots used</span></div>{% endif %}
+      <ul class="selection-rows">
+        {% for program in page_obj %}
+        <li class="selection-row" data-announcement-row="{{ program.pk }}" data-selected="{{ program.overview_selected|yesno:'true,false' }}">
+          <div class="selection-identity"><span class="selection-state announcement-publication" data-result-status data-publication="{{ program.result_publication.style }}">{{ program.result_publication.label }}</span><h2><a data-announcement-select="{{ program.pk }}" href="{% querystring selected=program.pk %}#announcement-program-overview"{% if program.overview_selected %} aria-current="true"{% endif %}>{{ program.name }}</a></h2><small>{{ program.public_code|default:'Code not assigned' }} &middot; Program: {{ program.get_status_display }}</small></div>
+          <div class="selection-number"><strong>{{ program.applicant_count }}</strong><small>Total applicants</small></div>
+          <div class="selection-number"><strong>{{ program.allocated_slots|default_if_none:'—' }}</strong><small>Allocated slots</small></div>
+          <div class="selection-slots">{% if program.slot_limit != None %}<div><span>{{ program.allocated_slots }} / {{ program.slot_limit }}</span><strong>{{ program.usage_percent|default_if_none:0 }}%</strong></div><progress max="100" value="{{ program.usage_percent|default_if_none:0 }}" aria-label="{{ program.name }} slots allocated">{{ program.usage_percent|default_if_none:0 }}%</progress><small>{{ program.available_slots }} available</small>{% else %}<small>Capacity not set</small>{% endif %}</div>
+        </li>
+        {% empty %}<li class="selection-empty"><p>No programs match your filters.</p></li>{% endfor %}
+      </ul>
+    {% include 'partials/page_links.html' with pagination_label='Program result pages' %}
+    </div>
+    {% endif %}
+  </section>
+  <aside class="selection-analysis" id="announcement-program-overview" tabindex="-1" aria-label="Selected announcement or program overview">
+    {% if announcement_section == 'announcements' %}
+    {% for notice in notice_page %}
+    <article class="selection-panel selection-glass announcement-notice-panel" data-announcement-panel="{{ notice.overview_id }}"{% if not notice.overview_selected %} hidden{% endif %}>
+      <header><span class="selection-state announcement-publication" data-publication="{{ notice.status }}">{{ notice.get_status_display }}</span><span class="selection-kicker">Selected announcement</span></header>
+      <h2>{{ notice.display_title }}</h2><p class="selection-meta">{{ notice.category_label }} announcement</p>
+      {% if notice.image %}<img class="announcement-overview-image" src="{% url 'announcements:preview_image' notice.pk %}" alt="{{ notice.image_alt }}">{% endif %}
+      <div class="announcement-overview-copy">{{ notice.overview_text|truncatechars:700|linebreaks }}</div>
+      <dl class="announcement-overview-dates"><div><dt>Updated</dt><dd>{{ notice.updated_at|date:'M j, Y, g:i A' }}</dd></div>{% if notice.published_at %}<div><dt>Published</dt><dd>{{ notice.published_at|date:'M j, Y, g:i A' }}</dd></div>{% endif %}</dl>
+      {% if notice.overview_public %}<p><a class="selection-text-link" href="{% url 'announcements:detail' notice.pk %}">View public announcement &rarr;</a></p>{% endif %}
+      {% if notice.overview_can_edit %}<a class="selection-button" href="{% url 'announcements:edit' notice.pk %}" data-announcement-create>Edit announcement</a>{% endif %}
+      <a class="selection-button selection-primary" href="{% url 'announcements:manage_detail' notice.pk %}" data-results-preview data-announcement-review-trigger aria-haspopup="dialog" aria-controls="program-results-dialog">Review announcement <span aria-hidden="true">&rarr;</span></a>
+    </article>
+    {% endfor %}
+    {% else %}
+    {% for program in page_obj %}
+    <article class="selection-panel selection-glass" data-announcement-panel="{{ program.pk }}"{% if not program.overview_selected %} hidden{% endif %}>
+      <header><span class="selection-state announcement-publication" data-publication="{{ program.result_publication.style }}">{{ program.result_publication.label }}</span><span class="selection-kicker">Selected program</span></header>
+      <h2>{{ program.name }}</h2><p class="selection-meta">{{ program.public_code|default:'Code not assigned' }} &middot; {{ program.assistance_type }}</p>
+      <div class="selection-gauge" role="img" aria-label="{{ program.allocated_slots }} allocated beneficiary slots{% if program.slot_limit != None %} out of {{ program.slot_limit }}{% endif %}.">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="selection-gauge-track" cx="60" cy="60" r="51"/>{% if program.usage_percent %}<circle cx="60" cy="60" r="51" pathLength="100" stroke-dasharray="{{ program.usage_percent }} 100"/>{% endif %}</svg><div><strong>{{ program.allocated_slots|default_if_none:'—' }}</strong><span>Allocated slots</span></div>
+      </div>
+      <dl class="release-overview-counts"><div><dt>Applicants</dt><dd>{{ program.applicant_count }}</dd></div><div><dt>Available slots</dt><dd>{% if program.available_slots != None %}{{ program.available_slots }}{% else %}{{ program.capacity_label }}{% endif %}</dd></div></dl>
+      {% if program.result_publication.url %}<p><a class="selection-text-link" href="{{ program.result_publication.url }}">View public results &rarr;</a></p>{% endif %}
+      <a class="selection-button selection-primary" href="{% url 'announcements:prepare_results' program.pk %}#program-results" data-results-preview aria-haspopup="dialog" aria-controls="program-results-dialog">Review and publish <span aria-hidden="true">&rarr;</span></a>
+    </article>
+    {% endfor %}
+    {% endif %}
+  </aside>
+</div>
+</div>

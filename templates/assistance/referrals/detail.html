@@ -1,0 +1,65 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Community Assistance Desk request {{ ticket.short_reference }} · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} referral-chat-page{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-ticket-screen.css' %}?v=20261111-back">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-workspace.css' %}"><link rel="stylesheet" href="{% static 'css/referral-ticket.css' %}?v=20261111-full-page">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-workspace.js' %}?v=20261111-screen" defer></script><script src="{% static 'js/referral-live.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}<div class="container content-section referral-page referral-detail-page" data-record-content>
+  <article class="referral-ticket" aria-labelledby="referral-ticket-title" data-referral-ticket="{{ ticket.pk }}" data-updates-url="{% url 'assistance:referral_updates' ticket.pk %}" data-version="{{ ticket.version }}" data-channel-key="referral-delivery-{{ request.user.pk }}" data-member-name="{{ member_name }}">
+    <header class="referral-ticket-header">
+      <a class="referral-inbox-back" href="{% url 'assistance:referral_inbox' %}" data-workspace-tab aria-label="Back to Community Assistance Desk inbox" title="Back to inbox">{% include 'assistance/referrals/icon.html' with name='back' %}</a>
+      {% include 'assistance/referrals/member_avatar.html' with large=True %}
+      <div class="referral-ticket-heading"><div class="referral-title-line"><h1 id="referral-ticket-title">{{ member_name }}</h1>{% include 'assistance/referrals/status.html' %}</div>
+        <div class="referral-ticket-meta"><span class="referral-ticket-reference">ID: {{ ticket.reference }}</span><time datetime="{{ ticket.received_at|date:'c' }}">{% include 'assistance/referrals/icon.html' with name='clock' %}{{ ticket.received_at|date:'M j, Y' }} · {{ ticket.received_at|date:'g:i A' }}</time></div>
+      </div>
+      <button type="button" class="referral-panel-menu" data-referral-sidebar-menu aria-expanded="false" aria-controls="referral-sidebar-content" aria-label="Open ticket details" title="Ticket details" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+    </header>
+    <div class="referral-ticket-feedback">
+      {% include 'partials/workspace_messages.html' %}
+      {% if begin_review_on_open %}<form method="post" data-referral-open hidden>{% csrf_token %}<input type="hidden" name="version" value="{{ ticket.version }}"><input type="hidden" name="action" value="begin_review"></form><noscript><form method="post">{% csrf_token %}<input type="hidden" name="version" value="{{ ticket.version }}"><button class="btn btn-primary" name="action" value="begin_review">Open ticket for review</button></form></noscript>{% endif %}
+      {% if action_errors or form.errors %}<div class="alert alert-danger" role="alert"><strong>The ticket could not be updated.</strong><ul class="mb-0">{% for error in action_errors %}<li>{{ error }}</li>{% endfor %}{% for field, errors in form.errors.items %}{% for error in errors %}<li>{{ error }}</li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+    </div>
+    <div class="referral-ticket-grid">
+      <div class="referral-ticket-main">
+        <section class="referral-conversation" aria-label="Request conversation" tabindex="0">
+          <p class="referral-conversation-date"><time datetime="{{ ticket.received_at|date:'c' }}">{{ ticket.received_at|date:'M j, Y, g:i A' }}</time></p>
+          <p class="referral-conversation-subject"><span>Ticket subject:</span> {{ ticket.subject|default:'Community Assistance request' }}</p>
+          <article class="referral-message referral-message--member" aria-label="Message from {{ member_name }}">{% include 'assistance/referrals/member_avatar.html' %}<div class="referral-message-content">
+            <div class="referral-message-bubble">{{ ticket.concern|linebreaksbr }}</div>
+            <time class="referral-message-time" datetime="{{ ticket.received_at|date:'c' }}">{{ ticket.received_at|date:'g:i A' }}</time>
+            <details class="referral-member-contact"><summary>View member contact details</summary><dl class="referral-contact-grid">
+              <div><dt>Verified member</dt><dd>{{ ticket.full_name }}</dd></div><div><dt>Assistance type</dt><dd>{{ ticket.get_assistance_type_display }}</dd></div>
+              <div><dt>Email</dt><dd>{{ ticket.email }}</dd></div><div><dt>Contact number</dt><dd>{{ ticket.contact_number|default:'Not provided' }}</dd></div>
+              <div class="referral-address"><dt>Address supplied for this request</dt><dd>{{ ticket.address|default:'Not provided'|linebreaksbr }}</dd></div>
+            </dl></details>
+          </div></article>
+          {% for item in actions %}{% if item.member_message %}
+          <article class="referral-message{% if item.action == 'member_replied' %} referral-message--member{% else %} referral-message--staff{% endif %}" data-message-id="{{ item.pk }}" aria-label="{% if item.action == 'member_replied' %}Message from {{ member_name }}{% else %}Association reply{% endif %}">
+            {% if item.action == 'member_replied' %}{% include 'assistance/referrals/member_avatar.html' %}{% endif %}
+            <div class="referral-message-content"><div class="referral-message-bubble">{{ item.member_message|linebreaksbr }}</div><time class="referral-message-time" datetime="{{ item.recorded_at|date:'c' }}">{{ item.recorded_at|date:'M j, g:i A' }}</time></div>
+          </article>{% endif %}{% endfor %}
+        </section>
+        {% if can_review %}{% include 'assistance/referrals/reply.html' %}{% endif %}
+      </div>
+      <button type="button" class="referral-panel-backdrop" data-referral-panel-dismiss aria-label="Close ticket details" hidden tabindex="-1"></button>
+      <aside class="referral-ticket-sidebar" aria-label="Ticket evidence and activity">
+        <button type="button" class="referral-sidebar-toggle" data-referral-sidebar-toggle aria-expanded="true" aria-controls="referral-sidebar-content" aria-label="Collapse evidence and activity panel" title="Collapse panel to the right" hidden><span class="visually-hidden">Hide panel</span><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 6 6-6 6m7-12 6 6-6 6"/></svg></button>
+        <div class="referral-sidebar-viewport">
+        <div class="referral-sidebar-content" id="referral-sidebar-content">
+        <header class="referral-panel-heading"><h2 id="referral-panel-title">Ticket details</h2><button type="button" data-referral-panel-dismiss aria-label="Close ticket details">&times;</button></header>
+        <div class="referral-sidebar-scroll" tabindex="0" aria-label="Supporting evidence and activity history">
+          {% include 'assistance/referrals/evidence.html' %}
+          {% include 'assistance/referrals/activity.html' %}
+          {% include 'assistance/referrals/email_history.html' %}
+        </div>
+        <section class="referral-ticket-actions" aria-label="Ticket actions">
+          {% if can_review %}<p><strong>Ticket actions:</strong> The ticket moves to In review when you open it. Closing ends the conversation and disables its public reference.</p><form method="post">{% csrf_token %}<input type="hidden" name="version" value="{{ ticket.version }}"><button type="submit" name="action" value="closed" class="btn referral-close-button">{% include 'assistance/referrals/icon.html' with name='check' %}Close ticket</button></form>
+          {% elif ticket.status == 'closed' %}<p class="referral-closed-note">{% include 'assistance/referrals/icon.html' with name='check' %}This ticket is closed. Its request and history remain available.</p>
+          {% else %}<p>You have view-only access to this ticket.</p>{% endif %}
+        </section>
+        </div>
+        </div>
+      </aside>
+    </div>
+  </article>
+</div>{% endblock %}

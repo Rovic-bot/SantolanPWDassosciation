@@ -1,0 +1,136 @@
+/* Public program details: two independent card columns in the portal palette. */
+body.public-portal article.public-program-detail { max-width: 75rem; margin-inline: auto; }
+body.public-portal article.public-program-detail .program-detail-heading { display: block; padding: 0; margin-bottom: 1.5rem; }
+body.public-portal article.public-program-detail .program-detail-heading h1 { font-size: clamp(1.75rem, 3vw, 2.6rem) !important; line-height: 1.2 !important; margin-bottom: .5rem; }
+body.public-portal article.public-program-detail .program-detail-heading p { color: var(--muted); font-size: .9rem; }
+body.public-portal article.public-program-detail .program-detail-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+body.public-portal article.public-program-detail :is(.program-detail-main, .program-detail-sidebar) { display: grid; gap: 1.5rem; min-width: 0; }
+body.public-portal article.public-program-detail :is(.program-detail-overview, .program-detail-requirements, .program-detail-steps, .program-detail-eligibility, .program-detail-schedule, .program-detail-help) {
+    min-width: 0;
+    padding: 1.75rem;
+    margin: 0;
+    border: 1px solid var(--edge) !important;
+    border-radius: 1.5rem !important;
+    background: var(--surface) !important;
+    box-shadow: 0 8px 18px #25221d12 !important;
+    overflow-wrap: anywhere;
+}
+body.public-portal article.public-program-detail h2 { color: var(--ink); font-size: 1.15rem !important; font-weight: 700 !important; line-height: 1.4; letter-spacing: -.015em !important; }
+body.public-portal article.public-program-detail .public-program-artwork--detail {
+    height: clamp(11rem, 22vw, 18rem);
+    padding: .75rem;
+    margin-bottom: 1.5rem;
+    border-radius: .9rem;
+    background: var(--stone);
+}
+body.public-portal article.public-program-detail .public-program-artwork img { border-radius: .55rem; object-fit: cover; }
+body.public-portal article.public-program-detail .public-program-initials { color: var(--muted); }
+body.public-portal article.public-program-detail .program-overview-heading { gap: .75rem; border-bottom: 1px solid var(--edge); padding-bottom: .9rem; margin-bottom: 1.1rem; }
+body.public-portal article.public-program-detail .program-overview-heading .quiet-badge { padding: .25rem .6rem; border-radius: 999px; background: var(--stone); color: var(--ink); font-size: .7rem; line-height: 1.5; }
+body.public-portal article.public-program-detail :is(.program-overview-copy p, .program-detail-overview > p) { font-size: .9rem; line-height: 1.7; color: var(--muted); margin: 0 0 .75rem; }
+body.public-portal article.public-program-detail .program-overview-copy p:last-child,
+body.public-portal article.public-program-detail .program-detail-overview > p:last-child { margin-bottom: 0; }
+body.public-portal article.public-program-detail .program-detail-steps > h2 { border-bottom: 1px solid var(--edge); padding-bottom: 1rem; }
+.public-program-detail .program-requirements-heading { padding-bottom: 1rem; border-bottom: 1px solid var(--edge); }
+.public-program-detail .program-requirements-heading h2 { margin: 0 0 .4rem; }
+body.public-portal article.public-program-detail .program-detail-requirements p { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.7; }
+.public-program-detail .program-requirements-instructions { margin-top: 1rem; }
+.public-program-detail .program-requirements-list { display: grid; list-style: none; padding: 0; margin: 0; }
+.public-program-detail .program-requirements-list > li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .85rem; padding: 1.15rem 0; margin: 0; }
+.public-program-detail .program-requirements-list > li + li { border-top: 1px solid var(--edge); }
+.public-program-detail .program-requirements-list > li:last-child { padding-bottom: 0; }
+.public-program-detail .program-requirement-number { display: grid; place-items: center; align-self: start; width: 2rem; height: 2rem; border: 1px solid var(--control-edge); border-radius: 50%; color: var(--ink); font-size: .8rem; font-weight: 700; }
+.public-program-detail .program-requirement-content { min-width: 0; }
+.public-program-detail .program-requirement-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem .75rem; }
+body.public-portal article.public-program-detail .program-requirement-heading h3 { margin: 0; color: var(--ink); font-size: .95rem; font-weight: 700; line-height: 1.5; }
+.public-program-detail .program-requirement-necessity { padding: .15rem .5rem; border: 1px solid var(--control-edge); border-radius: 999px; color: var(--ink); font-size: .7rem; font-weight: 600; line-height: 1.5; }
+body.public-portal article.public-program-detail .program-detail-requirements .program-requirement-kind { margin-top: .2rem; font-size: .75rem; }
+.public-program-detail .program-requirement-instructions { margin-top: .5rem; }
+body.public-portal article.public-program-detail .program-detail-requirements :is(.program-requirements-instructions, .program-requirement-instructions) p + p { margin-top: .5rem; }
+body.public-portal article.public-program-detail .program-detail-requirements .program-requirements-empty { margin-top: 1rem; }
+.public-program-detail .program-steps-list { list-style: none; padding: 0; margin: 1.25rem 0 0; }
+.public-program-detail .program-steps-list li { position: relative; display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: 1rem; padding-bottom: 1.75rem; }
+.public-program-detail .program-steps-list li:last-child { padding-bottom: 0; }
+.public-program-detail .program-steps-list li:not(:last-child)::before { content: ''; position: absolute; left: 1.125rem; top: 2.25rem; bottom: 0; border-left: 1px solid var(--edge); }
+.public-program-detail .program-step-number { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--brand-primary); color: #fff; font-size: .95rem; font-weight: 700; }
+.public-program-detail .program-steps-list li:nth-child(2) .program-step-number { background: var(--muted); }
+.public-program-detail .program-steps-list li:last-child .program-step-number { background: var(--stone); color: var(--ink); }
+body.public-portal article.public-program-detail .program-steps-list h3 { font-size: .95rem; line-height: 1.5; font-weight: 700; margin: .3rem 0 .4rem; }
+body.public-portal article.public-program-detail .program-steps-list p { font-size: .825rem; line-height: 1.65; color: var(--muted); margin: 0; }
+body.public-portal article.public-program-detail .program-detail-eligibility { background: var(--brand-primary) !important; border-color: var(--brand-primary) !important; color: var(--surface); }
+body.public-portal article.public-program-detail .program-detail-sidebar h2 { font-size: .95rem !important; }
+body.public-portal article.public-program-detail .program-detail-eligibility h2 { color: var(--surface); }
+body.public-portal article.public-program-detail .program-detail-eligibility ul { display: grid; gap: .5rem; padding: 0; margin: 1rem 0; list-style: none; }
+body.public-portal article.public-program-detail.program-detail-sized .program-detail-eligibility {
+    height: auto;
+    max-height: var(--program-overview-height);
+    min-height: var(--program-eligibility-min-height);
+}
+body.public-portal article.public-program-detail.program-detail-sized .program-detail-eligibility :is(h2, .program-detail-actions) { flex-shrink: 0; }
+body.public-portal article.public-program-detail.program-detail-sized .program-eligibility-list {
+    flex: 0 1 auto;
+    min-height: 0;
+    align-content: start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: #9c9589 #ffffff12;
+}
+body.public-portal article.public-program-detail .program-eligibility-list:focus-visible { outline: 2px solid #fff !important; outline-offset: 3px; border-radius: .4rem; }
+body.public-portal article.public-program-detail .program-detail-eligibility li { display: flex; align-items: flex-start; gap: .5rem; padding: .65rem .75rem; margin: 0; border: 1px solid #ffffff30; border-radius: .6rem; background: #ffffff12; color: var(--surface); font-size: .8rem; line-height: 1.5; }
+.public-program-detail .ui-icon { width: 1rem; height: 1rem; flex: none; }
+.public-program-detail .program-detail-eligibility li .ui-icon { margin-top: .1rem; }
+body.public-portal article.public-program-detail .program-detail-actions { gap: .6rem; margin-top: .25rem; }
+body.public-portal article.public-program-detail .program-detail-actions:empty { display: none; }
+body.public-portal article.public-program-detail .program-detail-actions .btn { display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .65rem .8rem !important; font-size: .8rem; line-height: 1.4; font-weight: 700; white-space: normal; text-align: center; }
+body.public-portal article.public-program-detail .program-detail-actions .btn-primary { background: var(--surface) !important; border-color: var(--surface) !important; color: var(--ink) !important; }
+body.public-portal article.public-program-detail .program-detail-actions .program-tracking-link { background: #ffffff12 !important; border-color: #ffffff40 !important; color: var(--surface) !important; }
+body.public-portal article.public-program-detail .program-detail-actions .btn-primary:hover { background: var(--stone) !important; }
+body.public-portal article.public-program-detail .program-detail-actions .program-tracking-link:hover { background: #ffffff26 !important; }
+body.public-portal article.public-program-detail .program-detail-actions a:focus-visible { outline: 3px solid #fff !important; outline-offset: 3px; }
+body.public-portal article.public-program-detail .program-schedule-heading { align-items: center; gap: .5rem; margin-bottom: 1.25rem; }
+body.public-portal article.public-program-detail .program-schedule-heading h2 { display: flex; align-items: center; gap: .4rem; }
+.public-program-detail .program-schedule-heading .portal-icon { width: 1rem; height: 1rem; flex: none; }
+body.public-portal article.public-program-detail .program-schedule-heading p { font-size: .65rem; }
+.public-program-detail .program-schedule-heading abbr { text-decoration: none; }
+body.public-portal article.public-program-detail .program-period-grid { display: block; }
+body.public-portal article.public-program-detail .program-period-card { padding: 0 0 1rem; margin-bottom: 1rem; border: 0; border-bottom: 1px solid var(--edge); border-radius: 0; background: transparent; }
+body.public-portal article.public-program-detail .program-period-card h3 { font-size: .65rem; font-weight: 700; letter-spacing: .04em; margin-bottom: .4rem; }
+body.public-portal article.public-program-detail .program-period-dates { font-size: .875rem; margin-bottom: .25rem; color: var(--ink); }
+body.public-portal article.public-program-detail .program-period-times { font-size: .75rem; color: var(--muted); }
+body.public-portal article.public-program-detail .program-time-dot { background: var(--muted); width: 4px; height: 4px; flex-basis: 4px; }
+body.public-portal article.public-program-detail .program-capacity-list { gap: .75rem; margin: 0; }
+body.public-portal article.public-program-detail .program-capacity-row { padding: 0; gap: .5rem; border: 0; border-radius: 0; background: transparent; }
+body.public-portal article.public-program-detail .program-capacity-row dt { font-size: .75rem; }
+body.public-portal article.public-program-detail .program-capacity-row dd { font-size: .8rem; }
+body.public-portal article.public-program-detail .program-capacity-row .program-slot-count { font-size: 1rem; font-weight: 700; min-width: 2rem; padding: .3rem .5rem; background: var(--stone); color: var(--ink); border-radius: .4rem; }
+.public-program-detail .program-help-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; margin-bottom: .875rem; border-radius: .7rem; background: var(--stone); color: var(--ink); }
+body.public-portal article.public-program-detail .program-detail-help p { font-size: .8rem; line-height: 1.65; color: var(--muted); margin: .65rem 0; }
+body.public-portal article.public-program-detail .program-detail-help a { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--ink); font-size: .8rem; font-weight: 700; text-decoration: none; }
+.public-program-detail .program-detail-help a .portal-icon { width: 1rem; height: 1rem; }
+body.public-portal article.public-program-detail .program-detail-help a:hover { text-decoration: underline; }
+@media (max-width: 991px) {
+    body.public-portal article.public-program-detail .program-detail-grid { grid-template-columns: minmax(0, 1fr); }
+    body.public-portal article.public-program-detail { max-width: 42rem; }
+}
+@media (max-width: 575px) {
+    body.public-portal article.public-program-detail :is(.program-detail-overview, .program-detail-requirements, .program-detail-steps, .program-detail-eligibility, .program-detail-schedule, .program-detail-help) { padding: 1.25rem; }
+    body.public-portal article.public-program-detail .public-program-artwork--detail { padding: .5rem; }
+    .public-program-detail .program-steps-list li { gap: .75rem; }
+}
+html[data-contrast=true] body.public-portal article.public-program-detail :is(.program-detail-overview, .program-detail-requirements, .program-detail-steps, .program-detail-schedule, .program-detail-help) { background: #fff !important; border-color: #000 !important; }
+html[data-contrast=true] body.public-portal article.public-program-detail .program-detail-requirements :is(.program-requirements-heading, li, .program-requirement-number, .program-requirement-necessity) { border-color: #555; color: #111; }
+html[data-contrast=true] body.public-portal article.public-program-detail .program-detail-eligibility { background: #000 !important; border-color: #000 !important; }
+html[data-contrast=true] body.public-portal article.public-program-detail :is(h2, h3, p, a, dt, dd) { color: #000 !important; }
+html[data-contrast=true] body.public-portal article.public-program-detail .program-detail-eligibility :is(h2, li, .program-tracking-link) { color: #fff !important; }
+html[data-contrast=true] body.public-portal article.public-program-detail .program-detail-actions .btn-primary { background: #fff !important; border-color: #fff !important; color: #000 !important; }
+@media print {
+    body.public-portal article.public-program-detail.program-detail-sized .program-detail-eligibility { height: auto; min-height: 0; max-height: none; }
+    body.public-portal article.public-program-detail.program-detail-sized .program-eligibility-list { display: grid; overflow: visible; scrollbar-gutter: auto; }
+    body.public-portal article.public-program-detail .program-detail-grid { display: block; }
+    body.public-portal article.public-program-detail .program-detail-main,
+    body.public-portal article.public-program-detail .program-detail-sidebar { display: block; }
+    body.public-portal article.public-program-detail :is(.program-detail-overview, .program-detail-requirements, .program-detail-steps, .program-detail-eligibility, .program-detail-schedule, .program-detail-help) { margin-bottom: 1rem; break-inside: avoid; box-shadow: none !important; }
+}

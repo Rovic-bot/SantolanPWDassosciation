@@ -1,0 +1,13 @@
+<article class="program-card program-reference-card ewaf-program-card" data-program="{{ program.pk }}">
+<div class="program-card-body">
+<header><span class="program-status ewaf-state-{{ program.ewaf_card.state }}" aria-label="Configuration: {{ program.ewaf_card.label }}"><span aria-hidden="true"></span>{{ program.ewaf_card.label }}</span><h2>{{ program.name }}</h2></header>
+{% if not ewaf_vault_enabled %}<section class="ewaf-card-weights" aria-label="EWAF criteria weights">
+<h3>{% if program.ewaf_card.state == 'ready' %}Calculated AHP weights{% else %}Criterion weights{% endif %}</h3>
+{% if program.ewaf_card.state == 'draft' %}<p class="ewaf-draft-note">Proposed only &middot; Not active for scoring</p>{% endif %}
+{% for row in program.ewaf_card.rows %}<div class="ewaf-card-weight" data-criterion="{{ row.code }}"><div><span>{{ row.name }} ({{ row.code }})</span><strong>{% if row.percent != None %}{{ row.percent }}%{% else %}<span class="visually-hidden">Not configured</span>&mdash;{% endif %}</strong></div>
+{% if row.percent != None %}<progress value="{{ row.percent }}" max="100" aria-label="{{ row.name }} weight">{{ row.percent }}%</progress>{% else %}<div class="ewaf-weight-empty" aria-hidden="true"></div>{% endif %}</div>{% endfor %}
+</section>{% endif %}
+<dl class="ewaf-card-applicants" aria-label="Applicants"><div><dt>Total applicants</dt><dd data-count="total">{{ program.applicant_count }}</dd></div><div><dt>Eligible</dt><dd data-count="eligible">{{ program.eligible_count }}</dd></div><div><dt>Pending</dt><dd data-count="pending">{{ program.pending_count }}</dd></div></dl>
+{% include 'programs/capacity.html' with hide_applicant_count=True %}
+</div><footer><a href="{% url 'ewaf:operational_workspace' program.pk %}">Open EWAF {% include 'programs/ui_icon.html' with name='arrow' %}</a></footer>
+</article>

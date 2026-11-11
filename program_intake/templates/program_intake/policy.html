@@ -1,0 +1,7 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Authorize EWAF data sources{% endblock %}
+{% block content %}<div class="container content-section"><a href="{% url 'ewaf:operational_workspace' program.pk %}">← EWAF configuration</a><h1>Authorize program data sources</h1><p>{{ program.name }}</p><div class="ui-panel">
+<p>Use this program’s approved measurement definition. SI will come from the configured program document after Admin verification. Employment and dependents come from onsite member records; previous assistance comes from confirmed, non-voided receipts.</p>
+<p>The current authorized employment encoding, dependent bounds, assistance scope, AHP weights and applicable functional-need rules are retained. Saving creates new evidence and configuration versions.</p>
+{% if not form.fields.requirement.queryset.exists %}<p class="alert alert-info">This program has no required socioeconomic document. Configure that requirement on a new program before publication; existing approved terms are protected.</p>{% endif %}
+<form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Authorize new source configuration</button></form></div></div>{% endblock %}

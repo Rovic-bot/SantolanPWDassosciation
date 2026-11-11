@@ -1,0 +1,245 @@
+/* Shared public material, loaded after feature styles. Keep official print documents independent. */
+@media screen {
+  body.public-portal {
+    --ink: var(--body-text); --muted: var(--secondary-text); --paper: var(--canvas); --surface: #fff;
+    --stone: #eaf2ff; --line: var(--edge); --teal: var(--brand-primary); --teal-hover: var(--brand-royal);
+    --teal-wash: #e6efff; --accent: var(--brand-royal); --focus: var(--brand-royal);
+    --violet: var(--brand-royal); --mint: #146343; --peach: #884715;
+    --tint: #e6efff; --rim: #abc2e2; --glass: #fff; --portal-radius: 1.05rem;
+    --sheen: linear-gradient(118deg,#ffffffcf 6%,#eef7ffda 54%,#ffffffd9);
+    --reflection: inset 0 1px 0 white, inset 1px 0 0 #ffffffc2, 0 5px 19px #123e8510;
+    --bs-heading-color: var(--brand-navy); color-scheme: light; color: var(--ink);
+    font-family: var(--font-sans); font-size: 1.0625rem; line-height: 1.6;
+    background: radial-gradient(ellipse 65rem 33rem at 90% 4rem,#d5e9ff 0%,transparent 72%),
+      radial-gradient(ellipse 46rem 28rem at 0% 16rem,#e0f3ff,transparent 85%),var(--paper);
+  }
+  .public-portal main { background: transparent; }
+  .public-portal :is(h1,h2,h3,h4) { color: var(--brand-navy); }
+  .public-portal .container, .section-page main .container { max-width: 1280px; padding-inline: clamp(1rem,3.3vw,2.75rem); }
+  .public-portal .btn { border-radius: .78rem; min-height: 46px; }
+  .public-portal :is(.btn-primary,.catalog-filter-button,.notice-filter-button), .public-portal .notice-search button {
+    color: white; background: var(--brand-primary); border-color: var(--brand-primary);
+    box-shadow: inset 0 1px 0 #ffffff33,0 3px 9px #1951fc19;
+  }
+  .public-portal :is(.btn-primary,.catalog-filter-button,.notice-filter-button):is(:hover,:active), .public-portal .notice-search button:hover {
+    color: white; background: var(--brand-royal); border-color: var(--brand-royal);
+  }
+  .public-portal .btn-outline-primary, .public-portal .catalog-outline-button { background: #fff; color: var(--brand-royal); border-color: var(--control-edge); }
+  .public-portal .text-link { font-size: 1rem; }
+  .public-portal :is(.eyebrow,.section-overline,.folio) { color: var(--brand-royal); }
+  .public-portal .folio { font-size: .8125rem; font-weight: 650; line-height: 1.4; letter-spacing: .105em; text-transform: uppercase; margin: 0 0 .45rem; }
+  .public-portal #public-header {
+    position: relative; background: #f6faff; border-bottom: 1px solid #bcd0e7; box-shadow: inset 0 1px 0 white,0 3px 16px #234b8120;
+  }
+  .public-portal #public-header .portal-header-top { min-height: 4rem; padding-block: .62rem; flex-wrap: nowrap; }
+  .public-portal .portal-brand { color: var(--brand-navy); }
+  .public-portal .portal-brand strong { font-size: 1.02rem; letter-spacing: -.025em; }
+  .public-portal .portal-brand span span { color: var(--muted); font-size: .875rem; margin-top: .08rem; }
+  .public-portal .portal-brand .association-logo { width: 2.7rem; height: 2.7rem; flex-basis: 2.7rem; }
+  .public-portal .mast-tools, .public-portal .menu-tools { display: flex; gap: 1.2rem; align-items: center; flex-wrap: wrap; }
+  .public-portal .mast-tools { display: none; }
+  .public-portal :is(.mast-tools,.menu-tools) :is(a,button) { display: inline-flex; align-items: center; min-height: 44px; gap: .45rem; font: 600 .92rem/1.4 var(--font-sans); background: transparent; color: var(--brand-royal); border: none; padding: .3rem .25rem; text-decoration: none; }
+  .public-portal :is(.mast-tools,.menu-tools) :is(a,button):hover { text-decoration: underline; }
+  .public-portal .mast-tools .portal-icon { width: 1.1rem; flex-basis: 1.1rem; }
+  .public-portal #public-header .navbar-toggler { border-radius: .75rem; border-color: var(--control-edge); min-height: 44px; font-size: .96rem; }
+  .public-portal #public-header .nav-link { color: var(--ink); font-size: 1rem; line-height: 1.35; min-height: 44px; border: 0; border-radius: .55rem; }
+  .public-portal #public-header .nav-link[aria-current] { background: var(--tint); color: var(--brand-royal); box-shadow: inset 3px 0 var(--brand-primary); font-weight: 650; }
+  .public-portal .menu-tools { padding: .55rem 0; border-top: 1px solid var(--line); }
+  .public-portal .portal-footer { background: #f7fbff; border-top: 1px solid var(--line); }
+  .public-portal .portal-footer-main { padding-block: clamp(1.5rem,3vw,2.5rem); gap: 1.35rem 2rem; }
+  .public-portal .portal-footer-main h2 { font-size: 1rem; }
+  .public-portal .portal-footer-main p { font-size: .94rem; max-width: 33ch; }
+  .public-portal .portal-footer-bottom { padding-block: 1.15rem; }
+  .public-portal :is(.display-panel,.display-trigger) { color: var(--ink); border: 1px solid var(--control-edge); border-radius: .85rem; background: white; box-shadow: 0 5px 22px #1b438024; }
+  .public-portal .display-trigger { color: var(--brand-navy); }
+  .public-portal .login-scene { background: transparent; }
+  .public-portal .account-card { border: 1px solid var(--line); border-top: 3px solid var(--brand-primary); background: var(--surface); border-radius: 1.25rem; box-shadow: var(--reflection); }
+  .public-portal :is(.portal-filter-bar,.catalog-toolbar,.bulletin-topics,.portal-service-selector a,.portal-side-help,.portal-note,
+    .resident-aside,.resident-form-rail,.portal-help-options article,.section-portrait,.welcome-glass,.service-strip,.home-help) {
+    background: #eff6ff; border-color: var(--line); box-shadow: var(--reflection); backdrop-filter: none;
+  }
+  /* Only utility surfaces refract light. Reading areas and input fields retain a solid backing. */
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .public-portal #public-header,
+    .public-portal :is(.portal-filter-bar,.catalog-toolbar,.bulletin-topics,.portal-service-selector a,.portal-side-help,.portal-note,
+      .resident-aside,.resident-form-rail,.portal-help-options article,.section-portrait,.welcome-glass,.service-strip,.home-help) {
+      background: var(--sheen); backdrop-filter: blur(var(--frost,12px)); -webkit-backdrop-filter: blur(var(--frost,12px));
+    }
+  }
+  .public-portal .portal-service-selector a[aria-selected=true] { background: #e3edff; border-color: var(--brand-primary); box-shadow: inset 0 1px white; }
+  .public-portal .section-hero { background: transparent; border-bottom: 1px solid var(--line); }
+  .public-portal .section-hero-grid { padding-block: clamp(1.15rem,2vw,1.9rem); gap: clamp(1rem,3vw,2.4rem); grid-template-columns: minmax(0,1fr) minmax(13rem,.48fr); }
+  .public-portal .section-hero h1 { font-size: clamp(2rem,3.4vw,2.75rem); letter-spacing: -.047em; line-height: 1.1; margin-bottom: .55rem; }
+  .public-portal .section-lead { font-size: 1.06rem; max-width: 59ch; }
+  .public-portal .section-overline { font-size: .8125rem; letter-spacing: .1em; margin-bottom: .4rem; }
+  .public-portal .portal-breadcrumb { margin-bottom: .75rem; font-size: .875rem; }
+  .public-portal .section-jumps { margin-top: .35rem; }
+  .public-portal .section-illustration { max-width: 19rem; color: var(--brand-primary); }
+  .public-portal .section-portrait { width: min(100%,26rem); }
+  .public-portal .section-portrait img { aspect-ratio: 2.15; object-fit: cover; object-position: center; }
+  .public-portal .section-portrait figcaption { font-size: .875rem; }
+  .public-portal .section-portrait details > summary { font-size: .875rem; color: var(--brand-royal); min-height: 44px; cursor: pointer; padding-block: .55rem; }
+  .public-portal .resident-heading { background: transparent; }
+  .public-portal :is(.portal-checklist,.portal-event-card,.catalog-card,.portal-result-row,.notice-row,.resident-panel,.profile-section,.receipt-card,.portal-service-panel,.catalog-guide,.resident-message-card) {
+    background: var(--surface); backdrop-filter: none;
+  }
+  .public-portal.section-page form[method=get] :is(select[name],input[type=search]), .public-portal .form-control {
+    background-color: var(--surface); border-color: var(--control-edge);
+  }
+  .public-portal .portal-empty, .public-portal .catalog-empty, .public-portal .notice-empty { background: #f6faff; border: 1px dashed var(--control-edge); }
+  .public-portal .portal-view-controls button:not([aria-pressed=true]), .public-portal .portal-service-selector a:not([aria-selected=true]),
+  .public-portal .navbar-toggler { border-color:var(--control-edge); }
+  .public-portal .pagination-bar { flex-wrap: wrap; }
+  .public-portal :is(.notice-topic-links a,.catalog-tab,.portal-month-links a,.pagination-bar a) { min-height: 44px; align-content: center; }
+  .public-portal .catalog-tab[aria-current], .public-portal .notice-topic-links a[aria-current], .public-portal .portal-view-controls button[aria-pressed=true] { background: var(--brand-royal); color: white; border-color: var(--brand-royal); }
+  .public-portal .catalog-tab[aria-current] span { color: inherit; }
+  .public-portal .portal-help-banner { background: #e7f1ff; border-color: var(--line); }
+  .public-portal .portal-help-options article > .portal-icon, .public-portal .portal-purpose-list li > .portal-icon { color: var(--brand-royal); background: #e4eeff; }
+}
+
+@media screen {
+  /* Annual schedule: the date stays visible even when there is no approved event photo. */
+  .section-events .portal-event-grid { grid-template-columns: minmax(0,1fr); }
+  .section-events .portal-event-card { display: grid; grid-template-columns: 5rem minmax(0,1fr) auto; gap: clamp(.85rem,2vw,1.5rem); align-items: start; padding: var(--pad); }
+  .section-events .portal-event-card-body { padding: 0; }
+  .section-events .portal-event-card-body h3 { margin-bottom: .45rem; }
+  .section-events .portal-event-card-media { width: clamp(8rem,14vw,13rem); max-width: 100%; border-radius: .7rem; border: 1px solid var(--line); }
+  .section-events .portal-event-card-body .portal-icon { width: 1.1rem; height: 1.1rem; flex-basis: 1.1rem; }
+  .section-events .portal-event-card-date { align-items: baseline; }
+  .schedule-date { display: grid; justify-items: center; border: 1px solid var(--line); border-radius: .7rem; overflow: hidden; background: #f1f6ff; color: var(--brand-navy); font-size: .875rem; padding-bottom: .45rem; }
+  .schedule-date span:first-child { padding: .25rem; background: var(--brand-royal); color:white; width:100%; text-align:center; font-weight:650; }
+  .schedule-date strong { font-size: 1.85rem; line-height: 1.15; margin-top: .25rem; font-variant-numeric:tabular-nums; }
+  .section-events .portal-filter-help summary { min-height:44px; }
+  /* About reads like a short feature: an opening photograph, one ruled service list, and a reading column. */
+  .section-about .section-hero-grid { grid-template-columns: minmax(0,.97fr) minmax(0,1.03fr); }
+  .section-about .section-portrait { width:100%; max-width:31rem; }
+  .section-about .section-about-work { display:grid; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap: .65rem clamp(1.3rem,5vw,4.5rem); }
+  .section-about .section-about-work > div { display:block; }
+  .section-about .section-about-work > a { grid-column:1; width:fit-content; }
+  .section-about .portal-purpose-list { grid-row:span 2; display:block; margin:0; border-bottom:1px solid var(--line); }
+  .section-about .portal-purpose-list li { display:grid; grid-template-columns: auto minmax(0,1fr); gap:0 .85rem; align-items:center; padding:.85rem .25rem; border:0; border-top:1px solid var(--line); background:transparent; box-shadow:none; border-radius:0; }
+  .section-about .portal-purpose-list li > .portal-icon { grid-row:span 2; }
+  .section-about .portal-purpose-list li strong { margin:0; color:var(--brand-navy); }
+  .section-about .section-about-reading { border-top:1px solid var(--line); }
+  /* Bulletin: topic index on the left, announcements in reading order in the main column. */
+  .section-notices .notice-layout { display:grid; grid-template-columns:minmax(13rem,.34fr) minmax(0,1fr); grid-template-areas: "topics feed" "side feed"; align-items:start; align-content:start; gap:1rem clamp(1.3rem,3vw,3rem); }
+  .section-notices .bulletin-topics { grid-area:topics; }
+  .section-notices .bulletin-aside { grid-area:side; }
+  .section-notices .notice-main { grid-area:feed; }
+  .section-notices .notice-topic-links { display:grid; }
+  .section-notices .notice-topic-links a { justify-content:flex-start; border-radius:.65rem; }
+  .section-notices .notice-row[data-latest] { border-inline-start:3px solid var(--brand-primary); }
+  .latest-label { font-size:.875rem; line-height:1.45; padding:.15rem .5rem; color:var(--brand-royal); background:var(--tint); border-radius:.4rem; }
+  .section-notices .notice-list-heading { align-items:start; }
+  .section-notices .notice-list-heading h2 { margin-bottom:.65rem; }
+  .section-notices .notice-search button { border-radius:.65rem; }
+  .section-notices .notice-search label { font-size:1rem; }
+  /* Programs: independently labelled search fields and comparable cards with real publication status. */
+  .section-programs .catalog-filters { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) auto; gap:.8rem; align-items:end; }
+  .section-programs .catalog-filters > div { min-width:0; width:100%; }
+  .section-programs .catalog-filters label { display:block; margin:0 0 .3rem; font-size:.95rem; }
+  .section-programs .catalog-search > .ui-icon { top:auto; bottom:.86rem; left:.85rem; transform:none; }
+  .section-programs .catalog-category-field select, .public-portal.section-programs form .catalog-search input[type=search] { width:100%; max-width:none; }
+  .public-portal .section-overline::before { background:linear-gradient(90deg,var(--brand-bright),var(--brand-ice)); }
+  .home-page .guide-index { max-width:20rem; }
+  .home-page .guide-index summary { min-height:44px; padding-block:.5rem; font-weight:600; color:var(--brand-royal); cursor:pointer; }
+  .home-page .guide-index nav { display:grid; }
+  .home-page .guide-index a { min-height:44px; align-content:center; }
+  .section-programs .catalog-card { border-top: 3px solid #b1c9ee; }
+  .section-programs .catalog-status--open .quiet-badge { color:#125b3b; background:#e0f4e7; }
+  .section-programs .catalog-status--cancelled .quiet-badge,.section-programs .catalog-status--unavailable .quiet-badge { color:#72370d; background:#fff1df; }
+  .section-programs .catalog-card-bottom .catalog-card-link { min-height:44px; }
+  .section-programs .catalog-empty { grid-column:1/-1; }
+  .section-programs .catalog-guide { border-top:2px solid var(--brand-primary); }
+  /* Results: group publications by month; keep outcome text on white and private follow-up separate. */
+  .section-results .portal-result-list { gap:0; }
+  .section-results h3.register-month { color:var(--brand-royal); margin:.75rem 0 0; padding:.65rem 1rem; background:var(--stone); border:1px solid var(--line); border-radius:.65rem .65rem 0 0; font-size:1rem; letter-spacing:0; }
+  .section-results .portal-result-row { display:grid; grid-template-columns:minmax(6rem,.31fr) minmax(0,1fr); gap:.3rem 1.2rem; padding:1rem; border-radius:0; border-top:0; box-shadow:none; }
+  .section-results .portal-result-row > .portal-small { grid-row:span 2; margin:0; font-size:.9rem; }
+  .section-results .portal-result-row a.text-link { justify-self:start; }
+  .section-results .register-entry h4 { font-size:1.22rem; margin:0 0 .45rem; }
+  .section-results .register-entry h4 a { color:var(--brand-navy); }
+  .section-results .register-entry p { font-size:1rem; margin:0 0 .45rem; }
+  /* Membership: select a service first. The checklist alongside it stays opaque and document-like. */
+  .section-membership .portal-service-panel { border:1px solid var(--line); border-radius:1rem; padding:clamp(1rem,2.4vw,2rem); }
+  .section-membership .portal-membership-layout { align-items:start; gap:clamp(1rem,2.5vw,2.5rem); }
+  .section-membership .portal-checklist { padding:0 0 0 1.5rem; border:0; border-left:1px solid var(--line); border-radius:0; box-shadow:none; }
+  .section-membership .portal-checklist li { padding-block:.4rem; }
+  .section-membership .portal-checklist li label { min-height:44px; align-content:center; cursor:pointer; }
+  .section-membership .portal-service-selector a[aria-selected=true] strong { color:var(--brand-royal); }
+  .section-membership .portal-step-list li::before { color:var(--brand-royal); }
+  /* Help desk: three task entries, followed by native expandable answers and the published guides. */
+  .section-help .portal-help-options { grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr)); }
+  .section-help .portal-help-options h3 { margin-top:.7rem; }
+  .section-help .portal-help-options article a:not(.btn) { min-height:44px; display:inline-flex; align-items:center; }
+  .section-help .portal-help-layout .portal-disclosure summary { min-height:48px; }
+  .section-page :is(.portal-service-selector a,.portal-view-controls button,.catalog-tab,.notice-topic-links a):focus-visible { outline-offset:3px; }
+  .home-page .program-window { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.8rem 1.1rem; margin-top:.65rem; border:1px solid var(--line); border-radius:.85rem; background:#ebf3ff; text-decoration:none; }
+  .home-page .program-window strong, .home-page .program-window small { display:block; }
+  .home-page .program-window small { font-size:.9rem; color:var(--muted); }
+}
+@media screen and (max-width:900px) {
+  .section-notices .notice-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"topics" "feed" "side"; }
+  .section-notices .notice-topic-links { display:flex; flex-wrap:wrap; }
+  .section-membership .portal-checklist { padding:1rem 0 0; border:0; border-top:1px solid var(--line); }
+}
+@media screen and (max-width:750px) {
+  .section-about .section-hero-grid,.section-about .section-about-work,.section-programs .catalog-filters { grid-template-columns:minmax(0,1fr); }
+  .section-programs .catalog-filters button { justify-self:start; }
+  .section-about .portal-purpose-list { grid-row:auto; }
+  .section-events .portal-event-card { grid-template-columns:3.6rem minmax(0,1fr); }
+  .section-events .portal-event-card-media { grid-column:2; }
+}
+@media screen and (max-width:550px) {
+  .section-results .portal-result-row { grid-template-columns:minmax(0,1fr); }
+  .section-results .portal-result-row > .portal-small { grid-row:auto; }
+  .section-programs .catalog-filters button { width:100%; }
+}
+@media screen and (min-width:1200px) {
+  .public-portal #public-header .navbar { display: block; }
+  .public-portal .mast-tools { display: flex; }
+  .public-portal .menu-tools { display: none; }
+  .public-portal #public-header .navbar-nav { padding: .35rem 0; justify-content: space-between; border-top: 1px solid var(--line); }
+  .public-portal #public-header .nav-link { padding: .5rem .8rem !important; }
+  .public-portal #public-header .nav-link[aria-current] { box-shadow: inset 0 -2px var(--brand-primary); }
+}
+/* Let larger text switch the masthead to its menu before links crowd or wrap. */
+@supports (container-type:inline-size) {
+  .public-portal #public-header { container:public-mast / inline-size; }
+  @media screen and (min-width:1200px) {
+    @container public-mast (max-width:74rem) {
+      .public-portal #public-header .navbar-toggler { display:inline-flex; align-items:center; }
+      .public-portal #public-header .mast-tools { display:none; }
+      .public-portal #public-header .menu-tools { display:flex; }
+      html[data-text] .public-portal #public-nav.collapse:not(.show) { display:none !important; }
+      .public-portal #public-nav:is(.show,.collapsing) { display:block !important; }
+      .public-portal #public-header .navbar-nav { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(14rem,100%),1fr)); }
+    }
+  }
+}
+@media screen and (max-width:750px) {
+  body.public-portal { --frost: 5px; }
+  .public-portal .section-hero-grid { grid-template-columns: minmax(0,1fr); }
+  .public-portal .section-portrait { width: 100%; max-width: 32rem; justify-self: start; }
+}
+@media screen and (max-width:420px) {
+  .public-portal #public-header .portal-header-top { flex-wrap: wrap; }
+}
+@media screen {
+  html[data-contrast=true] body.public-portal {
+    --ink: #101729; --brand-navy: #101729; --muted: #24344b; --teal: #092b8f; --brand-primary: #092b8f; --brand-royal: #05206e;
+    --surface: white; --paper: white; --stone: #edf2fa; --line: #41536d; --rim: #41536d; --control-edge: #34445f;
+    --tint: #e9f0fb; --glass: white; --sheen: white; --reflection: none; --frost: 0px; background: white;
+  }
+  html[data-contrast=true] .public-portal :is(#public-header,main,.section-hero,.page-hero,.portal-footer,.welcome-glass,.service-strip,.home-help,.portal-filter-bar,.catalog-toolbar,.bulletin-topics,.portal-service-selector a,.resident-form-rail,.resident-aside,.portal-help-options article,.portal-side-help,.portal-note,.section-portrait,.portal-help-banner,.display-panel,.portal-empty,.notice-empty,.catalog-empty) {
+    background: white; backdrop-filter: none; box-shadow: none; border-color: var(--line);
+  }
+  html[data-contrast=true] .public-portal :is(.portal-service-selector a[aria-selected=true],#public-header .nav-link[aria-current]) { background: var(--stone); border: 2px solid var(--teal); }
+}
+@media (prefers-reduced-transparency:reduce) { body.public-portal { --sheen: #f8fbff; --frost: 0px; --glass: white; } }
+@media (prefers-reduced-motion:reduce) { .public-portal *, .public-portal *::before, .public-portal *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+@media (forced-colors:active) {
+  .public-portal :is(.btn,.nav-link[aria-current],.portal-service-selector a,.display-trigger,.portal-view-controls button,.catalog-tab,.notice-topic-links a) { border: 1px solid ButtonText; }
+  .public-portal :is([aria-selected=true],[aria-current=page],button[aria-pressed=true]) { outline: 2px solid Highlight; outline-offset: -3px; }
+  .public-portal :focus-visible { outline: 3px solid Highlight !important; }
+}

@@ -1,0 +1,31 @@
+{% extends 'public/section_base.html' %}{% load static %}
+{% load portal_content %}
+{% block title %}Events · Santolan PWD Association{% endblock %}
+{% block section_class %}section-events{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-observance-popup.css' %}?v=20261111-wide"><link rel="stylesheet" href="{% static 'css/public-event-cards.css' %}?v=20261109-dark"><link rel="stylesheet" href="{% static 'css/public-announcement-cards.css' %}?v=20261111-observances">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/public-announcement-cards.js' %}?v=20261109-portrait" defer></script>{% endblock %}
+
+{% block content %}
+{% include 'public/section_hero.html' with tab='Events' eyebrow='Community calendar' title='Events' intro='Find local activities, check who can take part, and explore annual observances.' jump='scheduled-events' label='Scheduled activities' %}
+<div class="container portal-section">
+<section aria-label="Scheduled activities" id="scheduled-events" tabindex="-1">
+<div class="public-swipe-carousel event-swipe-carousel" data-swipe-carousel data-swipe-compact data-swipe-linked-cards role="region" aria-label="Scheduled event cards">
+<div class="public-swipe-viewport" data-swipe-viewport id="scheduled-event-cards">
+  {% for event in events %}<article class="portal-event-card event-photo-card" data-swipe-card>
+    <div class="event-card-photo">{% if event.image %}<img src="{% url 'events:image' event.pk %}" alt="{{ event.image_description }}" loading="lazy">{% else %}<span class="event-card-initials" aria-hidden="true">{{ event.title|title_initials }}</span>{% endif %}</div>
+    <time class="schedule-date" datetime="{{ event.starts_at|date:'c' }}"><span>{{ event.starts_at|date:'M' }}</span><strong>{{ event.starts_at|date:'d' }}</strong><span>{{ event.starts_at|date:'Y' }}</span></time>
+    <div class="portal-event-card-body">
+      <p class="eyebrow">{% if event.status == 'cancelled' %}Cancelled event{% elif event.starts_at > event_display_time %}Upcoming event{% elif event.ends_at < event_display_time %}Past event{% else %}Ongoing event{% endif %}</p>
+      <h3 translate="no">{{ event.title }}</h3><p class="event-card-description" translate="no">{{ event.description|truncatechars:95 }}</p>
+      <p class="portal-event-card-date">{% include 'public/icon.html' with name='clock' %}<time datetime="{{ event.starts_at|date:'c' }}">{{ event.starts_at|date:'l' }}, {{ event.starts_at|date:'g:i A' }}</time></p>
+      {% if event.location %}<p class="portal-event-card-location">{% include 'public/icon.html' with name='pin' %}<span translate="no">{{ event.location }}</span></p>{% endif %}
+      <a class="btn btn-outline-primary event-read-details" href="{% url 'events:detail' event.pk %}" data-event-popup data-public-popup data-popup-label="Event details">View event<span class="visually-hidden">: {{ event.title }}</span></a>
+    </div>
+  </article>{% empty %}<div class="portal-empty">{% include 'public/icon.html' with name='calendar' %}<h3>No {% if period == 'past' %}past{% else %}upcoming{% endif %} activities in this view</h3><p>{% portal_text "events_empty" %}Published activities will appear here. Please check back for updates.{% endportal_text %}</p></div>{% endfor %}
+</div>{% include 'public/swipe_controls.html' %}
+</div>
+</section>
+{% include 'public/observance_cards.html' %}
+</div>
+{% include 'public/detail_dialog.html' %}
+{% endblock %}

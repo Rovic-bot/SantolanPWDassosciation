@@ -1,0 +1,53 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Assistance releases &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} release-portfolio-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-selection.css' %}?v=20261104-spacing"><link rel="stylesheet" href="{% static 'css/assistance-portfolio.css' %}?v=20261106-program-list"><link rel="stylesheet" href="{% static 'css/program-dialog.css' %}?v=20261106-width"><link rel="stylesheet" href="{% static 'css/assistance-releases.css' %}?v=20261111-compact-receipt">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/assistance-claimant.js' %}?v=20261111-compact-receipt" defer></script><script src="{% static 'js/assistance-portfolio.js' %}?v=20261106-receipt-popup-2" defer></script><script src="{% static 'js/assistance-releases-dialog.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}
+<div class="ewaf-selection release-portfolio" data-release-portfolio data-selected-id="{{ selected_id }}">
+  <h1 class="visually-hidden">Assistance releases</h1>
+  {% include 'partials/workspace_messages.html' %}
+  <form method="get" class="release-filters selection-glass" data-release-filters role="search" aria-label="Filter assistance programs" action="{{ request.path }}">
+    <div class="release-filter-main">
+      <div class="release-search"><label for="release-search">Search programs</label><input id="release-search" name="q" type="search" value="{{ query }}" maxlength="200" placeholder="Program title or code" autocomplete="off"></div>
+      <div><label for="release-type">Assistance type</label><select id="release-type" name="assistance_type"><option value="">All types</option>{% for value in assistance_types %}<option{% if assistance_type == value %} selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+      <div><label for="release-status">Program status</label><select id="release-status" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div><label for="release-sort">Sort by</label><select id="release-sort" name="sort">{% for value,label in sort_options %}<option value="{{ value }}"{% if sort == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="release-filter-bottom">
+      <p class="selection-count" role="status"><strong data-release-count>{{ page_obj.paginator.count }}</strong> <span data-release-count-label>program{{ page_obj.paginator.count|pluralize }}</span></p>
+      <label class="release-applications-filter"><input type="checkbox" name="with_applications" value="1"{% if with_applications %} checked{% endif %}> With applications</label>
+      <div><label for="release-registration" class="visually-hidden">Registration status</label><select id="release-registration" name="registration"><option value="">All registration periods</option>{% for value,label in registration_options %}<option value="{{ value }}"{% if registration == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <button class="selection-button" type="submit" data-release-submit>Apply filters</button><a href="{{ request.path }}" data-release-reset>Clear filters</a>
+    </div>
+  </form>
+  <p class="visually-hidden" data-release-feedback role="status" aria-live="polite"></p>
+  <div class="selection-layout">
+    <section class="selection-board" aria-label="Assistance programs">
+      <div class="selection-queue selection-glass">
+        <div class="selection-columns" data-release-columns aria-hidden="true"{% if not page_obj %} hidden{% endif %}><span>Program</span><span>Applicants</span><span>Selected</span><span>Receipts</span></div>
+        <ul class="selection-rows" data-release-rows>
+          {% for program in program_rows %}{% with summary=program.release_summary %}
+          <li class="selection-row" data-release-row="{{ program.pk }}" data-search="{{ summary.search }}" data-name="{{ program.name }}" data-type="{{ program.assistance_type }}" data-status="{{ program.status }}" data-registration="{{ program.public_application_status }}" data-applicants="{{ summary.applicant_count }}" data-created="{{ program.created_at|date:'c' }}" data-start="{{ program.starts_at|date:'c' }}" data-end="{{ program.ends_at|date:'c' }}" data-selected="{{ summary.selected|yesno:'true,false' }}"{% if not summary.visible %} hidden{% endif %}>
+            <div class="selection-identity"><span class="selection-state" data-state="{{ summary.state }}">{{ summary.label }}</span><h2><a data-release-select="{{ program.pk }}" href="{% querystring selected=program.pk %}#release-program-overview"{% if summary.selected %} aria-current="true"{% endif %}>{{ program.name }}</a></h2><small>{{ program.public_code|default:'Code not assigned' }} &middot; {{ program.get_status_display }}</small></div>
+            <div class="selection-number"><strong>{{ summary.applicant_count }}</strong><small>Total applicants</small></div>
+            <div class="selection-number"><strong>{{ summary.selected_count }}</strong><small>Selected</small></div>
+            <div class="selection-slots"><div><span>{{ summary.received_count }} recorded</span><strong>{{ summary.percent }}%</strong></div><progress value="{{ summary.percent }}" max="100" aria-label="{{ program.name }} receipts recorded">{{ summary.percent }}%</progress><small>{{ summary.pending_count }} pending receipt</small></div>
+          </li>
+          {% endwith %}{% endfor %}
+        </ul>
+        <div class="selection-empty" data-release-empty{% if page_obj %} hidden{% endif %}><h2>No programs found</h2><p>Try a different program name or clear the filters.</p><a class="selection-button" href="{{ request.path }}" data-release-reset>Clear filters</a></div>
+      </div>
+    </section>
+    <aside class="selection-analysis" id="release-program-overview" aria-label="Selected program overview" tabindex="-1">
+      {% for program in program_rows %}{% include 'assistance/release_program_panel.html' with summary=program.release_summary %}{% endfor %}
+      <div class="selection-glass selection-empty" data-release-panel-empty{% if page_obj %} hidden{% endif %}><p>Select a program to see its assistance overview.</p></div>
+    </aside>
+  </div>
+</div>
+<dialog id="assistance-releases-dialog" class="program-details-dialog assistance-releases-dialog" aria-labelledby="release-dialog-title">
+  <header class="program-dialog-toolbar"><h2 id="release-dialog-title">Assistance releases</h2><button type="button" class="program-dialog-close" data-release-close aria-label="Close assistance releases" autofocus><span aria-hidden="true">&times;</span></button></header>
+  <p class="program-dialog-status" data-release-dialog-status role="status" aria-live="polite"></p>
+  <div class="program-dialog-content" data-release-dialog-content></div>
+</dialog>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% if decision_email %}
+<section class="review-email-status" aria-label="Email delivery" aria-live="polite">
+  <p><strong>{% if decision_email.state == 'sent' %}{% if decision_email_is_local %}Test email saved — not sent to an inbox.{% else %}Email sent.{% endif %}{% elif decision_email.state == 'queued' %}Email queued — not sent yet.{% elif decision_email.state == 'sending' %}Sending email — awaiting confirmation.{% elif decision_email_unconfirmed %}Email delivery is unconfirmed.{% elif decision_email.state == 'failed' %}Email not sent.{% elif decision_email.skip_reason == 'invalid' %}Email not sent — invalid email address.{% elif decision_email.skip_reason == 'superseded' %}Email not sent — application changed.{% else %}Email not sent — no email address.{% endif %}</strong></p>
+  {% if can_retry_decision_email %}<form method="post" action="{% url 'programs:decision_email_retry' program.pk application.pk decision_email.pk %}">
+    {% csrf_token %}
+    {% if decision_email_unconfirmed %}<p>Check the sender mailbox first; another attempt could send a duplicate.</p>{% endif %}
+    <button type="submit" name="confirm" value="1" class="btn btn-outline-primary">Retry email</button>
+  </form>{% endif %}
+</section>
+{% endif %}

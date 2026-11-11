@@ -1,0 +1,4 @@
+{% if submitted.profile_sections %}
+{% for title, rows in submitted.profile_sections %}<details class="pdao-data-section"><summary>{{ title }}<span>{{ rows|length }} fields</span></summary><dl class="pdao-data-grid">{% for label, value in rows %}<div><dt>{{ label }}</dt><dd>{{ value|linebreaksbr }}</dd></div>{% endfor %}</dl></details>{% endfor %}
+{% else %}<dl class="pdao-data-grid"><div><dt>Applicant full name</dt><dd>{{ submitted.full_name }}</dd></div><div><dt>Date of birth</dt><dd>{{ submitted.birthdate }}</dd></div><div><dt>Residence address</dt><dd>{{ submitted.address|linebreaksbr }}</dd></div><div><dt>Contact number</dt><dd>{{ submitted.contact_number|default:'Not recorded' }}</dd></div></dl>{% endif %}
+<p class="pdao-acknowledgement">Privacy notice and accuracy acknowledgement: {% if submitted.acknowledgement %}acknowledged at submission{% else %}not recorded{% endif %}.</p>

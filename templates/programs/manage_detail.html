@@ -1,0 +1,50 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{{ program.name|default:'Untitled program' }} &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} program-detail-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-detail.css' %}?v=20261110-natural-heights">{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True program_detail_workspace=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/program-detail.js' %}?v=20261110-archive" defer></script>{% endblock %}
+{% block content %}
+<div class="container program-profile" data-program-profile>
+  <a class="profile-back" href="{% url 'program_portfolio' %}"><span aria-hidden="true">&#8592;</span> All programs</a>
+  {% include 'partials/workspace_messages.html' %}
+  <header class="profile-header profile-header-with-picture">
+    <div class="profile-header-art" aria-hidden="true">
+      {% if program.picture_asset.image %}<img src="{% url 'programs:picture' program.pk %}?v={{ program.picture_asset.version }}" alt="" fetchpriority="high">
+      {% else %}<span class="profile-header-initials">{{ program.initials }}</span>{% endif %}
+    </div>
+    <div class="profile-header-identity"><p class="profile-eyebrow">{{ program.assistance_type }} &middot; {{ program.public_code|default:'Code not assigned' }}</p>
+      <h1>{{ program.name|default:'Untitled program' }}</h1>
+      <p class="profile-intro">{{ program.description|striptags|truncatechars:160 }}</p>
+      <div class="profile-meta"><span class="profile-status" data-status="{{ program.status }}">{{ program.get_status_display }}</span><span class="profile-updated">{% include 'programs/profile/icon.html' with name='clock' %}<span>Updated <time datetime="{{ program.updated_at|date:'c' }}">{{ program.updated_at|date:'M j, Y' }} at {{ program.updated_at|date:'g:i A' }}</time></span></span></div>
+    </div>
+    <div class="profile-header-side">
+      <div class="profile-actions">
+        {% if can_edit %}<a class="btn btn-primary" href="{% url 'programs:edit' program.pk %}">{% include 'programs/profile/icon.html' with name='edit' %}Edit program</a>{% endif %}
+        <a class="btn btn-outline-secondary" href="{% url 'programs:proposal' program.pk %}?download=1" target="_blank" rel="noopener">{% include 'programs/profile/icon.html' with name='download' %}Download<span class="visually-hidden"> proposal PDF, opens in a new tab</span></a>
+        {% if perms.programs.view_programapplication %}<a class="btn btn-outline-secondary" href="{% url 'programs:applications' program.pk %}">Review applications</a>{% endif %}
+      </div>
+      <ul class="profile-quick-facts" aria-label="Program summary">
+        {% if perms.programs.view_programapplication %}<li><strong>{{ program.applicant_count }}</strong> application{{ program.applicant_count|pluralize }}</li>{% endif %}
+        {% if program.available_slots != None %}<li><strong>{{ program.available_slots }}</strong> slot{{ program.available_slots|pluralize }} left</li>{% endif %}
+        <li>closes <strong>{{ program.registration_closes_at|date:'M j' }}</strong></li>
+      </ul>
+    </div>
+  </header>
+  <div class="profile-layout">
+    <div class="profile-main-column">
+      {% include 'programs/profile/overview.html' %}
+      {% include 'programs/profile/schedule.html' %}
+      {% include 'programs/profile/configuration.html' with panel='requirements' %}
+    </div>
+    <div class="profile-side-column">
+      {% include 'programs/profile/operations.html' %}
+      {% include 'programs/profile/configuration.html' with panel='eligibility' %}
+    </div>
+    <details class="profile-history profile-glass" id="program-history"{% if request.GET.page %} open{% endif %}>
+      <summary aria-expanded="{% if request.GET.page %}true{% else %}false{% endif %}" aria-controls="program-history-content"><span class="profile-history-heading"><span class="profile-history-icon">{% include 'programs/profile/icon.html' with name='history' %}</span><span><strong>Program history</strong><small>Creation, edits, authorization and publication activity</small></span></span><span class="profile-expand">{% include 'programs/profile/icon.html' with name='chevron' %}</span></summary>
+      <div id="program-history-content" class="profile-history-content">{% include 'programs/history.html' %}</div>
+    </details>
+  </div>
+</div>
+{% endblock %}

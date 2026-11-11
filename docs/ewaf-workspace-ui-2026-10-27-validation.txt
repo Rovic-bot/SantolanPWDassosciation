@@ -1,0 +1,143 @@
+EWAF ranking, applicant review and score breakdown UI - 2026-10-27
+
+Owner-authorized scope
+Implemented the three supplied reference screenshots in the existing Django
+Admin application. This is a presentation change using saved system data.
+The accepted 70% development milestone remains unchanged.
+
+Resulting workflow
+The ranking page has Configuration and Generate EWAF Ranking actions, a
+three-part summary, Ranking/Score breakdown navigation, applicant search,
+a decision filter, exact-rank tie labels, score bars and Review actions.
+Search and filtering retain the complete saved normalization pool, scores
+and ranks. They never generate a calculation or alter applicant decisions.
+
+Review opens a right-side dialog with the full application reference, rank,
+score and saved accepted income, reviewed household 4Ps finding, employment,
+qualifying previous assistance and household size. Select for assistance
+posts to the existing protected decision service. Completed recipients,
+stale calculations, restricted users and held ties retain their controls.
+The full applicant profile remains available through its existing private
+route. Selection does not itself create an assistance delivery record.
+
+The breakdown page has an applicant picker, score/rank summary, actual
+criterion contribution bars, input/weight/points details, optional formulas
+and an applicant comparison table. Historical criteria and missing criteria
+remain accurately distinguished. Display rounding never determines rank.
+
+Both pages use the existing eight permission-filtered navigation groups.
+Only these two screens use compact navigation defaults and a separate
+navigation preference key. Other modules and public templates are unchanged.
+The review dialog supports Tab/Shift+Tab containment, Escape, close/backdrop
+actions, focus return and independent content scrolling. GET links and
+ordinary forms remain usable without JavaScript. Mobile tables scroll inside
+their cards; the page itself does not overflow horizontally.
+Relative text sizes and scoped contrast colors preserve the existing Display
+preferences; the actual larger-text and high-contrast controls passed checks.
+
+Verification and boundaries
+40 distinct Django tests passed across the scoped runs and corrected
+follow-ups, with no skipped tests. The entire repository suite was not run.
+The executed coverage comprised:
+- ewaf.test_workspace_ui: 2 tests, including the Chrome workflow.
+- ewaf.test_score_breakdown: 11 historical/presentation/privacy tests.
+- ewaf.test_operational: 18 service, authorization, CSRF, concurrency,
+  immutable history, exact tie, capacity, stale-source and audit tests.
+- ewaf.test_delivery: 5 actual-release and publication regressions.
+- ewaf.test_current_weights: 3 selected integration cases covering all five
+  weight vectors across two existing programs, selection/publication, and
+  publication after a confirmed delivery.
+- ewaf.test_reranking.RerankingAfterDeliveryTests: the full browser case
+  approving weights twice and reranking both programs after delivery.
+
+Write tests used scripts/g12_test_runner.py and
+--testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+--noinput. The launcher verified fresh disposable MySQL 8.4.11 instances,
+isolated grants and private media. Project .env loading was disabled, email
+used local memory, and referrals were disabled. Fixtures used the existing
+12-member registration, evidence, 27-release, AHP, ranking and decision
+services; additional synthetic releases exercised completed recipients.
+Disposable schemas were synchronized through the established test runner.
+No working-database migration was applied.
+
+Browser coverage used real Django routes and service-backed fixtures:
+Generate -> search/filter -> Review -> breakdown -> switch applicant ->
+Review -> Select for assistance, followed by completed-recipient protection.
+It checked unchanged scores/ranks under filters, accepted inputs, full
+references, exact ties, desktop/mobile layout, keyboard focus and absence
+of JavaScript errors. Existing AHP/reranking/publication browser harnesses
+were updated to open the new drawer before selecting an applicant.
+
+Failures encountered and resolved
+1. The initial 13-case run had one browser failure: native dialog tabbing
+   allowed focus to leave the content. Explicit keyboard wrapping fixed it.
+   The other 12 tests passed.
+2. The first retained-development browser pass found mobile overflow from
+   an absolutely positioned hidden table heading. A positioned scrolling
+   container fixed the overflow; numeric table cells also avoid line breaks.
+3. The single-case browser retry reached applicant switching but asserted
+   before its GET navigation completed. The harness now waits for the
+   selected applicant in the URL. The full browser journey subsequently passed.
+4. The 27-entry regression invocation passed 25 tests in 404.972 seconds.
+   One legacy presentation assertion expected the retained human-selection
+   accessible label; that label was restored, and the case passed separately
+   in 4.064 seconds. One entry used an incorrect test class name and did not
+   execute. The corrected RerankingAfterDeliveryTests case passed in
+   135.575 seconds. The additional selection/publication case passed in
+   87.213 seconds. There are no unresolved failures from these scoped checks.
+
+Retained main development environment
+The guarded development restart loaded the final templates at
+http://127.0.0.1:8012/. Identity-verified read-only Chrome checks used the
+retained 12-member database, allowed only login POST, and blocked all
+business POSTs and external network requests. Ranking, review, contribution
+breakdown, comparison, mobile layouts and Display preferences passed without
+JavaScript errors.
+No ranking, approval, selection, delivery or publication was created in that
+database by this UI task.
+
+Complete-row before/after SHA-256 comparisons matched for these business
+models: Program 9; ProgramApplication 87; AssistanceLog 142; Member 12;
+AssistanceRelease 28; OperationalConfiguration 10; OperationalRun 12;
+OperationalDecision 12; Announcement 1; ProgramResultRevision 1;
+DatasetInputReview 60; SharedDatasetPolicy 10; VaultRevision 22.
+Login sessions and permission-checked access metadata may change during
+read checks. Scoring formulas, normalization, AHP projection, approval rules,
+selection services and release services were not changed by this task.
+Django system checks, model-migration dry run, Python/JavaScript syntax and
+git diff --check passed. No commit, push, merge or deployment was performed.
+
+Task-relative source and test changes
+ewaf/operational_views.py
+ewaf/workspace_ui.py (new)
+ewaf/test_workspace_ui.py (new)
+ewaf/test_current_weights.py (selection button label assertion)
+static/css/ewaf-workspace.css (new)
+static/js/ewaf-workspace.js (new)
+static/js/site.js
+templates/partials/workspace_header.html
+templates/ewaf/operational_workspace.html
+templates/ewaf/workspace_results.html
+templates/ewaf/score_breakdown.html
+templates/ewaf/workspace_base.html (new)
+templates/ewaf/workspace_tabs.html (new)
+templates/ewaf/ui_icon.html (new)
+templates/ewaf/ranking_notice.html (new)
+templates/ewaf/applicant_drawer.html (new)
+scripts/ewaf_workspace_ui_browser.cjs (new)
+scripts/ewaf_workspace_ui_readonly.cjs (new)
+scripts/ewaf_current_weights_browser.cjs
+scripts/ewaf_reranking_browser.cjs
+scripts/result_publication_browser.cjs
+
+Evidence files in docs/ewaf-workspace-ui-2026-10-27/
+ranking-desktop.png
+applicant-review-desktop.png
+score-breakdown-desktop.png
+ranking-mobile.png
+applicant-review-mobile.png
+score-breakdown-mobile.png
+
+This validation note and the six screenshots are also new. All pre-existing
+unfinished Git changes were preserved. Private launcher/probe artifacts are
+kept under ignored .local/ or the disposable launcher temporary directories.

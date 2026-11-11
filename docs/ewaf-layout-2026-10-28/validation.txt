@@ -1,0 +1,47 @@
+EWAF ranking layout and collapsible Admin navigation — 28 October 2026
+
+Owner-requested presentation changes
+- Removed the eligible/selected/saved-calculation summary block from the
+  program EWAF workspace. The existing ranking tabs and applicant list now
+  follow the page heading and any necessary readiness warnings.
+- Added an accessible desktop navigation toggle centered on the sidebar edge.
+  The owner-requested follow-up replaces the topbar hamburger with an inward
+  arrow to collapse and an outward arrow at the screen edge to reopen it.
+  Collapsing hides the sidebar and releases its content space. The preference
+  persists per account/browser tab across workspace and native Django Admin
+  pages. Existing mobile navigation, group disclosures and scroll restoration
+  remain available. Without JavaScript the desktop navigation stays visible.
+  The mobile menu uses a directional chevron instead of a hamburger icon.
+- Centered applicant review horizontally and vertically, with responsive
+  viewport margins, a fixed header and scrollable content.
+- The follow-up applicant-review score label uses a percent sign with the
+  existing two-decimal value instead of /100; calculation values are unchanged.
+- Updated asset version strings so refreshed pages load the revised files.
+
+Validation
+Passed Django system checks through the identity-verified current-development
+launcher, node --check for both modified JavaScript files, and git diff --check.
+Chrome/Playwright read-only verification used the existing fictional 12-member
+program on the retained local development server at http://127.0.0.1:8013/.
+The probe is .local/ewaf-layout-20261028/verify.cjs, adapted from the existing
+scripts/ewaf_workspace_ui_readonly.cjs harness.
+
+Verified summary removal; all 12 ranking rows; eight navigation groups;
+desktop collapse/expand and content width; persistence after reload and visits
+to Dashboard and native Admin; modal centering at 1560x1100 and 390x844;
+keyboard focus containment; Escape dismissal; mobile navigation and Escape;
+scrolling to the selection control; accepted-input details; score breakdown
+and comparison links; search and unchanged saved rank/score values after
+clearing search; larger text/high contrast; and no horizontal page overflow.
+No JavaScript errors or attempted business POSTs occurred. The browser allowed
+only login POST and same-origin reads. Screenshots are in this directory.
+
+The initial browser attempt detected cached old templates. The established
+scripts/restart-current-development.ps1 launcher restarted the identity-checked
+local system, then the complete browser pass succeeded. This task changed no
+models, services, scoring, selection or publication logic and ran no migrations.
+The inspected program already had a stale-calculation notice; its saved values
+and selection guard remain intact. No ranking or decision was generated.
+Login/session/access metadata may change during verification. No full backend
+regression suite, deployment, commit or push was performed. Existing Assets/
+and the owner's milestone documentation were preserved.

@@ -1,0 +1,17 @@
+{% if membership_approval_email %}
+<section class="{{ email_card_class|default:'onsite-help-card' }}" id="membership-approval-email" aria-labelledby="membership-email-heading">
+  <h2 id="membership-email-heading">Membership approval email</h2>
+  <p><strong>{{ membership_approval_email_label }}</strong></p>
+  {% include 'partials/email_delivery_help.html' with problem=membership_approval_email_help %}
+  {% if membership_approval_email.recipient %}<p>To: {{ membership_approval_email.recipient }}</p>{% endif %}
+  {% if membership_approval_email.state == 'sent' %}<p>{{ membership_approval_email.subject }}</p>
+  {% elif membership_approval_email.state == 'failed' %}<p>Membership is approved. Check the Association Gmail connection, then retry the saved email.</p>
+  {% elif membership_approval_email.state == 'skipped' %}<p>This older application has no valid email address. Contact the applicant through the Help Desk.</p>{% endif %}
+  {% if can_retry_membership_email %}
+  <form method="post" action="{% url 'membership:approval_email_retry' membership_approval_email.intake.reference membership_approval_email.pk %}">{% csrf_token %}
+    {% if membership_approval_email.state == 'sending' or membership_approval_email.state == 'uncertain' %}<p>The previous attempt is unconfirmed. Check Gmail before retrying; another attempt could send a duplicate.</p>{% endif %}
+    <button class="btn btn-outline-primary" type="submit" name="confirm" value="1">Retry approval email</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}

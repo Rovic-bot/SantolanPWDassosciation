@@ -1,0 +1,11 @@
+{% autoescape off %}Hello {{ applicant_name }},
+
+Your PWD ID is now ready for collection at the Barangay Santolan office.
+Please visit the barangay office to claim your PWD ID.
+
+Application reference: {{ reference }}
+
+If you have any questions, please contact the Barangay Santolan PWD Association Help Desk.
+
+Barangay Santolan PWD Association
+{% endautoescape %}

@@ -1,0 +1,17 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{% if program %}Prepare program results{% else %}Announcements{% endif %} &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} release-portfolio-workspace announcement-program-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-selection.css' %}?v=20261104-spacing"><link rel="stylesheet" href="{% static 'css/assistance-portfolio.css' %}?v=20261106-program-list"><link rel="stylesheet" href="{% static 'css/results-dialog.css' %}?v=20261110-selection-reason"><link rel="stylesheet" href="{% static 'css/announcement-workspace.css' %}?v=20261111-section-switch">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/announcement-programs.js' %}?v=20261106-program-overview" defer></script><script src="{% static 'js/results-dialog.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block content %}<div class="ewaf-selection release-portfolio announcement-programs" data-announcement-programs data-list-url="{% url 'announcements:choose_results' %}">
+<h1 class="visually-hidden">Announcements and program results</h1>
+{% include 'partials/workspace_messages.html' %}
+{% if form.errors and not program %}<div class="alert alert-danger" role="alert">{{ form.errors }}</div>{% endif %}
+<div class="announcement-filter-tools">{% include 'programs/card_filters.html' %}{% include 'announcements/create_link.html' %}</div>
+<p id="results-dialog-status" role="status" aria-live="polite" class="small"></p>
+<p class="visually-hidden" data-announcement-feedback role="status" aria-live="polite"></p>
+<div id="program-grid" tabindex="-1" data-results-grid>{% include 'announcements/program_overviews.html' %}</div>
+</div>
+<div id="results-dialog-host" data-review-url="{{ review_url }}">{% if program %}{% include 'announcements/result_preview_dialog.html' %}{% endif %}</div>
+<noscript><style>.results-dialog{display:block;position:static;width:auto;height:auto;max-height:none;margin:1rem}.results-dialog-body{overflow:visible}.results-dialog [data-results-close]{display:none}</style></noscript>
+{% endblock %}

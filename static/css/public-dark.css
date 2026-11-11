@@ -1,0 +1,87 @@
+/* Public dark mode uses the portal's warm neutral palette. Contrast mode takes precedence. */
+@media screen {
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal {
+        --ink: #f4f2ec; --ink-soft: #f4f2ec; --ink-deep: #fff; --muted: #c5c0b8;
+        --paper: #191817; --surface: #242220; --stone: #35322e; --canvas: #191817;
+        --line: #5d5851; --edge: #5d5851; --control-edge: #8d867b;
+        --brand-primary: #e6dfd2; --brand-navy: #f4f2ec; --brand-royal: #f4f2ec;
+        --teal: #e6dfd2; --teal-hover: #fff; --focus: #f4f2ec; --accent: #e6dfd2;
+        --portal-card: #242220; --portal-border: #5d5851; --portal-shadow: 0 8px 20px #0003;
+        --glass: #242220; --sheen: #242220; --tint: #35322e; --rim: #5d5851; --mint: #e6dfd2;
+        color-scheme: dark !important; color: #f4f2ec !important; background: #191817 !important;
+    }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, .bento-footer) { background: transparent !important; color: #f4f2ec !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, .bento-footer, .portal-navigation, dialog, .display-panel) :where(h1,h2,h3,h4,p,li,dt,dd,label,legend,summary,strong,em,small,span,a,figcaption,time) { color: #f4f2ec !important; text-shadow: none !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-landing { background-color: #191817 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .notice-action { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, dialog) :is(
+        .section-hero,.page-hero,.home-service-facts,.home-featured-event,.home-glass-card,
+        .bento-program-requirements,.catalog-card,.catalog-guide,.catalog-empty,
+        .portal-supplies,.portal-event-card,.portal-help-layout,.portal-help-options article,
+        .public-swipe-card,.about-background-source,.portal-note,.portal-help-banner,.portal-side-help,
+        .program-detail-overview,.program-detail-steps,.program-detail-schedule,.program-detail-help,
+        .notice-row,.notice-results-callout,.portal-result-row,.bulletin-topics,
+        .portal-filter-bar,.catalog-toolbar,.portal-disclosure,.portal-service-selector a,
+        .resident-panel,.resident-aside,.resident-form-rail,.resident-form-body,.record-section,
+        .receipt-card,.resident-message-card,.account-card,.information-aside,
+        .portal-membership-layout > div,.make-resource-layout > div,.section-about-reading > div
+    ) { background: #242220 !important; border-color: #5d5851 !important; box-shadow: 0 6px 18px #0002 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal dialog :is(.event-dialog-heading,.home-guidance-dialog-heading,.event-popup-layout aside) { background: #242220 !important; border-color: #5d5851 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal dialog :is(.event-dialog-heading button,.home-guidance-close) { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(.portal-navigation,dialog,.display-panel,.display-trigger) { background: #242220 !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.home-help-card,.make-about-split,.make-resource-aside,.forms-resource,.program-detail-eligibility,.portal-checklist,.public-stack-panel):is(section,article,aside,div,details) { background: #111110 !important; color: #f4f2ec !important; border-color: #5d5851 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.eyebrow,.quiet-badge,.section-overline,.catalog-category,.catalog-step-number,.schedule-date,.program-slot-count,.program-help-icon,.program-step-number,.resource-card-icon,.resource-card-label) { background: #35322e !important; color: #f4f2ec !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.catalog-photo-fallback,.event-card-initials,.home-event-initials) { background: #35322e !important; color: #ded7ca !important; }
+    /* Artwork gradients must stay dark when their text switches to cream. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .public-program-artwork { background: linear-gradient(145deg, #48433d, #242220) !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .section-photo-banner { --section-banner-rgb: 36 34 32; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-landing::after { background: linear-gradient(90deg,#191817 0%,#191817f5 24%,#191817bd 43%,#19181766 62%,#19181722 82%,transparent) !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-featured-event::after { background: linear-gradient(90deg,transparent 15%,#24222085 38%,#242220f0 54%,#242220 67%) !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.display-panel) :is(input:not([type=checkbox]):not([type=radio]),textarea,select) { background: #191817 !important; color: #f4f2ec !important; border-color: #8d867b !important; color-scheme: dark !important; }
+    /* Fetched forms also appear inside popups without the resident-page styles. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.form-text,.helptext) { color: #c5c0b8 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.alert,.concern-dialog-notice) { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.errorlist,.errorlist li,.invalid-feedback) { color: #ffb4ab !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) input[type=file]::file-selector-button { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(input,textarea)::placeholder { color: #c5c0b8 !important; opacity: 1; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(input[type=checkbox],input[type=radio]) { accent-color: #ded7ca !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.display-panel,.portal-navigation) :is(.btn,.catalog-tab,.catalog-pagination a,.public-swipe-arrows button,.display-close,.display-reset,.display-language,.home-event-link) { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.portal-navigation) :is(.btn-primary,.catalog-tab[aria-current],.catalog-pagination a[aria-current],a[aria-current="page"],.btn:hover,.btn:focus-visible) { background: #e6dfd2 !important; color: #1c1a18 !important; border-color: #e6dfd2 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.portal-navigation) :is(.btn,a[aria-current="page"]) :is(span,strong,svg) { color: inherit !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal .portal-icon { color: inherit !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal .display-panel :is(h2,p,label,span,button) { color: #f4f2ec !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal .display-panel :is(.display-close,.display-reset,.display-language):hover { background: #48433d !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :focus-visible { outline-color: #f4f2ec !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal ::selection { background: #f4f2ec; color: #1c1a18; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .resource-card-status { background: #35322e !important; color: #c5c0b8 !important; }
+    /* The photo backing and initials share one surface, avoiding a bright seam. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.home-event-photo,.event-card-photo) { background: #35322e !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.home-event-initials,.event-card-initials) { background: transparent !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .event-photo-card { --event-card-surface: #242220; --event-card-fade: #242220a0; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.home-guide-icon,.home-fact-icon,.pdao-received-label,.pdao-step-number) { background: #35322e !important; color: #f4f2ec !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.pdao-confirmation,.pdao-next,.pdao-copy-preview) { background: #242220 !important; border-color: #5d5851 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .pdao-reference-card { background: #191817 !important; border: 1px solid #5d5851; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content :is(.receipt-reference-box,.receipt-checklist,.receipt-status,.receipt-print-note,.receipt-step-number) { background: #35322e !important; color: #f4f2ec !important; border-color: #5d5851 !important; }
+    /* QR codes keep white backing; their alternative text needs dark ink. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(.receipt-qr,.program-receipt-qr) img { color: #1c1a18 !important; }
+    /* All interactive surfaces keep a matched foreground, including nested icons. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.portal-navigation,.display-panel) :is(
+        .btn,.catalog-tab,.catalog-pagination a,.public-stack-arrow,.public-swipe-arrows button,
+        .portal-navigation-links a,.home-event-link,.home-support-card > a,.home-guide-icon,
+        .program-tracking-link,.resource-card-action,.notice-action,
+        .event-dialog-heading button,.home-guidance-close,.display-close,.display-reset,.display-language,
+        .program-receipt-copy,.program-receipt-track-button,.program-receipt-toolbar button
+    ):is(:hover,:focus-visible) { background: #e6dfd2 !important; border-color: #e6dfd2 !important; color: #1c1a18 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.portal-navigation,.display-panel) :is(
+        .btn,.catalog-tab,.catalog-pagination a,.public-stack-arrow,.public-swipe-arrows button,
+        .portal-navigation-links a,.home-event-link,.home-support-card > a,.home-guide-icon,
+        .program-tracking-link,.resource-card-action,.notice-action,
+        .event-dialog-heading button,.home-guidance-close,.display-close,.display-reset,.display-language,
+        .program-receipt-copy,.program-receipt-track-button,.program-receipt-toolbar button
+    ) :is(span,strong,svg,path,small) { color: inherit !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) .btn-primary:is(:hover,:focus-visible) { background: #fff !important; border-color: #fff !important; color: #1c1a18 !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.btn,.catalog-pagination a,.public-stack-arrow):disabled { background: #35322e !important; color: #c5c0b8 !important; cursor: not-allowed; }
+    @media (max-width:767px) {
+        html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-landing::after { background: linear-gradient(105deg,#191817f5,#191817c4) !important; }
+    }
+}

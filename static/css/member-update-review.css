@@ -1,0 +1,18 @@
+.member-update-review > h1 { margin-top: 1.25rem; }
+.member-update-review-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 1.5rem; align-items: start; }
+.member-update-review-grid > * { min-width: 0; }
+.member-update-card { padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--line); border-radius: 1.25rem; background: var(--surface); color: var(--ink); }
+.member-update-card h2 { font-size: 1.15rem; }
+.member-update-card :is(p, li) { overflow-wrap: anywhere; }
+.member-update-comparison { margin: 1.25rem 0 0; }
+.member-update-comparison > div { display: grid; grid-template-columns: minmax(100px, .8fr) repeat(2, minmax(0, 1fr)); gap: 1rem; border-top: 1px solid var(--line); padding-block: 1rem; }
+.member-update-comparison dt { font-weight: 650; }
+.member-update-comparison dd { min-width: 0; margin: 0; }
+.member-update-comparison span { display: block; color: var(--muted); font-size: .75rem; margin-bottom: .5rem; }
+.member-update-comparison p { margin: 0; white-space: pre-wrap; }
+.member-update-state { font-weight: 700; color: var(--teal); }
+.member-update-confirm { display: flex; align-items: flex-start; gap: .75rem; margin: 1rem 0; }
+.member-update-confirm input { flex: 0 0 auto; margin-top: .3rem; }
+.member-update-card .btn { max-width: 100%; white-space: normal; }
+@media (max-width: 1099px) { .member-update-review-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .member-update-card { padding: 1rem; } .member-update-comparison > div { grid-template-columns: minmax(0, 1fr); } }

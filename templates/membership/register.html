@@ -1,0 +1,29 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Membership registration · Santolan PWD{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><div class="page-location"><a href="{% url 'core:home' %}">Home</a><span aria-hidden="true">/</span><span>Membership</span></div><p class="eyebrow">BECOME PART OF OUR COMMUNITY</p><h1>A place to belong.</h1><p class="page-intro">Apply to join the Barangay Santolan PWD Association. No member account is needed.</p></div></section>
+<div class="container content-section"><div class="form-layout">
+  <div>
+  {% if registration_open %}
+    <form method="post" enctype="multipart/form-data" class="membership-form" aria-label="Membership application">
+      {% csrf_token %}{{ form.submission_token }}
+      {% if form.errors %}<div class="alert alert-danger form-error-summary" role="alert" tabindex="-1"><h2 class="h5">Please check your application</h2><p>Correct the errors below. Select your documents again before submitting.</p>{{ form.non_field_errors }}{{ form.submission_token.errors }}<ul>{% for field in form.visible_fields %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|striptags }}</a></li>{% endif %}{% endfor %}</ul></div>{% endif %}
+      <fieldset><legend class="h4 mb-3"><span class="form-section-number">01</span>Personal &amp; contact information</legend><p class="text-secondary small">Fields marked * are required.</p><div class="form-field-grid">
+      {% for field in form.personal_fields %}{% if field.name == 'full_name' or field.name == 'birthdate' or field.name == 'address' or field.name == 'contact_number' or field.name == 'email' %}{% include 'membership/field.html' %}{% endif %}{% endfor %}</div></fieldset>
+      <fieldset class="form-section"><legend class="h4 mb-3"><span class="form-section-number">02</span>Membership information</legend>
+      {% for field in form.personal_fields %}{% if field.name == 'control_number' or field.name == 'disability_information' %}{% include 'membership/field.html' %}{% endif %}{% endfor %}</fieldset>
+      <fieldset class="form-section"><legend class="h4 mb-3"><span class="form-section-number">03</span>Household &amp; employment</legend><div class="form-field-grid">
+      {% for field in form.personal_fields %}{% if field.name == 'employment_information' or field.name == 'monthly_income' or field.name == 'dependents' %}{% include 'membership/field.html' %}{% endif %}{% endfor %}</div></fieldset>
+      <fieldset class="form-section"><legend class="h4"><span class="form-section-number">04</span>Supporting documents</legend>
+        <p class="small text-secondary">PDF, JPG, JPEG, or PNG. Up to {{ file_limit_mb }} MB per file and {{ total_limit_mb }} MB in total.</p>
+        {% for field in form.document_fields %}{% include 'membership/field.html' %}{% empty %}<p>No supporting documents are currently requested by the association.</p>{% endfor %}
+      </fieldset>
+      <div class="form-section"><p class="small text-secondary">Your information and documents will be available to authorized administrators for membership review and manual PRPWD verification.</p>
+      <button class="btn btn-primary" type="submit">Submit membership application <span aria-hidden="true">↗</span></button></div>
+    </form>
+  {% else %}<section class="information-body"><p class="eyebrow">MEMBERSHIP REGISTRATION</p><h2 class="h3">Online applications are not open yet.</h2><p>Please check back when the association opens registration.</p><p class="information-note">No member account is needed.</p><a class="text-link" href="{% url 'core:contact' %}">Contact information <span aria-hidden="true">↗</span></a></section>{% endif %}
+  </div>
+  <aside class="membership-guide"><section class="about-card"><p class="eyebrow">THE MEMBERSHIP PROCESS</p><h2>What happens next?</h2><ol class="ps-3 mt-3"><li>Submit your information and requested documents.</li><li>An administrator reviews your application and manually verifies your PRPWD details.</li><li>An authorized administrator records the membership decision.</li></ol><p class="small mb-0">Submitting an application does not automatically make you a member.</p></section><p class="small text-secondary mt-4">Your membership journey does not require a member account or password.</p></aside>
+</div></div>
+{% endblock %}

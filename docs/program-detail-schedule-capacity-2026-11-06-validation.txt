@@ -1,0 +1,46 @@
+Program Details schedule, capacity and popup width — 2026-11-06
+
+Owner request
+Show registration and program dates as compact ranges, show beneficiary capacity
+like the application-demand card, and reduce the Program Details popup width.
+
+Implemented
+- Shared program details now show Registration and Program dates as ranges such
+  as Nov 5 – Nov 15, 2026. Opening/closing times remain visible underneath in
+  Philippine Standard Time; complete timestamps remain on the time elements.
+  Cross-year ranges retain both years, and missing dates remain explicit.
+- Beneficiary slots uses the existing application count, demand percentage and
+  reserved-slot calculation. The blue demand bar is capped at 100%; the actual
+  percentage and excess applications remain visible above capacity. Unallocated
+  slots still reflect selection reservations, independently of applications.
+- Application counts and allocation details retain their separate permissions.
+  Unset capacity does not produce an invented percentage or available count.
+- The popup is capped at 1120px with desktop side margins of at least 40px and
+  vertical margins of at least 32px. Small screens retain 12px margins and the
+  existing responsive layout and internal scroll behavior.
+- Full-page and popup asset versions were refreshed. The event date-row partial,
+  eligibility list sizing, requirement placement and publication actions remain
+  unchanged. No database migration or application data changes are involved.
+
+Validation
+- All 8 programs.test_detail_workspace tests passed in disposable MySQL:
+  C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-ctvd0b15/django.log
+  Command: .venv/Scripts/python.exe scripts/g12_test_runner.py test
+    programs.test_detail_workspace --noinput
+    --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+- Same-year, cross-year, either missing endpoint and unscheduled date fragments
+  rendered successfully with explicit expected date/time checks.
+- Django system check, node --check scripts/program_detail_browser_qa.cjs and
+  git diff --check passed. Existing browser-harness assertions were updated for
+  the width and wording; that automated browser harness was not executed.
+- A broader 13-test run passed 10 tests and exposed 3 older reference-UI
+  assertions outside this change: Application History, ewaf-state-ready, and
+  program-reference-card. Their existing expectations were not rewritten here.
+  Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-iontzyo9/django.log
+- Collected assets and refreshed only the identity-verified local web process
+  at port 8013; the existing MySQL connection remained live.
+- Native browser inspection verified the compact dates on the existing Programa
+  page and the narrower centered popup on Programa testing, including the blue
+  3 / 6, 50% demand, 6 unallocated card. The popup retained visible side margins,
+  internal scrolling and the eligibility/requirements columns. No live review,
+  publication, selection or email action was triggered during verification.

@@ -1,0 +1,1 @@
+<div class="membership-field-label">{{ label }}</div><div class="membership-field-value">{% if date_value and value %}{{ value|slice:'5:7' }}/{{ value|slice:'8:10' }}/{{ value|slice:'2:4' }}{% else %}{{ value|default_if_none:'' }}{% endif %}</div>

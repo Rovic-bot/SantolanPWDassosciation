@@ -1,0 +1,47 @@
+{% extends 'public/base.html' %}
+{% load static portal_content %}
+{% block title %}Home &middot; Santolan PWD{% endblock %}
+{% block public_class %}home-page{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-home-v2.css' %}?v=20261110-events">{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/home-guidance.css' %}?v=20261110-card-click">{% endblock %}
+{% block content %}
+<section class="bento-home-hero home-landing" aria-labelledby="welcome-heading">
+    {% portal_picture "picture_1" %}<img src="{% static 'images/home-pavilion-illustration.png' %}" alt="" fetchpriority="high" width="1672" height="941">{% endportal_picture %}
+    <div class="home-hero-topline">
+        <p>Services <span aria-hidden="true">&mdash;</span> Guidance <span aria-hidden="true">&mdash;</span> Community</p>
+    </div>
+    <div class="bento-hero-copy">
+        <h1 id="welcome-heading">{% portal_text "welcome_heading" %}A community where everyone belongs.{% endportal_text %}</h1>
+        <p>{% portal_text "text_003" %}Find services, guidance, community updates, and application support for persons with disabilities in Santolan.{% endportal_text %}</p>
+        <div class="portal-actions">
+            <a class="btn btn-primary" href="{% url 'core:programs' %}">Browse programs <span aria-hidden="true">&rarr;</span></a>
+            <a class="home-guide-link" href="{% url 'core:membership' %}"><span class="home-guide-icon">{% include 'public/icon.html' with name='arrow' %}</span>Membership</a>
+        </div>
+    </div>
+    <div class="home-feature-grid">
+        <a class="home-glass-card home-featured-event{% if not current_event.image %} home-featured-event--initials{% endif %}" href="{% url 'core:events' %}" aria-label="{% if current_event %}Browse events: {{ current_event.title }}{% else %}View community calendar{% endif %}">
+            {% with featured=current_event %}
+            <div class="home-event-photo">{% if featured.image %}<img src="{% url 'events:image' featured.pk %}" alt="{{ featured.image_description }}" loading="lazy">{% elif featured %}<span class="home-event-initials" aria-hidden="true">{{ current_event_initials }}</span>{% else %}<span class="home-event-initials" aria-hidden="true">{% include 'public/icon.html' with name='calendar' %}</span>{% endif %}</div>
+            <div class="home-event-copy">
+                <div class="home-event-meta"><span class="home-mini-label">{% if featured %}Current event{% else %}Community calendar{% endif %}</span>{% if featured %}<time datetime="{{ featured.starts_at|date:'c' }}">{{ featured.starts_at|date:'M j' }}</time>{% endif %}</div>
+                {% if featured %}<h2 translate="no">{{ featured.title }}</h2><p translate="no">{{ featured.description|truncatechars:95 }}</p>
+                {% else %}<h2>No event happening now</h2><p>Explore the community calendar for scheduled activities.</p>{% endif %}
+                <span class="home-event-link" aria-hidden="true">{% include 'public/icon.html' with name='arrow' %}</span>
+            </div>
+            {% endwith %}
+        </a>
+        <section class="home-glass-card home-service-facts" aria-label="Portal at a glance">
+            <a href="{% url 'core:programs' %}" aria-label="{{ public_program_count }} published programs"><span class="home-fact-icon">{% include 'public/icon.html' with name='heart' %}</span><strong>{{ public_program_count }}</strong><span>Programs</span></a>
+            <a href="{% url 'core:membership' %}" aria-label="{{ public_member_count }} active Association members. Read the membership guide."><span class="home-fact-icon">{% include 'public/icon.html' with name='members' %}</span><strong>{{ public_member_count }}</strong><span>Members</span></a>
+            <a href="{% url 'core:events' %}" aria-label="{{ public_event_count }} published events"><span class="home-fact-icon">{% include 'public/icon.html' with name='calendar' %}</span><strong>{{ public_event_count }}</strong><span>Events</span></a>
+        </section>
+        <aside class="home-help-card home-support-card">
+            <img class="home-support-logo" src="{% static 'images/public-association-logo.png' %}" alt="" width="44" height="44">
+            <h2>Get Help &amp;<br>Support</h2>
+            <p>Contact the Help Desk for guidance.</p>
+            <a href="{% url 'core:contact' %}" aria-label="Get help and support">{% include 'public/icon.html' with name='arrow' %}</a>
+        </aside>
+    </div>
+</section>
+{% include 'public/guidance/section.html' %}
+{% endblock %}

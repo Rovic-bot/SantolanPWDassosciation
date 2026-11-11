@@ -1,0 +1,13 @@
+<aside class="builder-summary" aria-label="Live program summary">
+  {% if not editing %}{% include 'programs/builder/status.html' %}{% endif %}
+  <section class="builder-glass builder-preview"><div class="builder-preview-top"><span class="builder-badge">{% if editing %}{{ program.get_status_display }}{% else %}Draft{% endif %}</span><span>Live preview</span></div><h2 data-preview-title>{{ form.name.value|default:'Untitled program' }}</h2><p data-preview-category>{{ form.assistance_type.value|default:'Choose assistance type' }}</p><dl><div><dt>Beneficiary capacity</dt><dd data-preview-capacity>{% if form.slots.value %}{{ form.slots.value }} places{% else %}Not set{% endif %}</dd></div><div><dt>Selection</dt><dd data-preview-selection>EWAF required</dd></div><div><dt>Visibility</dt><dd class="builder-private">{% if program.status == 'published' or program.status == 'cancelled' %}Public{% else %}Private{% endif %}</dd></div></dl></section>
+  <section class="builder-glass builder-readiness"><h2>Review readiness</h2><p class="builder-help">Check the setup before opening program review.</p><ul>
+    <li data-readiness="details"><span aria-hidden="true">○</span><div>Program details<small data-ready-label>Not checked</small></div></li>
+    <li data-readiness="registration"><span aria-hidden="true">○</span><div>Registration window<small data-ready-label>Not checked</small></div></li>
+    <li data-readiness="delivery"><span aria-hidden="true">○</span><div>Program schedule<small data-ready-label>Not checked</small></div></li>
+    <li data-readiness="capacity"><span aria-hidden="true">○</span><div>Capacity &amp; assessment<small data-ready-label>Not checked</small></div></li>
+    <li data-readiness="eligibility"><span aria-hidden="true">○</span><div>Eligibility<small data-ready-label>Select at least one disability type</small></div></li>
+    <li data-readiness="requirements"><span aria-hidden="true">○</span><div>Requirements<small data-ready-label>Not checked</small></div></li>
+  </ul><p class="builder-readiness-count" data-ready-count aria-live="polite">Setup check available with JavaScript</p></section>
+  <section class="builder-guidance"><h2>{% if editing %}Updating this program{% else %}Before publishing{% endif %}</h2><p>{% if editing %}Save your changes with a reason, then review the updated program record. Its publication status stays the same.{% else %}Save a private draft, review its policies and evidence, then complete the required approvals and EWAF configuration when applicable.{% endif %}</p><p>Review readiness confirms setup only. It does not approve or publish the program.</p><a href="{% url 'program_portfolio' %}">Back to program portfolio &#8599;</a></section>
+</aside>

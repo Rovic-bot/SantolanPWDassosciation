@@ -1,0 +1,33 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Private development history · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:development_lab' %}">Fictional EWAF development</a>
+<h1>Private development calculations</h1><h2 class="h5">{{ program.name }}</h2>
+<p role="status"><strong>Fictional disposable data only. {% if four_criterion %}Versioned four-criterion development engine; PR is eligibility only.{% else %}Five-criterion historical engine.{% endif %} No operational ranking, selection, release or publication.</strong></p>
+{% if four_criterion %}<p><a href="{% url 'ewaf:four_workspace' program.pk %}">Four-criterion eligibility, configuration and human decision demonstration</a></p>{% endif %}
+{% if current %}<p>Current development run: {{ current.run_id }}. Valid only after a fresh protected-use check, and no later than {{ current.valid_until }}.</p>{% else %}<p>No currently usable development result is shown.</p>{% endif %}
+{% if blockers %}<h2 class="h5">Readiness findings</h2><ul>{% for reason in blockers %}<li>{{ reason }}</li>{% endfor %}</ul>{% endif %}
+{% if context %}<p>Complete retained inventory: {{ context.retained_count }}. Confirmed eligible: {{ context.eligible_count }}.</p>
+<form method="post">{% csrf_token %}{{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+<div class="mb-3">{{ form.reason.label_tag }}{{ form.reason }}{{ form.reason.errors }}</div>
+<p>A recalculation retains the prior run as history and explicitly replaces its development reference. A failed replacement does not silently restore an old result.</p>
+<button class="btn btn-primary" type="submit">Calculate a new fictional version</button></form>{% endif %}
+<h2 class="h5 mt-4">Immutable calculation history</h2>
+{% for entry in history %}<section aria-labelledby="run-{{ entry.run.pk }}"><h3 id="run-{{ entry.run.pk }}" class="h6">Run {{ entry.run.pk }} · {% if entry.current %}current at this inspection{% else %}historical only{% endif %}</h3>
+<p>Historical integrity: {{ entry.valid|yesno:'verified,failed' }}. Predecessor: {{ entry.run.previous_id|default:'none' }}. {{ entry.run.recorded_at }}</p>
+<p>Recorded engine: {{ entry.run.snapshot.engine }}</p>
+{% if entry.four_criterion %}<p>Explicit fictional evaluation cutoff: {{ entry.run.snapshot.contract.cutoff }}. The retained inventory contains {{ entry.run.snapshot.manifest|length }} applications.</p>
+{% for item in entry.run.snapshot.manifest %}{% if not item.in_scope %}<p>Application {{ item.application }} is retained outside this cutoff and was not scored. Recorded status: {{ item.status }}.</p>{% endif %}{% endfor %}{% endif %}
+<p class="text-break">Immutable digest: {{ entry.run.digest }}</p>
+{% if entry.valid and entry.four_criterion %}
+<div class="table-responsive"><table class="table" data-comparison-run="{{ entry.run.pk }}">
+<caption>Numerical comparison, highest score first. Exact ties share the same comparison counts; row order within a tie gives no priority. Equal count includes this application. No beneficiary decision or business rank is assigned.</caption>
+<thead><tr><th scope="col">Fictional application</th><th scope="col">Score / 100</th><th scope="col">Higher scores</th><th scope="col">Equal scores</th></tr></thead>
+<tbody>{% for result in entry.results %}<tr data-application="{{ result.application_id }}"><th scope="row"><a href="#explanation-{{ result.pk }}">{{ result.application_id }}</a></th><td class="text-break" data-score="{{ result.calculation.score_0_100 }}">{{ result.calculation.score_0_100 }}</td><td>{{ result.comparison.higher }}</td><td>{{ result.comparison.equal }}</td></tr>{% endfor %}</tbody></table></div>
+{% endif %}
+{% for result in entry.results %}<details id="explanation-{{ result.pk }}"><summary>Fictional application {{ result.application_id }} · numerical explanation</summary>
+<p class="text-break">Historical score: {{ result.calculation.score_0_100 }} / 100. Higher comparisons: {{ result.comparison.higher }}. Equal comparisons: {{ result.comparison.equal }}. No business rank.</p>
+<dl>{% for trace in result.review_traces|default:result.traces.all %}<dt>{{ trace.criterion }}</dt><dd class="text-break">Reviewed input: {{ trace.snapshot.input.value }} {{ trace.snapshot.input.unit }}. Normalized value: {{ trace.snapshot.calculation.normalized }}. Weight: {{ trace.snapshot.calculation.weight }}. Contribution to the 0–1 total: {{ trace.snapshot.calculation.contribution }}.</dd>{% endfor %}</dl>
+</details>{% endfor %}</section>{% empty %}<p>No completed calculation history.</p>{% endfor %}
+{% include 'ewaf/scoring_pages.html' %}
+</div>{% endblock %}

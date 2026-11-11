@@ -1,0 +1,122 @@
+EWAF selection, Configuration Vault cleanup, and program results
+October 27, 2026
+
+Implemented owner-requested behavior
+- Removed the Calculation rules and member information panel and the listed
+  introductory paragraphs from Configuration Vault. Shortened slider guidance
+  and the repeated SES source description. Existing policy routes and retained
+  configuration history remain available; no scoring policy was changed.
+- The ranking action is SELECT FOR ASSISTANCE. It records a current, attributed
+  OperationalDecision through the existing service, with an automatic audit
+  reason. It does not create an AssistanceRelease or increase PA. Selected rows
+  show Selected for assistance. Review selection retains correction/deferred
+  decisions and approved tie-procedure explanations when needed.
+- Prepare and publish program results begins with the existing Program
+  Management card grid, search, filters, ordering, counts, and pagination.
+- Selecting a program shows the publication preview: applicants on the left,
+  selected applicants on the right. Names use the established initials mask;
+  full public application references remain visible. Columns stack on mobile.
+- Generate results explicitly finalizes the displayed selection and publishes
+  a new immutable result revision in Announcements and Results. The screen
+  states that remaining eligible applicants will be recorded as not selected.
+  Finalization happens only on this authorized POST; page visits, application
+  closure and ranking generation never select, reject, deliver or publish.
+- The same two-column tables are used in the public announcement, public
+  Results page, and private publication preview. Historical schema-1 result
+  payloads retain their original masking and source validation.
+
+Proposal versus calculated AHP weights
+No mathematical engine or weight policy was modified. ewaf/weight_input.py
+forms pairwise ratios from the slider proposal, maps each to the supported
+Saaty 1-9 scale (or reciprocal), and runs the approved AHP calculation and
+consistency checks. Nearest means minimum multiplicative error. For example,
+2.5:1 maps to 3:1; an exact 5:1 remains 5:1. Final percentages may therefore
+differ from the proposal. Display rounding also apportions hundredths to make
+the displayed total 100%; full precision remains in the approved calculation.
+The approved calculated weights remain the weights used for new rankings.
+
+Protected workflow
+Generation retains cutoff, eligibility, current-evidence, current-run, slots,
+configuration, authority, source freshness and exact-tie checks. An unresolved
+capacity-boundary tie cannot be silently finalized. Deferred or older-run
+decisions require an explicit review. Finalization uses record_decision;
+publication uses the existing prepare_results and publish_results services.
+The version and a digest of the reviewed run, decisions, applications and
+projection reject changed-page submissions. All finalization, result-revision
+and publication writes share a transaction; failures roll back together.
+CSRF protection remains. Unauthorized selection/publication is rejected.
+A publication-only staff member with dashboard access can publish completed
+decisions without private scoring access or permission to choose beneficiaries.
+They cannot finalize undecided applicants. The earlier private draft POST and
+separate publisher review remain available for existing workflows.
+
+Validation actually executed
+All write tests used fresh native MySQL 8.4.11 instances on loopback, verified
+datadirs, separate grants, test_g12_disposable, .env disabled, private test media
+and disabled outbound messaging. The existing guarded runner synchronizes
+model tables; it does not validate the full historical migration chain.
+
+Launcher: .venv\Scripts\python.exe -B scripts\g12_test_runner.py test
+Runner: --testrunner scripts.ewaf_synthetic_twelve_runner.SyntheticTwelveRunner
+Options: --noinput --verbosity 1
+
+1. Initial integration: 4 passed in 89.636s.
+2. Broad regression: 168 executed in 385.901s; 160 passed, 8 failed.
+   Labels: ewaf.test_current_weights, ewaf.test_operational, ewaf.test_vault,
+   ewaf.test_composite_ses, ewaf.test_document_ranking, ewaf.test_weight_input,
+   announcements.
+   Failures: five obsolete UI-text expectations (including earlier Vault and
+   public Results cleanups), two new HTTP fixtures missing login, and an older
+   policy-editor fixture missing its explicitly required shared cutoff.
+   Assertions/fixtures were corrected; production scoring rules were unchanged.
+3. Affected regression rerun: all 68 passed in 193.658s. Includes every failed
+   case above, announcement publication and historical revisions, legacy direct
+   percentages, current AHP approvals, tie/slot/concurrency tests, and the full
+   browser journey.
+4. Final permission/publication check: 12 executed in 54.566s, 11 passed and
+   one new publisher-only fixture lacked accounts.access_dashboard. Adding
+   that required fixture permission preserved the real permission boundary.
+5. Both final 12-member selection/publication/authorization tests passed in
+   92.785s after that fixture correction. No failures remain unresolved among
+   the executed cases. These are focused suites, not a whole-repository run.
+
+Browser evidence
+scripts/ewaf_current_weights_browser.cjs passed the complete disposable-server
+journey: edit sliders -> calculate AHP -> approve -> generate two program
+rankings -> inspect scoring -> SELECT FOR ASSISTANCE -> choose a program card
+-> preview 12 applicants and one selection -> Generate results -> public masked
+names and complete references. Desktop columns and mobile stacking passed.
+Screenshots include ranking-selection.png, program-grid.png,
+publication-preview.png, public-results-desktop.png and public-results-mobile.png.
+The desktop publication preview and public result were visually inspected.
+
+scripts/selection_results_browser.cjs is a separate read-only check of the
+retained main system. It verifies the instance identity, cleaned Vault, five
+ranking pages with direct selection actions, program card grid and mobile
+layout. No decisions, approvals, rankings or publications are generated there.
+Screenshots prefixed current- show this retained system. No JavaScript errors.
+
+Main development preservation
+Start System.cmd continues to launch http://127.0.0.1:8012/ using the same
+verified MySQL instance at port 3309. No schema migration or seed was applied.
+Before/after row counts and SHA-256 hashes match for all ten inspected models:
+  Member 12; AssistanceRelease 28; OperationalConfiguration 10;
+  OperationalRun 10; OperationalDecision 1; Announcement 0;
+  ProgramResultRevision 0; DatasetInputReview 60; SharedDatasetPolicy 10;
+  VaultRevision 14.
+These include changes already present when this task began. Login/session
+metadata may change during browser checks. No older development database was
+opened. Existing approved weights, evidence, selections, releases and runs were
+retained. No existing result was automatically published.
+Guarded Django checks and makemigrations --check --dry-run passed; no model
+changes. Python/Node syntax and git diff --check passed.
+
+Files and artifacts
+Exact task-relative file inventory: selection-results-cleanup-2026-10-27/source-changes.json.
+Database evidence: selection-results-cleanup-2026-10-27/database-preservation.json.
+Test logs (including initial failures) and screenshots are in that directory.
+Private baseline inventory and read-only probe remain under
+.local/selection-results-cleanup-20261027/.
+The source inventory includes unfinished pre-existing changes and confirms no
+existing file was removed. The owner-defined 70% milestone remains unchanged.
+No commit, push, merge, deployment or external publication was performed.

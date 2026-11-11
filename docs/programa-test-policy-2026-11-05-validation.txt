@@ -1,0 +1,92 @@
+Programa local test scoring policy and input layout
+5 November 2026
+
+Owner authorization and local operation
+
+After diagnosis, the owner explicitly selected "Use local test rules" for
+Programa. The retained calculation policies were labeled synthetic test only;
+they were not treated as institutional approval. Using the existing audited
+services, copied policy 10 unchanged into a new draft/approved pair (11/12),
+using the program's already-approved intake weight version 36, then assigned
+approved test policy 12 as program configuration revision 3 (LOCKED).
+
+This is a program-specific local test assignment. The policy has no automatic
+shared-program-application rule. No other program was rebound. Existing policies,
+weights, configurations, runs, decisions, accepted-input reviews and application
+rows were compared within the transaction and remained unchanged. Current shared
+weights continue to follow the previously authorized current-weight workflow.
+The audit explanation explicitly records the owner's local-test request and
+does not represent Association operating-policy approval.
+
+The assessment cutoff uses the unchanged application closing time: November 15,
+2026, 5:00 PM Philippine time. No schedule was shortened, input was accepted,
+score was generated, beneficiary selected, release created, or result published.
+Private before/after snapshots are under .local/ewaf-twelve-demo/
+programa-local-test-policy-*/. No private snapshots or rendered member data are
+included in this tracked validation note.
+
+Interface changes
+
+Ranking now links a weights-only configuration directly to its method's
+calculation-rule editor. Assigned configurations link directly to their retained
+policy. The Vault exposes the existing calculation-rule review/setup pages.
+The waiting message includes the actual assessment cutoff in Philippine time.
+
+Composite rows without an accepted review use the same ES, HM, PA, SES structure
+as the owner's screenshot, populated from current member registration and the
+actual assistance ledger. PA obeys the assigned period, cutoff and program
+scope. Missing ledger context stays Not recorded; a known empty ledger gives
+zero recorded releases. Registration fields are labeled Registered scoring
+inputs. They are not relabeled as accepted averages, verified household 4Ps or
+complete assistance-history coverage. Existing accepted rows retain their actual
+reviewed values and Accepted inputs ready for ranking status.
+
+Readiness correction
+
+The readiness projection was unconditionally requiring an in-system PDAO approval
+binding and its terms digest even with PDAO_ENFORCEMENT_ENABLED=False. It now
+honors that setting, matching publication and scoring-policy binding. When the
+setting is enabled, both checks remain enforced. The operational configuration's
+own immutable source/terms validation, membership provenance, reported changes,
+accepted evidence, cutoff and scoring gates remain enforced. No external approval
+or member verification record was invented to remove these false warnings.
+
+Verification
+
+46 tests passed, exit 0, in disposable native MySQL:
+  scripts/g12_test_runner.py test ewaf.test_input_presentation ewaf.test_evidence
+  ewaf.test_dataset_policy.DatasetPolicyTests.test_accepted_evidence_produces_official_run_with_no_automatic_selection
+  ewaf.test_dataset_policy.DatasetPolicyTests.test_reference_definitions_and_frozen_terms_cannot_change_retained_results
+  ewaf.test_dataset_policy.DatasetPolicyTests.test_feature_flags_cutoff_approved_scope_and_unsupported_rules_are_not_bypassed
+  --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  --noinput --verbosity 1
+
+The initial 11 input-presentation tests also passed before the readiness correction;
+they overlap the final run and are not counted as additional distinct tests.
+Tests cover layout projection without acceptance, ledger scope/date/cutoff,
+zero/missing values, permissions, GET without writes, external-approval settings,
+private source evidence, accepted-input scoring and historical calculation replay.
+
+Read-only authenticated server renders of ranking, Vault and assigned-policy
+pages returned HTTP 200. They performed no INSERT/UPDATE/DELETE queries. The
+configuration passes require_binding(), the pending-configuration phrase is
+absent, and the false external-approval warnings are absent. Outstanding member
+provenance, change-report and criterion-input reviews remain visible.
+
+Chrome checked captured server-rendered ranking HTML at 1440px/390px, in light
+and dark themes, with all POST/network mutations blocked. Three applicant rows
+and the criterion layout were checked, with no page overflow or console errors.
+An initial about:blank harness caused a relative-URL error; using an intercepted
+local HTTP page corrected the harness. This was not an application code error.
+Private browser artifacts stay in .local/ewaf-twelve-demo/programa-scoring-layout-check/.
+
+Django database/system check passed. No model migration changes were detected.
+git diff --check passed. No external deployment or email was performed.
+
+Follow-up: removed the owner's requested "Registration information loaded.
+Review the inputs under the approved scoring rules." message from eligible
+unreviewed rows, including its empty paragraph spacing. Criterion values, review
+links, accepted-input labels and actual review/scoring rules are unchanged.
+Verified a read-only ranking-page render, Django checks and git diff --check.
+The local web process was refreshed. No additional tests were added for this
+display-only removal.

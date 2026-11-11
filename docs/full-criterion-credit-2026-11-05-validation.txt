@@ -1,0 +1,93 @@
+Full equal-value credit and visible criterion contributions
+5 November 2026
+
+Owner decision
+
+The owner rejected the previous equal-column zero contribution and explicitly
+selected "Keep each program's applicant ranges", followed by "1.0 — full
+criterion weight" before the existing SES household 4Ps adjustment. This
+supersedes the prior zero-column decision for new local test calculations.
+PA Focus's sample bounds were not adopted as fixed reference ranges.
+
+Implementation
+
+All four composite criteria retain their exact approved weights. Varying
+criteria use the saved program applicant minimum and maximum and existing
+directions. When minimum equals maximum, normalized credit is 1. For SES,
+income need I = 1 still receives the existing 0.90 / 1.00 household 4Ps
+multiplier. Nothing is redistributed. A varying criterion may still have a
+legitimate zero at its minimum-scoring endpoint; its contribution is recorded.
+
+The optional versioned calculation_application policy marker activates only
+the shared equal-value rule for new compatible composite calculations. Each
+new run captures the exact approved policy ID, digest, rule, approval instant
+and effective period. Generation tokens include that snapshot; changing the
+rule invalidates pending generation requests and requires a new ranking before
+further decisions/publication. Replay uses the saved rule, never today's rule.
+The run validity cannot extend beyond that rule's approved period.
+
+This does not rebind existing programs, invalidate their accepted input reviews,
+substitute member facts, change directions/weights, or rewrite earlier runs.
+Existing automatic member-record inputs, Student -> Unemployed score 4,
+open-registration ranking, human selection, and retained source checks remain.
+
+The ranking table now displays every saved criterion contribution in points,
+including zero, beside the total. Headers follow saved trace codes, preserving
+older method signatures. The breakdown and calculation guide explain the exact
+equal-value treatment and link its retained policy. Current rule guidance is
+separate from the original bound input policy.
+
+Applicant qualification, identity evidence, changed eligibility records and
+missing checklist/evidence messages no longer fall through to a misleading
+"Scoring settings are incomplete" message. Genuine review requirements remain.
+An empty eligible pool receives a specific no-ready-applicants explanation.
+
+Local activation and retained history
+
+Approved policy 24 (revision 22), following draft 23, through the existing
+audited services under the local ewaf_demo administrator. The audit reason
+records the owner's instruction as local test policy, not institutional approval.
+The shared equal-value rule is active for all 10 existing compatible programs.
+
+Generated Programa testing run 30, revision 2, through the calculation service.
+Its existing configuration 42 is unchanged. The new totals are 98.62 and 28.63.
+The respective displayed SES / ES / PA / HM contributions are:
+12.44 / 7.41 / 7.41 / 71.37 and 13.82 / 7.41 / 7.41 / 0.00.
+Displayed values are rounded; totals use the exact stored fractions.
+
+Before/after private snapshots verified that every existing policy, configuration,
+run, input review, member, application, decision, release, weight and audit row
+remained unchanged. All 29 earlier runs passed integrity replay. No beneficiary
+selection, publication, actual release or manual score/rank edit was performed.
+Only the identified local web process on port 8013 was refreshed; its database,
+uploads and sessions were preserved. Private snapshots/screenshots stay in .local.
+
+Read-only live checks found Programa testing, Programa, PA Focus and Balanced
+ready. ES Focus, HM Focus, SES Focus and Saklay still have actual qualification,
+identity and stale eligibility issues; Saklay also has reported changed details.
+Two other bound programs have no eligible applicant pool. No reviews were forged
+to bypass these conditions.
+
+Validation
+
+First isolated MySQL run: 55 of 56 tests passed. One new arithmetic comparison
+incorrectly compared two independently captured cutoff timestamps; calculation
+values matched. The test now freezes its clock.
+
+Final isolated MySQL run: 40 tests passed, including the new shared rule tests,
+automatic member inputs and shared application defaults. Earlier passing checks
+also covered rolling pools, input presentation and composite arithmetic. Tests
+cover all-equal/single-person credit, SES participation, exact varied bounds,
+manual input review preservation, historical replay, stale tokens, tampered
+rule snapshots, authorization, audit rollback, applicant warnings and table cells.
+
+manage.py check --database default: no issues.
+manage.py makemigrations --check --dry-run: no model changes.
+git diff --check: passed.
+
+Read-only rendering of the actual workspace returned HTTP 200 with all eight
+contribution cells. Playwright rendered that private captured HTML using only
+GET requests for local static assets, with no authentication or application
+mutations. Checked dark/light at 1440 and 390 pixels: nine table headers, no
+page overflow, mobile horizontal table scrolling. Desktop and mobile screenshots
+were visually inspected. The existing 29 runs and new run 30 passed replay.

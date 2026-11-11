@@ -1,0 +1,43 @@
+<details class="member-record-disclosure member-activity-disclosure" id="member-record-programs"{% if request.GET.program_page %} open{% endif %}>
+  <summary><h2>Program applications</h2><span class="member-activity-chevron" aria-hidden="true"></span></summary>
+  <div class="member-activity-content">
+    {% if perms.programs.view_program and perms.programs.view_programapplication %}
+      {% for application in program_history %}
+        <article class="member-activity-row">
+          <h3><a href="{% url 'programs:application_detail' application.program_id application.pk %}">{{ application.program.name }}</a></h3>
+          <p>{{ application.submitted_at|date:'M j, Y' }} &middot; {{ application.get_status_display }} &middot; Program: {{ application.program.get_status_display }}</p>
+          {% if reviews_available and perms.members.view_informationreview %}<p><a href="{% url 'members:reviews' member.pk %}?application={{ application.pk }}">Private evaluation clarification</a></p>{% endif %}
+        </article>
+      {% empty %}<p>No program applications recorded.</p>{% endfor %}
+      {% if program_history.has_other_pages %}
+        <nav class="pagination-bar" aria-label="Program history pages">
+          {% if program_history.has_previous %}<a href="?program_page={{ program_history.previous_page_number }}#member-record-programs">Previous</a>{% endif %}
+          <span>Page {{ program_history.number }} of {{ program_history.paginator.num_pages }}</span>
+          {% if program_history.has_next %}<a href="?program_page={{ program_history.next_page_number }}#member-record-programs">Next</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}<p>Program history requires program and application viewing permissions.</p>{% endif %}
+  </div>
+</details>
+<details class="member-record-disclosure member-activity-disclosure" id="member-record-assistance"{% if request.GET.assistance_page %} open{% endif %}>
+  <summary><h2>Assistance history</h2><span class="member-activity-chevron" aria-hidden="true"></span></summary>
+  <div class="member-activity-content">
+    {% if can_view_assistance %}
+      <p>Successfully received assistance: <strong>{{ previous_assistance }}</strong>. Voided records are excluded.</p>
+      {% for release in assistance_history %}
+        <article class="member-activity-row">
+          <h3><a href="{% url 'programs:application_detail' release.application.program_id release.application_id %}">{{ release.application.program.name }}</a></h3>
+          <p>{{ release.released_on|date:'M j, Y' }} &middot; {{ release.assistance_type }} &middot; {% if release.voided_at %}Voided{% else %}Released{% endif %}</p>
+          <p>{{ release.benefit }}</p>{% include 'assistance/receipt_details.html' %}
+        </article>
+      {% empty %}<p>No assistance release records.</p>{% endfor %}
+      {% if assistance_history.has_other_pages %}
+        <nav class="pagination-bar" aria-label="Assistance history pages">
+          {% if assistance_history.has_previous %}<a href="?assistance_page={{ assistance_history.previous_page_number }}#member-record-assistance">Previous</a>{% endif %}
+          <span>Page {{ assistance_history.number }} of {{ assistance_history.paginator.num_pages }}</span>
+          {% if assistance_history.has_next %}<a href="?assistance_page={{ assistance_history.next_page_number }}#member-record-assistance">Next</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}<p>Assistance history requires program, application, assessment and release viewing permissions.</p>{% endif %}
+  </div>
+</details>

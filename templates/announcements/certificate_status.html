@@ -1,0 +1,24 @@
+{% if certificate_emails_enabled or certificate_total %}<section class="results-certificate-status mt-3" aria-labelledby="certificate-status-heading">
+  <h3 id="certificate-status-heading" class="h6">Certificate emails</h3>
+  {% if certificate_emails_enabled %}<p class="small mb-2">Publishing again sends certificates only to selected members whose certificate email has not already been accepted. Previously sent certificates are not resent.</p>{% else %}<p class="small mb-2">Certificate delivery is unavailable for this program. Earlier delivery records are retained below.</p>{% endif %}
+  {% if certificate_setup %}<p class="small mb-2" role="status">{{ certificate_setup }} Certificates will remain pending until delivery is configured.</p>{% endif %}
+  {% if certificate_total %}
+  <p class="small mb-2">{{ certificate_accepted }} of {{ certificate_total }} accepted by the email service. Acceptance does not confirm inbox delivery.</p>
+  <details><summary class="small">View certificate delivery details</summary>
+    <ul class="list-unstyled mt-2">
+      {% for certificate in certificate_jobs %}
+      <li class="border-top py-2 small">
+        <strong>{{ certificate.member_name }}</strong> &middot; {{ certificate.delivery_label }} &middot; {{ certificate.get_provider_display }}<br>
+        {% if certificate.recipient %}{{ certificate.recipient }}<br>{% endif %}
+        {% if certificate.explanation %}{{ certificate.explanation }}<br>{% endif %}
+        <a href="{% url 'announcements:certificate_download' certificate.pk %}">Download certificate</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </details>
+  <div class="d-flex flex-wrap gap-2 mt-2">
+    <button type="button" class="btn btn-sm btn-outline-primary" data-results-reload>Refresh delivery status</button>
+    {% if certificate_can_retry %}<form method="post" action="{% url 'announcements:certificate_retry' program.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">Retry pending certificates</button></form>{% endif %}
+  </div>
+  {% else %}<p class="small mb-0">Publishing queues a personalized PDF certificate for each selected member using their application email or onsite registration email. Delivery service: {{ certificate_provider }}.</p>{% endif %}
+</section>{% endif %}

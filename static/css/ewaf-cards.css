@@ -1,0 +1,29 @@
+/* EWAF-specific presentation; other program listings keep their existing design. */
+.ewaf-filter-panel { margin-bottom: 1rem; }
+.ewaf-filter-panel .program-filter-main { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr) minmax(0, 1fr) auto auto; align-items: center; }
+.ewaf-filter-panel .reset-filters { font-size: .85rem; }
+.ewaf-program-card header { min-width: 0; }
+.ewaf-program-card h2 { margin-bottom: 0; }
+.ewaf-state-ready { color: #00765f; background: #effcf6; border-color: #bcebd7; }
+.ewaf-state-draft, .ewaf-state-review { color: #956000; background: #fffbef; border-color: #f6e2ad; }
+.ewaf-card-weights { border-top: 1px solid #edf1f5; padding-top: 1rem; margin-top: 1rem; }
+.ewaf-card-weights h3 { font-size: .85rem; font-weight: 600; margin: 0 0 1rem; }
+.ewaf-draft-note { font-size: .75rem; color: #77603d; margin: -.5rem 0 .75rem; }
+.ewaf-card-weight { margin-bottom: .85rem; }
+.ewaf-card-weight > div:first-child { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; font-size: .78rem; }
+.ewaf-card-weight strong { flex-shrink: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ewaf-card-weight progress, .ewaf-weight-empty { appearance: none; display: block; width: 100%; height: .4rem; margin-top: .4rem; background: #e5ecec; border: 0; border-radius: 1rem; overflow: hidden; }
+.ewaf-card-weight progress::-webkit-progress-bar { background: #e5ecec; border-radius: 1rem; }
+.ewaf-card-weight progress::-webkit-progress-value { background: #238779; border-radius: 1rem; }
+.ewaf-card-weight progress::-moz-progress-bar { background: #238779; border-radius: 1rem; }
+.ewaf-card-applicants { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: .75rem; border-top: 1px solid #edf1f5; padding-top: 1rem; margin: auto 0 1rem; }
+.ewaf-card-applicants > div + div { border-left: 1px solid #edf1f5; padding-left: .75rem; }
+.ewaf-card-applicants dt { font-size: .75rem; font-weight: 400; color: #62748a; }
+.ewaf-card-applicants dd { font-size: 1.25rem; font-weight: 600; margin: .25rem 0 0; }
+.ewaf-program-card .capacity-panel { margin-top: 0; }
+.ewaf-program-card footer { justify-content: flex-end; }
+@media (max-width: 1199px) { .ewaf-filter-panel .program-filter-main { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 699px) {
+    .ewaf-filter-panel .program-filter-main { grid-template-columns: 1fr; }
+    .ewaf-filter-panel .reset-filters { margin: 0; text-align: center; }
+}

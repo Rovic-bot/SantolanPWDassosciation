@@ -1,0 +1,70 @@
+Program application choices and ranking registration inputs
+5 November 2026
+
+Owner-requested changes
+
+The application change-report dropdown defaults to No changes to report and
+offers only unchanged/changed. Bound invalid submissions retain the selected
+answer. New uncertain submissions are rejected by the choice field; historical
+uncertain declarations and their existing reviews remain readable. Changed
+reports still require details. The two requested explanatory paragraphs were
+removed.
+
+The private ranking workspace automatically reads household income, 4Ps
+participation, employment status and household size from the current member
+record. Missing values remain Not recorded; zero income and No participation
+are preserved. The table distinguishes registration information from accepted
+scoring inputs, including inputs from the retained non-dataset workflows.
+GET does not create findings, change eligibility, or authorize a calculation.
+Existing accepted inputs are displayed from inventory, not overwritten by the
+current registration record. PA still comes from successful release records
+under the approved calculation contract, rather than invented defaults.
+
+Removed the misleading Complete the input review placeholder. The page links
+to the member record, program settings and scoring configuration. Eligible
+applications with a locked, complete configuration link directly to their
+dataset, registered-input or legacy evidence review, as applicable and only
+for officers with review permission. Draft/source-only configurations do not
+show an unavailable review link. Membership provenance, changed program terms
+and outstanding input reviews now have distinct messages. The legacy fallback's
+missing criterion assessments are not presented as missing registration data
+when no input-review contract exists. Raw engine blockers remain unchanged.
+
+Local diagnosis (read only)
+
+The screenshot's PRG000011 has a DRAFT configuration with weights_and_sources
+scope. All three referenced applications have the four registration fields.
+The existing engine also reports authorization/terms blockers and, for one
+eligible record, membership-provenance review. No retained record, configuration,
+approval, calculation, reference, source audit or document was altered to clear
+these blockers. This UI change does not approve missing scoring policy.
+
+Validation
+
+52 tests passed, exit 0, in fresh disposable native MySQL, using:
+  .venv/Scripts/python.exe -B scripts/g12_test_runner.py test
+  programs.test_application_workflow.ConfirmedApplicationTests
+  programs.test_application_workflow.ConfirmationEvidenceTests
+  programs.test_information_update ewaf.test_input_presentation
+  ewaf.test_operational.OperationalTests.test_pages_permissions_csrf_and_no_public_data
+  scripts.program_application_browser_qa
+  --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  --noinput --verbosity 1
+
+Coverage includes public choice validation, reported-change handling, source
+refresh, permissions, read-only GET queries, exact review routing, accepted
+versus registered values, zero/missing inputs, existing calculation permissions,
+CSRF rotation and file preservation across validation/network failures.
+
+Chrome verified the two options and initial default, removal of requested text,
+automatic registration display and configuration/member navigation, and no
+horizontal page overflow at 1440px and 390px in light and dark themes. No browser
+console errors. Desktop ranking and mobile application screenshots were visually
+inspected. Artifacts included here contain synthetic test data only.
+
+manage.py check --database default: no issues.
+makemigrations --check --dry-run: no changes detected.
+git diff --check: passed (existing line-ending notices only).
+The identified local web process was refreshed; its health check passed.
+No migration, external deployment, real email, real application submission or
+scoring approval was performed.

@@ -1,0 +1,15 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}Apply · Verify membership{% endblock %}
+{% block resident_class %}section-programs{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><div class="page-location"><a href="{% url 'programs:detail' program.pk %}">← Program details</a></div><p class="eyebrow">STEP 1 / MEMBERSHIP</p><h1>Verify your membership</h1><p class="page-intro">{{ program.name }}</p></div></section>
+<div class="container content-section"><div class="record-editor">
+{% if program.registration_available %}
+<p>Program applications are for registered Association members. Membership registration and corrections are handled onsite.</p>
+<p>Enter your Association Control Number, registered full name and disability information. If they match your onsite membership record and this program's qualifications, you can continue to the program requirements.</p>
+<form method="post" class="membership-form intake-form" autocomplete="off">{% csrf_token %}
+{{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field }}{% if not verification_failed %}{{ field.errors }}{% endif %}{% endfor %}
+{% for field in form.visible_fields %}{% if field.name == 'disability_types' %}<fieldset><legend class="h5">{{ field.label }}</legend><div class="intake-checkboxes">{% for choice in field %}<label class="intake-choice">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>{% endfor %}</div>{% if not verification_failed %}{{ field.errors }}{% endif %}</fieldset>{% else %}<div class="mb-4">{{ field.label_tag }}{{ field }}{% if field.help_text %}<p class="small text-secondary">{{ field.help_text }}</p>{% endif %}{% if not verification_failed %}{{ field.errors }}{% endif %}</div>{% endif %}{% endfor %}
+<button class="btn btn-primary" type="submit">Verify &amp; Continue</button></form>
+{% else %}{{ form.non_field_errors }}<h2>Applications are closed</h2><p>Check the program’s application period.</p>{% endif %}
+</div></div><link rel="stylesheet" href="{% static 'program_intake/intake.css' %}">{% endblock %}

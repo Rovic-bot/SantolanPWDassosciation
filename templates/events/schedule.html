@@ -1,0 +1,6 @@
+<dl class="event-schedule">
+<dt>When</dt><dd><time datetime="{{ event.starts_at|date:'c' }}">{{ event.starts_at|date:'F j, Y, g:i A' }}</time> to <time datetime="{{ event.ends_at|date:'c' }}">{{ event.ends_at|date:'F j, Y, g:i A' }}</time><br><span class="text-secondary">Philippine time (Asia/Manila)</span></dd>
+<dt>Where</dt><dd>{{ event.location }}</dd>
+<dt>Capacity</dt><dd>{{ event.capacity|default_if_none:'No capacity limit' }}</dd>
+</dl>
+{% include 'events/participation.html' with item=event optional=True %}

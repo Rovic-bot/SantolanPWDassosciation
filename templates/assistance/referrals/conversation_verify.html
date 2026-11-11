@@ -1,0 +1,17 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Continue a conversation · Community Assistance Desk{% endblock %}
+{% block resident_class %}section-help{% endblock %}
+{% block content %}
+{% url 'core:resources' as parent_url %}
+{% include 'public/resident_heading.html' with back=parent_url back_label='Community Assistance Desk' label='Private conversation' title='Continue your conversation' intro='Read the Association’s replies and send a follow-up to the same request.' icon='help' only %}
+<div class="container content-section resident-columns">
+  <section class="resident-panel">
+    <nav class="concern-flow-options" aria-label="Community Assistance options"><a href="{% url 'assistance:referral_verify' %}">New concern</a><a href="{% url 'assistance:referral_conversation_verify' %}" aria-current="page">Continue a conversation</a></nav>
+    <h2>Open your conversation</h2>
+    <p>Enter your private conversation reference to pick up where you left off.</p>
+    <p class="form-text">Keep this reference private. Anyone with it can open this conversation while it remains active.</p>
+    <form method="post" autocomplete="off">{% csrf_token %}{{ form.non_field_errors }}{% for field in form %}{% include 'membership/field.html' %}{% endfor %}<button class="btn btn-primary">Open conversation</button></form>
+  </section>
+  <aside class="resident-aside"><h2>First time here?</h2><p><a href="{% url 'assistance:referral_verify' %}">Submit a new concern</a>. Your conversation reference will appear after submission and in your acknowledgment email.</p><p>Returning to this conversation keeps your previous messages together. If you cannot find your reference, <a href="{% url 'core:contact' %}">contact the Association Help Desk</a>.</p></aside>
+</div>
+{% endblock %}

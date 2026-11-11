@@ -1,0 +1,4 @@
+<div class="public-program-artwork{% if detail %} public-program-artwork--detail{% endif %}">
+    {% if program.picture_asset.image %}<img src="{% url 'programs:public_picture' program.pk %}" alt="Program image for {{ program.name }}"{% if not detail %} loading="lazy"{% endif %}>{% endif %}
+    <span class="public-program-initials" role="img" aria-label="{{ program.name }} — no program image"{% if program.picture_asset.image %} hidden{% endif %}>{{ program.initials }}</span>
+</div>

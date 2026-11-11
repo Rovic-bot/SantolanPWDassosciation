@@ -1,0 +1,16 @@
+Program eligibility disclosure and card alignment — November 6, 2026
+
+Owner-requested presentation changes:
+- Eligibility profile is a native details/summary disclosure, closed initially, with a rotating chevron matching Program history. Its existing disability types and inactive/unrestricted states remain inside the disclosure. The existing program-detail script synchronizes aria-expanded.
+- Program overview and the adjacent operations/publication card stretch to the same desktop grid-row height, removing the gap below the shorter overview card.
+- Requirements & evidence remains directly beneath Schedule & capacity. Responsive section order and the event layout remain unchanged.
+- Updated the full-page and popup stylesheet versions and the existing browser harness alignment expectation.
+
+Validation:
+- Django system check passed; the changed templates compile.
+- JavaScript syntax check for scripts/program_detail_browser_qa.cjs passed.
+- git diff --check passed with core.safecrlf=false.
+- Refreshed the identity-checked development web process while retaining its running MySQL connection.
+- Visually verified the live Programa testing page: overview and publication have matching top/bottom edges; Eligibility profile starts collapsed with its chevron. Interactive expansion verification was interrupted by concurrent user input in the browser. The automated browser harness was not run for this presentation change.
+
+No database, business-rule, publication-action, or permission changes.

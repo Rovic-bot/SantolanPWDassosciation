@@ -1,0 +1,9 @@
+<div class="builder-range" data-shared-calendar{% if form.is_incomplete_draft %} data-allow-partial="true"{% endif %} data-accent="blue">
+  <div class="builder-native-dates" data-native-dates="registration" data-start-name="{{ form.registration_opens_at.name }}" data-end-name="{{ form.registration_closes_at.name }}">
+    <h3>Registration window</h3>{% include 'programs/builder/field.html' with field=form.registration_opens_at %}{% include 'programs/builder/field.html' with field=form.registration_closes_at %}
+  </div>
+  <div class="builder-native-dates" data-native-dates="delivery" data-start-name="{{ form.starts_at.name }}" data-end-name="{{ form.ends_at.name }}">
+    <h3>Program schedule <span class="builder-optional">Optional</span></h3>{% include 'programs/builder/field.html' with field=form.starts_at %}{% include 'programs/builder/field.html' with field=form.ends_at %}
+  </div>
+  {% include 'partials/range_calendar.html' with program_ranges=True %}
+</div>

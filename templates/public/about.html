@@ -1,0 +1,42 @@
+{% extends 'public/section_base.html' %}{% load static %}
+{% load portal_content %}
+{% block title %}About the Association · Santolan PWD{% endblock %}
+{% block section_class %}section-about{% endblock %}
+{% block content %}
+{% include 'public/section_hero.html' with tab='About' eyebrow='About the Association' title='Built around dignity, access, and participation.' intro='Supporting the rights, well-being, and participation of persons with disabilities in Santolan.' jump='about-community-heading' label='Our work' second_jump='about-background-heading' second_label='Our background' %}
+<section class="container portal-section" aria-labelledby="about-community-heading">
+<div class="make-image-split make-about-split">
+  <figure>{% portal_picture "picture_1" %}<picture><source type="image/webp" srcset="{% static 'images/community/community-walk-640.webp' %} 640w, {% static 'images/community/community-walk-1080.webp' %} 1080w" sizes="(min-width: 850px) 58vw, 94vw"><img src="{% static 'images/community/community-walk.jpg' %}" alt="Association members walking together with a National Disability Rights Week banner." width="1448" height="1086" fetchpriority="high"></picture>{% endportal_picture %}<figcaption>{% portal_block "picture_caption_1" %}National Disability Rights Week · Santolan<details><summary>Read the banner</summary><span>48th National Disability Rights Week. “Rights First, Legislation Forward — Strategic Action for Equal Participation and Inclusive Development.”</span></details>{% endportal_block %}</figcaption></figure>
+  <div class="make-split-copy">
+    <p class="eyebrow">{% portal_text "text_003" %}Our work{% endportal_text %}</p>
+    <h2 id="about-community-heading">{% portal_text "text_004" %}What the Association does{% endportal_text %}</h2>
+    <p>{% portal_text "text_005" %}The Barangay Santolan PWD Association connects persons with disabilities and their families with member services, community activities, and assistance information.{% endportal_text %}</p>
+  <ul class="portal-purpose-list">
+    <li>{% include 'public/icon.html' with name='document' %}<strong>{% portal_text "text_006" %}Membership services{% endportal_text %}</strong><span>{% portal_text "text_007" %}Guidance with forms, requirements, and onsite review.{% endportal_text %}</span></li>
+    <li>{% include 'public/icon.html' with name='check' %}<strong>{% portal_text "text_008" %}Rights and independence{% endportal_text %}</strong><span>{% portal_text "text_009" %}Awareness, advocacy, and support for participation.{% endportal_text %}</span></li>
+    <li>{% include 'public/icon.html' with name='members' %}<strong>{% portal_text "text_010" %}Community connections{% endportal_text %}</strong><span>{% portal_text "text_011" %}Activities, program information, and referral guidance.{% endportal_text %}</span></li>
+  </ul>
+  <a class="text-link" href="{% url 'core:programs' %}">View programs {% include 'public/icon.html' with name='arrow' %}</a>
+  </div>
+</div>
+</section>
+<section class="container portal-section section-about-reading" aria-labelledby="about-background-heading">
+  <div class="public-stack-panel">
+    <p class="eyebrow">{% portal_text "text_012" %}Association background{% endportal_text %}</p>
+    <h2 class="public-stack-heading" id="about-background-heading">{% portal_text "text_013" %}Mission and background{% endportal_text %}</h2>
+    <p class="public-stack-hint" data-stack-hint hidden>Swipe or drag to explore</p>
+    <div class="public-swipe-carousel public-card-stack" data-card-stack data-stack-width="440" data-stack-min-height="320" role="region" aria-labelledby="about-background-heading">
+      <div class="public-swipe-viewport" data-swipe-viewport id="about-background-cards">
+      <div class="about-background-source" data-about-source{% if version %} translate="no"{% endif %}>
+        {% portal_block "background_body" %}{% for block in blocks %}
+          {% if block.kind == 'heading' %}<h3>{{ block.text }}</h3>
+          {% elif block.kind == 'list' %}<ul>{% for item in block.items %}<li>{{ item }}</li>{% endfor %}</ul>
+          {% else %}{{ block.text|linebreaks }}{% endif %}
+        {% endfor %}{% endportal_block %}
+      </div>
+      </div>
+      {% include 'public/stack_controls.html' with viewport_id='about-background-cards' %}
+    </div>
+  </div>
+</section>
+{% endblock %}

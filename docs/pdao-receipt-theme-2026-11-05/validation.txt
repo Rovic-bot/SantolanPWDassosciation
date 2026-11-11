@@ -1,0 +1,36 @@
+PDAO receipt theme — November 5, 2026
+
+Owner requested the PDAO receipt page match the system colors. The receipt now
+uses the existing public-make navy, blue and pale-blue palette and Manrope font.
+Only the palette selector is shared with the new receipt body class; unrelated
+public components and staff print screens retain their existing styling.
+
+Added an Association header, submission confirmation, reference/date panel,
+primary print action, submitted-form anchor, next steps, private-session finish
+action, expandable print instructions and a framed document preview. All receipt
+values still use the original context and reference formatter. The existing
+CSRF-protected finish POST and print JavaScript are unchanged.
+
+Receipt styles load with media=screen. Screen-only navigation and headings are
+hidden for printing; the original A4 source form and receipt footer retain their
+black-on-white layout. No models, forms, policies, views, records or permissions
+were changed. Original declarations and staff correction history remain intact.
+
+Validation: 13 focused tests passed through scripts/g12_test_runner.py in
+C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-fv3ucp8v.
+Existing source-form, transient-print and layout-boundary tests passed. Extended
+the existing browser harness to render a fictional applicant receipt, check
+1440/768/390/320px widths, full-reference wrapping, theme colors, print action,
+preview anchor, expandable guidance and the finish form's POST/CSRF structure.
+Receipt and ordinary filled/minimal print fixtures each produce two A4 pages.
+Long fields retain the existing additional-page behavior. Printed screens hide
+all new decoration while preserving the private receipt footer and form text.
+No horizontal page overflow or browser JavaScript errors were observed.
+
+Visually inspected fictional desktop/mobile screenshots and printed form.
+Screenshots retained here contain fictional data only. Git diff --check passed.
+
+Restarted only the identity-verified local web process on port 8013; MySQL was
+not stopped or reset. Refreshed the user's existing receipt tab and visually
+confirmed the new design at the requested live URL. No live screenshot or
+applicant values were saved to this documentation.

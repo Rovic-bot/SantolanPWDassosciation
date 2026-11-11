@@ -1,0 +1,22 @@
+{% if not hide_guidance %}{% if participation.private_names %}<p class="text-secondary mt-4">Full names are visible in Admin. Public results use masked names.</p>{% else %}<p class="text-secondary mt-4">Names are masked. Use your complete program application reference number to find your entry.</p>{% endif %}{% endif %}
+<div class="row g-4 program-participation">
+<section class="col-lg-6 mt-4" aria-label="Members who applied">
+  <h2 class="h4">Members who applied{% if participation.applicants_ready %} <span class="small text-secondary">({{ participation.applicant_count }})</span>{% endif %}</h2>
+  <div class="table-responsive" tabindex="0" role="region" aria-label="Program applicants">
+    <table class="table align-middle"><caption>Submitted applications for this program</caption><thead><tr><th scope="col">{% if participation.private_names %}Full name{% else %}Masked name{% endif %}</th><th scope="col">Program reference number</th></tr></thead><tbody>
+    {% for row in participation.applicants %}<tr><td>{{ row.name }}</td><td class="font-monospace text-break">{{ row.reference }}</td></tr>{% empty %}<tr><td colspan="2">{% if participation.applicants_ready %}No applications have been submitted for this program.{% else %}{{ participation.applicant_message }}{% endif %}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</section>
+<section class="col-lg-6 mt-4" aria-label="Selected members">
+  <h2 class="h4">Selected members{% if participation.selection_ready %} <span class="small text-secondary">({{ participation.rows|length }})</span>{% endif %}</h2>
+  {% if not participation.selection_ready %}<p role="status">{{ participation.selection_message }}</p>{% endif %}
+  <div class="table-responsive" tabindex="0" role="region" aria-label="Selected program members">
+    <table class="table align-middle"><caption>Recorded selections for this program</caption><thead><tr><th scope="col">{% if participation.private_names %}Full name{% else %}Masked name{% endif %}</th><th scope="col">Program reference number</th></tr></thead><tbody>
+    {% for row in participation.rows %}<tr><td>{{ row.name }}</td><td class="font-monospace text-break">{{ row.reference }}</td></tr>{% empty %}<tr><td colspan="2">{% if participation.selection_ready %}No members were selected in this result.{% else %}Selection results are pending.{% endif %}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+  {% if not hide_guidance %}<p class="small text-secondary">Selection does not mean assistance has already been received. Contact the Barangay Santolan PWD Association Help Desk for private clarification.</p>{% endif %}
+</section>
+
+</div>

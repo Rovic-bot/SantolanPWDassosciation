@@ -1,0 +1,74 @@
+EWAF applicant row selection and concise review notices - 2026-11-06
+
+Owner request
+Select applicants from the left ranking to show their inputs on the right.
+Remove the right-panel applicant heading/count/dropdown. Mark applicants who
+need review, and replace repeated warning paragraphs with a short explanation.
+
+Implemented
+- The right panel starts with the selected applicant's name and existing input
+  card. Name links and row clicks on the left remain the selection controls.
+  Removed the redundant panel selector, its listeners and unused CSS.
+- Applicants not included in a saved ranking appear as compact, selectable rows
+  on the left under Not in this ranking. Before a ranking exists, these rows are
+  titled Applicants. This preserves access to pending, excluded and newly added
+  applications without inventing ranks or showing input cards below the table.
+- Existing inventory validation marks only applicants needing attention with
+  Needs review. The right card has a short summary of the existing reasons, such
+  as Check updated information, identity evidence and program qualifications.
+- One compact workspace notice replaces duplicate warning blocks and their
+  navigation links. It identifies review counts or a configuration/ranking issue.
+  Incomplete scoring configuration is still mentioned when applicant review is
+  also required. Score breakdown uses the same concise notice presentation.
+- Progressive row changes update the table, selection panel, notice and extra
+  applicant rows together. Server-rendered links also work without JavaScript.
+  Filtering does not leave another applicant's selection form in an empty view.
+- Select for assistance remains in the right panel with existing validation and
+  permissions. No calculation, eligibility, selection, schema or stored data
+  rules were changed. Saved calculations retain their original payloads.
+
+Validation
+30 distinct focused tests checked across:
+  ewaf.test_applicant_panel.ApplicantPanelTests
+  ewaf.test_ranking_freshness.RankingFreshnessTests
+  ewaf.test_retired_screens.RetiredScreensTests
+  ewaf.test_input_presentation
+The first run passed 28 of 30. The two failures exposed an omitted configuration
+pending message and an expectation missing the existing identity-review reason
+after a member-version change. Restored the configuration message and corrected
+that expectation. Reran the 9 affected applicant-panel/registration-page tests:
+all 9 passed (25.696 s). Remaining 21 tests passed in the first run.
+Both runs used fresh disposable MySQL through scripts/g12_test_runner.py and
+scripts.registration_intake_test_runner.RegistrationIntakeTestRunner.
+Logs:
+  C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-a98vjn8a/django.log
+  C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-3czsvkhw/django.log
+
+New coverage checks marked versus unaffected applicants, concise explanations,
+unchanged saved rankings, unranked left-side selection and filtering. Existing
+coverage verifies explicit selection success, stale revisions, permissions,
+excluded inputs and read-only GETs.
+
+Read-only RequestFactory rendering against retained local data checked stale
+PRG000005 workspace and breakdown, plus current PRG000012 workspace. Captured SQL
+contained no INSERT, UPDATE or DELETE. The stale workspace showed two marked
+applicants and one brief notice; the current workspace showed no warning.
+node --check, Django system/database check and git diff --check passed.
+
+Native Brave verification on PRG000005 confirmed the heading/dropdown removal,
+one compact warning, left-side review markers, and Gia Testgolf's row switching
+the right panel and selected-row highlight. The short reason appeared in the
+card and Select for assistance retained its existing blocked state. No live
+beneficiary decision, eligibility change or email was submitted.
+
+Collected static assets with a new cache version and restarted only the verified
+web process on port 8013 while preserving the existing MySQL connection.
+
+Follow-up: ranked applicants page flow
+Owner requested removal of the left table's internal scrolling. Scoped the left
+table wrappers to natural height with no maximum and no vertical overflow bar.
+Updated the CSS cache version and collected/reloaded the local web assets.
+Native Brave verification showed no left vertical scrollbar. Scrolling over the
+ranked rows moved the page, and the final rank 12 and table footer were reachable
+without clipping. The right applicant panel remained visible beside the table.
+git diff --check passed; no new tests were added for this CSS-only adjustment.

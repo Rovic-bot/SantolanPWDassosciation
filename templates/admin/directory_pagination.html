@@ -1,0 +1,8 @@
+<div class="directory-pagination">
+  <span>{% if cl.opts.label_lower == 'audit.securityevent' or cl.opts.label_lower == 'admin.logentry' %}Showing {{ page.start_index }} to {{ page.end_index }} of {{ cl.result_count }} records{% else %}{{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}{% endif %}</span>
+  {% if page.has_other_pages %}<nav aria-label="Report pages">
+    {% if previous_url %}<a href="{{ previous_url }}" rel="prev">Previous</a>{% else %}<span aria-disabled="true">Previous</span>{% endif %}
+    {% for item in pages %}{% if not item.url %}<span>{{ item.number }}</span>{% elif item.number == page.number %}<span aria-current="page">{{ item.number }}</span>{% else %}<a href="{{ item.url }}">{{ item.number }}</a>{% endif %}{% endfor %}
+    {% if next_url %}<a href="{{ next_url }}" rel="next">Next</a>{% else %}<span aria-disabled="true">Next</span>{% endif %}
+  </nav>{% endif %}
+</div>

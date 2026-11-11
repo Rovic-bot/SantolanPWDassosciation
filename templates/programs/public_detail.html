@@ -1,0 +1,77 @@
+{% extends 'public/resident_base.html' %}
+{% load static %}
+{% block title %}{{ program.name }} &middot; Santolan PWD{% endblock %}
+{% block resident_class %}section-programs{% endblock %}
+{% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-program-detail.css' %}?v=20261110-requirements">{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-program-deadlines.css' %}?v=20261110-1">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/public-program-detail.js' %}?v=20261108-1" defer></script><script src="{% static 'js/public-program-deadlines.js' %}?v=20261110-1" defer></script>{% endblock %}
+{% block content %}
+<article class="public-program-detail">
+    <a class="program-back-link" href="{% url 'core:programs' %}">&larr; All programs</a>
+    <header class="program-detail-heading">
+        <h1 translate="no">{{ program.name }}</h1>
+        <p>{{ program.assistance_type }}</p>
+    </header>
+    <div class="program-detail-grid">
+        <div class="program-detail-main">
+            <section class="program-detail-overview" aria-labelledby="program-overview-heading">
+                {% include 'programs/public_artwork.html' with detail=True %}
+                <div class="program-overview-heading">
+                    <h2 id="program-overview-heading">Program overview</h2>
+                    {% include 'programs/availability_label.html' %}
+                </div>
+                {% include 'programs/closing_notice.html' %}
+                <div class="program-overview-copy" translate="no">{{ program.description|linebreaks }}</div>
+                {% include 'programs/availability_message.html' %}
+                {% if program.public_application_status == 'upcoming' %}<p>Scheduled opening: <time datetime="{{ program.registration_opens_at|date:'c' }}">{{ program.registration_opens_at|date:'F j, Y, g:i A' }}</time> (Philippine time)</p>{% endif %}
+            </section>
+            {% include 'programs/public_requirements.html' %}
+            <section class="program-detail-steps" aria-labelledby="program-steps-heading">
+                <h2 id="program-steps-heading">Application steps</h2>
+                <ol class="program-steps-list">
+                    <li><span class="program-step-number" aria-hidden="true">1</span><div><h3>Check the eligibility profile and requirements</h3><p>Review the eligibility profile and published program requirements before applying.</p></div></li>
+                    <li><span class="program-step-number" aria-hidden="true">2</span><div><h3>Submit an online application</h3><p>During the registration period, use the apply button to verify your membership, review the requirements, and complete your application.</p></div></li>
+                    <li><span class="program-step-number" aria-hidden="true">3</span><div>{% if program_tracking_enabled %}<h3>Track a submitted application</h3><p>Keep your application reference and use the tracking option to check your submitted application's progress.</p>{% else %}<h3>Keep your application reference</h3><p>Save your reference after submitting. Contact the Association Help Desk if you need help with your application.</p>{% endif %}</div></li>
+                </ol>
+            </section>
+        </div>
+        <aside class="program-detail-sidebar" aria-label="Eligibility, schedule and assistance">
+            <section class="program-detail-eligibility" aria-labelledby="program-eligibility-heading">
+                <h2 id="program-eligibility-heading">Eligibility profile</h2>
+                <ul class="program-eligibility-list" aria-label="Eligible disability types">{% for item in program.eligibility_profile_types %}<li>{% include 'programs/ui_icon.html' with name='person' %}<span>{{ item.name }}</span></li>{% empty %}<li>{% include 'programs/ui_icon.html' with name='person' %}<span>Eligibility profile is not configured.</span></li>{% endfor %}</ul>
+                <div class="program-detail-actions">
+                    {% if program.public_application_status == 'open' %}<a class="btn btn-primary" href="{% url 'programs:verify' program.pk %}">Apply for this program {% include 'programs/ui_icon.html' with name='arrow' %}</a>{% endif %}
+                    {% if program_tracking_enabled %}<a class="btn btn-outline-primary program-tracking-link" href="{% url 'programs:tracking' %}" data-tracking-open>Track a submitted application</a>{% endif %}
+                </div>
+            </section>
+            <section class="program-detail-schedule" aria-labelledby="public-program-schedule">
+                <div class="program-schedule-heading">
+                    <h2 id="public-program-schedule">{% include 'public/icon.html' with name='calendar' %} Schedule &amp; capacity</h2>
+                    <p><abbr title="Philippine Standard Time (UTC+8)">UTC+8</abbr></p>
+                </div>
+                <div class="program-period-grid">
+                    <section class="program-period-card" aria-labelledby="registration-period-heading">
+                        <h3 id="registration-period-heading">Registration period</h3>
+                        {% include 'programs/public_period.html' with period_start=program.registration_opens_at period_end=program.registration_closes_at %}
+                    </section>
+                    <section class="program-period-card program-period-card--duration" aria-labelledby="program-duration-heading">
+                        <h3 id="program-duration-heading">Program duration</h3>
+                        {% include 'programs/public_period.html' with period_start=program.starts_at period_end=program.ends_at %}
+                    </section>
+                </div>
+                <dl class="program-capacity-list">
+                    <div class="program-capacity-row"><dt>Planned beneficiary slots</dt><dd class="program-slot-count">{{ program.capacity_label }}</dd></div>
+                    {% if program.amount != None %}<div class="program-capacity-row"><dt>Amount per beneficiary</dt><dd>PHP {{ program.amount|floatformat:2 }}</dd></div>{% endif %}
+                    {% if program.resubmission_closes_at %}<div class="program-capacity-row"><dt>Correction deadline</dt><dd><time datetime="{{ program.resubmission_closes_at|date:'c' }}">{{ program.resubmission_closes_at|date:'M j, Y, g:i A' }}</time></dd></div>{% endif %}
+                </dl>
+            </section>
+            <section class="program-detail-help" aria-labelledby="program-help-heading">
+                <span class="program-help-icon">{% include 'public/icon.html' with name='help' %}</span>
+                <h2 id="program-help-heading">Need assistance?</h2>
+                <p>If you have questions about eligibility or need help with your application, contact the Association Help Desk.</p>
+                <a href="{% url 'core:contact' %}">Contact Help Desk {% include 'public/icon.html' with name='arrow' %}</a>
+            </section>
+        </aside>
+    </div>
+</article>
+{% endblock %}

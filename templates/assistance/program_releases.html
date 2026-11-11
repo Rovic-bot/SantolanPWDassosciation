@@ -1,0 +1,48 @@
+{% extends 'admin_portal/base.html' %}{% load static workspace_navigation %}
+{% block title %}Assistance releases &middot; {{ program.name }}{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/assistance-releases.css' %}?v=20261111-compact-receipt">{% endblock %}
+{% block content %}
+<div class="container content-section assistance-releases" data-release-table data-program-id="{{ program.pk }}">
+  <a class="workspace-back" href="{% url 'assistance:release_programs' %}?selected={{ program.pk }}#release-program-overview">&larr; All assistance programs</a>
+  {% include 'partials/workspace_messages.html' %}
+  <header class="receipt-page-heading">
+    <div><p class="eyebrow">ASSISTANCE RELEASES</p><h1>{{ program.name }}</h1><p class="receipt-page-help">Record receipt after delivery. Program details and today's date are filled automatically.</p></div>
+    <span class="receipt-capacity">{{ program.capacity_label }} beneficiary slots</span>
+  </header>
+  {% operational_ewaf_access as can_use_ewaf %}
+  {% if program.ewaf_applicable and can_use_ewaf %}
+    <div class="receipt-ranking-link">{% if run %}<a href="{% url 'ewaf:operational_run' program.pk run.pk %}?from=releases">View ranking and selection &rarr;</a>{% else %}<a href="{% url 'ewaf:operational_workspace' program.pk %}">Open EWAF &rarr;</a>{% endif %}</div>
+  {% endif %}
+  <div class="receipt-table-wrap" role="region" aria-label="Applicant receipts" tabindex="0">
+    <table class="receipt-table">
+      <caption class="visually-hidden">Applicants and confirmed assistance receipts for {{ program.name }}</caption>
+      <thead><tr><th scope="col">Member</th>{% if can_use_ewaf and program.ewaf_applicable %}<th scope="col" class="receipt-rank">Rank</th><th scope="col" class="receipt-score">Score / 100</th>{% endif %}<th scope="col">Decision</th><th scope="col">Assistance received</th><th scope="col" class="receipt-action">Action</th></tr></thead>
+      <tbody>
+        {% for item in page_obj %}
+        <tr id="receipt-{{ item.pk }}">
+          <th scope="row" class="receipt-member"><span>{{ item.member.full_name }}</span><small>{{ item.short_reference }}</small></th>
+          {% if can_use_ewaf and program.ewaf_applicable %}<td class="receipt-rank">{{ item.ewaf_rank|default_if_none:'—' }}</td><td class="receipt-score">{{ item.ewaf_score|floatformat:2|default:'—' }}</td>{% endif %}
+          <td id="receipt-decision-{{ item.pk }}"><span class="receipt-decision{% if item.release_approved %} is-selected{% endif %}">{% if item.release_selection_stale and not item.receipt %}Selection needs review{% elif program.ewaf_applicable %}{{ item.ewaf_decision.get_outcome_display|default:'Awaiting decision' }}{% else %}{{ item.assistance_case.get_decision_display|default:'Awaiting decision' }}{% endif %}</span></td>
+          <td class="receipt-delivery">
+            {% if item.receipt %}<span class="receipt-recorded">Received</span><time datetime="{{ item.receipt.released_on|date:'Y-m-d' }}">{{ item.receipt.released_on|date:'M j, Y' }}</time>{% else %}<span class="receipt-muted">Not recorded</span>{% endif %}
+            {% for release in item.assistance_releases.all %}<div class="receipt-history-item">{% if release.voided_at %}<span class="receipt-muted">Voided &middot; {{ release.released_on|date:'M j, Y' }}</span>{% endif %}{% include 'assistance/receipt_details.html' %}</div>{% endfor %}
+            {% if item.receipt_email %}<div class="mt-2 small" aria-label="Beneficiary receipt email"><p role="status">{{ item.receipt_email.label }}</p>{% if item.receipt_email.recipient %}<p>{{ item.receipt_email.recipient }}</p>{% endif %}{% if item.receipt_email.can_retry %}{% if item.receipt_email.uncertain %}<p>Check the sender mailbox first; retrying could send a duplicate.</p>{% endif %}<form method="post" class="receipt-action-form" action="{% url 'assistance:receipt_email_retry' item.pk item.receipt.pk %}">{% csrf_token %}<input type="hidden" name="confirm" value="1"><button type="submit" class="receipt-button">Retry email</button></form>{% endif %}</div>{% endif %}
+          </td>
+          <td class="receipt-action">
+            {% if item.receipt %}<span class="receipt-recorded">Recorded</span>
+            {% elif perms.assistance.record_release %}
+              {% if item.release_approved and item.release_published %}
+                <a href="{% url 'assistance:release' item.pk %}" class="receipt-button" data-receipt-navigation aria-label="Record actual receipt for {{ item.member.full_name }}">Record actual receipt</a>
+              {% elif item.release_selection_stale %}<button type="button" class="receipt-button" disabled aria-describedby="receipt-selection-{{ item.pk }}">Record actual receipt</button><small class="d-block receipt-muted receipt-publication-note" id="receipt-selection-{{ item.pk }}">The ranking changed after selection.{% if can_use_ewaf %} <a href="{% url 'ewaf:operational_workspace' program.pk %}?review={{ item.pk }}">Review latest selection</a>{% else %} Ask an authorized staff member to review the latest selection.{% endif %}</small>
+              {% elif item.release_approved %}<button type="button" class="receipt-button" disabled aria-describedby="receipt-publication-{{ item.pk }}">Record actual receipt</button><small class="d-block receipt-muted receipt-publication-note" id="receipt-publication-{{ item.pk }}">Publish this selected member in Announcements first.</small>
+              {% else %}<button type="button" class="receipt-button" disabled aria-describedby="receipt-decision-{{ item.pk }}" title="Select this applicant for assistance first.">Record actual receipt</button>{% endif %}
+            {% else %}<span class="receipt-muted">View only</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}<tr><td colspan="6" class="receipt-empty">No applicants for this program.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'partials/page_links.html' %}
+</div>
+{% endblock %}

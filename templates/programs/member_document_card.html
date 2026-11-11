@@ -1,0 +1,14 @@
+<article data-member-document="{{ document.pk }}" tabindex="-1"><h3>{{ document.label }}</h3>
+{% with verification=document.verifications.first %}<p><span class="quiet-badge">{{ document.review_status }}</span>{% if verification.expires_on %}<small> Valid through {{ verification.expires_on|date:'M j, Y' }}</small>{% endif %}</p>{% endwith %}
+<div class="d-flex flex-wrap align-items-center gap-3">
+<a href="{% url 'members:document' application.member_id document.pk %}?preview=1" target="_blank" rel="noopener">Preview</a>
+<a href="{% url 'members:document' application.member_id document.pk %}">Download</a>
+{% if can_review_documents %}<form method="post" action="{% url 'programs:application_detail' application.program_id application.pk %}" data-document-review-form>
+{% csrf_token %}<input type="hidden" name="action" value="document_review"><input type="hidden" name="document_id" value="{{ document.pk }}">
+{% for field in document.review_form %}{{ field }}{% endfor %}
+<button type="submit" id="review-document-{{ document.pk }}" class="btn btn-sm {% if document.review_status == 'Verified' %}btn-outline-success{% else %}btn-outline-primary{% endif %}" {% if document.review_status == 'Verified' %}disabled{% endif %}>{{ document.review_button_label }}</button>
+<p class="small text-danger mb-0" role="alert" data-review-error hidden></p>
+</form>{% endif %}
+</div>
+{% if document.review_form.errors %}<div class="small text-danger mt-2" role="alert">{{ document.review_form.non_field_errors }}{% for field in document.review_form %}{{ field.errors }}{% endfor %}</div>{% endif %}
+</article>

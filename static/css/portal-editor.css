@@ -1,0 +1,23 @@
+.portal-editor { padding: 1.5rem 2rem 2rem; }
+.portal-editor-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1rem 0 .5rem; }
+.portal-editor-mode, .portal-editor-actions { display: flex; gap: .5rem; }
+.portal-editor-mode button { padding: .55rem .9rem; border: 1px solid var(--line); border-radius: .6rem; background: transparent; color: var(--muted); }
+.portal-editor-mode button[aria-pressed=true] { background: var(--stone); color: var(--ink); }
+.portal-editor-actions { margin-left: auto; }
+.portal-editor-actions .btn { padding: .55rem 1rem; border-radius: .65rem; font-size: .85rem; }
+.portal-editor [data-editor-status] { color: var(--muted); font-size: .8rem; }
+.portal-editor-save-note { color: var(--muted); font-size: .75rem; margin: .25rem 0 1rem; }
+.portal-editor-frame-wrap { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 1rem; overflow: hidden; }
+.portal-editor iframe { display: block; width: 100%; height: max(620px, calc(100dvh - 185px)); border: 0; background: #fff; }
+.portal-editor-loading { position: absolute; inset: 0; display: grid; place-items: center; background: var(--surface); color: var(--muted); z-index: 2; }
+.portal-editor [hidden] { display: none !important; }
+.portal-editor-error { margin: .5rem 0 1rem; padding: .85rem 1rem; border: 1px solid var(--danger); border-radius: .7rem; color: var(--danger); }
+.portal-picture-dialog { width: min(520px, calc(100vw - 2rem)); max-height: 85dvh; overflow-y: auto; margin: auto; padding: 1.5rem; border: 1px solid var(--line); border-radius: 1rem; color: var(--ink); background: var(--surface); }
+.portal-picture-dialog::backdrop { background: rgb(0 0 0 / .6); }
+.portal-picture-dialog header, .portal-picture-dialog footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.portal-picture-dialog h2 { font-size: 1.2rem; margin: 0; }
+.portal-picture-dialog header button { border: 0; background: transparent; color: var(--ink); font-size: 1.5rem; }
+.portal-picture-dialog label { display: grid; gap: .4rem; margin-top: 1rem; }
+.portal-picture-dialog footer { margin-top: 1rem; flex-wrap: wrap; }
+.portal-picture-dialog .small { color: var(--muted); margin: .4rem 0; }
+@media (max-width: 700px) { .portal-editor { padding: 1rem; } .portal-editor-heading { align-items: flex-start; flex-direction: column; } .portal-editor-actions { width: 100%; } .portal-editor-actions .btn { flex: 1; } }

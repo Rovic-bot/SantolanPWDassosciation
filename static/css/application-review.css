@@ -1,0 +1,105 @@
+/* Applicant review layout; submitted evidence and decision services are unchanged. */
+.admin-workspace .applicant-review-page { max-width: 1700px; padding: 28px clamp(16px,2.2vw,36px) 52px; }
+.applicant-review-page .ui-icon { width: 18px; height: 18px; flex: 0 0 auto; }
+.applicant-review-page .review-breadcrumbs { flex-wrap: wrap; font-size: .75rem; gap: 8px; margin-bottom: 16px; }
+.applicant-review-page .review-page-title { margin-bottom: 22px; gap: 16px; }
+.applicant-review-page .review-page-title h1 { font-size: 1.5rem; margin: 0; }
+.applicant-review-page .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; font-size: .8125rem; }
+.applicant-review-page .applicant-review-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 24px; margin-bottom: 14px; }
+.applicant-review-summary .member-identity { min-width: 0; flex: 1 1 550px; }
+.applicant-review-summary .member-identity-text { min-width: 0; }
+.applicant-review-summary .member-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.applicant-review-summary .member-title h2 { font-size: clamp(1.4rem,2vw,1.9rem); margin: 0; overflow-wrap: anywhere; }
+.applicant-review-summary .profile-avatar { width: 72px; height: 72px; border-radius: 12px; object-fit: cover; }
+.applicant-review-summary .member-identifiers { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.applicant-review-summary .member-identifiers > span { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; max-width: 100%; background: var(--dashboard-bg); border: 1px solid var(--line); border-radius: 9px; padding: 6px 12px; color: var(--muted); font-family: ui-monospace,monospace; font-size: .75rem; overflow-wrap: anywhere; }
+.applicant-review-summary .member-identifiers strong { overflow-wrap: anywhere; }
+.applicant-review-summary .member-program { font-size: .8125rem; margin: 10px 0 0; }
+.applicant-review-summary .copy-status:empty { display: none; }
+.review-verification { --review-accent: var(--orange); display: flex; align-items: center; gap: 12px; flex: 0 1 340px; padding: 15px; border: 1px solid color-mix(in srgb,var(--review-accent) 35%,var(--line)); border-radius: 14px; background: color-mix(in srgb,var(--review-accent) 7%,var(--dashboard-bg)); }
+.review-verification[data-status=eligible] { --review-accent: var(--green); }
+.review-verification[data-status=ineligible] { --review-accent: var(--danger); }
+.review-verification > .ui-icon { width: 36px; height: 36px; padding: 7px; border-radius: 10px; background: color-mix(in srgb,var(--review-accent) 14%,transparent); color: var(--review-accent); }
+.review-verification strong { font-size: .8125rem; }
+.review-verification p { color: var(--review-accent); font-size: .75rem; line-height: 1.5; margin: 3px 0 0; }
+.applicant-review-page .member-section-nav { display: flex; flex-wrap: wrap; gap: 8px 28px; padding: 0; border-bottom: 1px solid var(--line); margin: 0 0 22px; }
+.applicant-review-page .member-section-nav a { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 10px 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted); font-size: .8125rem; font-weight: 600; text-decoration: none; }
+.applicant-review-page .member-section-nav a[aria-current=location] { color: var(--teal); border-bottom-color: var(--teal); background: transparent; }
+.applicant-review-layout { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(360px,1fr); align-items: start; gap: 22px; }
+.applicant-review-submission { display: grid; min-width: 0; gap: 20px; }
+.applicant-review-page .workflow-section { margin: 0; padding: 22px; min-width: 0; scroll-margin-top: 100px; }
+.applicant-review-page .section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.applicant-review-layout .section-heading { padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+.applicant-review-layout .section-heading h2,.applicant-review-page .review-submitted-header h2 { display: flex; align-items: center; gap: 10px; font-size: .9375rem; line-height: 1.5; margin: 0; }
+.applicant-review-layout h2 .ui-icon { color: var(--teal); }
+.review-information .section-heading h2 { flex: 1 1 300px; }
+.review-information-label { color: var(--teal); border: 1px solid var(--line); border-radius: 5px; padding: 5px 9px; font-size: .625rem; font-family: ui-monospace,monospace; white-space: nowrap; }
+.review-information-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin: 0; }
+.review-information-grid > div { background: var(--dashboard-bg); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
+.review-information-grid dt { color: var(--muted); font-size: .6875rem; font-weight: 600; letter-spacing: .035em; text-transform: uppercase; margin: 0 0 7px; }
+.review-information-grid dd { margin: 0; color: var(--ink); font-size: .875rem; font-weight: 600; overflow-wrap: anywhere; }
+.review-information-grid .review-email { color: var(--teal); font-size: .75rem; font-family: ui-monospace,monospace; }
+.review-declaration-note { display: flex; align-items: flex-start; gap: 10px; padding: 14px; margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--dashboard-bg); color: var(--muted); font-size: .75rem; line-height: 1.6; }
+.review-declaration-note > .ui-icon { color: var(--orange); margin-top: 2px; }
+.review-declaration-note p { margin: 0; }
+.review-declaration-note p + p { margin-top: 5px; }
+.review-change-details { margin-top: 16px; font-size: .8125rem; overflow-wrap: anywhere; }
+.review-information > .btn { margin-top: 14px; }
+.review-submitted-header { border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 16px; }
+.review-submitted-header p { margin: 8px 0 0; font-size: .6875rem; color: var(--muted); font-family: ui-monospace,monospace; overflow-wrap: anywhere; }
+.review-submitted .review-documents-heading,.review-submitted .review-answers h3 { font-size: .8125rem; margin: 18px 0 12px; }
+.review-submitted > p { color: var(--muted); font-size: .8125rem; margin-top: 12px; }
+.review-attachments { display: grid; gap: 12px; }
+.review-attachment { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--dashboard-bg); }
+.review-file-icon,.review-photo-preview { width: 52px; height: 56px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 10px; background: var(--stone); color: var(--teal); overflow: hidden; }
+.review-file-icon .ui-icon { width: 26px; height: 26px; }
+.review-photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.review-attachment-details { min-width: 0; flex: 1 1 180px; overflow-wrap: anywhere; }
+.applicant-review-page .review-attachment h3,.applicant-review-page .review-attachment h4 { margin: 0; font-size: .875rem; line-height: 1.6; }
+.review-attachment-details p { font-size: .75rem; color: var(--muted); margin: 4px 0 0; }
+.review-required { display: inline-block; vertical-align: middle; margin-left: 6px; padding: 2px 6px; border: 1px solid color-mix(in srgb,var(--orange) 35%,var(--line)); border-radius: 4px; color: var(--orange); font-size: .625rem; text-transform: uppercase; font-weight: 600; }
+.review-attachment-details .review-missing { color: var(--orange); }
+.review-attachment-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.review-attachment-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; font-size: .75rem; font-weight: 600; color: var(--teal); text-decoration: none; }
+.review-attachment-actions a:hover { background: var(--teal-wash); border-color: var(--teal); }
+.review-answers .information-pairs { margin: 0; }
+.review-answers .information-pairs > div { padding: 12px 0; font-size: .8125rem; overflow-wrap: anywhere; }
+.applicant-review-page .applicant-decision { position: sticky; top: 100px; }
+.applicant-decision form > p,.applicant-decision > p { font-size: .875rem; line-height: 1.7; }
+.applicant-decision .quiet-badge { font-size: .6875rem; }
+.review-remarks { margin: 20px 0 24px; }
+.review-remarks label { color: var(--muted); font-size: .8125rem; font-weight: 600; margin-bottom: 8px; }
+.admin-workspace.applicant-review-workspace .applicant-review-page .review-remarks textarea { min-height: 120px; resize: vertical; width: 100%; background: var(--dashboard-bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px; color: var(--ink); font-size: .8125rem; }
+.review-decision-actions { padding: 0; margin: 0; border: 0; min-width: 0; }
+.review-decision-actions legend { float: none; font-size: .6875rem; color: var(--muted); text-transform: uppercase; letter-spacing: .035em; font-weight: 600; margin-bottom: 10px; }
+.review-decision-actions .workspace-actions { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; }
+.applicant-review-workspace .applicant-review-page .review-decision-actions .btn { padding: 10px 8px; border-radius: 12px; font-size: .75rem; line-height: 1.4; }
+.review-decision-actions [value=review] .ui-icon { color: var(--orange); }
+.review-decision-actions [value=ineligible] .ui-icon { color: var(--danger); }
+.review-email-recipient, .review-email-status { overflow-wrap: anywhere; }
+.review-email-recipient, .review-email-status p { font-size: .82rem; color: var(--muted); }
+.review-email-status { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.review-email-status h3 { font-size: .9rem; }
+.review-email-status form { margin-top: 12px; }
+.applicant-review-page :is(a,button,textarea):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 1199px) {
+  .applicant-review-layout { grid-template-columns: minmax(0,1fr); }
+  .applicant-review-page .applicant-decision { position: static; }
+  .review-verification { flex-grow: 1; }
+}
+@media (max-width: 575px) {
+  .applicant-review-page .workflow-section,.applicant-review-page .applicant-review-summary { padding: 16px; }
+  .review-information-grid { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .applicant-review-page .member-section-nav { gap: 0 16px; }
+  .applicant-review-page .member-section-nav a { font-size: .75rem; }
+  .review-decision-actions .workspace-actions { grid-template-columns: minmax(0,1fr); }
+  .review-attachment-actions { width: 100%; }
+  .review-attachment-actions a { flex: 1; }
+  .applicant-review-summary .member-identity { flex-wrap: wrap; }
+  .applicant-review-summary .member-identifiers > span { width: 100%; }
+}
+@media print {
+  .applicant-review-page .applicant-decision { position: static; }
+  .applicant-review-layout { display: block; }
+  .review-decision-actions,.review-remarks,.review-attachment-actions,.applicant-review-page .copy-icon { display: none; }
+}

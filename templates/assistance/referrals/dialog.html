@@ -1,0 +1,16 @@
+<dialog class="public-event-dialog concern-dialog" data-concern-dialog aria-labelledby="concern-dialog-title"
+        data-verify-url="{% url 'assistance:referral_verify' %}" data-apply-url="{% url 'assistance:referral_apply' %}"
+        data-receipt-url="{% url 'assistance:referral_receipt' %}" data-finish-url="{% url 'assistance:referral_finish' %}"
+        data-conversation-verify-url="{% url 'assistance:referral_conversation_verify' %}" data-conversation-url="{% url 'assistance:referral_conversation' %}" data-conversation-start-url="{% url 'assistance:referral_conversation_start' %}"
+        data-resources-url="{% url 'core:resources' %}">
+  <header class="event-dialog-heading">
+    <h2 id="concern-dialog-title">Community Assistance Desk</h2>
+    <form method="dialog"><button aria-label="Close concern form">&times;</button></form>
+  </header>
+  <div class="concern-dialog-notice" data-concern-notice hidden>
+    <p role="alert" data-concern-error></p>
+    <button class="btn btn-outline-primary" type="button" data-concern-retry>Try again</button>
+  </div>
+  <div class="event-dialog-body" data-concern-body></div>
+  <p class="visually-hidden" role="status" data-concern-progress></p>
+</dialog>

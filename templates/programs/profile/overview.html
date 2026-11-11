@@ -1,0 +1,7 @@
+<section class="profile-section profile-glass profile-overview" aria-labelledby="program-overview-title">
+  <header><span aria-hidden="true">01</span><div><h2 id="program-overview-title">Program overview</h2><p>Public-facing summary and purpose</p></div></header>
+  <div class="profile-section-body">
+    <div class="profile-overview-columns"><div class="profile-prose"><h3>Description</h3>{{ program.description|linebreaks }}</div><div class="profile-prose"><h3>Purpose and benefit</h3>{{ program.benefit|default:'Not recorded.'|linebreaks }}</div></div>
+    {% if program.budget != None or program.amount != None %}<dl class="profile-funding">{% if program.budget != None %}<div><dt>Program budget</dt><dd>PHP {{ program.budget|floatformat:2 }}</dd></div>{% endif %}{% if program.amount != None %}<div><dt>Assistance amount</dt><dd>PHP {{ program.amount|floatformat:2 }}</dd></div>{% endif %}</dl>{% endif %}
+  </div>
+</section>

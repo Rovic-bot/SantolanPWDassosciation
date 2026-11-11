@@ -1,0 +1,26 @@
+{% extends 'admin_portal/base.html' %}{% load static testing_review %}
+{% block title %}Applicant review &middot; Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<nav class="review-breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'core:application_programs' %}">Program Applications &amp; Eligibility</a><span aria-hidden="true">/</span><a href="{% url 'programs:applications' program.pk %}">{{ program.name }}</a><span aria-hidden="true">/</span><span>{{ application.member.full_name }}</span></nav>
+<div class="section-heading review-page-title"><h1>Member Verification &amp; Details</h1><div class="workspace-actions">{% if perms.members.view_member and perms.members.change_member %}<a class="btn btn-outline-primary" href="{% url 'members:edit' application.member_id %}">Edit Profile</a>{% endif %}{% if can_review_eligibility %}<a class="btn btn-primary" href="#eligibility">Review Eligibility</a>{% endif %}</div></div>
+{% include 'partials/workspace_messages.html' %}
+{% if automatic_sources %}<div class="ui-panel mb-4"><h2 class="h5">Automatic EWAF sources</h2><p>Verify program socioeconomic evidence and collect the saved employment, dependents and confirmed receipts.</p><a class="btn btn-outline-primary" href="{% url 'intake:sources' application.pk %}">Review SI and collect EWAF sources</a></div>{% endif %}
+{% include 'programs/applicant_profile.html' %}
+{% include 'programs/applicant_documents.html' %}
+{% include 'programs/review_sections.html' %}
+<section id="eligibility" class="workflow-section ui-panel" data-review-section><div class="section-heading"><h2 class="h4" tabindex="-1" data-review-heading>Eligibility Decision</h2><span class="quiet-badge" role="status">{{ review_result }}</span></div>
+<div class="review-summary review-links">{% for item in eligibility_checks %}<a href="#{{ item.target }}" class="review-check" data-review-target="{{ item.target }}" data-check="{{ item.key }}"><span>{{ item.label|review_label }}</span><strong class="quiet-badge">{{ item.status }}</strong><span class="review-chevron" aria-hidden="true">&rsaquo;</span></a>{% endfor %}</div>
+{% if can_review_eligibility %}<form id="eligibility-decision-form" method="post" action="{% url 'programs:application_detail' program.pk application.pk %}" data-applicant-review-form data-review-target="eligibility">{% csrf_token %}<input type="hidden" name="action" value="eligibility">{% for error in eligibility_form.non_field_errors %}<p class="text-danger" role="alert">{{ error|review_error }}</p>{% endfor %}
+{% for field in eligibility_form.hidden_fields %}{% if field.name != 'eligibility' %}{{ field }}{% endif %}{{ field.errors }}{% endfor %}
+<div class="my-3">{{ eligibility_form.notes.label_tag }}{{ eligibility_form.notes }}{{ eligibility_form.notes.errors }}</div>
+<p class="small text-danger" role="alert" data-review-error hidden></p><div class="workspace-actions"><button class="btn btn-primary" name="eligibility" value="eligible">Mark Eligible</button><button class="btn btn-outline-secondary" name="eligibility" value="ineligible">Mark Ineligible</button><button class="btn btn-outline-primary" name="eligibility" value="review">Needs Information</button></div></form>{% else %}<p>Review permission is required to change this decision.</p>{% endif %}
+</section>
+<div class="workspace-actions">{% if perms.assistance.view_assistancecase %}<a href="{% url 'assistance:detail' application.pk %}">Beneficiary decisions and assistance</a>{% endif %}</div>
+<details class="workflow-section" id="application-history"><summary>Application History and record actions</summary><p class="mt-3">Submitted {{ application.submitted_at|date:'M j, Y, g:i A' }} &middot; {{ application.get_status_display }}</p><div class="information-grid mt-3">
+<section><h2>Eligibility history</h2>{% for row in eligibility_history %}<p>{{ row.occurred_at }} &middot; {{ row.notes }}</p>{% empty %}<p>No reviews recorded.</p>{% endfor %}
+{% if can_return_review %}<form method="post">{% csrf_token %}<input type="hidden" name="action" value="return_review">{{ return_form.as_p }}<button class="btn btn-outline-primary">Return for review</button></form>{% endif %}</section>
+{% if can_view_photo %}<section><h2>Identity review history</h2>{% for row in photo_reviews %}<p>{{ row.get_outcome_display }} &middot; {{ row.reviewed_at }}<br>{{ row.reason }}</p>{% empty %}<p>No reviews recorded.</p>{% endfor %}</section>{% endif %}
+{% if input_reviews %}<section><h2>Scoring evidence</h2>{% for item in input_reviews %}<p>{{ item.label|review_label }} <span class="quiet-badge">{{ item.assessment.get_state_display|default:'Needs review' }}</span> <a href="{% url 'ewaf:evidence_review' application.pk item.code %}">Review</a></p>{% endfor %}</section>{% endif %}
+{% if perms.programs.change_programapplication %}<section><h2>Close application</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-outline-secondary">Update application</button></form></section>{% endif %}
+</div>{% include 'programs/history.html' %}</details>
+</div><script src="{% static 'js/admin-review.js' %}?v=20261021-checklist1" defer></script>{% endblock %}

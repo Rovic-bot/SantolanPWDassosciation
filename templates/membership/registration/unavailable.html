@@ -1,0 +1,3 @@
+{% extends resident_support_layout|default:'public/base.html' %}{% block title %}Registration unavailable · Santolan PWD{% endblock %}
+{% block resident_class %}section-membership resident-message{% endblock %}
+{% block content %}<section class="container content-section"><h1>This registration action is unavailable</h1><p>No registration has been accepted by this request. Please use the existing onsite Help Desk process.</p><a href="{% url 'core:membership' %}">Membership requirements and onsite guidance</a></section>{% endblock %}

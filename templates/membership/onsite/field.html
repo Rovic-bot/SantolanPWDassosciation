@@ -1,0 +1,17 @@
+{% load onsite_registration %}
+<div class="onsite-field{% if field.field.widget.input_type == 'checkbox' or field.field.widget.allow_multiple_selected or field.field.widget.input_type == 'file' or field.field.widget.template_name == 'django/forms/widgets/textarea.html' %} onsite-field-wide{% endif %}" data-profile-field="{{ field.name }}" data-field-label="{{ field.label }}">
+  {% if field.field.widget.allow_multiple_selected %}
+  <fieldset><legend class="form-label">{{ field.label }}{% if field.field.required %} <span class="onsite-required">(required)</span>{% endif %}</legend>{{ field|onsite_widget }}</fieldset>
+  {% elif field.field.widget.input_type == 'checkbox' %}
+  <label class="onsite-check" for="{{ field.id_for_label }}">{{ field|onsite_widget }}<span>{{ field.label }}{% if field.field.required %} <span class="onsite-required">(required)</span>{% endif %}</span></label>
+  {% else %}
+  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="onsite-required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span>{% endif %}</label>
+  {{ field|onsite_widget }}
+  {% endif %}
+  {% if field.help_text and field.help_text != 'Upload does not replace required onsite presentation.' %}<p class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+  {{ field.errors }}
+  {% if field.name == 'birthdate' %}<p class="form-text">Age: <output for="{{ field.id_for_label }}" data-registration-age>Calculated from date of birth</output></p>{% endif %}
+  {% if field.field.widget.input_type == 'file' %}
+  <div class="onsite-upload-state" data-upload-state><span data-file-status role="status">No file selected</span><button type="button" class="onsite-text-button" data-clear-upload hidden>Remove file<span class="visually-hidden">: {{ field.label }}</span></button></div>
+  {% endif %}
+</div>

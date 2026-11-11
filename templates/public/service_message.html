@@ -1,0 +1,10 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}{{ heading }} · Santolan PWD Association{% endblock %}
+{% block resident_class %}section-help resident-message{% endblock %}
+{% block content %}
+<div class="container content-section"><section class="resident-message-card">
+  <p class="eyebrow">Service information</p><h1>{{ heading }}</h1><p>{{ description }}</p>
+  <a class="btn btn-primary" href="{% url 'core:home' %}">Return to the public homepage</a>
+  <a class="text-link" href="{% url 'core:resources' %}">Resources &amp; Help {% include 'public/icon.html' with name='arrow' %}</a>
+</section></div>
+{% endblock %}

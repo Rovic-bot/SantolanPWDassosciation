@@ -1,0 +1,27 @@
+/* The ID specificity prevents page CSS from changing the shared navigation.
+   The class alternative also protects pages retained by the development template cache. */
+:is(#public-header, .public-site > .site-header) { position: sticky; top: 0; z-index: var(--z-nav); margin: 0; background: var(--paper); color: var(--ink); border: 0; border-bottom: 1px solid var(--line); border-radius: 0; transition: box-shadow var(--duration); }
+:is(#public-header, .public-site > .site-header) .navbar { width: 100%; max-width: 1320px; min-height: 96px; margin-inline: auto; padding: 1rem clamp(1.25rem, 4vw, 3rem); }
+:is(#public-header, .public-site > .site-header) .brand { color: var(--ink); }
+:is(#public-header, .public-site > .site-header) .navbar-nav { gap: .15rem; }
+:is(#public-header, .public-site > .site-header) .nav-link { display: flex; align-items: center; gap: .75rem; min-height: 44px; color: var(--muted); font-size: .82rem; font-weight: 500; padding-inline: .65rem!important; transition: color var(--duration-fast); }
+:is(#public-header, .public-site > .site-header) .navbar-nav .nav-link.active { color: var(--ink); text-decoration: underline; text-decoration-color: var(--teal); text-underline-offset: .5em; text-decoration-thickness: 2px; }
+:is(#public-header, .public-site > .site-header) .nav-link:hover { color: var(--ink); }
+:is(#public-header, .public-site > .site-header) .nav-link.nav-membership { border: 1px solid #788b87; border-radius: var(--radius-sm); padding-inline: .9rem!important; margin-inline: .5rem; background: transparent; color: var(--ink); }
+:is(#public-header, .public-site > .site-header) .nav-membership > span { display: inline; }
+:is(#public-header, .public-site > .site-header) .navbar-toggler { display: flex; align-items: center; gap: .65rem; min-height: 46px; border: 1px solid #879590; border-radius: var(--radius-sm); color: inherit; font-size: .85rem; }
+:is(#public-header, .public-site > .site-header) .menu-lines { display: block; width: 16px; height: 8px; border-block: 1px solid currentColor; }
+:is(#public-header, .public-site > .site-header).is-scrolled { box-shadow: 0 4px 24px #0b171f12; }
+/* Preserve Bootstrap's desktop toggle visibility despite the scoped display rule. */
+@media (min-width: 1200px) {
+  :is(#public-header, .public-site > .site-header) .navbar-toggler { display: none; }
+}
+@media (max-width: 1199px) {
+  :is(#public-header, .public-site > .site-header) .navbar { min-height: 78px; padding-block: .65rem; }
+  :is(#public-header, .public-site > .site-header) .navbar-collapse { padding-block: 1rem; max-height: calc(100svh - 7rem); max-height: calc(100dvh - 7rem); overflow-y: auto; overscroll-behavior-y: contain; }
+  :is(#public-header, .public-site > .site-header) .nav-link { padding-inline: .5rem!important; font-size: 1rem; }
+  :is(#public-header, .public-site > .site-header) .nav-link.nav-membership { margin-inline: 0; margin-block: .4rem; justify-content: space-between; }
+}
+@media (max-width: 399px) {
+  :is(#public-header, .public-site > .site-header) .navbar-toggler { padding: .5rem; }
+}

@@ -1,0 +1,9 @@
+# Selection with fixed EWAF scoring
+
+The local server log showed `KeyError: 'tie_procedure'` when the administrator clicked **Select for assistance**. The service assumed every configuration contained a narrative tie procedure. The immutable fixed-scoring definition instead specifies `tie_rule: hold_boundary`; no separate discretionary procedure is defined. The exception occurred while constructing the decision's audit payload, before persistence. Read-only inspection found no saved decisions from the failed attempts.
+
+`record_decision` now records the configured tie rule and copies optional tie-procedure text only when present, otherwise retaining an empty string. Existing narrative procedures are preserved. The existing permission, eligibility, current-ranking, held-tie, slot-limit, prior-release, revision, and audited-persistence checks remain in place. No scoring definitions, weights, ranking snapshots, database schema, or historical records were changed. Re-ranking is not required for this correction.
+
+Validation used the current local program's three existing eligible applicants. SQL writes were blocked, and the persistence boundary was replaced temporarily with an inspection that stopped execution before any insert. Each applicant reached that boundary with the expected selection outcome, unchanged score/configuration references, approved capacity, reason, and fixed tie rule. The saved ranking also passed its replay validation. Counts stayed unchanged: 0 decisions, 16 program-log entries, 2 saved runs, and 0 assistance releases for this program.
+
+Django system checks and `git diff --check` passed. No automated test suite, synthetic records, actual selection, publication, or email delivery was performed. Database persistence remains for the administrator's next real selection through the application.

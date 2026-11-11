@@ -1,0 +1,47 @@
+{% extends 'admin_portal/base.html' %}{% load static l10n %}
+{% block title %}EWAF Configuration Vault{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}">{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-vault.css' %}?v=20261106-slider-fill">{% endblock %}
+{% block content %}<div class="configuration-vault"><h1>EWAF Configuration Vault</h1>
+{% include 'ewaf/tabs.html' %}{% include 'partials/workspace_messages.html' %}
+{% if can_configure or can_authorize %}<section id="configuration" class="mb-4" aria-label="Adjust criterion weights">
+{% if ses_setup %}
+<p>No matching SES weight proposal has been saved. Choose four starting percentages totaling 100%; there are no supplied defaults. Select <strong>Adjust with volume sliders</strong> to edit them before saving anything.</p>
+{% if can_configure %}<form method="post" id="ses-weight-setup">{% csrf_token %}{{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+<div class="row">{% for field in form.weight_fields %}<div class="col-sm-6 mb-3">{{ field.label_tag }}<div class="input-group">{{ field }}<span class="input-group-text">%</span></div>{{ field.errors }}</div>{% endfor %}</div>
+<p>{{ form.reason.label_tag }}{{ form.reason }}{{ form.reason.errors }}<span class="form-text">{{ form.reason.help_text }}</span></p><button name="action" value="ADJUST_WEIGHTS" class="btn btn-primary">Adjust with volume sliders</button></form>{% endif %}
+{% elif form.weight_method and weight_state %}
+<form method="post" id="ewaf-configuration-form" data-one-click="true" data-vault-layout="cards">{% csrf_token %}{{ form.non_field_errors }}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% if direct_weights %}<p class="alert alert-info">The approved version retains its exact percentages. This editor calculates Saaty-compatible weights for a new version; existing programs keep their assigned version.</p>{% endif %}
+{% include 'ewaf/vault_weight_editor.html' %}
+<noscript><p class="alert alert-info">Enable JavaScript to adjust the sliders and review their calculated weights.</p></noscript>
+</form>{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261111-processing" defer></script>
+{% elif form.weight_fields %}
+<form method="post" id="ewaf-configuration-form">{% csrf_token %}{{ form.non_field_errors }}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+<p class="alert alert-info">This submission uses the earlier exact-percentage editor. Reload the Vault to use the Saaty sliders.</p>
+<div class="weight-editor vault-weight-controls mb-3">
+{% for field in form.weight_fields %}<div class="weight-row">
+<div class="weight-row-heading">{{ field.label_tag }}<div class="input-group vault-weight-number">{{ field }}<span class="input-group-text">%</span></div></div>
+<input type="range" id="{{ field.auto_id }}-slider" class="weight-range" data-vault-slider="{{ field.name }}" min="{{ field.field.min_value|unlocalize }}" max="{{ field.field.max_value|unlocalize }}" step="0.01" value="{{ field.value|default_if_none:''|unlocalize }}" aria-label="{{ field.label }} percentage slider" aria-describedby="{{ field.auto_id }}_helptext vault-total" disabled>
+{{ field.errors }}<p class="form-text mb-0" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>
+</div>{% endfor %}
+<noscript><p class="form-text">Use the percentage boxes to adjust weights when JavaScript is unavailable.</p></noscript>
+</div>
+<p><strong>Number of Household Members (HM): <output id="vault-hm" aria-live="polite">{{ form.remainder }}</output>%</strong></p>
+<p id="vault-total" role="status">Total must equal 100%. Reduce another weight if HM would be negative.</p>
+<p>{{ form.reason.label_tag }}{{ form.reason }}{{ form.reason.errors }}</p>
+<p class="small">The exact approved percentages are used in calculations. New versions apply to new program configurations; existing programs keep their assigned version.</p>
+{% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration>Approve configuration</button>{% else %}<p>Configuration approval requires an authorized administrator.</p>{% endif %}
+</form><script src="{% static 'js/ewaf-vault-percentages.js' %}?v=20261026-sliders" defer></script>
+{% else %}{{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field.errors }}{% endfor %}<p class="alert alert-info" role="status">Reload the Configuration Vault to use the updated weight editor. If this message remains, restart the local system. Your approved weights and saved rankings are retained.</p>{% endif %}</section>{% endif %}
+<section class="vault-card vault-active" aria-labelledby="active-vault-heading">
+  <header class="vault-card-heading"><div class="vault-active-heading"><h2 id="active-vault-heading">{% if active %}Active Vault (Version {{ active.revision }}){% else %}Active Vault{% endif %}</h2>{% if active %}<span class="vault-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/></svg> Active &amp; locked</span>{% endif %}</div>{% if active %}<p class="vault-approval-meta">Approved by <strong>{{ active.actor_label }}</strong> &middot; {{ active.recorded_at|date:'M j, Y, g:i A' }}</p>{% endif %}</header>
+  {% if active %}<div class="vault-active-weights">{% for row in weight_rows %}<article class="vault-active-weight"><div><h3>{{ row.display_name }}</h3><strong>{{ row.value }}%</strong></div><p>Source: {{ row.source_label }}</p></article>{% endfor %}</div>
+  {% if fixed_scoring %}<p class="vault-help">Scoring rules are built into the system and remain available after a database reset. Approve the weights here; eligible applicants are ranked using their member records and recorded assistance history.</p>{% elif scoring_pending %}<p class="vault-help">{% if not scoring_policy %}Scoring is pending approved calculation rules.{% else %}Scoring requires approved program rules and accepted inputs.{% endif %}</p>{% endif %}
+  {% else %}<p class="vault-help">No approved configuration is active. Choose your weights and approve the configuration before program publication.</p>{% endif %}
+  <div class="vault-active-footer"><span>{% if active %}Vault version #{{ active.revision }}{% else %}No active version{% endif %}{% if latest and latest.pk != active.pk %} &middot; Latest saved version: {{ latest.revision }} &middot; {{ latest.get_status_display }}{% endif %}</span>{% include 'ewaf/vault_history.html' %}</div>
+</section>
+<details class="vault-sources"><summary>Criterion data sources</summary><p>EWAF reuses registration information and supporting documents; previous assistance comes from recorded releases.</p><div class="table-responsive"><table class="table"><thead><tr><th scope="col">Criterion</th><th scope="col">Source</th></tr></thead><tbody>{% for row in source_rows %}<tr><th scope="row">{{ row.name }}</th><td>{% if is_composite and row.code == "SES" %}Accepted household income and reviewed household 4Ps information.{% else %}{{ row.source }}{% endif %}</td></tr>{% endfor %}</tbody></table></div></details>
+</div>{% endblock %}

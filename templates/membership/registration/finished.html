@@ -1,0 +1,14 @@
+{% extends 'public/resident_base.html' %}{% load static %}
+{% block title %}{% if reference %}Registration submitted{% else %}Membership registration{% endif %} · Santolan PWD{% endblock %}
+{% block public_class %}registration-page registration-receipt-page{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/registration.css' %}"><link rel="stylesheet" href="{% static 'css/registration-receipt.css' %}?v=20261026-reference-qr">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script>{% endblock %}
+{% block resident_class %}section-membership{% endblock %}
+{% block content %}<div class="container content-section registration-content registration-receipt">
+{% if reference %}
+  {% include 'membership/registration/receipt_breadcrumb.html' %}
+  {% include 'membership/registration/confirmation.html' %}
+  <div class="receipt-card receipt-guidance receipt-finished-steps">{% include 'membership/registration/receipt_steps.html' %}</div>
+{% else %}<section class="receipt-card receipt-guidance"><h1>Membership registration</h1><p>No submitted registration reference is available in this session. If you already registered, bring your saved reference number, PWD ID Card and required documents to the Barangay Santolan PWD Association Help Desk to verify your information.</p></section>{% endif %}
+<a class="btn receipt-view receipt-guidance-link" href="{% url 'core:membership' %}">Membership requirements and guidance</a>
+</div>{% endblock %}

@@ -1,0 +1,3 @@
+{% for route, label in public_navigation %}
+<a href="{% url route %}"{% if public_active_route == route %} aria-current="page"{% endif %}>{% if route == 'core:membership' %}Membership{% elif route == 'core:resources' %}Resources{% else %}{{ label }}{% endif %}</a>
+{% endfor %}

@@ -1,0 +1,1 @@
+<a class="{% if subject_link %}referral-subject{% else %}btn btn-outline-primary referral-view-ticket{% endif %}" href="{% url 'assistance:referral_detail' ticket.pk %}">{% if subject_link %}{{ ticket.subject|default:'Earlier request without a subject' }}{% else %}View ticket{% endif %}</a>

@@ -1,0 +1,57 @@
+/* Event-builder sections in a compact announcement dialog, using portal tokens. */
+.admin-workspace .announcement-composer-dialog {
+    width: min(900px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 40px);
+    margin: auto; padding: 0; overflow: auto; overscroll-behavior: contain;
+    border: 1px solid var(--control-edge); border-radius: 26px;
+    background: var(--canvas); color: var(--ink); box-shadow: 0 24px 90px #0005;
+}
+.announcement-composer-dialog::backdrop { background: #0009; backdrop-filter: blur(5px); }
+html:has(.announcement-composer-dialog[open]) { overflow: hidden; }
+.admin-workspace .announcement-composer { padding: clamp(18px, 4vw, 32px); color: var(--ink); }
+.announcement-composer-page { max-width: 960px; }
+.announcement-composer :is(p,h1,h2) { margin: 0; }
+.announcement-composer .composer-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.announcement-composer .composer-heading h1 { font-size: clamp(1.55rem, 4vw, 2rem); font-weight: 750; line-height: 1.2; margin: 7px 0 9px; color: var(--ink); }
+.announcement-composer .composer-eyebrow { font-size: .68rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.announcement-composer .composer-heading p { color: var(--muted); }
+.announcement-composer .composer-close { display: grid; place-items: center; flex: 0 0 40px; height: 40px; border: 1px solid var(--control-edge); border-radius: 50%; color: var(--ink); background: var(--surface); text-decoration: none; font-size: 1.5rem; }
+.announcement-composer .composer-section { margin-bottom: 16px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); }
+.announcement-composer .composer-section > header { display: flex; gap: 14px; align-items: baseline; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+.announcement-composer .composer-section > header > span { font-size: .72rem; font-weight: 750; color: var(--muted); }
+.announcement-composer .composer-section h2 { color: var(--ink); font-size: 1rem; font-weight: 750; margin-bottom: 5px; }
+.announcement-composer .composer-section header p, .announcement-composer .builder-help { color: var(--muted); font-size: .82rem; line-height: 1.6; }
+.announcement-composer .composer-fields { display: grid; gap: 18px; padding: 20px 22px; }
+.announcement-composer .builder-field { min-width: 0; }
+.announcement-composer .builder-field > label { display: block; margin-bottom: 8px; font-size: .88rem; font-weight: 700; }
+.announcement-composer .builder-optional { margin-left: 4px; font-size: .75rem; font-weight: 400; color: var(--muted); }
+.announcement-composer .builder-help { margin-top: 7px; }
+.announcement-composer :is(input:not([type=checkbox]),textarea) { width: 100%; max-width: 100%; min-height: 46px; padding: 12px 14px; border: 1px solid var(--control-edge); border-radius: 12px; background: var(--canvas); color: var(--ink); font-size: .95rem; }
+.announcement-composer textarea { resize: vertical; }
+.announcement-composer input[type=file] { padding: 10px; }
+.announcement-composer input::file-selector-button { padding: 8px 12px; margin-right: 10px; border: 1px solid var(--control-edge); border-radius: 8px; color: var(--ink); background: var(--stone); }
+.announcement-composer :is(input,textarea)::placeholder { color: var(--muted); opacity: 1; }
+.announcement-composer .composer-image-preview { display: flex; gap: 16px; align-items: center; overflow-wrap: anywhere; }
+.announcement-composer .composer-image-preview[hidden], .announcement-composer [hidden] { display: none; }
+.announcement-composer .composer-image-preview img { width: 100px; max-height: 130px; object-fit: contain; border-radius: 10px; background: var(--stone); }
+.announcement-composer .composer-image-preview p { margin-bottom: 8px; color: var(--muted); font-size: .85rem; }
+.announcement-composer .composer-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 10px 0 0; }
+.announcement-composer .composer-actions p { max-width: 32ch; color: var(--muted); font-size: .82rem; line-height: 1.6; }
+.announcement-composer .composer-actions > div { display: flex; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+.announcement-composer .btn { min-height: 44px; border-radius: 12px; padding: 11px 18px; font-size: .85rem; }
+.announcement-composer .composer-feedback { color: var(--muted); font-size: .9rem; margin-top: 14px; }
+.announcement-composer .composer-feedback:empty { display: none; }
+.announcement-composer :is(.composer-errors,.composer-warning) { background: var(--surface); border: 1px solid var(--control-edge); border-left: 4px solid var(--danger); padding: 16px; margin: 0 0 18px; border-radius: 12px; color: var(--ink); }
+.announcement-composer .composer-errors h2 { font-size: 1rem; font-weight: 700; }
+.announcement-composer .composer-errors ul { margin: 10px 0 0; }
+.announcement-composer .errorlist { color: var(--danger); margin: 8px 0 0; font-size: .85rem; }
+.announcement-composer :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 575px) {
+    .admin-workspace .announcement-composer-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); border-radius: 18px; }
+    .announcement-composer .composer-actions { align-items: stretch; flex-direction: column; gap: 14px; }
+    .announcement-composer .composer-actions p { max-width: none; }
+    .announcement-composer .composer-actions > div > * { flex: 1; }
+    .announcement-composer .composer-fields, .announcement-composer .composer-section > header { padding: 16px; }
+}
+@media (forced-colors: active) {
+    .admin-workspace .announcement-composer-dialog, .announcement-composer .composer-section { border-color: CanvasText; }
+}

@@ -1,0 +1,72 @@
+Optional program pictures and shared gradient header — 2026-11-06
+
+Authorized behavior
+- Create/Edit Program accepts an optional JPG or PNG picture, using the existing
+  image limits (currently 5 MB / 16 million pixels), format verification and
+  metadata-free PNG re-encoding. Multipart and enhanced builder saves both work.
+- Existing pictures are retained when no replacement is submitted. Admins can
+  replace a picture or remove it to use title initials. Simultaneous replacement
+  and removal is rejected. File-only changes are included in dirty detection.
+- Both popup and full-page details use the same header markup: artwork on the
+  right fading into the theme background on the left and bottom. Without a
+  picture, the first two title words supply initials (Rice Distribution -> RD).
+  Narrow layouts retain the title, actions and program facts. The artwork is
+  decorative; the real program heading supplies the accessible name.
+
+Storage and workflow boundaries
+- New programs.ProgramPicture stores only presentation artwork with its own
+  optimistic edit version. Approved program terms, program version, eligibility,
+  scoring and selection remain unchanged by a picture-only published-program edit.
+- Image delivery requires dashboard and programs.view_program access. Images use
+  an authenticated named route with no-store, nosniff and sandbox headers. No
+  unrestricted media URL or new public image endpoint is introduced.
+- Changes are audited as picture_updated, including old/new private file names.
+  Prior files are retained privately for history. Newly written files are removed
+  when the encompassing save or audit fails; requirements/program writes roll back.
+- Migration programs/0007_program_picture.py creates one table; no existing
+  programs, policies or application records are rewritten.
+
+Validation
+- 26 focused Django tests passed in separate disposable MySQL:
+    programs.test_pictures
+    programs.test_creation_builder
+    programs.test_detail_workspace
+  Runner: scripts/g12_test_runner.py, with
+    scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  Log: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-cn89bcv_/django.log
+- Coverage includes optional initials, actual multipart builder upload, protected
+  PNG delivery, permissions, retained/replaced/removed pictures, unchanged approved
+  terms, invalid/oversized/conflicting uploads, stale edits, audit/file rollback
+  and a rehearsal of the additive migration preserving existing program rows.
+- Node checks confirmed file-only edits are detected and empty file inputs remain
+  clean; program-builder.js passed syntax validation. Django system check and
+  git diff --check passed. Migration dry-run found no unrecorded model changes
+  (the inactive default DB history probe warned; retained runtime uses its own DB).
+- Native browser inspection of the local Programa testing page confirmed the
+  right-side PT initials, fading gradient, readable actions and responsive layout.
+  Edit Program exposed the optional picture field and removal control. An actual
+  uploaded image was verified through synthetic tests, not a live-record upload.
+  Popup uses the same profile fragment; no separate popup screenshot was taken.
+
+Local activation
+- Applied only the tested new-table operation to the identity-checked retained
+  model-synchronized database, without replaying or faking historical migrations.
+- A full 9,338,701-byte native SQL backup was created first at
+  .local/program-picture-20261106/before-program-picture.sql.
+- Before/after fingerprints matched all 121 existing tables. The only new table
+  was programs_programpicture, empty on activation. Evidence and backup hash are
+  in .local/program-picture-20261106/preservation.json.
+- Collected assets and restarted only the local web process at port 8013. No real
+  picture upload, publication, eligibility, selection, release or email was sent.
+
+Follow-up: full-width picture coverage
+- The owner requested the image behind the entire header, including the text on
+  the left. Artwork now fills the complete banner using object-fit: cover, with
+  a continuous translucent gradient from left to right and along the bottom.
+  This replaces the earlier 62%-wide picture panel. Initials remain on the right.
+- Both full-page and popup stylesheet versions were refreshed. Django database
+  system check and git diff --check passed. Collected assets and refreshed the
+  identity-checked web process while preserving its existing MySQL connection.
+- Native browser inspection of the owner's uploaded image confirmed full-width
+  coverage behind the left-side title and metadata with no vertical panel edge.
+  This CSS-only follow-up required no new tests or database changes.

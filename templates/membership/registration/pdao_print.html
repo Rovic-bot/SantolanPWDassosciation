@@ -1,0 +1,21 @@
+{% load static pdao_print %}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block pdao_title %}Printable PDAO application · Santolan PWD{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'css/pdao-print.css' %}?v=20261109-public">
+<script src="{% static 'js/pdao-print.js' %}?v=20261108-preview" defer></script>{% block pdao_extra_head %}{% endblock %}</head>
+<body class="{% block pdao_body_class %}pdao-public-form{% endblock %}">
+{% block pdao_header %}{% endblock %}
+<div class="registration-controls">{% block pdao_heading %}<h1>Pasig City PDAO — PWD ID application</h1>{% endblock %}
+{% block pdao_controls %}<p role="status">Your PDAO form is ready to print. No application was sent to PDAO and no reference number was issued.</p><button type="button" class="btn btn-primary" data-registration-print>Print or save PDAO form</button><a class="btn btn-outline-primary" href="{% url 'membership:pdao_prepare' %}">Prepare another form</a><a class="btn btn-outline-primary" href="{% url 'core:membership' %}">Finish and return to guidance</a><p class="mt-3">Save or print before leaving. Close this tab after use on a shared device.</p>{% endblock %}
+{% block pdao_instructions %}<p>Print on A4 paper at 100% scale with browser headers and footers turned off. Sign the printed form and attach the 1×1 photo.</p>
+<p>Prepared from the supplied Pasig PDAO Version 4.0 form. Confirm its requirements and contact details with PDAO before submission. This is not a PWD ID or proof of approval.</p>
+{% endblock %}
+</div>
+<div class="pdao-receipt-reference">{% block pdao_reference %}{% endblock %}</div>
+{% block pdao_preview_heading %}{% endblock %}
+<main id="submitted-form" class="pdao-preview" tabindex="0" aria-label="Printable application. Scroll horizontally on small screens.">
+{% pdao_source_form submitted %}
+</main>
+{% block pdao_footer %}{% endblock %}
+</body></html>

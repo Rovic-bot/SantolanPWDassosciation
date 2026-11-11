@@ -1,0 +1,47 @@
+One-click actual receipts and assistance table — 6 November 2026
+
+Authorized change
+- Replace the receipt entry form with a single Record actual receipt button in
+  the Assistance releases table. Remove Review application / Record decision
+  from its Action column and simplify table typography.
+
+Behavior
+- Selected applicants with no active receipt and the existing release permission
+  have an inline POST button. Awaiting-selection rows have a disabled receipt
+  button; recorded rows display Recorded. No selection is created by this action.
+- The receipt service derives assistance type, benefit, configured cash amount,
+  and program name from the current program. A blank benefit falls back to
+  Assistance for [program name]. Zero amounts remain zero; absent amounts remain
+  unset. Estimated value and external receipt reference remain unset.
+- The button confirms actual receipt today, using the application's current
+  version and the program's current version. A fixed remark identifies the
+  program and its prior selection; the approval snapshot records this entry path.
+- Both versions are checked, including the program version again under the
+  existing release lock. The existing permission, active membership, eligibility,
+  human selection, date, unique receipt, source scope and audit checks remain.
+- Actual receipt still changes the application to COMPLETED and contributes to
+  previous assistance. A prior selection alone does not contribute. Existing
+  reasoned voids and history remain available inside Receipt details.
+- GET/HEAD on the old receipt form URL redirect to the program table without
+  writing. Invalid/missing versions return a concise error on the table. Success
+  returns to the affected row. There is no receipt entry page or extra modal.
+- Smaller regular-weight references, distinct member names, numeric alignment,
+  compact status badges, consistent row spacing and a single action simplify
+  the table. Horizontal scrolling remains available on narrow screens.
+
+Validation
+- 63 focused tests passed on fresh disposable MySQL:
+  assistance.test_receipt_button, assistance.tests, ewaf.test_delivery,
+  ewaf.test_assistance_writers.
+- New cases cover program-derived fields, forged extra fields ignored, today's
+  date, zero amounts, blank benefit, GET/HEAD safety, CSRF, permissions, missing
+  and stale versions, unselected/inactive applicants, concurrent duplicate clicks,
+  program changes between default lookup and locking, audit rollback, complete
+  source invalidation/rollback, and preservation of EWAF decisions and scores.
+- Django database check and git diff --check passed. No model/schema change.
+- Collected assets and restarted only the local web process; MySQL remained up.
+- Native browser at 127.0.0.1:8013 shows one enabled receipt button for the selected
+  applicant and disabled buttons for the two awaiting selection. The Action column
+  has no Review application link. Typography/spacing checked at desktop width.
+- No actual applicant receipt was recorded for validation. All POST/concurrency
+  checks used synthetic data in the disposable test database.

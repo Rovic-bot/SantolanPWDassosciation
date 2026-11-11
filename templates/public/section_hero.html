@@ -1,0 +1,13 @@
+{% load static portal_content %}
+<header class="section-hero section-photo-banner" aria-labelledby="section-title">
+  {% include 'public/section_banner_art.html' %}
+  <div class="container section-hero-grid">
+    <div class="section-intro">
+      <nav class="portal-breadcrumb" aria-label="Breadcrumb"><a href="{% url 'core:home' %}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ tab }}</span></nav>
+      <p class="section-overline">{% portal_text "hero_eyebrow" %}{{ eyebrow }}{% endportal_text %}</p>
+      <h1 id="section-title">{% portal_text "hero_title" %}{{ title }}{% endportal_text %}</h1>
+      <p class="section-lead">{% portal_text "hero_intro" %}{{ intro }}{% endportal_text %}</p>
+      {% if jump %}<nav class="section-jumps" aria-label="On this page"><a href="#{{ jump }}">{{ label }} <span aria-hidden="true">↓</span></a>{% if second_jump %}<a href="#{{ second_jump }}">{{ second_label }} <span aria-hidden="true">↓</span></a>{% endif %}</nav>{% endif %}
+    </div>
+  </div>
+</header>

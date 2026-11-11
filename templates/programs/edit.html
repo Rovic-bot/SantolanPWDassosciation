@@ -1,0 +1,24 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} program &middot; Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'programs:manage_list' %}">Back to Program Management</a>
+<h1>{% if editing %}Edit{% else %}Create{% endif %} program</h1>
+{% if program_application_workflow_enabled and not editing %}<p>Save the program as a private draft first. Complete program approvals and EWAF configuration from the program review page before publishing.</p>{% endif %}
+{% if program.status == 'published' or program.status == 'cancelled' %}<p class="alert alert-warning">Published changes take effect immediately. Existing applications retain their original requirements and authorized terms.</p>{% endif %}
+<form method="post">{% csrf_token %}{{ form.non_field_errors }}
+{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+{% for title, fields in form.sections %}<fieldset class="workflow-section ui-panel"><legend class="h5">{{ title }}</legend>{% if title == 'Registration and Program Schedule' %}<p class="form-text">Dates and times use Philippine time.</p>{% endif %}<div class="workflow-form">
+{% for field in fields %}<div{% if field.name == 'description' or field.name == 'eligible_disability_types' or field.name == 'selection_method' %} class="form-wide"{% endif %}>
+{% if field.name == 'eligible_disability_types' %}<fieldset><legend class="form-label">Applicable disability types (required)</legend>{{ field }}</fieldset>{% if form.legacy_disability_types %}<p class="form-text">Earlier qualifications retained: {% for item in form.legacy_disability_types %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %}. No automatic reclassification.</p>{% endif %}
+{% else %}{{ field.label_tag }}{% if field.field.required %}<span aria-hidden="true"> *</span>{% endif %}{{ field }}{% endif %}{{ field.errors }}
+{% if field.help_text %}<p class="form-text">{{ field.help_text }}</p>{% endif %}</div>{% endfor %}</div></fieldset>{% endfor %}
+{% if perms.programs.configure_program %}<section id="requirements" class="workflow-section ui-panel"><h2 class="h5">Additional documents or questions <small class="text-secondary">(optional)</small></h2>
+{% for item in requirements %}<p>{{ item.label }} &middot; {{ item.is_required|yesno:'Required,Optional' }} <a href="{% url 'programs:requirement_edit' program.pk item.pk %}">Edit requirement</a></p>{% endfor %}
+{{ additions.management_form }}{{ additions.non_form_errors }}
+<div id="requirement-rows" class="information-grid">{% for entry in additions %}<section><h3 class="h5">New requirement</h3>{{ entry.as_p }}</section>{% endfor %}</div>
+<template id="requirement-template"><section><h3 class="h5">New requirement</h3>{{ additions.empty_form.as_p }}</section></template>
+<button type="button" class="btn btn-outline-primary mt-3" id="add-requirement">Add requirement</button>
+</section>{% endif %}
+{% if form.notes %}<div class="workflow-section">{{ form.notes.label_tag }}{{ form.notes }}{{ form.notes.errors }}</div>{% endif %}
+<button class="btn btn-primary mt-4" type="submit">{% if editing %}Save changes{% elif program_application_workflow_enabled %}Save program draft{% else %}Create program{% endif %}</button>
+</form></div><script src="{% static 'js/program-requirements.js' %}" defer></script>{% endblock %}

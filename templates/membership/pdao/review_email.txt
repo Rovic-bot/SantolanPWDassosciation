@@ -1,0 +1,17 @@
+{% autoescape off %}Hello {{ applicant_name }},
+
+{% if ready %}Your online PDAO application has been reviewed and marked ready for the next step.
+
+Please visit the Barangay Santolan PWD Association office / Help Desk so staff can verify your information in person. Bring your application reference, signed PDAO form and the required supporting documents. Staff will arrange forwarding to PDAO after onsite verification.
+{% else %}We need your help to check some information in your online PDAO application.
+
+{{ reason }}
+
+Some details may be incorrect or the PWD number provided may not be found in PRPWD. Please complete the PDAO application form again with the correct information, or visit the Barangay Santolan PWD Association office / Help Desk for assistance. Bring your existing reference so staff can identify your earlier submission.
+{% endif %}
+Application reference: {{ reference }}
+
+This is an Association review update, not PDAO approval or issuance of a PWD ID. PDAO makes the final decision.
+
+Barangay Santolan PWD Association
+{% endautoescape %}

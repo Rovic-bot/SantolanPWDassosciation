@@ -1,0 +1,46 @@
+# Dataset EWAF integration — implementation and validation
+
+This is an implementation report, not an approved operating policy. No working/production migration, genuine policy approval, program publication, schedule change, feature activation, commit, push or deployment was performed.
+
+The complete review-only decision presentation is in `DECISIONS.md`; `draft-review-package.json` contains the proposed content and the observed existing locked weight candidate. Neither artifact is an imported database record. The previous DOCX extraction, shared draft, synthetic preview and historical engines remain intact.
+
+## Implemented path
+
+- `ewaf/revised/contracts.py`: all three decision groups, all 15 unresolved-decision identifiers, every individual choice, explicit unspecified states, source-only weight compatibility, exact retained decimal vector and origin, and document-definition snapshots. No example weights are substituted. The existing Vault integrity replay still verifies its original stored provenance; it does not create a replacement approval or claim independently elicited AHP validation.
+- `ewaf/revised/live_models.py`: append-only `SharedDatasetPolicy` draft/approval chain and `DatasetInputReview` accepted/needs-review/disputed chain. Approval retains the exact reviewed draft, actor, time, reason, content digest, original weight record and audit reference. Supported ORM edits/deletes/bulk writes are rejected. This is not protection from a privileged SQL administrator, consistent with existing artifact guards.
+- `ewaf/revised/live_services.py`: permission-checked Save Draft, Review/Approve, and explicit program binding under the existing terms lock. Stale tokens and authority changes roll back. Incomplete or unapproved policies cannot bind or publish. The binding retains the exact method, approved policy, weight record, original program terms and explicit cutoff. It cannot convert previously published or historical fixed-range programs or programs with applications.
+- `ewaf/revised/live_evidence.py`: existing eligibility and current-information controls plus actual verified-document ownership, version, byte-digest, expiry and age checks. Review findings, supporting evidence, accepted values and results remain separate. HI derives from accepted monthly findings; SI from accepted domain findings; ES uses only the disclosed categories; HM requires a positive accepted household count. PA comes from the non-voided release ledger within the bound scope/period/cutoff and requires verified coverage evidence. Unknown history is not zero. No raw membership field becomes a verified numerical score.
+- `ewaf/revised/live_math.py`: shared Min–Max bounds derived from the complete frozen accepted pool; exact rational normalization, weighted sum, competition ranks and capacity-boundary ties; exact half-even display; retained input/bound/weight traces. Replays use bound terms and recorded inputs, not current program dates/capacity or the latest shared policy. Supported constant-column behavior is an explicitly selectable stop rule; no constant-column value is silently adopted.
+- `ewaf/revised/live_forms.py`, `live_views.py`, and six `templates/ewaf/revised/policy*` / input templates: private review screens with the full SI rubric, exact vector/provenance, every rule, individual blockers, explicit A/B/C confirmations, binding and evidence handoff. New policy routes return unavailable while the schema/workflow is disabled. HTTP rendering and access controls are tested; visual browser QA was not performed.
+
+## Narrow dispatch and reused safeguards
+
+`OperationalConfiguration` gains nullable `dataset_policy` and `assessment_cutoff`. Its historical payload omits both when no dataset binding exists, preserving historical hashes. New method dispatch is limited to configurations carrying the approved policy FK.
+
+`ewaf/operational_services.py` delegates dataset inventory/capture/replay/order/tie and evidence freshness to the new path. It continues using the same `OperationalRun`, `OperationalDecision`, audit persistence, capacity, stale-source checks, selection, release and public-result services. An internal rank creates no selection. Public output remains the existing allowlisted masked identity/reference projection; no scores, ranks, inputs or private documents are added.
+
+`ewaf/operational_policy.py`, `household_criteria.py`, `vault_services.py`, `operational_views.py`, and `programs/application_workflow.py` contain method-specific dispatch/readiness changes. New policy readiness does not inspect applicant bounds before opening. Official generation requires closing, cutoff, operational enablement, complete resolved eligibility and current accepted evidence. Shared draft changes do not retarget programs. Existing historical policy validators/calculation functions remain in use for legacy records.
+
+The Admin templates add explicit review/binding/evidence links, separate policy readiness from calculation readiness, and display the new method's exact half-even score text. The old result rendering remains the fallback for historical rows.
+
+## Additive migration proposal
+
+`ewaf/migrations/0012_dataset_policy_integration.py` adds two nullable configuration fields, two history tables and their constraints. It has no `RunPython`, backfill, fixture, approval creation, weight change or method conversion. Dependencies retain `ewaf.0011`, the existing Admin audit table, program terms schema and user model. Applying it to the working database remains outside this task.
+
+`scripts/dataset_policy_test_runner.py` permits only this migration's exact SHA-256 on a newly initialized isolated MySQL server. `scripts/dataset_policy_schema_tests.py` rehearses reverse/forward on synthetic model-synchronized history and proves existing legacy configuration payloads, calculation results and audit records remain unchanged. No other historical migration is executed by this rehearsal.
+
+## Validation record
+
+The full 194-test regression suite passed (164.719 seconds). The final 25-test integration rerun passed (38.337 seconds); these counts overlap. Django reported no system-check issues, and `makemigrations --check --dry-run` reported no changes. Syntax/whitespace and `git diff --check` passed. Commands and isolated artifact locations are recorded in `test-results.json`. The launcher disables `.env`, creates a fresh loopback MySQL instance with separate grants/datadir/server identity, verifies `test_g12_disposable` and InnoDB, and uses temporary synthetic uploads. The working database is not a test target.
+
+Coverage includes draft/approval immutability, exact nondefault precision and retained origin, later shared revisions not rebinding programs, incomplete/unapproved policy failures, pre-opening readiness without a pool, accepted-evidence requirements, DOCX synthetic scores, explicitly adopted test-only constant/tie rules, capacity/selection/release/publication controls, evidence changes, audit failure rollback, concurrent stale drafts, authority revocation, direct-request/CSRF denial, private UI rendering, and legacy calculation/publication regressions.
+
+Initial failures were test fixture issues: missing synthetic approved-term bindings, a wrong UI route name, and a test that incorrectly forbade the existing Vault integrity replay. They were corrected without loosening application controls. Later policy labels explicitly disclose the ES mapping and formulas; the focused integration suite verifies that final UI text.
+
+## Remaining blockers and Admin action
+
+Policy blockers: all operational choices still require adoption. The full SI rubric and its definitions/assessor authority are unapproved. Income composition, household edge cases, evidence acceptance/alternatives/freshness, PA history coverage and release units, unlisted employment treatment, constant-column handling, tie procedure, correction handling, institutional scope and effective dates remain unresolved or proposed as enumerated in `DECISIONS.md`. Existing stored weights are not authorization for those rules.
+
+Installation/activation blockers: the additive migration has not been applied to the running system; both new settings default to false (`EWAF_DATASET_POLICY_ENABLED`, `EWAF_DATASET_SCORING_ENABLED`). The source checkout has not been synchronized into or deployed over the separate running development clone. No real approved policy or program binding has been created. If the institution chooses an alternative unsupported by the explicit options, that alternative requires a separately scoped implementation before approval.
+
+There is no remaining code handoff gap for the supported options tested here. Institutional decisions and deployment authorization remain distinct from applicant-data readiness. After separately authorized installation, the authorized Admin completes **Save Draft → Review Policy → explicit A/B/C confirmation → Approve policy version → Bind exact approved policy and cutoff to a new authorized program → existing Publish action**. Applications follow the unchanged approved schedule. Official calculation remains blocked until accepted evidence is complete after closing/cutoff and scoring activation is separately authorized.

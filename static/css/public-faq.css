@@ -1,0 +1,73 @@
+/* A readable question list, using the public portal's shared palette. */
+body.public-portal #main-content .public-faq {
+    display: block;
+    padding: clamp(24px, 4vw, 56px) !important;
+    border: 1px solid var(--line);
+    border-radius: 36px;
+    background: linear-gradient(160deg, var(--surface), var(--paper));
+    color: var(--ink);
+}
+.public-faq-heading { max-width: 760px; margin: 0 auto 32px; text-align: center; }
+.public-faq-heading .eyebrow { display: inline-block; margin: 0 0 12px; }
+body.public-portal #main-content .public-faq-heading h2 {
+    margin: 0 0 12px; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.2; letter-spacing: -.04em;
+}
+.public-faq-heading > p:last-child { margin: 0; color: var(--muted); font-size: .9rem; }
+.public-faq-list { display: grid; gap: 10px; max-width: 880px; margin-inline: auto; }
+.public-faq-item {
+    border: 1px solid transparent; border-radius: 22px;
+    background: color-mix(in srgb, var(--stone) 60%, var(--surface));
+    transition: background-color .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+.public-faq-item[open] {
+    background: var(--surface); border-color: var(--control-edge);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.public-faq-item > summary {
+    display: flex; align-items: center; gap: 14px; min-height: 72px;
+    margin: 0; padding: 14px 18px; border-radius: 22px; list-style: none; cursor: pointer;
+}
+.public-faq-item > summary::-webkit-details-marker { display: none; }
+.public-faq-item > summary::after { display: none; }
+.public-faq-item > summary:focus-visible { outline: 3px solid var(--ink); outline-offset: -4px; }
+body.public-portal #main-content .public-faq-item h3 {
+    flex: 1; margin: 0; min-width: 0; color: var(--ink); font-size: 1rem; font-weight: 600; line-height: 1.5;
+}
+.public-faq-number {
+    display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 28px;
+    border-radius: 9px; background: var(--surface); color: var(--muted); font-size: .7rem; font-weight: 600;
+}
+html body.public-portal #main-content .public-faq .public-faq-icon {
+    display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px;
+    border: 1px solid var(--ink); border-radius: 50%; background: var(--ink); color: var(--surface) !important;
+}
+.public-faq-icon svg { width: 18px; height: 18px; transition: transform .24s ease; }
+html body.public-portal #main-content .public-faq .public-faq-item[open] .public-faq-icon {
+    border-color: var(--line); background: var(--surface); color: var(--muted) !important;
+}
+.public-faq-item[open] .public-faq-icon svg { transform: rotate(45deg); }
+.public-faq-answer { padding: 0 68px 22px 60px; color: var(--muted); font-size: .9rem; line-height: 1.75; }
+.public-faq-answer p, .public-faq-answer ul { margin: 0 0 12px; }
+.public-faq-answer > :last-child { margin-bottom: 0; }
+.public-faq-answer ul { padding-left: 20px; }
+.public-faq-answer li + li { margin-top: 10px; }
+.public-faq-contact { margin: 30px 0 0; text-align: center; color: var(--muted); font-size: .85rem; }
+.public-faq-contact a { display: block; width: fit-content; margin: 6px auto 0; padding: 6px 0; color: var(--ink); font-weight: 600; text-underline-offset: 4px; }
+@media (max-width: 599px) {
+    body.public-portal #main-content .public-faq { padding: 26px 14px !important; border-radius: 26px; }
+    .public-faq-heading { margin-bottom: 24px; }
+    .public-faq-item > summary { gap: 10px; padding: 12px; }
+    .public-faq-number { width: 24px; height: 24px; flex-basis: 24px; }
+    .public-faq-answer { padding: 0 18px 20px; }
+}
+html[data-motion=reduce] .public-faq :is(details, svg) { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .public-faq :is(details, svg) { transition: none !important; } }
+@media (forced-colors: active) {
+    .public-faq-item { border-color: CanvasText; }
+    html body.public-portal #main-content .public-faq .public-faq-icon { background: ButtonFace; color: ButtonText !important; border-color: ButtonText; }
+}
+@media print {
+    .public-faq, .public-faq-item { background: white !important; color: black !important; box-shadow: none; }
+    .public-faq-item { break-inside: avoid; }
+    .public-faq-icon { display: none !important; }
+}

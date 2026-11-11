@@ -1,0 +1,8 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} announcement · Santolan PWD{% endblock %}
+{% block content %}
+<div class="container content-section announcement-composer-page" data-composer-page>
+    {% include 'announcements/composer_form.html' %}
+</div>
+{% include 'announcements/composer_assets.html' %}
+{% endblock %}

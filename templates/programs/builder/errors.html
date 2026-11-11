@@ -1,0 +1,15 @@
+{{ form.non_field_errors }}
+{% if form.errors %}
+<ul>
+  {% for field in form %}{% for error in field.errors %}
+  <li>{% if field.is_hidden or field.name == 'resubmission_closes_at' %}{{ field.label }}: {{ error }}{% else %}<a href="{% if field.field.widget.input_type == 'datetime-local' %}#setup-schedule{% else %}#{{ field.id_for_label }}{% endif %}" data-error-field="{{ field.name }}">{{ field.label }}: {{ error }}</a>{% endif %}</li>
+  {% endfor %}{% endfor %}
+</ul>
+{% endif %}
+{{ additions.non_form_errors }}
+{% for entry in additions %}
+  {{ entry.non_field_errors }}
+  {% for field in entry %}{% for error in field.errors %}
+  <p><a href="#{{ field.id_for_label }}" data-error-field="{{ field.html_name }}">Requirement {{ forloop.parentloop.parentloop.counter }} — {{ field.label }}: {{ error }}</a></p>
+  {% endfor %}{% endfor %}
+{% endfor %}

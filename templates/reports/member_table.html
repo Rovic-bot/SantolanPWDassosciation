@@ -1,0 +1,22 @@
+<section class="member-report-card" aria-label="Member report results">
+  <div class="member-report-table-wrap" role="region" aria-label="Members table" tabindex="0">
+    <table class="member-report-table">
+      <caption class="visually-hidden">Members matching the selected filters</caption>
+      <colgroup><col class="report-control-column"><col class="report-member-column"><col class="report-joined-column"><col class="report-status-column"></colgroup>
+      <thead><tr>{% for name in columns %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for row in member_rows %}
+        <tr><td class="member-report-control">{{ row.control_number }}</td>
+          <th scope="row"><div class="member-report-identity"><span class="member-report-avatar" data-tone="{{ row.tone }}" aria-hidden="true">{{ row.initials }}</span><span>{{ row.name }}</span></div></th>
+          <td class="member-report-joined">{{ row.joined }}</td>
+          <td class="member-report-status"><span data-status="{{ row.status_code }}">{{ row.status }}</span></td></tr>
+      {% empty %}<tr><td colspan="4" class="member-report-empty">No members match these filters.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  <footer class="member-report-footer"><span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <nav aria-label="Members report pages">
+      {% if page_obj.has_previous %}<a href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" rel="prev">Previous</a>{% else %}<span class="report-page-disabled" aria-disabled="true">Previous</span>{% endif %}
+      {% for number in page_numbers %}{% if number == page_obj.paginator.ELLIPSIS %}<span class="report-page-ellipsis">{{ number }}</span>{% elif number == page_obj.number %}<span class="report-current-page" aria-current="page" aria-label="Page {{ number }}">{{ number }}</span>{% else %}<a href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ number }}" aria-label="Page {{ number }}">{{ number }}</a>{% endif %}{% endfor %}
+      {% if page_obj.has_next %}<a href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}" rel="next">Next</a>{% else %}<span class="report-page-disabled" aria-disabled="true">Next</span>{% endif %}
+    </nav>
+  </footer>
+</section>

@@ -1,0 +1,9 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}{{ label }} · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:configuration_detail' program.pk %}">Configuration diagnostics</a>
+<h1>{{ label }}</h1><p>{{ program.name }}</p>
+<p><a href="{% url 'ewaf:policy_review' program.pk %}">Review computation references and pending policies</a> before recording a draft or review. Source examples are not approved defaults.</p>
+<p>This appends a private preparatory record. Previous records remain unchanged. Effective Association authorization and operational scoring are unavailable.</p>
+{% include 'ewaf/evidence_form.html' with submit_label=label %}
+</div>{% endblock %}

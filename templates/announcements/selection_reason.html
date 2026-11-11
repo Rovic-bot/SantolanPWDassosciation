@@ -1,0 +1,6 @@
+{% if results.selection_reason %}
+<section class="mt-4 mb-4" aria-label="Selection reason">
+    <h3 class="h5">Why these members were selected</h3>
+    <div translate="no">{{ results.selection_reason|linebreaks }}</div>
+</section>
+{% endif %}

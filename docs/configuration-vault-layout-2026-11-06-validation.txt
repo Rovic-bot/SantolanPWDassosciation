@@ -1,0 +1,59 @@
+Configuration Vault reference layout - 2026-11-06
+
+Owner request
+Match the supplied Configuration Vault screenshot.
+
+Implemented
+- Criterion Weights card with a two-column slider grid, percentage readouts,
+  feasible range hints, priority controls, total and proposal summary, Reset,
+  and Calculate AHP Weights.
+- Calculated AHP Weights table beside Audit & Approval on wide screens; cards
+  stack on narrower screens. The consistency badge displays the actual preview
+  result and CR, and resets when that preview becomes stale or fails.
+- Required version audit notes and the existing explicit approval action.
+- Active Vault card with actual approved version, actor/date, calculated weights,
+  source summaries and expandable retained configuration history. Detailed source
+  information remains available in a disclosure below the active card.
+- Scoped dark/light-theme styles and compact controls. Table headers, labels,
+  keyboard slider/priority controls, status announcements and errors are retained.
+
+Scope
+Presentation-only changes. No calculation coefficients, cascade feasibility,
+rounding contract, signed preview, approval permission, persistence, locking,
+historical configuration or scoring services changed. No migration is needed.
+The screenshot's example percentages were not installed as configuration data.
+
+Validation
+- 15 focused Django tests passed on a newly provisioned disposable native-MySQL
+  database in 9.456 seconds: VaultTests, CompositeSesFirstSetupTests, and the
+  existing preview authority/stale edits/audit rollback integration test.
+- Existing tests were adjusted for the new approval button label and to verify
+  assigned Vault source through current program-detail context instead of retired
+  program-page wording.
+- 2,500 slider cascade/reorder cases and six exact examples passed.
+- Production-JavaScript DOM/event checks passed for both the shared editor and
+  new Vault cards: first setup, cascade, priority, reset, preview, and approval gates.
+- JavaScript syntax, Django database configuration and git diff --check passed.
+- Native browser inspection confirmed the live four-card controls, actual preview
+  table/consistency, aligned calculation/approval cards on the wide layout, stacked
+  cards at the narrower window size, audit field, active version and history control.
+- No Approve/Save action was clicked on the retained workspace. It remains at the
+  previously approved version 46. Assets were collected; only the web process was
+  restarted, preserving the existing MySQL process and connection.
+
+Historical fixture limitation
+An initially selected broader repeat-ranking test could not reach its target:
+its older synthetic member fixture calls verify(birthdate=...), whereas the
+current registration workflow no longer accepts that argument. This unrelated
+fixture was not changed. It is not included in the 15 passing focused tests.
+
+Final disposable test artifacts:
+C:\Users\rovic\AppData\Local\Temp\santolan-g12-tests-yd_ro3wa
+
+Slider fill follow-up
+Added blue track fill from the left edge to each knob. The fill follows every
+rendered proposal value, including cascading changes, priority changes and reset.
+Chromium uses a gradient; Firefox uses its native range-progress track. Existing
+shared/editor DOM checks, JavaScript syntax and diff checks passed. Collected and
+reloaded the assets; native browser inspection confirmed the fill on all four
+sliders. No configuration approval was submitted.

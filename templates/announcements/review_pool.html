@@ -1,0 +1,23 @@
+<div class="results-pool-columns">
+  <section class="results-pool-card" aria-labelledby="results-applicants-title">
+    <header class="results-pool-card-header"><span class="results-pool-icon">{% include 'ewaf/ui_icon.html' with icon='users' %}</span><div><h3 id="results-applicants-title">Submitted applications</h3><p>All member applications under program review</p></div><span class="results-pool-count">{{ review_pool.applicant_count }} member{{ review_pool.applicant_count|pluralize }}</span></header>
+    <div class="results-pool-table-wrap" tabindex="0" role="region" aria-label="Submitted applications">
+      <table class="results-pool-table" id="results-applicant-table"><caption class="visually-hidden">Members who applied to {{ program.name }}</caption><thead><tr><th scope="col">Applicant</th><th scope="col">Program reference</th><th scope="col">Status</th></tr></thead><tbody>
+      {% for row in review_pool.applicants %}<tr data-results-applicant data-selected="{{ row.selected|yesno:'true,false' }}"><td><strong data-results-name>{{ row.name }}</strong>{% if row.submitted_at %}<small>Applied {{ row.submitted_at|date:'M j, Y' }}</small>{% endif %}</td><td class="results-reference" data-results-reference>{{ row.reference }}</td><td><span class="results-row-status{% if row.selected %} is-selected{% endif %}">{% if row.selected %}{% include 'ewaf/ui_icon.html' with icon='tick' %} Selected{% else %}Unselected{% endif %}</span></td></tr>{% empty %}<tr><td colspan="3">No applications have been submitted.</td></tr>{% endfor %}
+      <tr data-results-empty="applicants" hidden><td colspan="3">No applicants match this search or filter.</td></tr>
+      </tbody></table>
+    </div>
+    <footer class="results-pool-card-footer"><span>{% include 'ewaf/ui_icon.html' with icon='info' %} <span data-results-visible-count role="status" aria-live="polite">Showing {{ review_pool.applicant_count }} application record{{ review_pool.applicant_count|pluralize }}</span></span><small>{{ review_pool.applicant_count }} total</small></footer>
+  </section>
+  <section class="results-pool-card results-pool-selections" aria-labelledby="results-selections-title">
+    <header class="results-pool-card-header"><span class="results-pool-icon">{% include 'ewaf/ui_icon.html' with icon='check' %}</span><div><h3 id="results-selections-title">Recorded selections</h3><p>Members selected for assistance</p></div><span class="results-pool-count">{{ review_pool.selected_count }} selected</span></header>
+    <div class="results-pool-table-wrap" tabindex="0" role="region" aria-label="Recorded selections">
+      <table class="results-pool-table" id="results-selection-table"><caption class="visually-hidden">Selected members for {{ program.name }}</caption><thead><tr><th scope="col">Selected member</th><th scope="col">Program reference</th></tr></thead><tbody>
+      {% for row in review_pool.selected %}<tr data-results-selection><td><strong data-results-name>{{ row.name }}</strong><small>Selected for assistance</small></td><td class="results-reference" data-results-reference>{{ row.reference }}</td></tr>{% empty %}<tr><td colspan="2">No members selected yet.</td></tr>{% endfor %}
+      <tr data-results-empty="selected" hidden><td colspan="2">No selected members match this search.</td></tr>
+      </tbody></table>
+    </div>
+    <div class="results-pool-availability"><span class="results-pool-icon">{% include 'ewaf/ui_icon.html' with icon='users' %}</span><strong>{% if review_pool.over_capacity %}Recorded selections exceed capacity{% elif review_pool.available_slots == None %}Program capacity not set{% elif review_pool.available_slots %}{{ review_pool.available_slots }} remaining slot{{ review_pool.available_slots|pluralize }} available{% else %}All program slots allocated{% endif %}</strong><p>Selections are managed in <a href="{% url 'ewaf:operational_workspace' program.pk %}#results">EWAF &amp; Selection</a>.</p></div>
+    <footer class="results-pool-card-footer"><span>{% include 'ewaf/ui_icon.html' with icon='check' %} {{ review_pool.selected_count }}{% if program.slot_limit != None %} / {{ program.slot_limit }} slots allocated{% else %} selected{% endif %}</span><small>{% if review_pool.over_capacity %}Over capacity{% elif review_pool.available_slots %}Capacity available{% elif review_pool.available_slots == 0 %}Capacity filled{% else %}Capacity not set{% endif %}</small></footer>
+  </section>
+</div>

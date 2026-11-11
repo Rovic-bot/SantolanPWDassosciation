@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Community updates and information from the Barangay Santolan PWD Association.">
+  <title>{% block title %}Santolan PWD Association{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'images/association-logo.png' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=20261103-blue">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261104-tabs">
+  <link rel="stylesheet" href="{% static 'css/branding.css' %}">
+  <link rel="stylesheet" href="{% static 'css/action-feedback.css' %}?v=20261111">
+  <script src="{% static 'js/workspace-page.js' %}?v=20261104"></script>
+  <script src="{% static 'js/csrf-forms.js' %}?v=20261105" data-csrf-cookie="{{ csrf_cookie_name }}" defer></script>
+  <script src="{% static 'js/action-feedback.js' %}?v=20261111" defer></script>
+  {% block extra_head %}{% endblock %}
+  {% block final_styles %}{% endblock %}
+  {% block surface_styles %}{% endblock %}
+  {% block accessibility_styles %}{% endblock %}
+  <noscript><style>.navbar-collapse.collapse,.workspace-navigation.collapse{display:block!important}.navbar-collapse{max-height:none!important}.navbar-toggler,.workspace-menu{display:none!important}.site-header{position:relative!important}.home-page .hero-stage{padding-top:3rem}</style></noscript>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  {% block header %}{% endblock %}
+  <main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
+  {% block footer %}{% endblock %}
+  {% include 'partials/accessibility.html' %}
+  <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}" defer></script>
+  <script src="{% static 'js/accessibility.js' %}?v=20261110-admin-display" defer></script>
+  <script src="{% static 'js/site.js' %}?v=20261104-tabs" defer></script>
+  <script src="{% static 'js/workspace-navigation.js' %}?v=20261110-stable-member-switch" defer></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

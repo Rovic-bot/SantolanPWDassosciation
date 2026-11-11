@@ -1,0 +1,14 @@
+{% extends 'public/resident_base.html' %}
+{% load public_result_tags %}
+{% block title %}Results: {{ result.public_payload.program_name }} · Santolan PWD Association{% endblock %}
+{% block resident_class %}section-results{% endblock %}
+{% block content %}
+<div class="container content-section result-detail-page">
+  <div class="page-location"><a href="{% url 'core:announcements' %}?category=results">← Program Results announcements</a></div>
+  <article class="result-presentation" aria-labelledby="result-page-heading">
+    {% include 'announcements/public_result_header.html' with announcement=result.notice primary_heading=True heading_id='result-page-heading' %}
+    {% public_result_details result.public_payload published_at=result.published_at schedule=result.schedule %}
+  </article>
+  <nav class="result-detail-followup" aria-label="Result information"><a href="{% url 'core:announcements' %}?category=results">← Back to program results</a><a href="{% url 'core:contact' %}">Contact the Help Desk</a></nav>
+</div>
+{% endblock %}

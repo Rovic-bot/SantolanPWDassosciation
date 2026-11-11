@@ -1,0 +1,56 @@
+﻿Onsite required email and PWD number - 2026-11-06
+
+Owner request: require an email address for eligibility decision notifications,
+and require the PWD number on the onsite member registration form.
+
+Implementation:
+- OnsiteRegistrationForm now requires a valid, nonblank email address for the
+  current Association form, including walk-in and staff-encoded printed intake.
+  The shared widgets show the required marker and browser validation; the same
+  form is validated again by the submission service, independently of JavaScript.
+- Existing required PWD number validation remains enforced, including digits and
+  hyphens and preservation of leading zeros. No new ID prerequisite or manual
+  PRPWD approval shortcut was introduced.
+- Email help text explains eligibility decision notifications. Approval already
+  projects the registration email to Member.email. Existing decision delivery
+  uses it when there is no separate program application email. Recipient
+  precedence, provider configuration, after-commit delivery, retry/privacy,
+  and immutable notification history are unchanged.
+- Only the onsite intake form requirement changed. Historical records, the
+  separate public/PDAO forms, and member profile editing were not rewritten.
+  No migration, real registration/decision, or real email sending was performed.
+
+Validation:
+- The 22 onsite alignment and decision-email tests passed on fresh disposable
+  native MySQL. New checks cover omitted/blank/whitespace/invalid email rejection
+  without writes, direct-service validation in both staff channels, required HTML
+  fields, unchanged public field contracts, and approved Member.email persistence.
+  Existing tests verify PWD validation, permissions, registration history, decision
+  email recipient fallback, sending, rollback, duplicates and retries.
+- Initial browser run passed the new required-field and invalid-email checks,
+  then exposed an older assertion expecting six member-editor sections. The
+  current editor already contains a seventh supporting-documents section; the
+  assertion was updated without changing application layout.
+- Django retained-database system check, JavaScript syntax and git diff --check
+  passed. Refreshed only the identity-verified local web process on port 8013;
+  its database process, records, private uploads and sessions were retained.
+
+Commands:
+.venv/Scripts/python.exe -B scripts/g12_test_runner.py test membership.test_onsite_registration_alignment programs.test_decision_email scripts.member_registration_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+.venv/Scripts/python.exe -B scripts/current_development.py check
+
+Initial test artifacts: %TEMP%/santolan-g12-tests-ohnned2e
+
+Browser follow-up:
+The broad historical browser harness reached member editing, then timed out
+waiting for its post-save member-page navigation. This unrelated profile-edit
+path was not changed and is not claimed as passing. Its rerun artifacts are
+%TEMP%/santolan-g12-tests-ghhyufpi. A focused onsite-only browser method was added
+so required-field checks and valid review can run independently of profile editing.
+
+Final focused browser result: passed in 4.062 seconds, including required email
+and PWD attributes, blocked empty email, invalid-email browser validity, and a
+successful review showing the supplied email. No JavaScript errors. Together
+with the 22 passing backend checks this validates the requested change.
+Command: .venv/Scripts/python.exe -B scripts/g12_test_runner.py test scripts.member_registration_browser_qa.MemberRegistrationBrowserTests.test_onsite_required_email_and_pwd --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+Artifacts: %TEMP%/santolan-g12-tests-_1hrj3sz

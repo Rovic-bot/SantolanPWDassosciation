@@ -1,0 +1,93 @@
+/* Skin Django's existing controls; keep its own templates, widgets, and permissions. */
+:root, html[data-theme="light"] {
+  --primary: var(--brand-primary); --secondary: var(--brand-navy); --accent: var(--brand-ice);
+  --primary-fg: #fff; --body-fg: var(--brand-navy); --body-bg: var(--canvas);
+  --body-quiet-color: var(--secondary-text); --body-loud-color: var(--brand-navy);
+  --header-color: var(--brand-ice); --header-branding-color: var(--canvas); --header-bg: var(--brand-navy);
+  --header-link-color: #fff; --breadcrumbs-fg: #c9d9d3; --breadcrumbs-link-fg: #fff; --breadcrumbs-bg: #142747;
+  --link-fg: var(--brand-primary); --link-hover-color: var(--brand-royal); --link-selected-fg: var(--brand-royal);
+  --hairline-color: #d6dcd8; --border-color: #c3ceca;
+  --darkened-bg: #eeeee8; --selected-bg: #e4efff; --selected-row: #e4efff;
+  --button-fg: #fff; --button-bg: var(--brand-primary); --button-hover-bg: var(--brand-royal);
+  --default-button-bg: var(--brand-navy); --default-button-hover-bg: #142747;
+  --close-button-bg: var(--secondary-text); --close-button-hover-bg: #39474d;
+  --delete-button-bg: #a73535; --delete-button-hover-bg: #862c2c;
+  --font-family-primary: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+/* Match Django's automatic theme as well as its explicit theme toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: var(--brand-primary); --secondary: #142747;
+    --body-fg: #edf3f0; --body-bg: var(--brand-navy);
+    --body-quiet-color: #bccbc8; --body-loud-color: #fff;
+    --link-fg: #a6c7ff; --link-hover-color: var(--brand-ice); --link-selected-fg: var(--brand-ice);
+    --hairline-color: #3c525b; --border-color: #52686f;
+    --darkened-bg: #192c39; --selected-bg: #203b70; --selected-row: #203b70;
+    --default-button-bg: var(--brand-primary); --default-button-hover-bg: var(--brand-royal);
+  }
+}
+html[data-theme="dark"] {
+  --primary: var(--brand-primary); --secondary: #142747;
+  --body-fg: #edf3f0; --body-bg: var(--brand-navy);
+  --body-quiet-color: #bccbc8; --body-loud-color: #fff;
+  --link-fg: #a6c7ff; --link-hover-color: var(--brand-ice); --link-selected-fg: var(--brand-ice);
+  --hairline-color: #3c525b; --border-color: #52686f;
+  --darkened-bg: #192c39; --selected-bg: #203b70; --selected-row: #203b70;
+  --default-button-bg: var(--brand-primary); --default-button-hover-bg: var(--brand-royal);
+}
+body { font-family: var(--font-family-primary); font-size: 14px; }
+#header { padding: 22px 32px; gap: 20px; }
+#site-name { font-size: 20px; font-weight: 500; letter-spacing: -.035em; }
+#user-tools { font-size: 12px; line-height: 1.8; }
+#user-tools a,#logout-form button { display: inline-flex; align-items: center; min-height: 44px; }
+.santolan-admin-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 13px; }
+.santolan-admin-links a { display: inline-flex; min-height: 44px; align-items: center; }
+div.breadcrumbs { padding: 14px 32px; line-height: 1.5; }
+#content { padding: 32px; min-width: 0; }
+#content h1 { font-size: 30px; letter-spacing: -.04em; font-weight: 500; color: var(--body-fg); }
+#content h2 { font-weight: 600; }
+.module { border: 1px solid var(--hairline-color); border-radius: 5px; }
+.module h2,.module caption { padding: 14px 16px; font-size: 13px; letter-spacing: .01em; }
+#nav-sidebar { background: var(--body-bg); }
+#nav-sidebar .module { border: 0; border-radius: 0; }
+#nav-sidebar td,#nav-sidebar th { padding-block: 9px; }
+#nav-sidebar a { display: inline-block; min-height: 30px; align-content: center; }
+#nav-filter { padding: 10px; min-height: 44px; box-sizing: border-box; }
+#changelist-filter h2 { padding-block: 16px; }
+#changelist-filter a { display: inline-flex; align-items: center; min-height: 36px; }
+#changelist .actions { padding: 16px; }
+#changelist .actions .button { min-height: 38px; padding: 8px 16px; }
+#toolbar { padding: 16px!important; }
+#toolbar input[type=submit] { min-height: 44px; padding-inline: 18px; }
+#changelist table thead th { padding-block: 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+#changelist table tbody th,#changelist table tbody td { padding: 14px 12px; font-size: 13px; line-height: 1.5; }
+#changelist table tbody tr:hover { background: var(--selected-bg); }
+#changelist .paginator { padding: 18px; }
+.object-tools { margin-top: -48px; }
+.object-tools a { border-radius: 4px; padding: 11px 18px; font-size: 12px; letter-spacing: .02em; }
+input[type=text],input[type=password],input[type=email],input[type=url],input[type=number],input[type=search],textarea,select { border-radius: 4px; padding: 10px 12px; font-size: 14px; min-height: 42px; box-sizing: border-box; max-width: 100%; }
+input::placeholder,textarea::placeholder { color: var(--body-quiet-color); opacity: 1; }
+select[multiple] { min-height: 160px; }
+.form-row { padding: 18px 16px; overflow: visible; }
+.form-row::after { content: ''; display: table; clear: both; }
+.form-row label { font-size: 14px; }
+.form-row .help { font-size: 13px; line-height: 1.6; }
+.submit-row { padding: 18px; border-radius: 5px; }
+input[type=submit],.submit-row a.deletelink,.button { border-radius: 4px; min-height: 44px; box-sizing: border-box; }
+.errornote,.errorlist { line-height: 1.6; }
+:where(a,button,input,select,textarea,[tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media(max-width:1024px) { #header { padding: 16px 20px; } #content { padding: 24px 20px; } .object-tools { margin-top: 0; } }
+@media(max-width:767px) {
+  input[type=text],input[type=password],input[type=email],input[type=url],input[type=number],input[type=search],textarea,select { font-size: 16px; }
+  #header { align-items: flex-start; }
+  div.breadcrumbs { padding: 12px 20px; }
+  #content { padding: 24px 16px; }
+  #content h1 { font-size: 26px; }
+  .form-row { padding: 16px 12px; }
+  .selector { width: 100%; max-width: 100%; }
+  .selector-available,.selector-chosen { width: 100%; max-width: 100%; }
+  .selector select { width: 100%; }
+  .selector .selector-filter input { width: calc(100% - 40px); }
+  #changelist .actions { padding: 12px; }
+}
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition: none!important; animation: none!important; } }

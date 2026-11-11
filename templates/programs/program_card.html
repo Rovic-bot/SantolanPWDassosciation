@@ -1,0 +1,16 @@
+<article class="program-card program-reference-card">
+<div class="program-card-body">
+{% if show_result_status %}<span class="program-status status-{{ program.result_publication.style }}" data-result-status><span aria-hidden="true"></span>{{ program.result_publication.label }}</span>
+{% else %}<span class="program-status status-{{ program.status }}"><span aria-hidden="true"></span>{{ program.get_status_display }}</span>{% endif %}
+<h2>{{ program.name }}</h2>
+{% if show_result_status %}<p class="small text-secondary mb-2">Program: {{ program.get_status_display }}</p><p class="small">{{ program.result_publication.description }}{% if program.result_publication.url %} <a href="{{ program.result_publication.url }}">View public results</a>{% endif %}</p>{% endif %}
+<p class="program-category">{% if program.assistance_type == 'Food & Nutrition' %}{% include 'programs/ui_icon.html' with name='food' %}{% elif program.assistance_type == 'Assistive Devices' %}{% include 'programs/ui_icon.html' with name='mobility' %}{% else %}{% include 'programs/ui_icon.html' with name='health' %}{% endif %}{{ program.assistance_type }}</p>
+<dl class="program-card-dates">
+<div><dt>{% include 'programs/ui_icon.html' with name='calendar' %}Registration</dt><dd>{% if program.registration_opens_at|date:'Y' != program.registration_closes_at|date:'Y' %}{{ program.registration_opens_at|date:'M j, Y' }}{% else %}{{ program.registration_opens_at|date:'M j' }}{% endif %} &ndash; {{ program.registration_closes_at|date:'M j, Y' }}</dd></div>
+<div><dt>{% include 'programs/ui_icon.html' with name='calendar' %}Program Dates</dt><dd>{% if program.starts_at|date:'Y' != program.ends_at|date:'Y' %}{{ program.starts_at|date:'M j, Y'|default:'Not set' }}{% else %}{{ program.starts_at|date:'M j'|default:'Not set' }}{% endif %} &ndash; {{ program.ends_at|date:'M j, Y'|default:'Not set' }}</dd></div>
+</dl>
+{% include 'programs/capacity.html' %}
+{% if show_configuration %}<p class="program-configuration-status">Configuration <strong>{{ program.current_configuration.get_status_display|default:'Required' }}</strong></p>{% endif %}
+</div>
+<footer><span>Created {{ program.created_at|date:'M j, Y' }}</span><a href="{{ card_url }}"{% if show_result_status %} data-results-preview{% endif %}>{{ card_action|default:'View Program' }} {% include 'programs/ui_icon.html' with name='arrow' %}</a></footer>
+</article>

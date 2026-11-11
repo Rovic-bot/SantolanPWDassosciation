@@ -1,0 +1,35 @@
+Actual receipt after an audited schedule correction - 6 November 2026
+
+Owner report: selected applicants in Programa testing were blocked from recording
+actual receipt by "Member or program details changed after assessment".
+
+Read-only diagnosis found program version 4, with two otherwise current eligible
+reviews at program version 3. Current ranking 40 already accepted the audited
+date-only correction through eligibility_schedule_witness. The release writer
+still required exact numeric version equality, contradicting that validated rule.
+
+Correction: after delivery_selection validates the current human EWAF selection,
+the receipt check may reuse the same verified date-only witness. Member versions,
+required evidence, eligibility/checklist checks, permissions, source locks,
+capacity, expiry, dates, duplicate receipt protection and audit rollback remain.
+Other callers retain exact version checks. Unexplained or non-date program
+changes still fail. The witness is retained in the receipt approval snapshot and
+its native audit; no old review, selection, score or calculation is rewritten.
+
+Validation on fresh disposable native MySQL:
+- 58 existing assistance.tests, assistance.test_receipt_button, ewaf.test_delivery
+  and ewaf.test_ranking_freshness checks passed in the first run.
+- The new receipt regression initially exceeded its synthetic one-slot capacity;
+  corrected the fixture to select one applicant, preserving the capacity rule.
+- Both date-only regressions plus all 13 ewaf.test_assistance_writers checks then
+  passed: 15 tests in 37.651 seconds. Covers receipt after date correction, frozen
+  review/run preservation, corrupted witness and member-change rejection,
+  complete source scope, concurrent duplicates and late audit/CAS rollback.
+  Artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-u_zuy2wh
+  Earlier regression artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-5tczomqx
+- Read-only validation against the retained affected program confirms all three
+  selected applicants pass delivery_selection and the corrected review check;
+  two use the verified date-only witness. No actual receipt was recorded.
+- Django/database check, migration drift check and git diff --check passed.
+- Restarted only the identity-verified local web process at 127.0.0.1:8013.
+  No schema migration, database reset or business-data change was performed.

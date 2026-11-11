@@ -1,0 +1,8 @@
+<div class="chooser-layout{% if not review_programs %} chooser-no-results{% endif %}" data-review-results data-result-count="{{ page_obj.paginator.count }}" data-selected-id="{{ selected_program.id }}">
+  <section class="chooser-board" aria-label="Choose a program" tabindex="-1">
+    <div class="chooser-grid">{% for item in review_programs %}{% include 'programs/application_workspace/card.html' %}{% empty %}<div class="chooser-empty chooser-glass"><h2>No programs found</h2><p>Adjust the title, assistance type, or status filters.</p><a class="btn btn-outline-secondary" href="{% url 'application_workspace' %}" data-review-reset>Clear filters</a></div>{% endfor %}</div>
+    {% if page_obj.paginator.count %}<nav class="chooser-pagination" aria-label="Program pages"><span>Showing {{ page_obj.start_index }}&ndash;{{ page_obj.end_index }} of {{ page_obj.paginator.count }}</span><div>{% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number selected=None %}" data-review-page>&larr; Previous</a>{% endif %}<span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number selected=None %}" data-review-page>Next &rarr;</a>{% endif %}</div></nav>{% endif %}
+  </section>
+  {% if selected_program %}{% include 'programs/application_workspace/selected.html' with item=selected_program %}{% endif %}
+  {{ review_programs|json_script:'application-program-data' }}
+</div>

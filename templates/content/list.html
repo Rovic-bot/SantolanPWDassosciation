@@ -1,0 +1,6 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Content Management{% endblock %}
+{% block content %}
+<div class="container content-section"><h1 class="visually-hidden">Content Management</h1>
+<ul class="workspace-link-list workspace-content-links">{% for key,label in content_keys %}<li><a href="{% url 'core:content_edit' key=key %}">{{ label }}</a></li>{% endfor %}</ul></div>
+{% endblock %}

@@ -1,0 +1,86 @@
+Member-record ranking review and removal of the Documents navigation tab
+5 November 2026
+
+Authorization
+
+The owner requested removal of synthetic ranking documents and the Documents
+tab, with program uploads configured using Add requirement. This authorizes the
+evidence-source change below, using the previously selected local test scoring
+rules. It does not establish institutional approval of the test mathematics or
+accept individual applicants' numerical findings automatically.
+
+Implementation
+
+Removed Administration > Documents from the shared custom/native workspace
+navigation. Protected historical documents, verification rows, definitions and
+permission-checked historical URLs remain retained. Program Add requirement,
+private application uploads, required-field validation and eligibility checks
+are unchanged.
+
+Composite SES policies now support the explicit association_records_v1 source.
+Its policy draft and input review omit separate criterion-document selectors.
+The review displays current registration values and prefills supported recorded
+employment, household size and explicit 4Ps Yes/No. Unspecified employment and
+past monthly income are not inferred. Reviewers still confirm period-specific
+findings, household relationship, release-ledger coverage and the review reason.
+PA remains derived from actual non-voided releases under the bound scope/cutoff.
+
+Accepted reviews preserve member/profile version, eligibility and ledger
+provenance, exact configuration, findings, actor, time and audit. Missing,
+disputed, stale or expired reviews still block calculation. Historical
+document-backed policies keep their existing document verification behavior.
+No scores, normalization, weights, tie rules or final selection were changed.
+
+Published programs can receive this specific evidence-source revision only
+before any accepted inputs or calculation. The service checks current binding,
+authority, stale tokens, unchanged weights/cutoff and a strict whitelist of
+evidence-source changes. Existing policy/configuration history remains immutable;
+new rows and their required audits commit atomically.
+
+Local Programa update
+
+Preserved configuration 25/policy 12; appended reviewed draft 13, approved policy
+14 and configuration 26 (program revision 5). The exact weights, formula,
+income period, release scope, cutoff and other calculation choices are retained.
+The evidence procedures now explicitly use member records and the Association
+ledger, without synthetic file requirements. Private backup and verification
+hashes are in .local/ranking-member-records. Before/after comparisons confirmed
+the program, all applications, all earlier configurations and policies, reviews
+and runs were unchanged. No applicant review or ranking was created.
+
+Validation
+
+38 focused tests passed in fresh disposable native MySQL, exit 0:
+  scripts/g12_test_runner.py test
+  ewaf.test_member_record_evidence
+  core.tests.test_workspace_navigation
+  programs.test_configured_application
+  ewaf.test_dataset_policy.DatasetPolicyTests.test_authorization_is_required_for_binding_and_all_three_review_groups
+  ewaf.test_composite_ses.CompositeSesWorkflowTests.test_real_stored_policy_binding_ranking_human_decision_and_publication_journey
+  ewaf.test_composite_ses.CompositeSesWorkflowTests.test_missing_unresolved_unconfirmed_disputed_and_stale_4ps_cannot_become_no
+  ewaf.test_dataset_policy.DatasetPolicyTests.test_reference_definitions_and_frozen_terms_cannot_change_retained_results
+  --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+  --noinput --verbosity 1
+
+Evidence: %TEMP%/santolan-g12-tests-6h28qetb/django.log.
+Coverage includes a complete two-applicant calculation without any membership
+supporting files, explicit review, valid zero/No findings, missing/invalid inputs,
+source freshness, policy limits, immutable history, audit rollback, permissions,
+required program uploads, CSRF and navigation.
+
+The initial 48-test run found two errors in the new test harness, corrected
+before the passing run. It also found an unrelated existing assertion in
+test_generating_ranking_exposes_private_scoring_and_calculation_tabs: it expects
+the calculation-guide link to be absent before ranking, while the retained
+workspace already displays How scoring works. That template/test was unchanged.
+
+Read-only authenticated server renders of Jon, Finn and Gia's review pages all
+returned 200, with no document selectors, no synthetic assessment label, no
+Documents sidebar link and no INSERT/UPDATE/DELETE queries. Current Programa
+binding validation passes. Reviews and calculations remain empty pending Admin
+input review. These were server-render checks, not a new browser visual test.
+
+Django database/system check passed; migration dry run reports no changes.
+git diff --check passed. The identified local web process was refreshed and its
+instance health check passed. No migration, external deployment, email, document
+deletion, applicant acceptance or real ranking was performed.

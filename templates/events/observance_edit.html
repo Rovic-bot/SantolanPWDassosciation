@@ -1,0 +1,60 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}{% if editing %}Edit{% else %}Create{% endif %} annual observance &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} program-builder-workspace event-builder-workspace observance-builder-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-builder.css' %}?v=20261102-edit"><link rel="stylesheet" href="{% static 'css/event-builder.css' %}?v=20261102-calendar"><link rel="stylesheet" href="{% static 'css/observance-builder.css' %}?v=20261111-calendar">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/schedule-calendar.js' %}?v=20261111-annual" defer></script><script src="{% static 'js/observance-builder.js' %}?v=20261111-create" defer></script>{% endblock %}
+{% block content %}
+<div class="container builder-container" data-observance-builder data-image-limit="{{ image_limit_mb }}" data-current-schedule="{{ form.current_schedule }}">
+  <header class="builder-header">
+    <div><a class="workspace-back" href="{% url 'events:observances' %}">&larr; Annual observances</a><h1>{% if editing %}Edit{% else %}Create{% endif %} annual observance</h1>{% if editing %}<p class="builder-record-name">{{ observance.title }}</p>{% endif %}</div>
+    <section class="builder-draft-card builder-glass" aria-label="Observance status"><p class="builder-eyebrow">{{ observance.get_status_display }} observance</p><strong data-observance-status role="status">{% if form.is_bound %}Unsaved changes{% elif editing %}Saved observance{% else %}Unsaved draft{% endif %}</strong>{% if editing %}<p>Updated {{ observance.updated_at|date:'M j, Y, g:i A' }}</p>{% else %}<p>Private until published</p>{% endif %}<span class="builder-private">Repeats every year</span></section>
+  </header>
+  {% include 'partials/workspace_messages.html' %}
+  <div class="builder-layout">
+    <nav class="builder-steps" aria-label="Observance setup sections"><p class="builder-eyebrow">Observance setup</p>
+      <a href="#observance-details" aria-current="step"><span>01</span><div>Details<small>Title &amp; audience</small></div></a>
+      <a href="#observance-dates"><span>02</span><div>Dates<small>Yearly start &amp; end</small></div></a>
+      <a href="#observance-description"><span>03</span><div>Description<small>About the observance</small></div></a>
+      <a href="#observance-image"><span>04</span><div>Image<small>Optional upload</small></div></a>
+    </nav>
+    <form class="builder-form" method="post" enctype="multipart/form-data" action="{% if editing %}{% url 'events:observance_edit' observance.pk %}{% else %}{% url 'events:observance_create' %}{% endif %}" data-observance-form>
+      {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
+      {% if form.errors %}<div class="builder-validation builder-glass" tabindex="-1" role="alert"><h2>Check your observance details</h2>{{ form.non_field_errors }}<ul>{% for field in form.visible_fields %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}</ul></div>{% endif %}
+      <section class="builder-section builder-glass" id="observance-details" aria-labelledby="observance-details-heading">
+        <header><span>01</span><div><h2 id="observance-details-heading">Observance details</h2><p>Name the observance and the audience it focuses on.</p></div></header>
+        <div class="builder-fields">{% include 'programs/builder/field.html' with field=form.title wide=True %}{% include 'programs/builder/field.html' with field=form.target_audience wide=True %}</div>
+      </section>
+      <section class="builder-section builder-glass builder-schedule" id="observance-dates" aria-labelledby="observance-dates-heading">
+        <header><span>02</span><div><h2 id="observance-dates-heading">Date &mdash; start and end</h2><p>The month and day repeat every year.</p></div></header>
+        {% if editing %}<p class="builder-help">Current schedule: <strong>{{ form.current_schedule }}</strong>{% if not form.original_dates %}. Leave both dates empty to keep this annual rule, or choose dates to replace it.{% endif %}</p>{% endif %}
+        <div class="builder-range" data-observance-calendar data-date-only="true" data-annual="true" data-initial-month="{{ observance.month|default_if_none:'' }}" data-accent="blue">
+          <div class="builder-native-dates builder-fields" data-native-dates="observance" data-start-name="{{ form.start_date.name }}" data-end-name="{{ form.end_date.name }}" data-range-label="Annual observance" data-range-accent="blue" data-range-empty-label="{{ form.current_schedule }}">
+            {% include 'programs/builder/field.html' with field=form.start_date %}{% include 'programs/builder/field.html' with field=form.end_date %}
+          </div>
+          {% include 'partials/range_calendar.html' with program_ranges=False compact_event=True date_only=True annual_observance=True allow_reset=form.start_date.field.required|yesno:"false,true" %}
+        </div>
+        <p class="builder-help">Choose dates within the same observance month. For a one-day observance, use the same start and end date.</p>
+      </section>
+      <section class="builder-section builder-glass" id="observance-description" aria-labelledby="observance-description-heading">
+        <header><span>03</span><div><h2 id="observance-description-heading">Description</h2><p>Include the details people need to know.</p></div></header>
+        <div class="builder-fields">{% include 'programs/builder/field.html' with field=form.description wide=True %}</div>
+      </section>
+      <section class="builder-section builder-glass" id="observance-image" aria-labelledby="observance-image-heading">
+        <header><span>04</span><div><h2 id="observance-image-heading">Image</h2><p>Add an image approved for public display.</p></div></header>
+        {% if observance.image %}<div class="event-image-preview" data-current-image><img src="{% url 'events:observance_preview_image' observance.pk %}" alt="{{ observance.image_alt }}"><div><p>Current image</p><a href="{% url 'events:observance_preview_image' observance.pk %}" target="_blank" rel="noopener">View current image</a></div></div><label class="builder-help">{{ form.remove_image }} {{ form.remove_image.label }}</label>{{ form.remove_image.errors }}{% endif %}
+        <div class="event-image-upload">{% include 'programs/builder/field.html' with field=form.image %}<p class="builder-help" id="observance-image-help">PNG or JPEG, up to {{ image_limit_mb }} MB. {% if editing %}Leave empty to keep the current image.{% else %}The image is optional.{% endif %} Include any essential image text in the description.</p>{% if form.is_bound %}<p class="builder-help">If you selected a new image, choose it again before saving.</p>{% endif %}</div>
+        <div class="event-image-preview" data-image-preview hidden><img data-image-thumbnail alt="Selected observance image preview"><div><p data-image-name></p><p class="builder-help" data-image-size></p><button type="button" class="btn btn-outline-secondary" data-remove-image>Remove selected image</button></div></div>
+        <p class="builder-help" data-image-feedback role="status"></p>
+      </section>
+      <footer class="builder-action-bar builder-glass"><p data-save-feedback role="status">{% if editing %}Saving updates this observance on the public Events page.{% else %}Save a private draft, then review and publish it when ready.{% endif %}</p><div><a class="btn btn-outline-secondary" href="{% url 'events:observances' %}">Cancel</a><button class="btn btn-primary" type="submit" data-save-observance>{% if editing %}Save changes{% else %}Save draft{% endif %}</button></div></footer>
+    </form>
+    <aside class="builder-summary" aria-label="Live observance summary">
+      <section class="builder-glass builder-preview"><div class="builder-preview-top"><span class="builder-badge">Every year</span><span>Live preview</span></div><h2 data-observance-title>{{ form.title.value|default:'Untitled observance' }}</h2><dl>
+        <div><dt>Target audience</dt><dd data-observance-audience>{{ form.target_audience.value|default:'Audience not set' }}</dd></div>
+        <div><dt>Dates</dt><dd data-observance-dates>{{ form.current_schedule }}</dd></div>
+      </dl></section>
+      {% if editing %}<section class="builder-guidance"><a href="{% url 'events:observance_detail' observance.pk %}">View history and publication controls &nearr;</a></section>{% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}

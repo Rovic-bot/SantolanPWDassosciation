@@ -1,0 +1,4 @@
+{% extends 'membership/registration/pdao_print.html' %}{% load reference_codes %}
+{% block pdao_body_class %}pdao-public-form {% if request.GET.preview %}pdao-embedded-preview{% endif %}{% endblock %}
+{% block pdao_controls %}<p>Your submitted PDAO application. Keep this copy private.</p><button type="button" class="btn btn-primary" data-registration-print>Print or save submitted form</button><a class="btn btn-outline-primary" href="{% url 'membership:pdao_receipt' %}">Back to receipt</a>{% endblock %}
+{% block pdao_reference %}<p>Admin receipt reference: {{ reference|short_reference:'pdao' }} · {{ received_at|date:'M j, Y H:i' }}</p>{% endblock %}

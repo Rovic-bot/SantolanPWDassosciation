@@ -1,0 +1,65 @@
+.registration-content { max-width: 64rem; min-width: 0; overflow-wrap: anywhere; }
+.registration-content fieldset { min-inline-size: 0; max-width: 100%; }
+.registration-content .form-control, .registration-content .form-select { min-width: 0; max-width: 100%; }
+.registration-reference, .registration-data dd, .registration-content h1 { overflow-wrap: anywhere; }
+.registration-data dt { margin-top: .75rem; }
+.registration-data dd { margin-left: 0; }
+/* Reuse the onsite profile sections/grid within the same 58rem editor panel. */
+.public-site .registration-editor { max-width: 58rem; margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); }
+.registration-editor .profile-section > legend { font-size: 1.15rem; }
+.registration-editor .profile-field fieldset { min-inline-size: 0; }
+.registration-editor .profile-field fieldset > .form-label { float: none; width: auto; font-size: 1rem; }
+.registration-guidance { margin-top: 3rem; }
+.registration-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.registration-options .btn { white-space: normal; }
+.registration-content .record-section { margin-top: 2rem; }
+.registration-photo { border: 1px dashed currentColor; width: 1in; height: 1in; display: flex; align-items: center; text-align: center; padding: .2rem; margin: 1rem 0; }
+.registration-signature { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid currentColor; }
+/* Privacy dialogs are used only by the two public registration forms. */
+.public-portal.registration-privacy-open { overflow: hidden; }
+.public-portal .registration-privacy-controls { margin-block: 1rem; }
+.public-portal .registration-privacy-dialog {
+    width: min(42rem, calc(100% - 2rem));
+    max-width: none;
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: .625rem;
+    box-shadow: 0 12px 40px rgb(20 45 35 / 18%);
+    font: inherit;
+    overflow: hidden;
+}
+.public-portal .registration-privacy-dialog:not([open]) { display: none; }
+.public-portal .registration-privacy-dialog[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.public-portal .registration-privacy-dialog::backdrop { background: rgb(17 35 28 / 50%); }
+.public-portal .registration-privacy-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.5rem; }
+.public-portal .registration-privacy-content:focus-visible { outline-offset: -4px !important; }
+.public-portal .registration-privacy-notice { overflow-wrap: anywhere; }
+.public-portal .registration-privacy-dialog h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.public-portal .registration-privacy-dialog h2:focus { outline: none !important; }
+.public-portal .registration-privacy-notice p:last-child { margin-bottom: 0; }
+.public-portal .registration-privacy-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--line); }
+@media (max-width: 575px) {
+    .public-portal .registration-privacy-content, .public-portal .registration-privacy-footer { padding: 1rem; }
+    .public-portal .registration-privacy-footer .btn { width: 100%; }
+}
+@media (max-width: 700px) { .registration-options { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .public-site .registration-editor { padding: 1rem; } }
+@media print {
+    .registration-page header, .registration-page footer, .registration-controls,
+    .registration-content nav, .registration-page .accessibility-widget,
+    .registration-page .skip-link { display: none !important; }
+    .registration-content { max-width: none; }
+    @page { size: A4; margin: 14mm; }
+    .registration-page { background: white !important; color: black !important; }
+    .registration-content { padding: 0 !important; font-size: 10pt; }
+    .registration-content h1 { font-size: 19pt; }
+    .registration-content .record-section { margin-top: 12pt; }
+    .registration-data { display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 58%); margin: 0; }
+    .registration-data dt, .registration-data dd { margin: 0; padding: 4pt; border-bottom: 1px solid #bbb; break-inside: avoid; }
+    .registration-content h2, .registration-content h3 { break-after: avoid; }
+    .registration-signature { break-inside: avoid; }
+}

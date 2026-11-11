@@ -1,0 +1,26 @@
+<article class="selection-panel selection-glass" data-program-panel="{{ program.pk }}"{% if not selection.selected %} hidden{% endif %}>
+  <header><span class="selection-state" data-state="{{ selection.state }}">{{ selection.label }}</span><span class="selection-kicker">Selected program</span></header>
+  <h2>{{ program.name }}</h2><p class="selection-meta">{{ program.public_code|default:'Code not assigned' }} · {{ program.eligible_count }} eligible applicant{{ program.eligible_count|pluralize }}</p>
+  <div class="selection-gauge" role="img" aria-label="Ranking readiness: {{ selection.percent }} percent. {{ selection.completed }} of {{ selection.checks|length }} checks complete.">
+    <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="selection-gauge-track" cx="60" cy="60" r="51"/><circle cx="60" cy="60" r="51" pathLength="100" stroke-dasharray="{{ selection.percent }} 100"/></svg><div><strong>{{ selection.percent }}%</strong><span>Ranking readiness</span></div>
+  </div>
+  <ul class="selection-checks">{% for check in selection.checks %}<li data-complete="{{ check.complete|yesno:'true,false' }}"><span aria-hidden="true">{% if check.complete %}✓{% else %}○{% endif %}</span><span>{{ check.label }}<small>{% if check.complete %}Complete{% else %}Pending{% endif %}</small></span></li>{% endfor %}</ul>
+  {% if program.ewaf_card.weights_available %}<section class="selection-weights" aria-label="Criteria weights">
+    <header><h3>Approved criteria weights</h3><small>{% if program.ewaf_card.weight_version %}Vault #{{ program.ewaf_card.weight_version }}{% elif program.ewaf_card.version %}Configuration v{{ program.ewaf_card.version }}{% endif %}</small></header>
+    {% for weight in program.ewaf_card.rows %}<div class="selection-weight"><div><span>{{ weight.name }}</span><strong>{{ weight.percent }}%</strong></div><progress value="{{ weight.percent }}" max="100" aria-label="{{ weight.name }} weight">{{ weight.percent }}%</progress></div>{% endfor %}
+  </section>
+  {% endif %}
+  {% if selection.preview %}
+  <section class="selection-preview" aria-label="Saved ranking preview" data-ranking-preview>
+    <header><h3>{% if selection.preview.active %}Leading applicants{% else %}Previous ranking{% endif %}</h3><span class="selection-meta">Run {{ selection.preview.run.revision }}</span></header>
+    {% if selection.preview.invalid %}<p>Retained ranking needs integrity review.</p>{% else %}
+      <p class="selection-meta">{% if selection.preview.active %}Current saved ranking{% else %}Refresh required before selection{% endif %} · {{ selection.preview.run.recorded_at|date:'M j, Y' }}</p>
+      <ol>{% for row in selection.preview.rows %}<li><span class="selection-rank">{{ row.rank }}</span><a href="{% url 'ewaf:operational_breakdown' program.pk %}?run={{ selection.preview.run.pk }}&amp;applicant={{ row.application }}">{{ row.member_name }}{% if row.comparison.equal > 1 %}<small>Shared rank</small>{% endif %}</a><strong>{{ row.display_score|floatformat:2 }}</strong></li>{% endfor %}</ol>
+      <p class="selection-meta">Scores are rounded for display. Administrators make the final selection.</p>
+    {% endif %}
+  </section>
+  {% else %}<section class="selection-note"><h3>{% if selection.state == 'ready' %}Ready to generate{% else %}Pending scoring{% endif %}</h3><p>{% if selection.state == 'ready' %}Applicant reviews, approved weights, and the assessment cutoff are ready.{% else %}Review applicant and assessment readiness before generating a ranking.{% endif %}</p>{% if selection.state != 'ready' %}<a class="selection-text-link" href="{{ selection.url }}#readiness">Review applicant readiness →</a>{% endif %}</section>{% endif %}
+  <form method="post" action="{{ selection.url }}" data-generate-ranking data-program="{{ program.pk }}">{% csrf_token %}<input type="hidden" name="action" value="GENERATE">{% for field in selection.form.hidden_fields %}{{ field }}{% endfor %}<button class="selection-button selection-primary"{% if not selection.can_generate %} disabled{% endif %}>{% if selection.preview %}Regenerate ranking{% else %}Generate EWAF Ranking{% endif %}</button></form>
+  {% if not perms.ewaf.calculate_operational %}<p class="selection-meta">Ranking generation requires calculation permission.</p>{% endif %}
+  {% if selection.preview and not selection.preview.invalid %}<a class="selection-button" href="{{ selection.url }}#results">Open full ranking</a>{% endif %}
+</article>

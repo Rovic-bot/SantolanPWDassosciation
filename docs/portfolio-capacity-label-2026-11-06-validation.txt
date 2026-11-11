@@ -1,0 +1,15 @@
+Portfolio capacity label spacing — 2026-11-06
+
+The owner reported that Application demand touched the circular chart.
+
+The gauge now reserves a centered inner area with 20% insets, allowing the
+label to wrap onto two balanced lines. Explicit line heights keep the number
+and label compact. The circular gauge uses rem sizing and a square aspect
+ratio so its size follows the text-size setting. Counts and calculations are
+unchanged. The portfolio stylesheet version was refreshed.
+
+Validation: Django system check and git diff --check passed. Static assets
+were collected and only the identity-checked local web process was refreshed;
+the existing MySQL connection stayed live. Native browser verification was
+interrupted by concurrent navigation, so a final visual check is not claimed.
+No new tests or database changes were needed for this CSS spacing correction.

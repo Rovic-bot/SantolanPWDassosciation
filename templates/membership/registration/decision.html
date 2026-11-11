@@ -1,0 +1,33 @@
+<section class="card p-4 mb-4" aria-labelledby="membership-decision-heading">
+<h2 class="h4" id="membership-decision-heading">Association membership decision</h2>
+{% if application %}
+<p>Membership review: <strong>{{ application.get_status_display }}</strong>. The original AMR reference remains unchanged.</p>
+{% if handoff_record %}<details class="mb-3"><summary>Accepted onsite findings and assessment</summary>
+<p>Recorded by {{ handoff_record.actor_label }} on {{ handoff_record.occurred_at }} for submitted revision {{ handoff_record.revision.number }}.</p>
+<dl><dt>Identity and representation</dt><dd>{{ handoff_record.payload.basis.identity_basis|linebreaksbr }}</dd>
+<dt>Five Association requirements</dt><dd>{{ handoff_record.payload.basis.requirements_basis|linebreaksbr }}</dd>
+<dt>Socioeconomic assessment</dt><dd>{{ handoff_record.payload.basis.assessment_basis|linebreaksbr }}<br>Assessor: {{ handoff_record.payload.basis.assessor }}; date: {{ handoff_record.payload.basis.assessed_on }}.</dd>
+<dt>Control-number source</dt><dd>{{ handoff_record.payload.basis.control_number_basis|linebreaksbr }}</dd>
+<dt>Duplicate review</dt><dd>{{ handoff_record.payload.basis.duplicate_review|linebreaksbr }}</dd></dl></details>{% endif %}
+{% if application.status == 'approved' %}<p>An official Member record has been created.</p>
+{% if perms.members.view_member %}<p><a href="{% url 'members:detail' application.member.pk %}">Open official Member record</a></p>{% endif %}
+{% endif %}
+{% if application.status != 'pending' %}<p>{{ application.decision_notes|linebreaksbr }}</p><p>Recorded by {{ application.decided_by|default:'Former administrator' }} on {{ application.decided_at }}.</p>
+{% elif handoff_ready and can_membership_review %}
+<p>Manual PRPWD result: <strong>{{ application.prpwd_verified|yesno:'Verified,Not verified,Not yet checked' }}</strong>.</p>
+{% if application.prpwd_verified_at %}<p>Recorded by {{ application.prpwd_verified_by|default:'Former administrator' }} on {{ application.prpwd_verified_at }}.</p><p>{{ application.verification_notes|linebreaksbr }}</p>{% endif %}
+<p><a href="{% url 'membership:detail' application.reference %}#prpwd-verification">Open existing PRPWD verification guidance</a></p>
+{% if perms.membership.verify_membershipapplication %}<form method="post" class="mb-4">{% csrf_token %}<input type="hidden" name="action" value="verify_membership">
+{{ verification_form.non_field_errors }}{{ verification_form.version }}{{ verification_form.version.errors }}
+{% for field in verification_form.visible_fields %}{% include 'membership/field.html' %}{% endfor %}
+<button type="submit" class="btn btn-outline-primary">Save manual verification</button></form>{% endif %}
+{% if perms.membership.decide_membershipapplication %}<p>Approval creates one official Member through the existing membership service. Successful manual verification and the retained onsite acceptance are required.</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="decide_membership">
+{{ decision_form.non_field_errors }}{{ decision_form.version }}{{ decision_form.version.errors }}
+{% for field in decision_form.visible_fields %}{% include 'membership/field.html' %}{% endfor %}
+<button type="submit" class="btn btn-primary">Save membership decision</button></form>{% endif %}
+{% else %}<p role="status">Membership decisions are unavailable until the approved procedures and your staff permissions are configured.</p>{% endif %}
+{% elif handoff_ready and can_prepare %}<p>Record current onsite findings, accepted identity and requirements, the completed assessment, and the legitimate control number before the existing verification and approval steps.</p>
+<a class="btn btn-primary" href="{% url 'membership:registration_handoff' intake.reference %}">Prepare membership approval</a>
+{% else %}<p role="status">The pending form is retained. Membership approval requires the configured onsite, identity, identifier and assessment procedures, plus assigned staff permissions.</p>{% endif %}
+</section>

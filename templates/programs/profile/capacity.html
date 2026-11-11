@@ -1,0 +1,17 @@
+<div class="profile-beneficiary-capacity" role="group" aria-labelledby="program-capacity-title">
+  <h3 id="program-capacity-title">Beneficiary slots</h3>
+  <div class="profile-demand-card">
+    <div class="profile-demand-heading">
+      {% if perms.programs.view_programapplication %}<span>Application demand</span><strong>{{ program.applicant_count }} / {{ program.capacity_label }}</strong>
+      {% else %}<span>Total capacity</span><strong>{{ program.capacity_label }}</strong>{% endif %}
+    </div>
+    {% if perms.programs.view_programapplication and detail_capacity.demand != None %}
+      <progress value="{{ detail_capacity.progress }}" max="100" aria-label="{{ program.applicant_count }} applications for {{ program.slot_limit }} beneficiary slots; {{ detail_capacity.demand }} percent demand">{{ detail_capacity.demand }}%</progress>
+    {% else %}<div class="profile-demand-track" aria-hidden="true"></div>{% endif %}
+    <div class="profile-demand-foot">
+      <span>{% if not perms.programs.view_programapplication %}Application demand restricted{% elif detail_capacity.demand != None %}{{ detail_capacity.demand }}% demand{% else %}Capacity not set{% endif %}</span>
+      {% if program.available_slots != None %}<span data-capacity-available>{{ program.available_slots }} unallocated</span>{% elif not program.can_view_capacity %}<span>Slot allocation access restricted</span>{% endif %}
+    </div>
+    {% if perms.programs.view_programapplication and detail_capacity.excess %}<p class="profile-demand-excess">{{ detail_capacity.excess }} application{{ detail_capacity.excess|pluralize }} above capacity</p>{% endif %}
+  </div>
+</div>

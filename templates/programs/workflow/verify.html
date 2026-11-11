@@ -1,0 +1,13 @@
+{% extends 'public/resident_base.html' %}
+{% block title %}Membership checking · Santolan PWD{% endblock %}
+{% block resident_class %}section-programs{% endblock %}
+{% block content %}<section class="page-hero"><div class="container resident-mast"><div><p class="eyebrow">STEP 1 / MEMBERSHIP CHECKING</p><h1>Apply for a specific program</h1><p class="page-intro" translate="no">{{ program.name }}</p></div><div class="resident-mark" aria-hidden="true">{% include 'public/icon.html' with name='members' %}</div></div></section>
+<div class="container content-section resident-columns"><section class="resident-panel"><h2>Check your membership</h2><p><a href="{% url 'programs:detail' program.pk %}">Review program requirements</a></p>
+{% if screening == 'not_met' %}<div class="alert alert-warning" role="alert"><h2 class="h4">Application cannot proceed</h2><p class="mb-0">{{ screening_message }}</p></div>{% else %}{% if screening == 'unable' %}<h2>Unable to confirm / correctable information</h2>{% endif %}
+{% if screening_message %}<p role="status">{{ screening_message }}</p>{% endif %}{% endif %}
+{% if applications_available %}<p>Use your registered PWD control number and full name. Disability eligibility uses the classifications in your internal member record.</p>
+<form method="post" autocomplete="off">{% csrf_token %}{% include 'programs/fields.html' %}<button class="btn btn-primary" type="submit">Verify membership and screen requirements</button></form>
+{% else %}<h2>Applications are currently unavailable</h2><p>The application schedule and required program authorizations must be in place before applications can proceed.</p>{% endif %}
+</section><aside class="resident-aside"><h2>About screening</h2><p>An unsuccessful record match does not prove that someone is a non-member. <a href="{% url 'core:contact' %}">Contact the Association Help Desk</a> for correction or review. New applicants can follow the <a href="{% url 'core:membership' %}">membership application guide</a>.</p>
+<p>At least one allowed classification satisfies the classification check. Additional classifications do not disqualify you or provide extra EWAF points. Other mandatory requirements still apply.</p>
+<p>Screening passed means you may proceed to Admin review after submission. It is not final eligibility or beneficiary approval.</p></aside></div>{% endblock %}

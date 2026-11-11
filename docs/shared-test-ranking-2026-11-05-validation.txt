@@ -1,0 +1,109 @@
+Shared local test calculation rules and automatic member-record inputs
+5 November 2026
+
+Owner authorization
+
+The owner answered the clarification about Programa testing with:
+"it should always use the local test calculation rules and automatic member-records as programa"
+
+This authorizes reusing Programa's existing local test policy as a shared default
+for compatible programs. It does not approve institutional scoring policy, new
+mathematics, different employment mappings, changed deadlines or beneficiary
+selection. The existing local test validity period remains unchanged: through
+26 December 2026 at 12:00 noon Asia/Manila, exclusive.
+
+Configuration applied
+
+Used the existing audited SharedDatasetPolicy services, not a code change or
+direct update of protected rows. Copied the exact content of Programa policy 16
+and added only the existing versioned shared program-application setting:
+
+  version: shared-program-application-v1
+  scope: all_compatible_unbound_programs
+  cutoff_rule: application_close
+  cutoff_at: empty
+
+The copy retains current_member_records_v1, current household monthly income,
+household size, explicit household 4Ps Yes/No, recorded employment and the scoped
+confirmed-release ledger. Its explicit test mapping remains Employed -> Full-Time
+Worker and Unemployed -> Unemployed. Unsupported statuses remain unresolved.
+All normalization, coefficients, constant-column blocks, missing-input rules,
+ties, human selection, release windows and policy dates are unchanged.
+
+Appended policy draft 19 and approved policy 20, with the target intake's retained
+locked weight version 40. The current main Vault approval observed during
+verification was 42, with exactly the same weight values. New calculations keep
+using the existing current-approved-weights capture behavior; no Vault record or
+weight value was changed by this operation.
+
+The audited shared-application service appended these locked configurations:
+
+  Program test 1: configuration 36, revision 3; closes November 21, 17:00.
+  Programa testing: configuration 37, revision 3; closes November 8, 17:00.
+  Saklay distribution: configuration 38, revision 3; closed October 31, 13:50.
+  Create program 2: configuration 39, revision 3; closes November 7, 18:42.
+
+All times above are Asia/Manila. Each assessment cutoff equals that program's
+approved application closing time. Future compatible programs inherit the shared
+policy through the existing authorization/publication hooks, subject to policy
+validity and readiness. Already bound scoring programs retain their policies.
+Programa remains on configuration 27 / policy 16 and its saved runs are unchanged.
+Unapproved or incompatible programs were not forced into a scoring binding.
+
+Private recovery and integrity evidence
+
+Scoped snapshots are in .local/shared-test-ranking/before.json and after.json.
+They include policy/configuration/weight history, programs, applications, runs,
+decisions, input reviews, members and releases. All existing rows were compared
+field-for-field and remained unchanged. Only the two new policy rows and four
+new configuration rows were added to those model sets. Their normal audit
+entries were recorded by the services. No ranking, decision or release was made.
+
+The first transaction rolled back because the private verification script
+assumed every model's primary-key field was named id. After correcting that
+check, the complete pre-operation snapshot was verified unchanged before the
+retry. Rolled-back auto-increment IDs were not reused; policy revisions still
+follow 16 -> 17 (draft ID 19) -> 18 (approved ID 20).
+
+Repeating shared application after approval returned zero changes. Every new
+configuration passed the normal binding validator. The exact policy content
+comparison confirms only shared scope/cutoff inheritance was added.
+
+Readiness and validation
+
+An authenticated render of the actual Programa testing EWAF workspace returned
+HTTP 200. The missing/unapproved-scoring-settings message and pending-calculation-
+rules warning are absent; calculation settings are ready. The expected waiting-
+for-application-close message is present. A SQL guard permitted reads and
+transaction savepoint controls only, and the data snapshot remained identical
+after rendering/readiness checks.
+
+Ranking still has the following current conditions:
+
+* The approved intake closes November 8, 2026 at 17:00 Asia/Manila. Calculation
+  context correctly reports that complete-pool scoring starts after closing.
+* There are two eligible applicants. One currently supplies valid automatic
+  inputs. The other has a recorded employment status absent from the saved test
+  mapping. This needs an accurate record correction or an explicit mapping
+  decision; no category was inferred.
+* Both current members have equal recorded household income. If the final pool
+  remains this way, the retained constant-column rule blocks calculation.
+  Values and formulas were not adjusted to manufacture a rank.
+
+33 tests passed for ewaf.test_shared_application and
+ewaf.test_automatic_member_inputs using a fresh disposable MySQL instance:
+
+  .venv\Scripts\python.exe scripts/g12_test_runner.py test
+    ewaf.test_shared_application ewaf.test_automatic_member_inputs
+    --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner
+    --noinput
+
+Evidence: %TEMP%/santolan-g12-tests-9dv7k6j6/django.log.
+The suite covers automatic future-program inheritance, current-weight reuse,
+unchanged historical bindings, approval permissions, stale requests, rollback,
+idempotence, automatic member inputs, missing values, unsupported employment,
+source provenance, audit failures and saved calculation replay. Its disposable
+baseline synchronizes models; it does not validate historical migrations.
+
+No application code change, migration, server restart or external publication
+was required. Existing unfinished repository changes were preserved.

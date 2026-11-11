@@ -1,0 +1,5 @@
+<a class="home-service" href="{% url route %}{{ fragment }}">
+  <span class="service-glyph">{% include 'public/icon.html' with name=icon %}</span>
+  <span><strong>{{ title }}</strong><small>{{ description }}</small></span>
+  <span class="service-arrow" aria-hidden="true">↗</span>
+</a>

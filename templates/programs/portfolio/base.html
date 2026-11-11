@@ -1,0 +1,6 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Program portfolio · Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} program-portfolio-workspace{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/program-portfolio.css' %}?v=20261110-archive">{% include 'programs/profile/dialog_styles.html' %}{% endblock %}
+{% block header %}{% include 'partials/workspace_header.html' with compact_workspace_navigation=True program_portfolio=True %}{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/program-portfolio.js' %}?v=20261110-new" defer></script>{% include 'programs/profile/dialog_scripts.html' %}{% endblock %}

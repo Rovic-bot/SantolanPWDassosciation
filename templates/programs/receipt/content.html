@@ -1,0 +1,46 @@
+<div class="program-receipt" data-program-receipt>
+  <div class="program-receipt-layout">
+    <div class="program-receipt-main">
+      <header class="program-receipt-heading">
+        <svg class="program-receipt-success" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M58 28v4a26 26 0 1 1-15.4-23.8"/><path d="m58 10-26 26-8-8"/></svg>
+        <h1 tabindex="-1">Your application has been successfully submitted.</h1>
+        <p class="program-receipt-program">{{ program.name }}</p>
+      </header>
+      <section class="program-receipt-card program-receipt-reference" aria-labelledby="receipt-reference-label">
+        <h2 id="receipt-reference-label" class="visually-hidden">Application Reference Number</h2>
+        <div class="program-receipt-reference-value">
+          <strong id="program-receipt-reference" tabindex="-1">{{ application.short_reference }}</strong>
+          <button class="program-receipt-copy" type="button" data-receipt-copy aria-label="Copy application reference" title="Copy application reference" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1"/></svg></button>
+        </div>
+        <p class="program-receipt-copy-status" data-receipt-copy-status role="status" aria-live="polite"></p>
+      </section>
+{% if information_change_reported %}<section class="program-receipt-card program-receipt-change" id="information-change-notice" aria-labelledby="information-change-heading">
+<h2 id="information-change-heading">Confirm your information at the barangay office</h2>
+<p>You reported a change or uncertainty in your information. Please visit the Barangay Santolan office and speak with the PWD Association Help Desk to confirm your change of information.</p>
+<p class="mb-0">Bring your application reference number or saved receipt. Submitting this application does not update your member record.</p>
+</section>{% endif %}
+      <section class="program-receipt-card program-receipt-steps" aria-labelledby="receipt-next-heading">
+        <h2 id="receipt-next-heading">What happens next?</h2>
+        <ol>
+          <li>Admin reviews your submitted information and the program's required evidence.</li>
+          <li>Check the <a href="{% url 'core:announcements' %}?category=results">Program Results announcements</a> for officially published updates.</li>
+          <li>Save or print this receipt for your records. Do not share your full reference publicly.</li>
+        </ol>
+      </section>
+      <div class="program-receipt-actions"><button type="button" data-receipt-image="png" hidden>Save as PNG</button><button type="button" data-receipt-image="jpeg" hidden>Save as JPEG</button><button type="button" data-receipt-print hidden>{% include 'public/icon.html' with name='download' %} Print receipt</button><a href="{% url 'programs:detail' program.pk %}">Return to program details</a></div>
+    </div>
+    <aside class="program-receipt-card program-receipt-tracking" aria-labelledby="tracking-heading">
+      <p class="program-receipt-eyebrow">After submission</p>
+      {% if program_tracking_enabled %}{% include 'programs/tracking/receipt.html' %}
+      {% else %}<h2 id="tracking-heading">Keep your receipt</h2><p>Save your reference for follow-up with the Association Help Desk.</p><a class="program-receipt-track-button" href="{% url 'core:announcements' %}?category=results">View published results</a>{% endif %}
+    </aside>
+  </div>
+  <p class="program-receipt-download-status" data-receipt-download-status role="status" aria-live="polite"></p>
+  <details class="program-receipt-guidance"><summary>About this receipt</summary>
+    <p>Submission does not guarantee eligibility or selection. Approval and actual assistance remain subject to authorized review and processing.</p>
+    <p>Once the program review and selection process is completed and officially authorized, results may be published in the Results section. Results are not published automatically at the application deadline.</p>
+    <p>You may save or print this confirmation using your browser. Choose Print, then Save as PDF to download a receipt copy. To copy the reference, select its text and use your device's copy command. This receipt is available only in this browser session.</p>
+    <p>For private clarification, contact the <a href="{% url 'core:contact' %}">Barangay Santolan PWD Association Help Desk</a>. Do not post your full reference or personal documents publicly.</p>
+    {% if program_tracking_enabled %}<p>Keep your reference private. It can show application status. Personal details, documents and assessments are not displayed.</p>{% endif %}
+  </details>
+</div>

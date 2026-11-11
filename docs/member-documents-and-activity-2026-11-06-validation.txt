@@ -1,0 +1,67 @@
+Member documents, editor parity, and activity width — 6 November 2026
+
+Scope
+- Display existing Association onsite uploads on the member record.
+- Include the onsite document fields and acknowledgement in Edit profile.
+- Give Program applications and Assistance history the full record width.
+
+Cause and implementation
+- The member page previously read only MembershipApplicationDocument. Current
+  onsite registration files belong to RegistrationAttachment revisions; affected
+  records had active uploads but no rows in the legacy document table.
+- The member page now resolves current onsite uploads through their existing
+  protected routes, together with legacy documents and later member uploads.
+- Intake and member edit forms share the 2x2 photo, Birth OR Marriage Certificate,
+  Voter's Certificate, and civil-document choice fields and validators. The editor
+  requires a fresh acknowledgement and displays the privacy notice and current
+  files. Leaving an upload blank retains its file. Physical envelope handling is
+  unchanged; no envelope upload was introduced.
+- New member uploads use immutable MemberDocumentUpload versions, private
+  preview/download routes, existing document permissions, and MemberEvent audits.
+  Replacements retain earlier files and original registration declarations.
+  Profile snapshots and existing source invalidation include the new versions.
+  Late transaction/audit failure removes newly stored files.
+- The activity section is now a direct full-width grid child in the shared
+  member detail template, used by the full page and the member dialog.
+- The shared onsite upload filename/remove controls also initialize in the
+  member editor, without requiring the intake submission review dialog.
+
+Local activation
+- Normal deployment schema change: members/0008_member_document_uploads.py.
+- The retained development environment uses a model-synchronized baseline.
+  Only members_memberdocumentupload was created using Django's schema editor;
+  no historical migration chain or fake migration records were applied.
+- Fresh full database backup before activation:
+  .local/ewaf-twelve-demo/backups/before-member-documents-activation-20261106-140532.sql
+  9,409,584 bytes; SHA256:
+  2849571a4c39d4b4a5c0a8a188bb8a5f648e43d49cb1a13a5caf7c670f1ca8f8
+- Collected assets and restarted only the web process. The existing MySQL
+  connection remained available. No actual member profile or upload was edited
+  for validation; private document views retain their existing access auditing.
+
+Validation
+- 68 tests passed on a fresh disposable MySQL instance, separate from user data:
+  members.test_member_documents
+  members.test_registration_edit
+  members.test_original_registration
+  members.test_record_layout
+  members.test_registration_portrait
+  members.tests
+  ewaf.test_member_writers
+  membership.test_pdf_registration
+  Four focused PendingRegistrationTests covering unknown/invalid/duplicate files,
+  civil alternatives, and private document permission/auditing.
+- Coverage includes all three onsite uploads, fresh acknowledgement, replacement
+  history, unchanged original declarations, file ownership and permissions,
+  unsafe/unrecognized uploads, stale edits, append-only records, audit rollback,
+  retained-program source changes, protected access audits, and cleanup after a
+  late source failure while preserving pre-existing files.
+- Django database check, member migration drift check, JavaScript syntax check,
+  and git diff --check passed.
+- Native browser verification at 127.0.0.1:8013: the affected member record now
+  shows 3 attached with protected photo/civil/voter preview and download links.
+  Edit profile shows all three upload fields, civil choice, required unchecked
+  acknowledgement, privacy notice, and current documents. Program applications
+  and Assistance history visibly span the record's full width.
+- Browser verification did not submit an edit or upload. No browser screenshots
+  were saved because an unrelated call window overlapped the application.

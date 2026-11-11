@@ -1,0 +1,31 @@
+Free Gmail certificate delivery - 6 November 2026
+
+Owner decision
+- The owner required a free setup, then explicitly selected Gmail for certificate emails instead of Resend. The retained local application now uses its existing Association Gmail connection. No domain, paid subscription, Resend key, or new Google credential was created.
+- Resend remains available in code for deployments choosing that provider later. This update supersedes the retained-local Resend setup requirement in docs/certificate-delivery-2026-11-06/validation.txt; its template, privacy and publication controls remain applicable.
+
+Behavior
+- Publish Results creates one private certificate job per selected application after the existing reviewed-publication checks. Each sends separately with the personalized DOCX attached and the applicant email, falling back to the onsite member email.
+- New jobs snapshot the delivery provider. The additive migration defaults historical jobs to Resend; changing the configured provider cannot silently switch an attempted message to another transport.
+- Gmail uses the encrypted sender-bound Association connection already configured in the system. The saved credential is neither copied into source files nor exposed in outputs.
+- Email status identifies Gmail/Resend per job. SMTP acceptance is not proof of inbox delivery. Missing addresses and rejected/authentication failures remain visible and retryable as appropriate.
+- Interrupted Gmail submissions and stale sending claims are never automatically retried: SMTP provides no Resend-style idempotency guarantee. Administrators must check Gmail's Sent folder before a manual resend. Successful submissions remain accepted even if closing the SMTP connection fails afterward.
+- In production, set CERTIFICATE_EMAIL_PROVIDER=gmail and connect the Association Gmail account. The owner's retained local settings select Gmail explicitly. Resend's domain/key settings are not required for Gmail delivery.
+
+Validation
+- Existing Gmail connection successfully authenticated over TLS to smtp.gmail.com. Authentication check sent no message.
+- 25 focused tests/browser checks passed in 9.235 seconds on fresh disposable native MySQL. Coverage includes Gmail recipient privacy and attachment bytes, configured sender, accepted status, repeated submission guard, authentication failures, ambiguous SMTP failures, QUIT failures, provider binding, migration rehearsal, existing Resend retry behavior, concurrent workers, and desktop/mobile publication/download/status controls.
+  .venv/Scripts/python.exe -B scripts/g12_test_runner.py test announcements.test_gmail_certificates announcements.test_certificate_delivery scripts.certificate_publication_browser_qa --testrunner=scripts.registration_intake_test_runner.RegistrationIntakeTestRunner --noinput --verbosity 1
+  Private synthetic artifacts: C:/Users/rovic/AppData/Local/Temp/santolan-g12-tests-xmbqkxl_
+- Tests use mock transports or the explicit memory backend, never actual members' inboxes.
+- Additive announcements.0007_certificate_email_provider was rehearsed and applied only to the identity-verified retained database after a complete 9,543,337-byte native backup. All existing data in 127 tables was preserved. Only the certificate provider column was added; state display wording changed without changing stored states. Historical migrations were not replayed or faked.
+- Private activation evidence: .local/certificate-gmail-20261106/preservation.json and before-gmail-provider.sql. Zero certificate jobs existed at activation; none was sent by activation.
+- Configuration check and collectstatic passed; the retained website restarted at http://127.0.0.1:8013/.
+- Final model/migration check reports no drift, provider is gmail, and connection setup is ready.
+- After explicit owner approval, one TEST email with the previously rendered fictional sample certificate was submitted to the saved Association inbox. Gmail accepted it. No real member email or result publication was triggered, and the certificate-job count remained zero before/after. Inbox delivery has not been independently confirmed. Private send evidence: .local/certificate-gmail-20261106/test-delivery.json.
+
+Primary references consulted
+https://resend.com/docs/dashboard/domains/introduction
+https://education.github.com/pack?sort=popularity&tag=Domains
+https://support.google.com/mail/answer/185833
+https://support.google.com/mail/answer/22839

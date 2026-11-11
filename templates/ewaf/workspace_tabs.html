@@ -1,0 +1,4 @@
+<nav class="ewaf-tabs" aria-label="Program EWAF sections">
+<a class="ewaf-tab{% if active_section != 'breakdown' %} is-active{% endif %}"{% if active_section != 'breakdown' %} aria-current="page"{% endif %} href="{% url 'ewaf:operational_workspace' program.pk %}{% if run %}?run={{ run.pk }}{% endif %}#results">{% include 'ewaf/ui_icon.html' with icon='rank' %} Ranking{% if run and not invalid_calculation %}<span class="ewaf-count">{{ run.calculations|length }}</span>{% endif %}</a>
+<a class="ewaf-tab{% if active_section == 'breakdown' %} is-active{% endif %}"{% if active_section == 'breakdown' %} aria-current="page"{% endif %} href="{% url 'ewaf:operational_breakdown' program.pk %}{% if run %}?run={{ run.pk }}{% endif %}">{% include 'ewaf/ui_icon.html' with icon='chart' %} Score breakdown</a>
+</nav>

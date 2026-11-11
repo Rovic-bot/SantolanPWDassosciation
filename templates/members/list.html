@@ -1,0 +1,18 @@
+{% extends 'members/directory/base.html' %}
+{% block content %}
+<div class="container directory-container" data-member-directory>
+  <h1 class="visually-hidden">Member directory</h1>
+  {% include 'partials/workspace_messages.html' %}
+  <section class="directory-metrics" aria-label="Membership summary" data-directory-metrics>{% for metric in directory_metrics %}<article class="directory-metric" data-accent="{{ metric.accent }}"><span class="directory-metric-index" aria-hidden="true">{{ forloop.counter|stringformat:'02d' }}</span><strong>{{ metric.value }}</strong><h2>{{ metric.label }}</h2><p>{{ metric.detail }}</p><span class="directory-metric-line" aria-hidden="true"></span></article>{% endfor %}</section>
+  <form method="get" action="{% url 'member_directory' %}" class="directory-toolbar" data-directory-filters role="search" aria-label="Search member records">
+    <div class="directory-search"><label for="directory-search">Search records</label><div class="directory-search-control"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="directory-search" type="search" name="q" value="{{ query }}" maxlength="200" placeholder="Name or control number" autocomplete="off" class="form-control"></div></div>
+    <div class="directory-filter"><label for="directory-status">Member status</label><select id="directory-status" name="status" class="form-select"><option value=""{% if not status %} selected{% endif %}>All statuses</option>{% for value,label in statuses %}<option value="{{ value }}"{% if value == status %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="directory-filter"><label for="directory-disability">Disability type</label><select id="directory-disability" name="disability" class="form-select"><option value="">All disability types</option>{% for item in disability_choices %}<option value="{{ item.pk }}"{% if item.pk|stringformat:'s' == disability %} selected{% endif %}>{{ item.name }}{% if not item.is_active %} (Inactive){% endif %}</option>{% endfor %}</select></div>
+    <noscript class="directory-filter-fallback"><button class="btn btn-outline-secondary" type="submit">Filter records</button></noscript>
+    <p class="directory-result-count" aria-live="polite" aria-atomic="true"><strong data-directory-count>{{ page_obj.paginator.count }}</strong><span data-directory-count-label>matching record{{ page_obj.paginator.count|pluralize }}</span></p>
+    <div class="directory-filter-footer"><a href="{% url 'member_directory' %}?status=" data-clear-directory-filters{% if not query and not status and not disability %} hidden{% endif %}>Clear filters</a><span role="status" data-directory-feedback></span></div>
+  </form>
+  {% include 'members/directory/results.html' %}
+  {% include 'partials/record_dialog.html' %}
+</div>
+{% endblock %}

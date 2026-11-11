@@ -1,0 +1,58 @@
+Community Assistance Desk activation and rename — 28 October 2026
+
+The owner reported that concerns could not be submitted and requested the name
+Community Assistance Desk. The retained main development system inherited
+REFERRAL_ENABLED=False from the EWAF demo settings. Its ReferralSettings table
+also had no sender configuration, which would have blocked verified members
+even after the feature was enabled. The intake and private inbox already existed.
+
+Changes
+- Enabled REFERRAL_ENABLED in config/current_development_settings.py only.
+  Ordinary production defaults and the isolated EWAF demo remain unchanged.
+- Initialized the previously approved Association address through set_sender,
+  with an audit reason identifying the owner's activation request and the
+  development assistant. Existing sender settings would have been preserved.
+- Changed local mail from transient memory to the existing private file outbox
+  at .local/referral-email-outbox. This does not configure real email delivery.
+- Renamed the public Resources card, service/form titles, home shortcut,
+  program help links, private inbox and Admin navigation. Send a concern starts
+  the existing member-verification flow. The home shortcut links to that card.
+- Updated existing referral guidance assertions for the requested wording.
+
+Verification
+The isolated native-MySQL run exercised 40 existing referral and quick-action
+tests. Thirty-nine passed initially; the guidance test exposed the home
+shortcut's missing referral-section anchor. The shortcut was updated alongside
+its new service label, and the focused retry passed. No unresolved test failure
+remains from these checks. The tests cover submission, required fields, private
+access, evidence, email jobs/retries, concurrency, idempotency and staff actions.
+The test launcher used fresh temporary data directories and a separate
+test_g12_disposable schema; it did not target application data.
+
+Commands:
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test assistance.test_referrals assistance.test_referral_quick_actions --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+.venv/Scripts/python.exe -B .local/deploy-compatibility-20261028/run_tests.py test assistance.test_referrals.ReferralTests.test_public_guidance_home_and_staff_navigation --testrunner scripts.durable_test_runner.DurableTestRunner --noinput --verbosity 1
+
+Actual-development-settings HTTP checks additionally completed Resources ->
+membership verification -> form -> submission -> receipt -> private Admin
+inbox/details, including duplicate submission. The entire probe ran in an outer
+rollback transaction using a retained fictional SYNTH-EWAF member. No probe
+ticket, grant or email remained and no on-commit email was sent.
+
+After restarting the guarded main development server at 127.0.0.1:8013, Chrome
+confirmed the enabled public link and verification form, desktop/mobile layout,
+and renamed Admin inbox/navigation. Browser traffic allowed login POST and
+same-origin reads only; no business POSTs or JavaScript errors occurred.
+The first browser attempt preceded completion of the server restart; rerunning
+after startup passed. Screenshots are saved beside this note. Browser script:
+.local/community-assistance-desk-20261028/verify.cjs
+
+Django system checks and git diff --check passed. The sender initialization
+added its configuration/history through the audited service. Member, program
+application, operational run, assistance release and referral ticket counts
+were unchanged. Private activation evidence is in
+.local/community-assistance-desk-20261028/activation.json.
+
+No migration, actual external email, hosted deployment, commit or push occurred.
+Existing unfinished EWAF/sidebar changes and Assets/ were preserved. Membership
+verification and program/assistance/EWAF business rules were not changed.

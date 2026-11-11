@@ -1,0 +1,42 @@
+Assistance releases program list and overview — 6 November 2026
+
+Authorized change
+- Replace the Assistance releases program cards with a program list and a
+  right-side overview for the selected program, following the EWAF tab.
+
+Implementation
+- All programs, including non-EWAF and empty programs, appear in the list.
+  Search, assistance type, publication status, registration period, sort and
+  with-applications filters remain available. The list uses normal page scrolling.
+- The selected program has a persistent overview with a receipt progress ring,
+  application/selection/receipt/pending counts, schedule, capacity, configured
+  amount and benefit. View Releases opens its existing one-click receipt table.
+- Overview selection and filtering use pre-rendered rows/panels with no additional
+  request. URLs retain selection and filters; browser Back restores selection.
+  GET links and server filtering continue to work without JavaScript.
+- Narrow screens stack the overview below the list; selecting a program moves
+  focus to that overview. Controls support keyboard use and selection feedback.
+- Summaries use grouped application counts, latest EWAF decision revisions and
+  active receipts. Voided receipts do not count. Slot reservations use the same
+  approved-case/latest-EWAF-selection union as the existing reservation service.
+  No member detail, score calculation, pool capture or ranking-run load is needed.
+- Existing view permissions apply before building the overview. This is a read
+  model only: selection, receipt confirmation, audits and void rules are unchanged.
+- No model/schema change or migration.
+
+Validation
+- 12 tests passed in the first disposable MySQL run: assistance.test_release_portfolio
+  (4) and assistance.test_receipt_button (8). Coverage includes permissions,
+  selection/receipt/void count separation, latest EWAF decision revisions, all
+  programs beyond the former 20-row page, and two-query non-EWAF summaries.
+- The shared program-filter test initially failed on an older Applications UI
+  assertion. Updated its presentation expectations to the existing chooser layout
+  and the new releases list; its focused rerun passed. Combined: 13 checks passed.
+- Django database check, node --check and git diff --check passed.
+- Collected assets and restarted only the retained local web process. The existing
+  MySQL connection remained live; application data was not changed for validation.
+- Native browser checks confirmed the desktop list/right-panel structure, immediate
+  selection of a second program, matching overview link, filtering from 16 programs
+  to 2, and narrow-window selection revealing the centered overview. A separate
+  call window obscured part of the desktop rail; no screenshots were retained.
+- Left the local page showing all programs with Programa testing selected.

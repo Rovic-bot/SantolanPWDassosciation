@@ -1,0 +1,41 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Fictional EWAF development · Santolan PWD{% endblock %}
+{% block content %}<div class="container content-section">
+<a class="workspace-back" href="{% url 'ewaf:scoring_list' %}">Scoring-policy diagnostics</a>
+<h1>Fictional EWAF development</h1>
+<p role="status"><strong>Disposable test session only. Operational EWAF remains disabled. Accepted milestone: 70%.</strong></p>
+<p>These examples contain no real applicants. No form on this page selects a beneficiary, records a release or publishes results.</p>
+<h2 class="h5">Four-criterion policy readiness: blocked</h2>
+<p>The approved removal of Program Relevance from scoring does not approve the revised weights. PR is a program-specific eligibility requirement before EWAF. The amendment approval date and authorized program scope remain unrecorded.</p>
+<ul>{% for item in readiness.pending %}<li>{{ item }}</li>{% endfor %}</ul>
+<h2 class="h5">Eligibility comes first</h2>
+<p>Confirm active verified membership, program qualifications, required evidence, actual functional need and any approved additional assessment. A disability label alone does not establish hospital-bed need. Preserve consent, privacy and accessible alternatives for an authorized home assessment. Missing or disputed evidence stays in the review inventory.</p>
+<form method="post">{% csrf_token %}
+<fieldset><legend class="h5">Guided pairwise comparisons</legend>
+<p>SI: Socioeconomic Indicator; ES: Employment Status; PA: Previous Assistance Received; ND: Number of Dependents.</p>
+<p>Each column is normalized, then each row is averaged to derive a weight. The server calculates reciprocal comparisons. The reference check uses RI = 0.90 and CR below 0.10; passing this mathematical check neither establishes fairness nor authorizes a policy.</p>
+{{ form.non_field_errors }}
+{% for field in form %}<div class="mb-3">{{ field.label_tag }} {{ field }}{% if field.help_text %}<div id="{{ field.auto_id }}_helptext" class="form-text">{{ field.help_text }}</div>{% endif %}{{ field.errors }}</div>{% endfor %}
+</fieldset><button class="btn btn-primary" type="submit">Recalculate fictional example</button></form>
+{% if demo %}
+<h2 class="h5 mt-4">Proposed mathematical configuration</h2>
+<p class="text-break">Version {{ demo.version }} · CR {{ demo.ahp.CR }} · Reference consistency {{ demo.ahp.reference_consistency }}</p>
+<dl>{% for code, weight in demo.ahp.weights.items %}<dt>{{ code }}</dt><dd class="text-break">{{ weight }}</dd>{% endfor %}</dl>
+<p>{{ demo.fictional_measurement_rule }} These are illustrative rules, not proposed Association measurement policy.</p>
+<h2 class="h5">Complete fictional inventory</h2>
+<p>Retained: {{ demo.retained_count }}. Confirmed eligible: {{ demo.eligible_count }}. Unresolved applications block the example; none disappear.</p>
+<ul>{% for item in demo.inventory %}<li>{{ item.id }}: {{ item.eligibility }} — {{ item.functional_need }}</li>{% endfor %}</ul>
+{% if demo.blockers %}<div role="alert"><p>Calculation blocked:</p><ul>{% for reason in demo.blockers %}<li>{{ reason }}</li>{% endfor %}</ul></div>{% endif %}
+{% for result in demo.results %}
+<h3 class="h6">{{ result.id }} · private fictional explanation</h3>
+<p class="text-break">Illustrative score: {{ result.score_0_100 }} / 100. Higher examples: {{ result.higher }}; equal examples: {{ result.equal }}. No business rank or need classification is assigned.</p>
+<div class="table-responsive"><table class="table"><caption>Calculation trace for {{ result.id }}; arbitrary fictional scales</caption><thead><tr><th scope="col">Criterion</th><th scope="col">Input</th><th scope="col">Normalized</th><th scope="col">Weighted contribution</th></tr></thead><tbody>{% for trace in result.traces %}<tr><th scope="row">{{ trace.criterion }}</th><td>{{ trace.input }}</td><td>{{ trace.normalized }}</td><td class="text-break">{{ trace.contribution }}</td></tr>{% endfor %}</tbody></table></div>
+<p>Eligible: yes. Human choice in this example: {{ result.selected_in_demonstration|yesno:'yes,no' }}. Actually assisted: no. A comparison, a human decision and an actual receipt are separate records.</p>
+{% endfor %}
+<p class="text-break">Replay digest: {{ demo.digest }}</p>
+<p>This four-criterion example is not saved as an approved configuration or inserted into the historical five-criterion result tables.</p>
+{% endif %}
+<h2 class="h5 mt-4">Versioned development calculations and history</h2>
+<p>The existing five-criterion engine remains separate. The links below use only harness-created fictional evaluation contracts and preserve immutable calculation history.</p>
+<ul>{% for program in programs %}<li><a href="{% url 'ewaf:development_program' program.program_id %}">{{ program.program__name }}</a></li>{% empty %}<li>No harness-created evaluation contract is available.</li>{% endfor %}</ul>
+</div>{% endblock %}

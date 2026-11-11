@@ -1,0 +1,25 @@
+{% extends 'admin_portal/base.html' %}{% load static %}
+{% block title %}Applicant review &middot; Santolan PWD{% endblock %}
+{% block body_class %}{{ block.super }} applicant-review-workspace{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/application-review.css' %}?v=20261106-decision-email">{% endblock %}
+{% block content %}<div class="container content-section applicant-review-page">
+<nav class="review-breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'core:application_programs' %}">Program Applications &amp; Eligibility</a><span aria-hidden="true">/</span><a href="{% url 'programs:applications' program.pk %}">{{ program.name }}</a><span aria-hidden="true">/</span><span>{{ application.member.full_name }}</span></nav>
+<div class="section-heading review-page-title"><h1>Application review</h1><div class="workspace-actions">{% if perms.members.view_member %}<a class="btn btn-outline-primary" href="{% url 'members:detail' application.member_id %}">Member record</a>{% endif %}{% if can_decide_application and decision_available %}<a class="btn btn-primary" href="#eligibility">Review Eligibility</a>{% endif %}</div></div>
+{% include 'partials/workspace_messages.html' %}
+{% if legacy_review_errors %}<div class="alert alert-danger" role="alert"><p>The previous review could not be saved. Review the message below and use the decision buttons.</p><ul>{% for error in legacy_review_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+{% include 'programs/submitted_profile.html' %}
+<div class="applicant-review-layout">
+<div class="applicant-review-submission">
+{% include 'programs/workflow/confirmation.html' %}
+{% include 'programs/submission_review.html' %}
+</div>
+<section id="eligibility" class="workflow-section ui-panel applicant-decision" data-review-section {% if decision_form.errors %}data-review-errors{% endif %}><div class="section-heading"><h2 class="h4" tabindex="-1" data-review-heading>{% include 'programs/review_icon.html' with icon='decision' %} Eligibility decision</h2><span class="quiet-badge" data-status="{{ review_code }}" role="status">{{ review_result }}</span></div>
+{% if can_decide_application and decision_available %}<form id="eligibility-decision-form" method="post" action="{% url 'programs:application_detail' program.pk application.pk %}" data-applicant-review-form data-review-target="eligibility">{% csrf_token %}<input type="hidden" name="action" value="review_decision">{{ decision_form.non_field_errors }}
+{% for field in decision_form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}{{ decision_form.eligibility.errors }}
+{% if completed_reassessment %}<p class="alert alert-info">The existing receipt and original selection remain recorded.</p>{% if perms.ewaf.view_operational %}<p><a href="{% url 'ewaf:operational_workspace' program.pk %}">Return to EWAF &amp; selection</a></p>{% endif %}{% endif %}
+<div class="review-remarks">{{ decision_form.notes.label_tag }}{{ decision_form.notes }}{{ decision_form.notes.errors }}</div>
+<p class="small text-danger" role="alert" data-review-error hidden></p><fieldset class="review-decision-actions"><legend>Select decision action</legend><div class="workspace-actions"><button class="btn btn-primary" name="eligibility" value="eligible">{% include 'programs/ui_icon.html' with name='check' %} Eligible</button><button class="btn btn-outline-primary" name="eligibility" value="review">{% include 'programs/review_icon.html' with icon='info' %} Needs Information</button><button class="btn btn-outline-secondary" name="eligibility" value="ineligible">{% include 'programs/review_icon.html' with icon='close' %} Ineligible</button></div></fieldset></form>{% elif can_decide_application %}<p>{{ decision_unavailable_reason }}</p>{% else %}<p>Application review permission is required to record an eligibility decision.</p>{% endif %}
+{% if can_decide_application %}{% include 'programs/decision_email_status.html' %}{% endif %}
+</section>
+</div>
+</div><script src="{% static 'js/admin-review.js' %}?v=20261111-processing" defer></script>{% endblock %}

@@ -1,0 +1,10 @@
+{% if form.profile_sections %}
+<nav class="resident-index" aria-label="Form sections">
+  <details data-form-directory>
+  <summary>In this form</summary>
+  <ol>{% for title, fields in form.profile_sections %}
+    <li><a href="#form-section-{{ forloop.counter }}"><span aria-hidden="true">{{ forloop.counter|stringformat:'02d' }}</span>{{ title }}</a></li>
+  {% endfor %}</ol>
+  </details>
+</nav>
+{% endif %}
