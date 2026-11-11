@@ -17,7 +17,8 @@ ENV PATH="/opt/venv/bin:$PATH" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY --chown=santolan:santolan . /app
+RUN install -d -o santolan -g santolan /app/staticfiles
 USER santolan
-RUN python scripts/check_certificate_runtime.py
+RUN test -w /app/staticfiles && python scripts/check_certificate_runtime.py
 EXPOSE 10000
 CMD ["sh", "/app/scripts/render-start.sh"]
