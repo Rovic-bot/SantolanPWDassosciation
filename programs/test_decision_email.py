@@ -118,7 +118,7 @@ class DecisionEmailTests(TestCase):
         job = self.save_decision()
         self.assertEqual((job.state, job.skip_reason, job.attempt_count), ('skipped', 'missing', 0))
         self.assertEqual(len(mail.outbox), 1)
-        self.assertContains(self.client.get(self.url), 'No email address was provided')
+        self.assertContains(self.client.get(self.url), 'Email not sent — no email address.')
 
     def test_invalid_primary_address_never_silently_uses_registration(self):
         self.addresses('not-an-email', 'registration@example.invalid')

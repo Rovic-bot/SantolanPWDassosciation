@@ -60,6 +60,16 @@ DATABASES = {'default': {
     },
     'TEST': {'NAME': DB_TEST_NAME, 'CHARSET': 'utf8mb4'},
 }}
+DB_ENGINE = os.environ.get('DB_ENGINE', 'mysql')
+if DB_ENGINE == 'postgresql':
+    DATABASES['default'].update(
+        ENGINE='django.db.backends.postgresql',
+        OPTIONS={'connect_timeout': 10},
+        TEST={'NAME': DB_TEST_NAME},
+        DISABLE_SERVER_SIDE_CURSORS=True,
+    )
+elif DB_ENGINE != 'mysql':
+    raise ImproperlyConfigured('DB_ENGINE must be mysql or postgresql.')
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -114,6 +124,8 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
 EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
 EMAIL_TIMEOUT = env_positive_int('EMAIL_TIMEOUT', 10)
+EMAIL_HTTPS_RELAY_URL = os.environ.get('EMAIL_HTTPS_RELAY_URL', '')
+EMAIL_HTTPS_RELAY_TOKEN = os.environ.get('EMAIL_HTTPS_RELAY_TOKEN', '')
 EMAIL_FILE_PATH = BASE_DIR / '.local/referral-email-outbox'
 # Certificate delivery is a separate, explicit Resend connection. Keep keys in
 # the environment, never in templates, logs, version control, or public files.

@@ -4,6 +4,8 @@ Django + native MySQL application for the Barangay Santolan PWD Association. Pub
 
 ## Current development — November 11, 2026
 
+The online deployment branch is `deployment/free-render-supabase`. See [current Render + Supabase instructions](docs/render-supabase-2026-11-11.md) for PostgreSQL, private uploads, Gmail relay, Docker/LibreOffice, configuration and backup boundaries. Older deployment notes below describe earlier environments.
+
 The complete application snapshot is on the [`development` branch of SantolanPWDassosciation](https://github.com/Rovic-bot/SantolanPWDassosciation/tree/development). **Start with [Fresh Checkout Setup](docs/FRESH_CHECKOUT.md).** It covers the database, migrations, current feature settings, registration policy, Gmail, certificate PDF conversion, annual observances, and startup on another computer. The [publication validation](docs/github-development-2026-11-11-validation.md) records the actual checks and publication scope.
 
 This branch includes all application source, migrations, templates, JavaScript/CSS, required images and downloadable forms, certificate templates, dependency manifests, tests, and developer tools. The latest work includes annual-observance creation/editing, email and receipt workflows, household scoring, Admin animations and popups, public result dragging, and immediate processing feedback. Credentials, live database records, private uploads, generated screenshots, and the old private Git history are not part of this public source snapshot.

@@ -15,6 +15,12 @@ _identity = None
 
 
 def identity():
+    if connection.vendor == 'postgresql':
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT current_database(),current_setting('data_directory'),"
+                           "current_setting('port'),system_identifier::text,version(),"
+                           "current_setting('transaction_isolation') FROM pg_control_system()")
+            return cursor.fetchone()
     if connection.vendor != 'mysql':
         raise PermissionDenied('Disposable MySQL required.')
     with connection.cursor() as cursor:
@@ -26,7 +32,8 @@ def require_disposable():
     if _identity is None:
         raise PermissionDenied('Durable numerical development requires the isolated test runner.')
     actual = identity()
-    if actual[:4] != _identity[:4] or actual[0] != 'test_g12_disposable':
+    expected = 'test_pg_disposable' if connection.vendor == 'postgresql' else 'test_g12_disposable'
+    if actual[:4] != _identity[:4] or actual[0] != expected:
         raise PermissionDenied('Disposable database identity changed.')
     # Tests may override media only to their own newly created temporary fixtures.
     from django.conf import settings
@@ -62,6 +69,35 @@ class DurableTestRunner(DiscoverRunner):
                 raise PermissionDenied('All test tables must be transactional InnoDB.')
         _identity = test_identity
         print('Durable isolated test identity:', test_identity, 'all tables InnoDB', flush=True)
+        return result
+
+    def teardown_databases(self, old_config, **kwargs):
+        global _identity
+        _identity = None
+        return super().teardown_databases(old_config, **kwargs)
+
+
+class DurablePostgresTestRunner(DiscoverRunner):
+    """Equivalent capability for a newly initialized loopback PostgreSQL cluster."""
+    def setup_databases(self, **kwargs):
+        global _identity
+        directory = Path(os.environ.get('PG_TEST_ARTIFACT_DIR', '')).resolve()
+        actual = identity()
+        if (connection.vendor != 'postgresql' or os.environ.get('PYTHON_DOTENV_DISABLED') != '1'
+                or not directory.name.startswith('santolan-pg-tests-')
+                or directory.parent != Path(tempfile.gettempdir()).resolve()
+                or Path(actual[1]).resolve() != directory / 'data'
+                or actual[0] != 'pg_empty' or connection.settings_dict['HOST'] != '127.0.0.1'
+                or connection.settings_dict['TEST']['NAME'] != 'test_pg_disposable'):
+            raise PermissionDenied('Not the isolated PostgreSQL harness.')
+        with connection.cursor() as cursor:
+            if connection.introspection.table_names(cursor):
+                raise PermissionDenied('Harness base database must be empty.')
+        result = super().setup_databases(**kwargs)
+        test_identity = identity()
+        if test_identity[1:4] != actual[1:4] or test_identity[0] != 'test_pg_disposable':
+            raise PermissionDenied('Test database identity mismatch.')
+        _identity = test_identity
         return result
 
     def teardown_databases(self, old_config, **kwargs):

@@ -50,11 +50,15 @@ SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', False)
 _ca_path = Path(required('DB_SSL_CA'))
 if not _ca_path.is_absolute() or not _ca_path.is_file():
     raise ImproperlyConfigured('DB_SSL_CA must point to an existing absolute CA certificate file.')
-DATABASES['default']['OPTIONS'] = {
-    **DATABASES['default']['OPTIONS'],
-    'ssl': {'ca': str(_ca_path)},
-    'ssl_mode': 'VERIFY_IDENTITY',
-}
+if DB_ENGINE == 'postgresql':
+    DATABASES['default']['OPTIONS'].update(
+        sslmode='verify-full', sslrootcert=str(_ca_path),
+        options='-c search_path=santolan,public',
+    )
+else:
+    DATABASES['default']['OPTIONS'].update(
+        ssl={'ca': str(_ca_path)}, ssl_mode='VERIFY_IDENTITY',
+    )
 DATABASES['default']['CONN_MAX_AGE'] = 60
 DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 

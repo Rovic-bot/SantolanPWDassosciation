@@ -6,6 +6,7 @@ import re
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Prefetch
 from django.utils import timezone
 from core.permissions import require_workspace_permissions
 from members.models import Member
@@ -215,7 +216,8 @@ def publish_results(pk, *, user, version, address=None):
     require_workspace_permissions(user, *RESULT_PERMISSIONS, 'announcements.publish_announcement')
     program_id = Announcement.objects.values_list('program_id', flat=True).get(pk=pk)
     program = lock_program(program_id)
-    item = Announcement.objects.select_for_update().select_related('result_revision').get(pk=pk)
+    item = Announcement.objects.select_for_update().prefetch_related(Prefetch(
+        'result_revision', queryset=ProgramResultRevision.objects.select_for_update())).get(pk=pk)
     if item.result_revision and item.result_revision.public_payload.get('kind') == 'assistance_recipients':
         require_workspace_permissions(user, 'assistance.view_assistancerelease')
     item.program = program

@@ -19,6 +19,12 @@ SMTP_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 TEST_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
 
+def gmail_backend():
+    if getattr(settings, 'EMAIL_HTTPS_RELAY_URL', ''):
+        return 'core.https_email.EmailBackend'
+    return SMTP_BACKEND
+
+
 class EmailConnectionRequired(Exception):
     pass
 
@@ -59,7 +65,7 @@ def check_gmail_login(sender, password):
     """Authenticate over TLS only; saving settings never sends a test message."""
     connection = None
     try:
-        connection = get_connection(backend=SMTP_BACKEND, **gmail_options(sender, password))
+        connection = get_connection(backend=gmail_backend(), **gmail_options(sender, password))
         connection.open()
     except smtplib.SMTPAuthenticationError:
         raise ValidationError('Google could not sign in. Check the Gmail address and its app password.') from None
@@ -77,14 +83,14 @@ def check_gmail_login(sender, password):
 def transport_for(row):
     if row and row.gmail_password_encrypted:
         password = decrypt_password(row.sender_email, row.gmail_password_encrypted)
-        return SMTP_BACKEND, gmail_options(row.sender_email, password)
+        return gmail_backend(), gmail_options(row.sender_email, password)
     # Only the explicitly selected memory backend captures test mail. File and
     # console outboxes must never masquerade as the user's direct Send action.
     if row and settings.EMAIL_BACKEND == TEST_BACKEND:
         return TEST_BACKEND, {}
     if (row and settings.EMAIL_BACKEND == SMTP_BACKEND and settings.EMAIL_HOST_PASSWORD
             and settings.EMAIL_HOST_USER.casefold() == row.sender_email.casefold()):
-        return SMTP_BACKEND, {}
+        return gmail_backend(), {}
     raise EmailConnectionRequired('Connect this Gmail account in Association email settings before sending.')
 
 

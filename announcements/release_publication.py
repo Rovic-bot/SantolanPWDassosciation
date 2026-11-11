@@ -1,8 +1,9 @@
 """Exact, explicitly published selections that permit assistance receipt recording."""
 from django.core.exceptions import ValidationError
+from django.db.models import Prefetch
 from django.utils import timezone
 
-from .models import Announcement
+from .models import Announcement, ProgramResultRevision
 from .participation import KIND
 
 MESSAGE = 'Publish this selected member in Announcements before recording actual receipt.'
@@ -15,9 +16,14 @@ def published_selection(program, *, lock=False):
     selection remain independently enforced by the release writer. Legacy masked
     references cannot establish an exact member match and require republication.
     """
-    query = Announcement.objects.select_related('result_revision').filter(
+    query = Announcement.objects.filter(
         program=program, status='published', published_at__lte=timezone.now())
-    item = (query.select_for_update() if lock else query).first()
+    if lock:
+        query = query.select_for_update().prefetch_related(Prefetch(
+            'result_revision', queryset=ProgramResultRevision.objects.select_for_update()))
+    else:
+        query = query.select_related('result_revision')
+    item = query.first()
     if not item or not item.result_revision:
         return set(), None
     revision = item.result_revision

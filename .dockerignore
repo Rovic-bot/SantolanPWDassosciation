@@ -1,0 +1,22 @@
+.git
+.env
+.env.*
+.local
+.venv
+venv
+media
+staticfiles
+node_modules
+__pycache__
+**/__pycache__
+*.pyc
+*.sql
+*.dump
+*.log
+*.zip
+*.7z
+*.key
+output
+Assets
+new pages
+.pytest_cache

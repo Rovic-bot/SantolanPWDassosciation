@@ -18,6 +18,10 @@ def capture_slots(apps, schema_editor):
         # Only attach the capture identity; existing required/active policy is retained.
         item.capture_key = key
         item.save(using=alias, update_fields=['capture_key'])
+    # PostgreSQL creates the deferred unique index when the schema editor exits.
+    # Finish FK checks from these inserts before that deferred DDL is executed.
+    if schema_editor.connection.vendor == 'postgresql':
+        schema_editor.execute('SET CONSTRAINTS ALL IMMEDIATE')
 
 
 class Migration(migrations.Migration):
