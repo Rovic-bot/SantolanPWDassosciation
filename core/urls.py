@@ -19,6 +19,7 @@ urlpatterns = [
     path('membership/register/', register, name='membership'),
     path('contact/', views.public_page, {'page': 'contact'}, name='contact'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('workspace/review-counts/', views.review_notification_counts, name='review_notification_counts'),
     path('workspace/applications/', workspace.application_programs, name='application_programs'),
     path('information/applications/', views.public_page, {'page': 'application-information'}, name='application_information'),
     path('information/privacy/', views.public_page, {'page': 'privacy'}, name='privacy'),

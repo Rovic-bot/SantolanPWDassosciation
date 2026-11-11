@@ -31,6 +31,7 @@ def card_presentation(program: Program) -> CardPresentation:
 
 
 def portfolio_context(request) -> dict:
+    from core.review_notifications import program_review_counts
     now = timezone.now()
     programs = Program.objects.all()
     closed = request.GET.get('status') == 'closed'
@@ -39,8 +40,10 @@ def portfolio_context(request) -> dict:
     context['statuses'] = [*context['statuses'], ('closed', 'Registration closed')]
     if closed:
         context['status'] = 'closed'
+    pending = program_review_counts(request.user, [program.pk for program in context['page_obj']])
     for program in context['page_obj']:
         program.portfolio = card_presentation(program)
+        program.review_count = pending.get(program.pk, 0)
     totals = programs.aggregate(total=Count('pk'), categories=Count('assistance_type', distinct=True),
         published=Count('pk', filter=Q(status='published')), draft=Count('pk', filter=Q(status='draft')),
         registration_closed=Count('pk', filter=Q(status='published', registration_closes_at__lte=now)),

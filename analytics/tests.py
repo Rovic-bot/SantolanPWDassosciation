@@ -290,7 +290,7 @@ class OverviewTests(TestCase):
             data = self.projection()
             html = render_to_string('admin_portal/dashboard.html', {'overview': data, 'form': form}, request=request)
             elapsed = (perf_counter()-start)*1000
-        self.assertLessEqual(len(queries), 24)
+        self.assertLessEqual(len(queries), 27)  # Includes permission-scoped review badges.
         print(f'Dashboard fixture: {len(queries)} SELECT queries; aggregate + render {elapsed:.1f} ms', flush=True)
         for private in ['Private fixture name', 'PRIVATE DESK NAME', 'private@example.invalid', 'PRIVATE SUBJECT',
                         'PRIVATE MEDICAL TEXT', 'SYNTH-DASH-', 'SYNTH-APPLICATION-', '2016-10-29', '1986-10-30']:
@@ -299,7 +299,8 @@ class OverviewTests(TestCase):
         self.assertEqual(html.count('class="overview-data-table"'), 12)
         main = html.split('<main', 1)[1].split('</main>', 1)[0]
         for removed in ['Membership reviews', 'Photo Verification</h2>', 'Manage accounts', 'Manage public information',
-                        'workspace-priority', 'workspace-aside', 'workspace-sections']:
+                        'workspace-priority', 'workspace-aside', 'workspace-sections',
+                        'More metrics', 'Additional metrics', 'overview-definitions']:
             self.assertNotIn(removed, main)
         self.assertIn('Member Directory', html)
         self.assertIn('Membership reviews', html)
@@ -368,6 +369,31 @@ class OverviewTests(TestCase):
         Member.objects.filter(pk=self.members[2].pk).update(birthdate=NOW.date()+timedelta(days=1))
         data = self.projection()['ages']
         self.assertEqual((data['total'], data['invalid']), (2, 1))
+
+    def test_histogram_birthday_boundaries_leap_day_and_local_date(self):
+        Member.objects.exclude(pk=self.members[0].pk).update(archived_at=NOW, is_active=False)
+        member = Member.objects.filter(pk=self.members[0].pk)
+        for birthdate, instant, expected in [
+            ('2016-10-29', NOW, '10–19'),
+            ('2016-10-30', NOW, '0–9'),
+            ('2016-11-01', NOW, '0–9'),
+            ('2016-09-30', NOW, '10–19'),
+            ('2004-02-29', datetime(2034, 2, 28, 12, tzinfo=ZONE), '20–29'),
+            ('2004-02-29', datetime(2034, 3, 1, 12, tzinfo=ZONE), '30–39'),
+            ('2004-02-29', datetime(2024, 2, 29, 12, tzinfo=ZONE), '20–29'),
+            ('1926-10-29', NOW, '100–109'),
+            ('2016-10-30', datetime(2026, 10, 29, 16, tzinfo=ZoneInfo('UTC')), '10–19'),
+        ]:
+            with self.subTest(birthdate=birthdate, instant=instant):
+                member.update(birthdate=birthdate)
+                with connection.execute_wrapper(only_reads):
+                    data = services.ages(instant)
+                self.assertEqual([(label, count) for label, count in data['rows'] if count], [(expected, 1)])
+
+    def test_histogram_empty_current_members(self):
+        Member.objects.update(archived_at=NOW, is_active=False)
+        data = services.ages(NOW)
+        self.assertEqual((data['state'], data['rows'], data['total']), ('ready', [], 0))
 
     def test_heatmap_uses_local_start_day_once_not_duration_or_reference(self):
         first, second = Event.objects.all()

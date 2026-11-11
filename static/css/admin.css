@@ -40,8 +40,8 @@
 .workspace-module[open] > summary .workspace-chevron { transform: rotate(90deg); }
 .workspace-module-links { margin: .125rem 0 .5rem 1.1875rem; padding-left: .5625rem; border-left: 1px solid var(--line); }
 .workspace-concern-label { flex: 1; min-width: 0; }
-.admin-workspace .workspace-concern-badge { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: .1rem .4rem; margin-left: .4rem; border: 1px solid var(--brand-primary); border-radius: 999px; background: var(--brand-primary); color: var(--brand-on-action); font-size: .6875rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.admin-workspace .workspace-concern-badge[hidden], .workspace-module[open] > summary .workspace-concern-badge { display: none; }
+.admin-workspace .workspace-concern-badge, .admin-workspace .workspace-review-badge { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: .1rem .4rem; margin-left: .4rem; border: 1px solid var(--brand-primary); border-radius: 999px; background: var(--brand-primary); color: var(--brand-on-action); font-size: .6875rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.admin-workspace .workspace-review-badge[hidden], .workspace-module[open] > summary .workspace-review-badge, .admin-workspace .workspace-concern-badge[hidden], .workspace-module[open] > summary .workspace-concern-badge { display: none; }
 .workspace-module-notice { margin: .5rem .75rem .75rem; color: var(--muted); font-size: .8125rem; line-height: 1.6; }
 .workspace-account { margin-top: 1.5rem; padding: 1.25rem .625rem .25rem; border-top: 1px solid var(--line); display: flex; flex-direction: column; align-items: flex-start; font-size: .8125rem; overflow-wrap: anywhere; }
 .workspace-account .account-label { color: var(--muted); font-size: .625rem; font-weight: 500; letter-spacing: .06em; }

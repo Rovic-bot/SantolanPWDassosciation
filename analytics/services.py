@@ -6,8 +6,8 @@ from datetime import date, datetime, time, timedelta
 import logging
 
 from django.db import DatabaseError
-from django.db.models import Case, Count, F, Func, IntegerField, Q, Value, When
-from django.db.models.functions import Floor
+from django.db.models import Case, Count, F, IntegerField, Q, Value, When
+from django.db.models.functions import ExtractYear, Floor
 from django.utils import timezone
 
 from assistance.models import AssistanceRelease
@@ -217,9 +217,12 @@ def ages(now):
     source = Member.objects.filter(archived_at__isnull=True)
     exclusions = source.aggregate(missing=Count('pk', filter=Q(birthdate__isnull=True)),
                                   invalid=Count('pk', filter=Q(birthdate__gt=as_of)))
-    # Native MySQL completed years; only equal-width bin counts leave the database.
-    age = Func(F('birthdate'), Value(as_of), function='TIMESTAMPDIFF',
-               template='%(function)s(YEAR, %(expressions)s)', output_field=IntegerField())
+    # Completed birthdays, using portable date extraction on MySQL/PostgreSQL.
+    # A February 29 birthday advances on March 1 in non-leap years, as before.
+    birthday_pending = Q(birthdate__month__gt=as_of.month) | Q(
+        birthdate__month=as_of.month, birthdate__day__gt=as_of.day)
+    age = Value(as_of.year) - ExtractYear('birthdate') - Case(
+        When(birthday_pending, then=Value(1)), default=Value(0), output_field=IntegerField())
     groups = source.filter(birthdate__lte=as_of).order_by().annotate(
         band=Floor(age / Value(10.0))).values('band').annotate(count=Count('pk', distinct=True))
     counts = {int(row['band']): row['count'] for row in groups}

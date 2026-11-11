@@ -9,6 +9,7 @@ from ewaf.evidence import VIEW as EVIDENCE_VIEW
 from ewaf.configuration_services import VIEW as CONFIGURATION_VIEW
 from ewaf.scoring_inputs import VIEW as SCORING_VIEW
 from ewaf.operational_services import VIEW as OPERATIONAL_VIEW
+from core.review_notifications import review_counts
 
 register = template.Library()
 
@@ -33,19 +34,23 @@ def workspace_navigation(context):
     model = opts.label_lower if opts else ''
     workspace = user.has_perm('accounts.access_dashboard')
     groups = []
+    counts = review_counts(request)
 
     def allowed(*permissions):
         return workspace and user.has_perms(permissions)
 
-    def link(label, name, permitted, active=False, query=''):
+    def link(label, name, permitted, active=False, query='', review_kind=''):
         if not permitted:
             return None
-        return {'label': label, 'url': reverse(name) + query, 'active': active}
+        return {'label': label, 'url': reverse(name) + query, 'active': active,
+                'review_kind': review_kind, 'review_count': counts.get(review_kind, 0)}
 
     def group(key, label, index, links, notice='', current=False):
         links = [item for item in links if item is not None]
         if links or notice:
             groups.append({'key': key, 'label': label, 'index': index, 'links': links,
+                           'review_kind': next((item['review_kind'] for item in links if item['review_kind']), ''),
+                           'review_count': sum(item['review_count'] for item in links),
                            'referral_badge': next((item['referral_badge'] for item in links if item.get('referral_badge')), None),
                            'notice': notice, 'active': current or any(item['active'] for item in links)})
 
@@ -59,7 +64,7 @@ def workspace_navigation(context):
              'membership.encode_membershipapplication'), route == 'membership:encode'),
         link('Membership reviews', 'membership:review_home',
              allowed('membership.view_membershipapplication') or allowed('membership.view_pdaoregistration'),
-             app == 'membership' and route not in ('membership:encode', 'membership:pdao_onsite')),
+             app == 'membership' and route not in ('membership:encode', 'membership:pdao_onsite'), review_kind='membership'),
         link('Onsite PDAO registration', 'membership:pdao_onsite',
              allowed('membership.view_pdaoregistration', 'membership.add_pdaoregistration'),
              route == 'membership:pdao_onsite'),
@@ -69,7 +74,8 @@ def workspace_navigation(context):
     photo_routes = ('programs:photo_queue', 'programs:photo_review', 'programs:photo')
     group('programs', 'Programs & Events', '03', [
         link('Program Management', 'program_portfolio', allowed('programs.view_program'),
-             route in ('program_portfolio', 'program_builder', 'program_detail') or (app == 'programs' and route not in application_routes + photo_routes)),
+             route in ('program_portfolio', 'program_builder', 'program_detail') or (app == 'programs' and route not in application_routes + photo_routes),
+             review_kind='programs' if allowed('programs.view_programapplication') else ''),
         link('Events Calendar', 'event_workspace',
              allowed('events.view_annualobservance') or allowed('events.view_event'), app == 'events' or route == 'event_workspace'),
     ])

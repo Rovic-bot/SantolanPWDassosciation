@@ -8,6 +8,26 @@ from programs.models import Program
 from django.utils import timezone
 
 
+@never_cache
+@dashboard_required
+@require_safe
+def review_notification_counts(request):
+    from uuid import UUID
+    from django.http import JsonResponse
+    from .review_notifications import review_counts, program_review_counts
+    # Only the currently displayed page (at most 20 program cards) is polled.
+    raw = request.GET.get('programs', '')
+    ids = raw.split(',') if raw else []
+    try:
+        if len(raw) > 740 or len(ids) > 20:
+            raise ValueError
+        ids = [UUID(item) for item in ids]
+    except ValueError:
+        return JsonResponse({'error': 'Invalid program list.'}, status=400)
+    return JsonResponse({**review_counts(request),
+        'program_cards': {str(key): count for key, count in program_review_counts(request.user, ids).items()}})
+
+
 # Stable Home anchors also preserve existing bookmarks and in-application links.
 HOME_INFORMATION = (
     ('application-information', 'Application guidance'),

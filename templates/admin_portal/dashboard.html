@@ -36,14 +36,6 @@
       </section>
       {% endfor %}
     </div>
-    <details class="overview-more">
-      <summary>More metrics &amp; reporting details</summary>
-      <div class="overview-metrics" aria-label="Additional metrics">{% for metric in overview.additional_metrics %}{% include 'analytics/metric.html' %}{% endfor %}</div>
-      <p class="overview-updated"><span class="overview-live-dot" aria-hidden="true"></span>Live records · Updated <time datetime="{{ overview.updated|date:'c' }}">{{ overview.updated|date:'j M Y, g:i A' }}</time> · {{ overview.zone }}</p>
-      <dl class="overview-definitions">{% for metric in overview.metrics %}<div><dt>{{ metric.label }}</dt><dd>{{ metric.caption }}</dd></div>{% endfor %}</dl>
-      <p class="overview-note">Program filters apply to applications, releases and program charts. Membership, events and Desk requests remain association-wide. Current snapshots stay current.</p>
-      <p class="overview-note">Activity uses retained records and the displayed dates. Monthly summaries may include partial months at the range boundaries. Zero means no matching recorded activity; unavailable sources are labeled separately.</p>
-    </details>
   {% endif %}
   </div>
   <dialog class="overview-data-dialog" id="overview-data-dialog" aria-labelledby="overview-data-title">

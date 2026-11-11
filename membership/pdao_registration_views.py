@@ -116,10 +116,11 @@ def finish(request):
 @dashboard_required
 @require_safe
 def review_home(request):
+    from core.review_notifications import review_counts
     actor = get_user_model().objects.get(pk=request.user.pk)
     if not actor.has_perm('membership.view_membershipapplication') and not actor.has_perm(services.VIEW):
         raise PermissionDenied
-    return render(request, 'membership/reviews.html', {'association_online': available('staff')
+    return render(request, 'membership/reviews.html', {'review_counts': review_counts(request), 'association_online': available('staff')
         and actor.has_perm('membership.view_registrationintake')})
 
 

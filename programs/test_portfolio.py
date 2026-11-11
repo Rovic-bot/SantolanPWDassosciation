@@ -52,7 +52,7 @@ class ProgramPortfolioTests(TestCase):
             self.assertContains(response, 'Program portfolio')
             self.assertContains(response, f'href="{reverse("program_builder")}"')
             self.assertNotContains(response, f'href="{reverse("programs:pdao_readiness")}"')
-            self.assertContains(response, 'aria-current="page">Program Management')
+            self.assertContains(response, 'aria-current="page"><span class="workspace-concern-label">Program Management</span>')
         self.assertEqual(self.client.post(reverse('program_portfolio')).status_code, 405)
 
     def test_totals_are_not_inflated_by_application_joins_or_filters(self):

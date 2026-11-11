@@ -5,7 +5,7 @@
 {% block dark-mode-vars %}{% if not has_permission %}{{ block.super }}{% endif %}{% endblock %}
 {% block responsive %}{{ block.super }}{% if has_permission and not is_popup %}
   <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261104-tabs">
-  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261111-concern-badge">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261111-review-badges">
   <link rel="stylesheet" href="{% static 'css/admin-workspace.css' %}">
   <link rel="stylesheet" href="{% static 'css/admin-ui.css' %}?v=20261010-cleanup">
   <noscript><style>.workspace-navigation.collapse{display:block!important}.workspace-menu{display:none!important}</style></noscript>
