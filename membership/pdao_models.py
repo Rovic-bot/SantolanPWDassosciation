@@ -1,9 +1,10 @@
-"""Private PDAO intake: deliberately has no Association application/member link."""
+"""Private PDAO intake, claimed IDs and optional Association registration links."""
 import uuid
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import models
+from django.utils import timezone
 from core.reference_services import ShortReferenceMixin
 
 from .registration_models import RegistrationRecord
@@ -69,6 +70,8 @@ class PDAORegistrationEvent(RegistrationRecord):
         ('needs_info', 'More information requested'),
         ('email_retry', 'Review email retried'),
         ('claim_notice_queued', 'PWD ID claim notice requested'),
+        ('id_claimed', 'PWD ID claimed'),
+        ('membership_started', 'Association membership application started'),
     ])
     details = models.JSONField(default=dict, editable=False)
     occurred_at = models.DateTimeField(auto_now_add=True)
@@ -92,3 +95,32 @@ class PDAORegistrationRevision(RegistrationRecord):
         ordering = ['-version']
         default_permissions = ()
         constraints = [models.UniqueConstraint(fields=['registration', 'version'], name='pdao_review_version')]
+
+
+class PDAOIDClaim(RegistrationRecord):
+    registration = models.OneToOneField(PDAORegistration, on_delete=models.PROTECT,
+        primary_key=True, related_name='id_claim')
+    pwd_number = models.CharField(max_length=80)
+    claimed_at = models.DateTimeField(default=timezone.now, editable=False)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='+')
+    actor_label = models.CharField(max_length=150)
+    membership_intake = models.OneToOneField('membership.RegistrationIntake', null=True, blank=True,
+        on_delete=models.PROTECT, related_name='pdao_claim')
+    membership_started_at = models.DateTimeField(null=True, blank=True, editable=False)
+    membership_started_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.PROTECT, related_name='+')
+
+    class Meta:
+        default_permissions = ()
+        constraints = [models.CheckConstraint(condition=(
+            models.Q(membership_intake__isnull=True, membership_started_at__isnull=True, membership_started_by__isnull=True)
+            | models.Q(membership_intake__isnull=False, membership_started_at__isnull=False, membership_started_by__isnull=False)),
+            name='pdao_membership_link_complete')]
+
+    def save(self, *args, **kwargs):
+        if not self._state.adding:
+            fields = {'membership_intake', 'membership_started_at', 'membership_started_by'}
+            if (set(kwargs.get('update_fields') or ()) != fields
+                    or type(self).objects.filter(pk=self.pk, membership_intake__isnull=False).exists()):
+                raise PermissionDenied('Claim records and completed membership links must be preserved.')
+        return super().save(*args, **kwargs)

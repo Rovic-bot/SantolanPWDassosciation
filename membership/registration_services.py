@@ -157,13 +157,14 @@ def _cleanup(saved):
             logger.error('Uncommitted private registration object needs cleanup: %s', name)
 
 
-def submit_registration(context_id, binding, data, files=None, *, user=None, channel='online'):
+def submit_registration(context_id, binding, data, files=None, *, user=None, channel='online', _saved_files=None):
     if channel not in ('online', 'printed', 'walk_in'):
         raise PermissionDenied
     policy = policy_for('public' if channel == 'online' else 'staff')
     payload, uploads, fingerprints = _validated(data, files, policy, onsite=channel != 'online', online=channel == 'online')
     payload_digest = digest({'data': payload, 'files': fingerprints, 'policy': digest(policy)})
-    saved = []
+    # An enclosing workflow can own cleanup through its outer transaction.
+    saved = [] if _saved_files is None else _saved_files
     try:
         with transaction.atomic(), registration_write():
             context, policy = _context(context_id, binding, user=user, channel=channel)
@@ -193,7 +194,8 @@ def submit_registration(context_id, binding, data, files=None, *, user=None, cha
             record_action(intake, 'received', revision, actor=actor, context=context)
             return intake
     except Exception:
-        _cleanup(saved)
+        if _saved_files is None:
+            _cleanup(saved)
         raise
 
 

@@ -1,0 +1,25 @@
+{% if registration.status == 'forwarded' %}
+<section class="member-record-card pdao-processing" aria-labelledby="pdao-collection-heading">
+  <h2 id="pdao-collection-heading">PWD ID collection</h2>
+  {% if id_claim %}
+    <p><strong>ID claimed</strong> on {{ id_claim.claimed_at|date:'M j, Y · g:i A' }}.</p>
+    <p>Issued PWD ID: {{ id_claim.pwd_number }}</p>
+    {% if id_claim.membership_intake_id %}
+      <p>An Association membership application has been started.</p>
+      {% if can_start_membership %}<a class="btn btn-primary" href="{% url 'membership:registration_detail' id_claim.membership_intake.reference %}">Open membership application</a>{% endif %}
+    {% elif can_start_membership %}
+      <p>If the applicant also wants Association membership, reuse their PDAO details and complete the remaining membership fields.</p>
+      <a class="btn btn-primary" href="{% url 'membership:pdao_membership' registration.pk %}">Start Association Membership</a>
+      <p class="form-text">Membership requires a separate application and approval.</p>
+    {% endif %}
+  {% elif perms.membership.forward_pdaoregistration %}
+    <p>Record this only after the applicant or authorized representative has received the issued PWD ID.</p>
+    <form method="post" action="{% url 'membership:pdao_claim_id' registration.pk %}">
+      {% csrf_token %}{{ id_claim_form.as_p }}
+      <button class="btn btn-primary" type="submit">Record ID as claimed</button>
+    </form>
+  {% else %}
+    <p>Actual ID collection has not been recorded.</p>
+  {% endif %}
+</section>
+{% endif %}

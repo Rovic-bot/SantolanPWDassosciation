@@ -44,6 +44,7 @@
           {% include 'membership/pdao/review_actions.html' %}
         </section>
         {% include 'membership/pdao/email_status.html' %}
+        {% include 'membership/pdao/membership_actions.html' %}
         <section class="member-record-card member-history-card" id="pdao-history"><h2>Processing history</h2><p>Latest activity first</p>{% for event in processing_history %}<article class="member-timeline-item"><p>{{ event.get_action_display }}</p><p class="small"><time datetime="{{ event.occurred_at|date:'c' }}">{{ event.occurred_at|date:'M j, Y · g:i A' }}</time>{% if event.actor_label %}<br>{{ event.actor_label }}{% endif %}</p></article>{% empty %}<p>No processing history recorded.</p>{% endfor %}</section>
       </aside>
     </div>

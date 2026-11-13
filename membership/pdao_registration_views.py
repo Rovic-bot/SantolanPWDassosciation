@@ -25,6 +25,8 @@ from .pdao_models import PDAORegistration
 from .pdao_presentation import record_summary
 from . import pdao_email
 from . import pdao_claim_email
+from . import pdao_membership
+from .pdao_models import PDAOIDClaim
 from .prpwd import registry_url
 from .registration_policy import RegistrationUnavailable, available
 from core.reference_services import lookup_key
@@ -235,7 +237,19 @@ def detail(request, key):
                 return redirect('membership:pdao_detail', key=key)
         else:
             status = 400
+    id_claim = PDAOIDClaim.objects.select_related('membership_intake').filter(registration=registration).first()
+    can_start_membership = False
+    if id_claim:
+        try:
+            pdao_membership.require_actor(request.user)
+        except (PermissionDenied, RegistrationUnavailable):
+            pass
+        else:
+            can_start_membership = True
     return render(request, 'membership/pdao/detail.html', {'registration': registration,
+        'id_claim': id_claim, 'can_start_membership': can_start_membership,
+        'id_claim_form': pdao_membership.IDClaimForm(initial={'version': registration.version,
+            'pwd_number': submitted.get('pwd_number', '')}, auto_id='claim_%s'),
         'submitted': submitted, 'form': form, 'needs_form': needs_form, 'editor_form': editor,
         'online_review': registration.data.get('intake_channel', 'online') == 'online',
         'prpwd_lookup_url': registry_url(), **pdao_email.notification_context(registration, request.user),

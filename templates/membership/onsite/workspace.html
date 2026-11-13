@@ -4,6 +4,15 @@
     <h1 class="visually-hidden">Onsite member registration</h1>
   </header>
 
+  {% if pdao_transfer %}
+  <section class="onsite-lookup" aria-labelledby="pdao-membership-heading">
+    <h1 id="pdao-membership-heading">Association membership from PDAO</h1>
+    <p>Applicant: <strong>{{ pdao_transfer.current_data.full_name }}</strong>. The recorded name, date of birth, issued PWD ID and equivalent details are filled in below.</p>
+    <p>Complete the remaining membership fields, including the required 4Ps Yes/No answer, and confirm that the applicant wants to apply. Submission goes to membership review.</p>
+    {% if source_disabilities %}<p>PDAO disability record: {{ source_disabilities|join:', ' }}. Equivalent membership labels are used below.</p>{% endif %}
+    <a href="{% url 'membership:pdao_detail' pdao_transfer.pk %}">Back to PDAO application</a>
+  </section>
+  {% else %}
   <section class="onsite-lookup" aria-labelledby="load-online-heading">
     <div class="onsite-lookup-heading"><span class="onsite-id-mark" aria-hidden="true">ID</span><div><h2 id="load-online-heading">Already applied online?</h2><p>Load the existing application using its AMR reference.</p></div></div>
     {% if policy or registration_retrieval_available %}
@@ -14,6 +23,7 @@
     </form>
     {% else %}<p class="onsite-lookup-unavailable" role="status">Online retrieval is unavailable for this account or while the registration service is closed.</p>{% endif %}
   </section>
+  {% endif %}
 
   <div class="onsite-workspace-grid">
     <div class="onsite-form-column">

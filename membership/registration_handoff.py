@@ -147,6 +147,8 @@ class HandoffForm(ApplicationForm):
         # Sparse PDF declarations stay sparse. No invented dependent count,
         # individual income, classification, or socioeconomic assessment.
         values.update({name: getattr(blank, name) for name in PROFILE_FIELDS if name != 'control_number'})
+        from .pdf_registration_forms import stored_name_suffix
+        values.update(stored_name_suffix(source))
         for name in ('full_name', 'first_name', 'middle_name', 'last_name', 'address', 'contact_number', 'email', 'barangay'):
             values[name] = source.get(name, '')
         from datetime import date

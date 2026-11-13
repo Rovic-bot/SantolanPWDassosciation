@@ -42,6 +42,14 @@ def date_field(label, *, required=False):
     return forms.DateField(label=label, required=required, widget=forms.DateInput(attrs={'type': 'date'}))
 
 
+def stored_name_suffix(source):
+    from members.profile import SUFFIXES
+    suffix = source.get('suffix', '')
+    if suffix in dict(SUFFIXES) and suffix != 'other':
+        return {'suffix': suffix, 'suffix_other': ''}
+    return {'suffix': 'other' if suffix else '', 'suffix_other': suffix}
+
+
 class SourceForm(StyledForm, forms.Form):
     groups = ()
 
@@ -64,7 +72,7 @@ class SourceForm(StyledForm, forms.Form):
         for name in ('birthdate', 'date_issued', 'date_applied'):
             if values.get(name) and values[name] > timezone.localdate():
                 self.add_error(name, 'Enter a date that is not in the future.')
-        combined = ' '.join(values.get(name, '') for name in ('first_name', 'middle_name', 'last_name')).strip()
+        combined = ' '.join(values.get(name, '') for name in ('first_name', 'middle_name', 'last_name', 'suffix')).strip()
         if len(combined) > 200:
             self.add_error('last_name', 'The combined name must be at most 200 characters.')
         return values
@@ -102,6 +110,7 @@ class AssociationPDFForm(SourceForm):
     last_name = text_field('Last name', required=True, length=100)
     first_name = text_field('First name', required=True, length=100)
     middle_name = text_field('Middle name (if any)', length=100)
+    suffix = text_field('Name suffix (if any)', length=20)
     house_street = text_field('House no. and street', required=True, length=255)
     barangay = text_field('Barangay', required=True, length=100)
     city = text_field('City', required=True, length=100)
@@ -125,13 +134,13 @@ class AssociationPDFForm(SourceForm):
         help_text='Used for staff assessment; excluded from the printed membership form.')
     spouse_name = text_field('Spouse name')
     spouse_contact = number_field('Spouse contact no.', length=30)
-    four_ps_member = choice_field("4P’s member", ['Yes', 'No'])
+    four_ps_member = choice_field("4P’s member", ['Yes', 'No'], required=True)
     guardian_name = text_field('Parent / guardian')
     guardian_contact = number_field('Parent / guardian contact no.', length=30)
     disability_type = choice_field('Type of disability (choose one)', [
         'Physical / Orthopedic', 'Learning and Behavioral', 'Speech', 'Hearing',
         'Psychosocial', 'Intellectual', 'Cancer (R.A. 11215)', 'Mental Disability',
-        'Visual Disability', 'Rare Disease (R.A. 10747)'])
+        'Visual Disability', 'Rare Disease (R.A. 10747)'], required=True)
     pwd_number = number_field('Issued PWD ID no. (if already issued)', hyphenated=True,
         help_text='Leave blank if not issued and ask the Help Desk about completing the PWD ID photocopy requirement. An entered number is not verification.')
     voter_certification_number = number_field("VRR / Voter’s Certification no.", hyphenated=True)
@@ -140,7 +149,7 @@ class AssociationPDFForm(SourceForm):
     education = choice_field('Educational attainment', [
         'Elementary', 'High School', 'College Graduate', 'College Undergraduate', 'Vocational'])
     print_groups = (
-        ('Personal information', ('last_name', 'first_name', 'middle_name', 'birthdate', 'civil_status', 'nationality', 'gender')),
+        ('Personal information', ('last_name', 'first_name', 'middle_name', 'suffix', 'birthdate', 'civil_status', 'nationality', 'gender')),
         ('Address and contact information', ('house_street', 'barangay', 'city', 'region', 'zip_code', 'contact_number', 'email')),
         ('Family information', ('family_members', 'spouse_name', 'spouse_contact', 'four_ps_member', 'guardian_name', 'guardian_contact')),
         ('Disability and education', ('disability_type', 'education')),
@@ -152,6 +161,8 @@ class AssociationPDFForm(SourceForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        for name in ('four_ps_member', 'disability_type'):
+            self.fields[name].choices = [('', 'Select an answer'), *self.fields[name].choices[1:]]
         # Staff may reopen submissions made when this was a free-text field.
         # Retain that original value without accepting new arbitrary choices.
         recorded_gender = self.initial.get('gender')

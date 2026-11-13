@@ -17,7 +17,7 @@ from .approval_email_models import approval_email_write
 from .pdao_email import deliver_review_email
 from .pdao_email_models import PDAOReviewEmail as Email
 from .pdao_forms import MAX_CLAIM_BATCH
-from .pdao_models import PDAORegistration
+from .pdao_models import PDAORegistration, PDAOIDClaim
 from .registration_models import registration_write
 from . import pdao_services as services
 
@@ -45,12 +45,12 @@ def claim_context(registration, user, jobs):
     recipient = claim_recipient(registration.current_data)
     return {'claim_notice': notice, 'claim_recipient': recipient,
         'claim_delivery_label': delivery_label(notice) if notice else '',
-        'can_send_claim_notice': registration.status == 'forwarded' and not notice and bool(recipient)
+        'can_send_claim_notice': registration.status == 'forwarded' and not hasattr(registration, 'id_claim') and not notice and bool(recipient)
             and user.has_perm(services.FORWARD)}
 
 
 def claim_records(records, user):
-    records = records.prefetch_related(Prefetch('review_emails',
+    records = records.select_related('id_claim').prefetch_related(Prefetch('review_emails',
         queryset=Email.objects.filter(outcome='claim_ready').defer('body'), to_attr='claim_notices'))
     # The caller paginates first; do not evaluate the complete inbox here.
     for registration in records:
@@ -102,6 +102,8 @@ def queue_claim_notices(*, user, selections, confirmed):
     records = list(PDAORegistration.objects.select_for_update().filter(pk__in=selections).order_by('pk'))
     if len(records) != len(selections):
         raise ValidationError('A selected application is no longer available. Refresh the list before sending.')
+    if PDAOIDClaim.objects.filter(registration_id__in=selections).exists():
+        raise ValidationError('A selected PWD ID has already been claimed. Refresh the list before sending.')
     for registration in records:
         if registration.status != 'forwarded' or registration.version != selections[registration.pk]:
             raise ValidationError('A selected application changed or has not been forwarded to PDAO. Refresh the list before sending.')

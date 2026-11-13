@@ -118,7 +118,7 @@ WorkspacePage.run(({on}) => {
   }
 
   function reviewValue(field) {
-    const inputs = controlsIn(field).filter(input => input.name && !input.disabled);
+    const inputs = controlsIn(field).filter(input => input.name);
     if (!inputs.length) return 'Not provided';
     if (inputs[0].type === 'checkbox' && inputs.length > 1) {
       return inputs.filter(input => input.checked).map(input => input.closest('label')?.textContent.trim() || input.value).join(', ') || 'Not selected';

@@ -78,6 +78,8 @@ def member_values(source, number):
         values[name] = source.get(name, '')
     kind = source.get('profile_kind')
     if kind == ASSOCIATION_PDF_KIND:
+        from .pdf_registration_forms import stored_name_suffix
+        values.update(stored_name_suffix(source))
         for name in ('first_name', 'middle_name', 'last_name', 'email', 'barangay',
                      'employment_status', 'household_monthly_income', 'household_members'):
             values[name] = source.get(name, getattr(blank, name))

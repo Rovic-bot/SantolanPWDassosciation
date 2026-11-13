@@ -96,7 +96,7 @@ class SubmissionWindow(models.Model):
 # Additive pending intake; the established membership models above stay unchanged.
 from .registration_models import (RegistrationSubmissionContext, RegistrationIntake,
     RegistrationRevision, RegistrationAttachment, RegistrationAction)
-from .pdao_models import PDAORegistration, PDAORegistrationEvent, PDAORegistrationRevision
+from .pdao_models import PDAORegistration, PDAORegistrationEvent, PDAORegistrationRevision, PDAOIDClaim
 from .approval_email_models import MembershipApprovalEmail, MembershipApprovalEmailAttempt
 from .pending_email_models import MembershipPendingEmail, MembershipPendingEmailAttempt
 from .pdao_email_models import PDAOReviewEmail, PDAOReviewEmailAttempt

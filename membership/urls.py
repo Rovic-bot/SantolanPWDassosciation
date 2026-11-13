@@ -3,6 +3,7 @@ from . import views
 from . import registration_views
 from . import pdao_views
 from . import pdao_registration_views
+from . import pdao_membership_views
 from . import approval_email_views
 
 app_name = 'membership'
@@ -16,6 +17,8 @@ urlpatterns = [
     path('reviews/pdao/claim-notices/', pdao_registration_views.send_claim_notices, name='pdao_claim_notices'),
     path('registration/pdao/onsite/', pdao_registration_views.onsite, name='pdao_onsite'),
     path('reviews/pdao/<uuid:key>/', pdao_registration_views.detail, name='pdao_detail'),
+    path('reviews/pdao/<uuid:key>/claim/', pdao_membership_views.claim_id, name='pdao_claim_id'),
+    path('reviews/pdao/<uuid:key>/membership/', pdao_membership_views.membership, name='pdao_membership'),
     path('reviews/pdao/<uuid:key>/email/<uuid:email_id>/retry/', pdao_registration_views.retry_email, name='pdao_email_retry'),
     path('reviews/pdao/<uuid:key>/print/', pdao_registration_views.print_form, name='pdao_print'),
     path('registration/pdao/', pdao_views.prepare, name='pdao_prepare'),

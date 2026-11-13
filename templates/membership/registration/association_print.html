@@ -34,6 +34,7 @@
         <td colspan="8">{% include 'membership/registration/print_field.html' with label='FIRST NAME' value=submitted.first_name %}</td>
         <td colspan="8">{% include 'membership/registration/print_field.html' with label='MIDDLE NAME' value=submitted.middle_name %}</td>
       </tr>
+      {% if submitted.suffix %}<tr><td colspan="24">{% include 'membership/registration/print_field.html' with label='NAME SUFFIX' value=submitted.suffix %}</td></tr>{% endif %}
       <tr>
         <td colspan="8">{% include 'membership/registration/print_field.html' with label='HOUSE NO. AND STREET' value=submitted.house_street %}</td>
         <td colspan="5">{% include 'membership/registration/print_field.html' with label='BARANGAY' value=submitted.barangay %}</td>
