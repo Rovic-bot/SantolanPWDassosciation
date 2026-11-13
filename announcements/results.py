@@ -227,6 +227,8 @@ def publish_results(pk, *, user, version, address=None):
         raise ValidationError('These results are missing or changed after preparation. Prepare and review a new result revision before publishing.')
     from .selection_reason import clean_selection_reason
     clean_selection_reason(item.result_revision.public_payload.get('selection_reason'))
+    from ewaf.result_weights import validate_publication
+    validate_publication(item, timezone.now())
     item.status = 'published'
     item.published_at = timezone.now()
     item.updated_by = user

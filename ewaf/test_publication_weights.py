@@ -1,15 +1,16 @@
-"""Publication freezes weights, while global authoring and ranking stay usable."""
+"""Results publication freezes ranking weights; program notices leave them editable."""
 from copy import deepcopy
+import json
 from unittest.mock import patch
 from uuid import uuid4
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.test import TransactionTestCase, override_settings
 from django.urls import reverse
 
 from . import operational_services as operations, shared_weights, vault_services as vault
 from .dataset_methods import COMPOSITE
-from .operational_models import OperationalConfiguration, OperationalRun
+from .operational_models import OperationalRun
 from .program_cards import configuration_summary
 from . import test_rolling_pool as rolling_fixture, test_shared_application as shared_fixture
 from .test_synthetic_twelve import proposal
@@ -18,14 +19,14 @@ from .test_synthetic_twelve import proposal
 def approve_weights(test, scenario):
     for status in ('DRAFT', 'LOCKED'):
         row = vault.record_ses_weights(user=test.user, expected=vault.token(),
-            proposal=proposal(scenario), reason='SYNTHETIC publication weight regression',
+            proposal=proposal(scenario), reason='SYNTHETIC result weight regression',
             status=status, method=COMPOSITE)
     return row
 
 
 @override_settings(EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True,
     EWAF_VAULT_ENABLED=True, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True, PDAO_ENFORCEMENT_ENABLED=False)
-class PublishedRankingWeightTests(TransactionTestCase):
+class ResultWeightTests(TransactionTestCase):
     draft = rolling_fixture.RollingPoolTests.draft
     approve = rolling_fixture.RollingPoolTests.approve
     bind = rolling_fixture.RollingPoolTests.bind
@@ -35,209 +36,257 @@ class PublishedRankingWeightTests(TransactionTestCase):
     generate = rolling_fixture.RollingPoolTests.generate
 
     def setUp(self):
-        # The retained-policy fixture predates automatic fixed-rule binding.
-        # Only its setup skips that new side effect; publication, validation,
-        # weight approval and ranking below all use the real services.
+        # Only legacy fixture setup skips the later automatic fixed-rule binding.
+        # Publication, approvals, selections and rankings use real services.
         with patch('ewaf.fixed_scoring.bind', return_value=None):
             rolling_fixture.RollingPoolTests.setUp(self)
 
-    def test_later_approvals_preserve_weights_scores_tokens_and_allow_repeated_ranking(self):
-        with patch('django.utils.timezone.now', return_value=self.open_at):
-            self.pool()
-            original = self.generate()
-            payload = deepcopy(original.payload())
-            binding = deepcopy(self.configuration.payload())
-            for scenario in ('ses', 'pa', 'hm'):
-                expected = operations.context(self.program.pk, user=self.user)
-                approved = approve_weights(self, scenario)
-                self.assertNotEqual(approved.pk, self.configuration.validation['weight_version'])
-                self.assertEqual(expected, operations.context(self.program.pk, user=self.user))
-                run = operations.generate(self.program.pk, user=self.user, expected=expected,
-                    reason='SYNTHETIC rerank published program', request_key=uuid4())
-                run.clean()
-                self.assertEqual(run.calculations, original.calculations)
-                self.assertEqual(shared_weights.current(run.configuration)['id'], self.configuration.validation['weight_version'])
-                self.assertNotIn(shared_weights.KEY, run.snapshot)
-                card = configuration_summary(self.program)
-                self.assertTrue(card['weights_locked'])
-                self.assertEqual(card['weight_version'], self.configuration.validation['weight_version'])
-                self.assertEqual(operations.latest_configuration(self.program).payload(), binding)
-            original.refresh_from_db(); original.clean()
-            self.assertEqual(original.payload(), payload)
-            page = self.client.get(reverse('ewaf:operational_workspace', args=[self.program.pk]))
-            self.assertTrue(page.context['ready'])
+    def select(self, run, app):
+        from .operational_models import OperationalDecision
+        previous = OperationalDecision.objects.filter(application=app).first()
+        return operations.record_decision(self.program.pk, user=self.user, run_id=run.pk,
+            application_id=app.pk, expected_revision=previous.revision if previous else 0,
+            outcome='SELECTED', reason='SYNTHETIC reviewed ranking selection')
 
-    def test_published_ranking_does_not_depend_on_a_current_global_approval(self):
-        with patch('django.utils.timezone.now', return_value=self.open_at):
-            self.pool()
-            with patch('ewaf.vault_services.active', return_value=None):
-                self.generate().clean()
+    def prepare(self, recorded=True):
+        from announcements.models import Announcement
+        from announcements.results import prepare_results
+        item = Announcement.objects.filter(program=self.program).first()
+        return prepare_results(self.program.pk, user=self.user, version=item.version if item else 0,
+            reason='SYNTHETIC prepare reviewed results', recorded=recorded,
+            selection_reason='SYNTHETIC selected after reviewing the retained EWAF ranking.')
 
-    def test_fixed_scoring_published_program_can_generate_through_http_after_weight_changes(self):
-        import json
-        from datetime import timedelta
-        from django.utils.dateparse import parse_datetime
-        from programs.services import change_publication
-        from .fixed_scoring import definition, is_fixed
-        with patch('django.utils.timezone.now', return_value=self.open_at):
-            change_publication(self.program.pk, user=self.user, version=self.program.version,
-                action='published', notes='SYNTHETIC current fixed-scoring publication')
-            self.program.refresh_from_db()
-            self.configuration = operations.latest_configuration(self.program)
-            self.assertTrue(is_fixed(self.configuration))
-            self.applicant('FIXED-LOCK-A', low=True)
-            self.applicant('FIXED-LOCK-B')
-        # The historical fixture may predate the fixed rules' effective date.
-        ranking_at = max(self.open_at, parse_datetime(definition()['effective_from']) + timedelta(hours=4))
-        with patch('django.utils.timezone.now', return_value=ranking_at):
-            original = self.generate()
-            approved = approve_weights(self, 'hm')
-            self.assertNotEqual(approved.pk, self.configuration.validation['weight_version'])
-            url = reverse('ewaf:operational_workspace', args=[self.program.pk])
-            page = self.client.get(url)
-            self.assertTrue(page.context['ready'])
-            self.assertTrue(page.context['can_calculate'])
-            self.assertFalse(page.context['can_configure'])
-            self.assertContains(page, 'Weights locked after publication.')
-            response = self.client.post(url, {'action': 'GENERATE',
-                'expected': json.dumps(operations.context(self.program.pk, user=self.user)),
-                'request_key': str(uuid4())})
-            self.assertEqual(response.status_code, 302)
-            rerun = OperationalRun.objects.filter(program=self.program).first()
-            rerun.clean()
-            self.assertEqual(rerun.previous_id, original.pk)
-            self.assertEqual(rerun.calculations, original.calculations)
-            self.assertNotIn(shared_weights.KEY, rerun.snapshot)
+    def publish_results(self, item=None):
+        from announcements.results import publish_results
+        item = item or self.prepare()
+        return publish_results(item.pk, user=self.user, version=item.version)
 
-    def test_published_lock_does_not_bypass_ranking_permission(self):
-        from django.contrib.auth import get_user_model
-        from django.core.exceptions import PermissionDenied
-        from membership.tests import grant
+    def ranked_selection(self):
+        a, b = self.pool()
+        approved = approve_weights(self, 'hm')
+        run = self.generate()
+        self.select(run, a)
+        return a, b, approved, run
+
+    def test_program_publication_and_program_notice_leave_weights_editable(self):
+        from announcements.models import Announcement
+        from announcements.services import change_publication
+        self.pool()
+        notice = Announcement.objects.create(linked_program=self.program,
+            title='SYNTHETIC program announcement', content='Program is open.', source_office='SYNTHETIC office')
         with patch('django.utils.timezone.now', return_value=self.open_at):
-            self.pool()
-            viewer = get_user_model().objects.create_user('SYNTHETIC-LOCK-VIEWER', is_staff=True)
-            grant(viewer, 'accounts.access_dashboard', *operations.VIEW)
+            change_publication(notice.pk, user=self.user, version=notice.version, action='published')
+        original = self.generate()
+        saved = deepcopy(original.payload())
+        for scenario in ('ses', 'pa', 'hm'):
+            old = operations.context(self.program.pk, user=self.user)
+            approved = approve_weights(self, scenario)
+            self.assertFalse(shared_weights.publication_locked(self.program))
+            self.assertNotEqual(old, operations.context(self.program.pk, user=self.user))
+            self.assertEqual(self.generate().snapshot[shared_weights.KEY]['id'], approved.pk)
+            self.assertFalse(configuration_summary(self.program)['weights_locked'])
+        original.refresh_from_db(); original.clean()
+        self.assertEqual(original.payload(), saved)
+
+    def test_prepared_results_do_not_lock_weights(self):
+        self.ranked_selection()
+        self.prepare()
+        approved = approve_weights(self, 'ses')
+        self.assertFalse(shared_weights.publication_locked(self.program))
+        self.assertEqual(self.generate().snapshot[shared_weights.KEY]['id'], approved.pk)
+
+    def test_initial_bound_weights_are_retained_when_published_ranking_has_no_override(self):
+        a, b = self.pool()
+        original = self.generate()
+        self.assertNotIn(shared_weights.KEY, original.snapshot)
+        self.select(original, a)
+        self.publish_results()
+        approve_weights(self, 'hm')
+        rerun = self.generate()
+        self.assertNotIn(shared_weights.KEY, rerun.snapshot)
+        self.assertEqual(rerun.calculations, original.calculations)
+
+    def test_one_results_lock_does_not_lock_another_program(self):
+        a, b, frozen, run = self.ranked_selection()
+        self.publish_results()
+        with patch('ewaf.fixed_scoring.bind', return_value=None):
+            other = shared_fixture.SharedApplicationTests.another_program(self, 'SYNTHETIC independent program')
+        shared_fixture.SharedApplicationTests.publish_intake(self, other)
+        approved = approve_weights(self, 'ses')
+        self.assertEqual(shared_weights.current(self.configuration)['id'], frozen.pk)
+        self.assertEqual(shared_weights.current(operations.latest_configuration(other))['id'], approved.pk)
+        self.assertFalse(shared_weights.publication_locked(other))
+
+    def test_results_with_mixed_selected_weight_versions_require_review(self):
+        # Fictional fixture capacity, set before its first scoring binding.
+        self.program.slots = 2
+        self.program.save(update_fields=['slots'])
+        a, b = self.pool()
+        first = self.generate()
+        self.select(first, a)
+        approve_weights(self, 'hm')
+        second = self.generate()
+        self.select(second, b)
+        item = self.prepare()
+        with self.assertRaisesMessage(ValidationError, 'different EWAF weight versions'):
+            self.publish_results(item)
+        self.assertFalse(shared_weights.publication_locked(self.program))
+
+    def test_results_freeze_actual_selected_ranking_and_allow_repeated_ranking(self):
+        from announcements.results import results_current
+        a, b, approved, original = self.ranked_selection()
+        self.assertNotEqual(approved.pk, self.configuration.validation['weight_version'])
+        saved = deepcopy(original.payload())
+        item = self.publish_results()
+        source = deepcopy(item.result_revision.public_payload)
+        for scenario in ('ses', 'pa'):
             expected = operations.context(self.program.pk, user=self.user)
-            with self.assertRaises(PermissionDenied):
-                operations.generate(self.program.pk, user=viewer, expected=expected,
-                    reason='SYNTHETIC forbidden generation', request_key=uuid4())
-            self.assertFalse(OperationalRun.objects.filter(program=self.program).exists())
+            approve_weights(self, scenario)
+            self.assertEqual(expected, operations.context(self.program.pk, user=self.user))
+            rerun = self.generate()
+            rerun.clean()
+            self.assertEqual(rerun.calculations, original.calculations)
+            self.assertEqual(rerun.snapshot[shared_weights.KEY]['id'], approved.pk)
+            card = configuration_summary(self.program)
+            self.assertTrue(card['weights_locked'])
+            self.assertEqual(card['weight_version'], approved.pk)
+            self.assertTrue(results_current(item))
+        item.result_revision.refresh_from_db()
+        self.assertEqual(item.result_revision.public_payload, source)
+        original.refresh_from_db(); original.clean()
+        self.assertEqual(original.payload(), saved)
 
-    def test_direct_rebinding_cannot_replace_published_weights(self):
+    def test_recorded_results_use_selected_older_ranking_not_latest_vault_or_unselected_run(self):
+        a, b, selected_weights, selected = self.ranked_selection()
+        newer = approve_weights(self, 'ses')
+        unselected = self.generate()
+        self.assertEqual(unselected.snapshot[shared_weights.KEY]['id'], newer.pk)
+        self.publish_results()
+        rerun = self.generate()
+        self.assertEqual(rerun.snapshot[shared_weights.KEY]['id'], selected_weights.pk)
+        self.assertEqual(rerun.calculations, selected.calculations)
+        unselected.clean()
+
+    def test_withdraw_and_republish_results_keep_first_published_weights(self):
+        from announcements.services import change_publication
+        self.ranked_selection()
+        item = self.publish_results()
+        locked = shared_weights.current(self.configuration)
+        change_publication(item.pk, user=self.user, version=item.version, action='draft')
+        approve_weights(self, 'ses')
+        self.assertTrue(shared_weights.publication_locked(self.program))
+        self.assertEqual(shared_weights.current(self.configuration), locked)
+        self.generate()
+        self.publish_results()
+        self.assertEqual(shared_weights.current(self.configuration), locked)
+
+    def test_failed_result_audit_rolls_back_publication_without_locking(self):
+        self.ranked_selection()
+        item = self.prepare()
+        with patch('announcements.results.record_event', side_effect=ValidationError('SYNTHETIC audit failure')):
+            with self.assertRaisesMessage(ValidationError, 'audit failure'):
+                self.publish_results(item)
+        item.refresh_from_db()
+        self.assertEqual(item.status, 'draft')
+        self.assertIsNone(item.published_at)
+        self.assertFalse(shared_weights.publication_locked(self.program))
+        approved = approve_weights(self, 'ses')
+        self.assertEqual(self.generate().snapshot[shared_weights.KEY]['id'], approved.pk)
+
+    def test_results_lock_works_without_current_global_approval(self):
+        self.ranked_selection()
+        self.publish_results()
+        with patch('ewaf.vault_services.active', return_value=None):
+            self.generate().clean()
+
+    def test_results_lock_preserves_permissions_and_rejects_rebinding(self):
+        from django.contrib.auth import get_user_model
+        from membership.tests import grant
         from .revised import live_services
-        with patch('django.utils.timezone.now', return_value=self.open_at):
-            self.pool()
-            new = approve_weights(self, 'hm')
-            policy = deepcopy(self.configuration.dataset_policy)
-            policy.weight_configuration_id = new.pk
-            with self.assertRaisesMessage(ValidationError, 'Published programs retain'):
-                live_services.binding_preflight(self.program, policy, self.configuration.assessment_cutoff)
-            with override_settings(EWAF_VAULT_ENABLED=False):
-                with self.assertRaisesMessage(ValidationError, 'Weights are locked'):
-                    operations.record_configuration(self.program.pk, user=self.user,
-                        expected=operations.configuration_token(self.program), proposed={}, judgments={},
-                        status='DRAFT', reason='SYNTHETIC direct write rejected')
+        self.ranked_selection()
+        self.publish_results()
+        viewer = get_user_model().objects.create_user('SYNTHETIC-LOCK-VIEWER', is_staff=True)
+        grant(viewer, 'accounts.access_dashboard', *operations.VIEW)
+        before = OperationalRun.objects.count()
+        with self.assertRaises(PermissionDenied):
+            operations.generate(self.program.pk, user=viewer,
+                expected=operations.context(self.program.pk, user=self.user),
+                reason='SYNTHETIC forbidden generation', request_key=uuid4())
+        self.assertEqual(OperationalRun.objects.count(), before)
+        policy = deepcopy(self.configuration.dataset_policy)
+        policy.weight_configuration_id = approve_weights(self, 'ses').pk
+        with self.assertRaisesMessage(ValidationError, 'Published program results retain'):
+            live_services.binding_preflight(self.program, policy, self.configuration.assessment_cutoff)
+        with override_settings(EWAF_VAULT_ENABLED=False):
+            with self.assertRaisesMessage(ValidationError, 'Weights are locked after program results'):
+                operations.record_configuration(self.program.pk, user=self.user,
+                    expected=operations.configuration_token(self.program), proposed={}, judgments={},
+                    status='DRAFT', reason='SYNTHETIC rejected edit')
 
-    def test_preexisting_run_with_old_shared_override_still_replays_unchanged(self):
-        with patch('django.utils.timezone.now', return_value=self.open_at):
-            self.pool()
-            approved = approve_weights(self, 'hm')
-            # Build an authentic older-contract run, which selected the active
-            # Vault after publication. The fix must preserve its signed history.
-            with patch.object(shared_weights, 'publication_locked', return_value=False):
-                historic = self.generate()
-            self.assertEqual(historic.snapshot[shared_weights.KEY]['id'], approved.pk)
-            saved = deepcopy(historic.payload())
-            historic.clean()
-            new = self.generate()
-            self.assertNotIn(shared_weights.KEY, new.snapshot)
-            historic.refresh_from_db(); historic.clean()
-            self.assertEqual(historic.payload(), saved)
+    def test_fixed_scoring_http_ranking_uses_published_result_weights(self):
+        from programs.services import change_publication
+        from .fixed_scoring import is_fixed
+        with patch('django.utils.timezone.now', return_value=self.base):
+            change_publication(self.program.pk, user=self.user, version=self.program.version,
+                action='published', notes='SYNTHETIC fixed-scoring program')
+        self.program.refresh_from_db()
+        self.configuration = operations.latest_configuration(self.program)
+        self.assertTrue(is_fixed(self.configuration))
+        a = self.applicant('FIXED-RESULT-A', low=True)
+        self.applicant('FIXED-RESULT-B')
+        approved = approve_weights(self, 'hm')
+        original = self.generate()
+        self.select(original, a)
+        self.publish_results()
+        approve_weights(self, 'ses')
+        url = reverse('ewaf:operational_workspace', args=[self.program.pk])
+        page = self.client.get(url)
+        self.assertTrue(page.context['ready'])
+        self.assertTrue(page.context['can_calculate'])
+        self.assertContains(page, 'Weights locked after results publication.')
+        response = self.client.post(url, {'action': 'GENERATE',
+            'expected': json.dumps(operations.context(self.program.pk, user=self.user)),
+            'request_key': str(uuid4())})
+        self.assertEqual(response.status_code, 302)
+        rerun = OperationalRun.objects.filter(program=self.program).first()
+        rerun.clean()
+        self.assertEqual(rerun.snapshot[shared_weights.KEY]['id'], approved.pk)
+        self.assertEqual(rerun.calculations, original.calculations)
+
+    def test_strict_results_publication_retains_current_ranking_weights(self):
+        a, b, approved, run = self.ranked_selection()
+        operations.record_decision(self.program.pk, user=self.user, run_id=run.pk,
+            application_id=b.pk, expected_revision=0, outcome='NOT_SELECTED', reason='SYNTHETIC reviewed nonselection')
+        self.publish_results(self.prepare(recorded=False))
+        approve_weights(self, 'ses')
+        self.assertEqual(self.generate().snapshot[shared_weights.KEY]['id'], approved.pk)
+
+    def test_recorded_results_without_ranking_freeze_approval_at_publication(self):
+        self.pool()
+        approved = approve_weights(self, 'hm')
+        self.publish_results()
+        approve_weights(self, 'ses')
+        self.assertEqual(self.generate().snapshot[shared_weights.KEY]['id'], approved.pk)
 
 
 @override_settings(EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True,
     EWAF_VAULT_ENABLED=True, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True, PDAO_ENFORCEMENT_ENABLED=False)
-class PublicationBindingWeightTests(TransactionTestCase):
+class UnpublishedResultProgramTests(TransactionTestCase):
     publish_intake = shared_fixture.SharedApplicationTests.publish_intake
 
     def setUp(self):
         with patch('ewaf.fixed_scoring.bind', return_value=None):
             shared_fixture.SharedApplicationTests.setUp(self)
 
-    def another_program(self, name):
-        with patch('ewaf.fixed_scoring.bind', return_value=None):
-            return shared_fixture.SharedApplicationTests.another_program(self, name)
-
-    def test_unpublished_programs_receive_new_weights_then_freeze_at_publication(self):
-        from .fixed_scoring import bind
-        before = operations.latest_configuration(self.program, require_locked=False)
-        published = self.another_program('SYNTHETIC already published')
-        self.publish_intake(published)
-        old = operations.latest_configuration(published)
-        saved = deepcopy(old.payload())
+    def test_draft_and_published_program_without_results_follow_new_approvals(self):
         approved = approve_weights(self, 'hm')
-        draft = operations.latest_configuration(self.program, require_locked=False)
-        self.assertEqual(draft.vault_revision_id, approved.pk)
-        self.assertNotEqual(draft.pk, before.pk)
+        self.assertEqual(operations.latest_configuration(self.program, require_locked=False).vault_revision_id, approved.pk)
         self.publish_intake()
-        current = operations.latest_configuration(self.program)
-        self.assertEqual(current.validation['weight_version'], approved.pk)
+        configuration = operations.latest_configuration(self.program)
         newer = approve_weights(self, 'pa')
-        self.assertNotEqual(newer.pk, approved.pk)
-        self.assertEqual(shared_weights.current(current)['id'], approved.pk)
-        self.assertEqual(bind(published, user=self.user).payload(), saved)
-        fresh = self.another_program('SYNTHETIC future program')
+        self.assertFalse(shared_weights.publication_locked(self.program))
+        self.assertEqual(shared_weights.current(configuration)['id'], newer.pk)
+        with patch('ewaf.fixed_scoring.bind', return_value=None):
+            fresh = shared_fixture.SharedApplicationTests.another_program(self, 'SYNTHETIC new program')
         self.publish_intake(fresh)
         self.assertEqual(operations.latest_configuration(fresh).validation['weight_version'], newer.pk)
-
-    def test_fixed_draft_refreshes_to_latest_approved_weights_at_first_publication(self):
-        from .fixed_scoring import bind
-        fixed_draft = bind(self.program, user=self.user)
-        approved = approve_weights(self, 'hm')
-        self.assertEqual(shared_weights.current(fixed_draft)['id'], approved.pk)
-        self.publish_intake()
-        published = operations.latest_configuration(self.program)
-        self.assertEqual(published.validation['weight_version'], approved.pk)
-        self.assertEqual(published.previous_id, fixed_draft.pk)
-        fixed_draft.clean()
-
-    def test_unpublish_and_republish_keep_the_same_approved_weights(self):
-        from programs.services import change_publication
-        self.publish_intake()
-        original = operations.latest_configuration(self.program)
-        change_publication(self.program.pk, user=self.user, version=self.program.version,
-            action='unpublish', notes='SYNTHETIC temporarily hide program')
-        self.program.refresh_from_db()
-        self.assertTrue(shared_weights.publication_locked(self.program))
-        approve_weights(self, 'hm')
-        self.assertIsNone(vault.inherit(self.program, user=self.user))
-        self.assertEqual(shared_weights.current(original)['id'], original.validation['weight_version'])
-        self.publish_intake()
-        self.assertEqual(operations.latest_configuration(self.program).pk, original.pk)
-
-    def test_published_weights_only_intake_keeps_original_weights_when_completed(self):
-        from .fixed_scoring import bind
-        with patch('ewaf.fixed_scoring.bind', return_value=None):
-            self.publish_intake()
-        original = operations.latest_configuration(self.program, require_locked=False)
-        self.assertEqual(original.policy['configuration_scope'], 'weights_and_sources')
-        original_id = original.vault_revision_id
-        approved = approve_weights(self, 'hm')
-        completed = operations.latest_configuration(self.program)
-        self.assertNotEqual(approved.pk, original_id)
-        self.assertEqual(completed.validation['weight_version'], original_id)
-        self.assertEqual(bind(self.program, user=self.user).pk, completed.pk)
-
-    def test_publication_audit_failure_rolls_back_the_new_weight_binding(self):
-        from .fixed_scoring import bind
-        fixed_draft = bind(self.program, user=self.user)
-        approve_weights(self, 'hm')
-        count = OperationalConfiguration.objects.filter(program=self.program).count()
-        with patch('programs.services.record_log', side_effect=ValidationError('SYNTHETIC failed publication audit')):
-            with self.assertRaisesMessage(ValidationError, 'failed publication audit'):
-                self.publish_intake()
-        self.program.refresh_from_db()
-        self.assertEqual(self.program.status, 'draft')
-        self.assertIsNone(self.program.published_at)
-        self.assertEqual(OperationalConfiguration.objects.filter(program=self.program).count(), count)
-        self.assertEqual(operations.latest_configuration(self.program).pk, fixed_draft.pk)

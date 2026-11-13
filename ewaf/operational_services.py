@@ -114,7 +114,7 @@ def record_configuration(program_id, *, user, expected, proposed, judgments, sta
     with fence(program_id, user, permission) as (current, program, applications):
         from .shared_weights import publication_locked
         if publication_locked(program):
-            raise ValidationError('Weights are locked after program publication. Create an unpublished program to use different weights.')
+            raise ValidationError('Weights are locked after program results are published. Programs without published results can use different Vault weights.')
         if Configuration.objects.filter(program=program, dataset_policy__isnull=False).exists():
             raise ValidationError('Use the explicit dataset-policy binding service for this program.')
         if status not in ('DRAFT', 'LOCKED') or expected != configuration_token(program):

@@ -118,7 +118,7 @@ def vault(request):
                 if action == 'DRAFT':
                     messages.success(request, 'Unapproved SES weight draft saved. Review its calculated AHP weights before approval.')
                 elif method == methods.COMPOSITE:
-                    messages.success(request, 'Configuration approved for unpublished programs. Published programs keep their locked weights and can still generate rankings. Open EWAF Ranking and select a ready program.')
+                    messages.success(request, 'Configuration approved for programs without published results. Programs with published results keep their ranking weights and can still generate rankings. Open EWAF Ranking and select a ready program.')
                 elif scoring_pending(approved.policy):
                     messages.warning(request, SCORING_PENDING_MESSAGE)
                 else:

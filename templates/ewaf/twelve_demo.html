@@ -7,7 +7,7 @@
   <p>The 12 members, 27 confirmed historical releases and five comparison programs are saved in this demo database. Your changes remain after restarting it.</p>
   <div class="alert alert-info">Start with <strong>Balanced</strong>. Open its ranking, enter a test reason and choose <strong>Generate EWAF Ranking</strong> to save another calculation. Earlier calculations remain in history.</div>
   <div class="table-responsive"><table class="table align-middle">
-    <caption>Each program contains the same 12 eligible applicants. Published programs retain their own approved weights.</caption>
+    <caption>Each program contains the same 12 eligible applicants. Weights remain adjustable until its results are published.</caption>
     <thead><tr><th>Scenario</th><th>Expected first place (original fixture)</th><th>Actions</th></tr></thead><tbody>
     {% for item in demo_scenarios %}<tr>
       <th>{{ item.name }}{% if item.primary %} <span class="badge text-bg-success">Start here</span>{% endif %}</th>
@@ -17,7 +17,7 @@
     </tr>{% endfor %}
     </tbody></table></div>
   <p><a href="{% url 'ewaf:vault' %}">Open Configuration Vault</a></p>
-  <p>You can generate rankings for these published programs using their retained approved weights. New Vault approvals apply to unpublished programs. The expected winners above describe the original saved fixtures; earlier calculations remain available in history.</p>
+  <p>New Vault approvals apply to programs without published results. After results are published in Announcements, that program can still generate rankings using the weights retained from those results. The expected winners above describe the original saved fixtures; earlier calculations remain available in history.</p>
   <p>Employment assessments use the test-only assumption Employed = 1 and Unemployed = 4. All evidence, manual checks and approvals in this database are fictional. Normal review, permission and audit requirements still apply.</p>
 </div>
 {% endblock %}

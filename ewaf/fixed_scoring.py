@@ -98,10 +98,10 @@ def bind(program, *, user, rebind=False, reason=None):
             return None
         if OperationalRun.objects.filter(program=program).exists():
             return None
-        # Adding scoring rules to an opened intake retains its publication weights.
+        # Result publication preserves the ranking basis; program notices do not lock weights.
         if publication_locked(program):
             if not previous or not previous.vault_revision_id:
-                raise ValidationError('The published program is missing its retained approved weights. Review its configuration history.')
+                raise ValidationError('The program with published results is missing its retained approved weights. Review its configuration history.')
             revision = previous.vault_revision
         else:
             revision = active(COMPOSITE)
