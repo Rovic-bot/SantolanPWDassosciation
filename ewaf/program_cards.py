@@ -18,6 +18,7 @@ SORTS = (('newest', 'Newest first'), ('oldest', 'Oldest first'),
 
 
 def configuration_summary(program):
+    from .shared_weights import publication_locked
     latest = OperationalConfiguration.objects.filter(program=program).first()
     state, weights = 'unconfigured', None
     weight_version = None
@@ -46,7 +47,7 @@ def configuration_summary(program):
                 state = 'ready'
                 weights = percentages(selected['weights'] if selected else current.validation['weights'])
                 weight_version = selected['id'] if selected else None
-    return {'state': state, 'label': dict(CONFIGURATIONS)[state],
+    return {'state': state, 'label': dict(CONFIGURATIONS)[state], 'weights_locked': publication_locked(program),
             'version': latest.revision if latest else None, 'weight_version': weight_version,
             'rows': [{'code': code, 'name': NAMES[code],
                       'percent': f'{weights[code] / 100:.2f}' if weights is not None else None}

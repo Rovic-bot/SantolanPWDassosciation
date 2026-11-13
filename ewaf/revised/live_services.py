@@ -173,6 +173,10 @@ def bind(program_id, *, user, expected, policy_id, cutoff, reason):
 def binding_preflight(program, policy, cutoff):
     """Shared validation for explicit historical and centrally approved binding."""
     previous = Configuration.objects.filter(program=program).first()
+    from ewaf.shared_weights import publication_locked
+    if publication_locked(program) and (not previous or
+            policy.weight_configuration_id != previous.validation.get('weight_version', previous.vault_revision_id)):
+        raise ValidationError('Published programs retain their exact approved weight version. Create an unpublished program to use different weights.')
     from .member_record_evidence import permits_evidence_revision
     from .rolling_pool import permits_revision
     record_revision = (permits_evidence_revision(program, previous, policy, cutoff)

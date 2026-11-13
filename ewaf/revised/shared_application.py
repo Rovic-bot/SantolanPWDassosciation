@@ -74,7 +74,8 @@ def candidate(program, configuration):
     if configuration:
         from ewaf.dataset_methods import method_of, is_composite
         rows = rows.filter(method=method_of(configuration.policy))
-        if not is_composite(configuration.policy):
+        from ewaf.shared_weights import publication_locked
+        if not is_composite(configuration.policy) or publication_locked(program):
             rows = rows.filter(weight_configuration_id=configuration.vault_revision_id)
     for row in rows:
         if enabled_for(row.content):

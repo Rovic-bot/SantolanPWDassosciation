@@ -102,6 +102,8 @@ def configuration(request, pk):
 def configuration_context(request, program, current):
     pk = program.pk
     latest = Configuration.objects.filter(program=program).first()
+    from .shared_weights import publication_locked
+    locked = publication_locked(program)
     if latest and latest.uses_dataset_scoring:
         if request.method == 'POST' and request.POST.get('action') in ('DRAFT', 'LOCKED', 'PREVIEW_WEIGHTS'):
             return JsonResponse({'errors': ['Use the versioned dataset-policy review and explicit program binding.']}, status=400)
@@ -123,7 +125,7 @@ def configuration_context(request, program, current):
         waiting = ('Calculation waits until the approved application closing time and assessment cutoff.'
                    if not rolling and timezone.now() < latest.assessment_cutoff else '')
         from .employment_scoring import SCORES
-        return {'configuration': latest, 'can_configure': False, 'can_authorize': False,
+        return {'configuration': latest, 'can_configure': False, 'can_authorize': False, 'weights_locked': locked,
                 'fixed_scoring': bool(latest.policy.get('fixed_scoring_version')),
                 'employment_scoring': SCORES.items(),
                 'shared_weights': shared_weights,
@@ -135,7 +137,7 @@ def configuration_context(request, program, current):
         if request.method == 'POST' and request.POST.get('action') in ('DRAFT', 'LOCKED', 'PREVIEW_WEIGHTS'):
             return JsonResponse({'errors': ['Configure shared weights and rules in the EWAF Configuration Vault.']}, status=400)
         from .revised.shared_application import status as shared_status
-        return {'configuration': latest, 'can_configure': False, 'can_authorize': False,
+        return {'configuration': latest, 'can_configure': False, 'can_authorize': False, 'weights_locked': locked,
                 'shared_configuration': shared_status(program, latest)}
     from .weight_input import initial_state, preview
     if request.method == 'POST' and request.POST.get('action') == 'PREVIEW_WEIGHTS':
@@ -190,12 +192,13 @@ def configuration_context(request, program, current):
             weight_state['proposal'] = validate_proposal(json.loads(form['slider_proposal'].value() or 'null'))
         except (ValidationError, ValueError, TypeError):
             pass
-    return {'configuration': latest,
+    return {'configuration': latest, 'weights_locked': locked,
         'editing_settings': editing_settings, 'upgrading_criteria': upgrading_criteria,
         'weight_state': weight_state,
         'configuration_form': form, 'missing': missing, 'math_rows': math_rows,
         'configuration_history': Paginator(Configuration.objects.filter(program=program), 30).get_page(request.GET.get('configuration_page')),
-        'can_configure': current.has_perm('ewaf.configure_operational'), 'can_authorize': current.has_perm('ewaf.authorize_operational')}
+        'can_configure': not locked and current.has_perm('ewaf.configure_operational'),
+        'can_authorize': not locked and current.has_perm('ewaf.authorize_operational')}
 
 
 @never_cache

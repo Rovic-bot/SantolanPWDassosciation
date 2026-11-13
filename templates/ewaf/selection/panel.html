@@ -6,6 +6,7 @@
   </div>
   <ul class="selection-checks">{% for check in selection.checks %}<li data-complete="{{ check.complete|yesno:'true,false' }}"><span aria-hidden="true">{% if check.complete %}✓{% else %}○{% endif %}</span><span>{{ check.label }}<small>{% if check.complete %}Complete{% else %}Pending{% endif %}</small></span></li>{% endfor %}</ul>
   {% if program.ewaf_card.weights_available %}<section class="selection-weights" aria-label="Criteria weights">
+    {% if program.ewaf_card.weights_locked %}<p class="selection-meta">Weights locked after publication. You can still generate rankings using these weights.</p>{% endif %}
     <header><h3>Approved criteria weights</h3><small>{% if program.ewaf_card.weight_version %}Vault #{{ program.ewaf_card.weight_version }}{% elif program.ewaf_card.version %}Configuration v{{ program.ewaf_card.version }}{% endif %}</small></header>
     {% for weight in program.ewaf_card.rows %}<div class="selection-weight"><div><span>{{ weight.name }}</span><strong>{{ weight.percent }}%</strong></div><progress value="{{ weight.percent }}" max="100" aria-label="{{ weight.name }} weight">{{ weight.percent }}%</progress></div>{% endfor %}
   </section>

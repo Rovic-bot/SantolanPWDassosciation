@@ -3,6 +3,7 @@
 {% block content %}<div class="container content-section"><a href="{% url 'ewaf:operational_programs' %}?mode=configuration">All EWAF configurations</a><h1>EWAF Configuration</h1><h2 class="h5">{{ program.name }}</h2>{% include 'ewaf/operational_banner.html' %}
 <p><a href="{% url 'ewaf:evidence_policy' program.pk %}">Program evidence definitions</a></p>
 {% if configuration %}<p>Version {{ configuration.revision }} &middot; {{ configuration.get_status_display }}</p>{% endif %}
+{% if weights_locked %}<p>Weights are locked after publication. Rankings can still be generated using the program's retained weights.</p>{% endif %}
 {% if math_rows %}<details class="mb-4"><summary>Saved AHP weights</summary><table class="table"><caption>Stored full-precision weights are used for calculation.</caption><thead><tr><th>Criterion</th><th>Weight</th></tr></thead><tbody>{% for row in math_rows %}<tr><th>{{ row.criterion }}</th><td>{{ row.weight|floatformat:4 }}</td></tr>{% endfor %}</tbody></table>
 {% if configuration.policy.weight_input %}<p>Input method: slider-derived comparisons, explicitly reviewed. These were not independently elicited pairwise judgments.</p>{% else %}<p>Existing pairwise configuration. Its recorded comparisons and history are retained.</p>{% endif %}</details>{% endif %}
 {% if missing %}<details><summary>Settings to complete</summary><ul>{% for error in missing %}<li>{{ error }}</li>{% endfor %}</ul></details>{% endif %}

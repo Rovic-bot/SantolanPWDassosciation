@@ -24,7 +24,7 @@
       <header class="vault-card-heading"><h2 id="vault-approval-heading">Audit &amp; Approval</h2></header>
       <label for="{{ form.reason.id_for_label }}">Version audit notes <span class="vault-required">(required)</span></label>
       {{ form.reason }}{{ form.reason.errors }}
-      <p class="vault-help">{% if is_composite %}Approval creates a new version for subsequent four-criterion rankings.{% else %}Existing programs and rankings retain their saved versions.{% endif %}</p>
+      <p class="vault-help">Approval creates a new weight version for unpublished programs. Published programs keep their locked weights and can still generate rankings.</p>
       <div class="vault-approval-actions">{% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration disabled>{% include 'public/icon.html' with name='check' %} Approve &amp; Save Configuration</button>{% else %}<p class="vault-help">An authorized administrator must approve this configuration.</p>{% endif %}
       {% if is_ses and can_configure and not is_composite %}<button name="action" value="DRAFT" class="btn btn-outline-primary" data-save-configuration disabled>Save weight draft</button><p class="vault-help">Save changed proposals as a draft before approving the reviewed version.</p>{% endif %}</div>
     </section>

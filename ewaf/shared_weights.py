@@ -1,4 +1,4 @@
-"""Current Vault weights for new composite runs; immutable weights for replay."""
+"""Drafts follow Vault approval; published programs retain their bound weights."""
 from django.core.exceptions import ValidationError
 
 from . import dataset_methods as methods
@@ -8,12 +8,23 @@ CONTRACT = 'approved-vault-weights-per-calculation-v1'
 KEY = 'approved_weights'
 
 
+def publication_locked(program):
+    """Unpublishing does not reopen an already published program's weights."""
+    return bool(program and (program.published_at or program.status == 'published'))
+
+
 def current(configuration):
     from .vault_policy import enabled
     if not configuration or not getattr(configuration, 'uses_dataset_scoring', getattr(configuration, 'dataset_policy_id', None)) or not methods.is_composite(configuration.policy) or not enabled():
         return None
-    from .vault_services import active
-    revision = active(methods.COMPOSITE)
+    if publication_locked(configuration.program):
+        from .vault_models import VaultRevision
+        revision = VaultRevision.objects.filter(pk=configuration.validation.get('weight_version')).first()
+        if revision is None:
+            raise ValidationError('The published program is missing its retained approved weight version. Review its configuration history.')
+    else:
+        from .vault_services import active
+        revision = active(methods.COMPOSITE)
     if revision is None:
         raise ValidationError('Approve the four-criterion AHP weights in the Configuration Vault before generating a ranking.')
     return {'contract': CONTRACT, 'method': methods.COMPOSITE,

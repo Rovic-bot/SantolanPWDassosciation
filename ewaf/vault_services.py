@@ -168,7 +168,7 @@ def record(*, user, expected, proposed, judgments, status, reason, attested=Fals
             from .fixed_scoring import bind as bind_fixed
             for program in Program.objects.filter(status='published', ewaf_applicable=True).order_by('pk'):
                 retained = Configuration.objects.filter(program=program).first()
-                if not retained or retained.policy.get('configuration_scope') == 'weights_and_sources':
+                if retained and retained.policy.get('configuration_scope') == 'weights_and_sources':
                     bind_fixed(program, user=current)
         final = actor(user, 'ewaf.authorize_operational' if status == 'LOCKED' else 'ewaf.configure_operational')
         if (final.pk, final.is_superuser, frozenset(final.get_all_permissions())) != authority:
@@ -179,6 +179,9 @@ def record(*, user, expected, proposed, judgments, status, reason, attested=Fals
 @terms_lock()
 def inherit(program, *, user, revision=None):
     if not vault_policy.enabled() or not program.ewaf_applicable:
+        return None
+    from .shared_weights import publication_locked
+    if publication_locked(program):
         return None
     revision = revision or active()
     if not revision:

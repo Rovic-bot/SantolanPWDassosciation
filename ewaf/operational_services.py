@@ -112,6 +112,9 @@ def record_configuration(program_id, *, user, expected, proposed, judgments, sta
         raise ValidationError('Edit shared weights and scoring rules in the EWAF Configuration Vault.')
     permission = 'ewaf.authorize_operational' if status == 'LOCKED' else 'ewaf.configure_operational'
     with fence(program_id, user, permission) as (current, program, applications):
+        from .shared_weights import publication_locked
+        if publication_locked(program):
+            raise ValidationError('Weights are locked after program publication. Create an unpublished program to use different weights.')
         if Configuration.objects.filter(program=program, dataset_policy__isnull=False).exists():
             raise ValidationError('Use the explicit dataset-policy binding service for this program.')
         if status not in ('DRAFT', 'LOCKED') or expected != configuration_token(program):

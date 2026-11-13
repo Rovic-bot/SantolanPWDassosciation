@@ -77,6 +77,7 @@ def bind(program, *, user, rebind=False, reason=None):
     from programs.approval_policy import require_binding as require_terms
     from core.permissions import require_workspace_permissions
     from programs.terms import terms_lock
+    from .shared_weights import publication_locked
     with terms_lock():
         require_workspace_permissions(user, 'programs.view_program', 'programs.publish_program')
         program = type(program).objects.select_for_update().get(pk=program.pk)
@@ -87,13 +88,23 @@ def bind(program, *, user, rebind=False, reason=None):
             previous.clean()
             if not rebind:
                 require_binding(previous)
-                return previous
+                if publication_locked(program):
+                    return previous
+                newest = active(COMPOSITE)
+                if not newest or newest.pk == previous.vault_revision_id:
+                    return previous
         if previous and not is_fixed(previous) and (previous.dataset_policy_id or not is_composite(previous.policy)
                 or previous.policy.get('configuration_scope') != 'weights_and_sources'):
             return None
         if OperationalRun.objects.filter(program=program).exists():
             return None
-        revision = previous.vault_revision if is_fixed(previous) else active(COMPOSITE)
+        # Adding scoring rules to an opened intake retains its publication weights.
+        if publication_locked(program):
+            if not previous or not previous.vault_revision_id:
+                raise ValidationError('The published program is missing its retained approved weights. Review its configuration history.')
+            revision = previous.vault_revision
+        else:
+            revision = active(COMPOSITE)
         if not revision:
             raise ValidationError('Approve the four-criterion weights in Configuration before publishing.')
         require_terms(program, first_publication=program.published_at is None)
