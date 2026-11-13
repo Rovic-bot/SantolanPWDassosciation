@@ -64,3 +64,5 @@ A fresh custom-format PostgreSQL backup and a private object archive containing 
 The reviewed plan contained only membership.0016_pdao_claim_membership. It was applied through the existing trusted Django migration environment with verified TLS. Post-migration inspection confirmed the migration entry, an empty claim table, the migration role as owner, RLS, runtime-role access and no anon/authenticated SELECT access. Supabase's security advisor returned no notices.
 
 The existing Render service uses manual deployment from deployment/free-render-supabase. Preserve the additive table if rolling application code back; do not erase claimed-ID or linked-application history.
+
+Commit 1d23df7ace689a4a605ba7661cf4cef7908d2c02 went live in Render deployment dep-dbrhkps9v7es73ckg4pg at 2026-11-13 14:12:00 UTC. Eight live HTTP checks passed, including both public application pages, required membership disability/4Ps controls, the updated review script and login protection on the new private endpoints. No error-level application logs were returned during the deployment check. Production verification did not submit a claim or membership application.
