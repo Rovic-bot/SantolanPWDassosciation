@@ -29,6 +29,7 @@ def pdao_data():
         disability_types=['Visual Disability'], disability_cause='Acquired', education='College',
         employment_status='Unemployed', accomplished_by='Applicant', emergency_name='Contact Example',
         emergency_relationship='Sibling', emergency_phone='9081234567',
+        father_first_name='Father', father_last_name='Example', mother_first_name='Mother', mother_last_name='Example',
         submission_token='synthetic-only', acknowledgement='on')
 
 
@@ -59,7 +60,8 @@ class IntakeValidationTests(SimpleTestCase):
             required = ['house_street', 'barangay', 'city', 'region', 'contact_number', 'email', 'birthdate',
                         'civil_status', 'education', 'employment_status']
             required += (['sex', 'province', 'disability_types', 'disability_cause', 'emergency_name',
-                          'emergency_relationship', 'emergency_phone'] if 'application_type' in data else
+                          'emergency_relationship', 'emergency_phone', 'father_first_name', 'father_last_name',
+                          'mother_first_name', 'mother_last_name'] if 'application_type' in data else
                          ['zip_code', 'nationality', 'gender', 'family_members', 'four_ps_member', 'disability_type'])
             for name in required:
                 with self.subTest(form=cls.__name__, field=name):
@@ -106,6 +108,7 @@ class IntakeValidationTests(SimpleTestCase):
     @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
     def test_fifth_birthday_boundary_and_guardian_for_minors(self, _today):
         for cls, data, kwargs in self.cases():
+            data['education'] = 'Elementary'
             if 'application_type' not in data:
                 data |= {'guardian_name': 'Guardian Example', 'guardian_contact': '9171234567'}
             for born, valid in [('2021-11-14', True), ('2021-11-15', False), ('2027-01-01', False)]:
@@ -120,6 +123,81 @@ class IntakeValidationTests(SimpleTestCase):
         self.assertIn('guardian_contact', form.errors)
         self.assertEqual(latest_birthdate(date(2028, 2, 29)), date(2023, 2, 28))
         self.assertEqual(latest_birthdate(date(2029, 2, 28)), date(2024, 2, 28))
+
+    @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
+    def test_children_under_15_choose_elementary_or_lower_and_student_or_unemployed(self, _today):
+        for cls, data, kwargs in self.cases():
+            is_pdao = 'application_type' in data
+            data |= {'guardian_name': 'Guardian Example', 'guardian_contact': '9171234567'} if not is_pdao else {}
+            for born in ('2021-11-14', '2016-11-14', '2011-11-15'):
+                for education in ('None' if is_pdao else 'None / Not yet in school', 'Kindergarten', 'Elementary'):
+                    for status in (('Student', 'Unemployed') if is_pdao else ('student', 'unemployed')):
+                        with self.subTest(form=cls.__name__, born=born, education=education, status=status):
+                            form = cls(data | {'birthdate': born, 'education': education, 'employment_status': status}, **kwargs)
+                            self.assertTrue(form.is_valid(), form.errors)
+                for changes, error in [
+                    ({'education': 'Junior High School' if is_pdao else 'High School'}, 'education'),
+                    ({'education': 'College' if is_pdao else 'College Undergraduate'}, 'education'),
+                    ({'employment_status': 'Employed' if is_pdao else 'employed'}, 'employment_status'),
+                    ({'employment_status': 'Self employed' if is_pdao else 'self_employed'}, 'employment_status'),
+                ]:
+                    with self.subTest(form=cls.__name__, born=born, changes=changes):
+                        form = cls(data | {'birthdate': born, 'education': 'Elementary'} | changes, **kwargs)
+                        self.assertFalse(form.is_valid())
+                        self.assertIn(error, form.errors)
+            # Exactly 15 restores the existing choices, including their conditional details.
+            data |= {'birthdate': '2011-11-14', 'employment_status': 'Employed' if is_pdao else 'employed'}
+            if is_pdao:
+                data |= {'employment_category': 'Private', 'employment_nature': 'Permanent / Regular', 'occupation': 'Professional'}
+            form = cls(data, **kwargs)
+            self.assertTrue(form.is_valid(), form.errors)
+
+    @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
+    def test_child_employment_details_rejected_and_required_family_names_have_optional_middle_names(self, _today):
+        for cls in (PDAOOnlineForm, PDAOOnsiteForm):
+            child = pdao_data() | {'birthdate': '2021-11-14', 'education': 'Kindergarten', 'employment_status': 'Student'}
+            form = cls(child)
+            self.assertTrue(form.is_valid(), form.errors)
+            self.assertEqual(form.submitted_data()['employment_status'], 'Student')
+            for name, value in [('employment_category', 'Private'), ('employment_nature', 'Casual'),
+                                ('occupation', 'Professional'), ('occupation_other', 'Seller')]:
+                with self.subTest(form=cls.__name__, field=name):
+                    form = cls(child | {name: value})
+                    self.assertFalse(form.is_valid())
+                    self.assertIn(name, form.errors)
+            for name in ('father_middle_name', 'mother_middle_name'):
+                self.assertFalse(cls().fields[name].required)
+
+    @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
+    def test_filtered_bound_form_retains_full_choices_for_birthdate_correction(self, _today):
+        for cls, data, kwargs in self.cases():
+            form = cls(data | {'birthdate': '2021-11-14'}, **kwargs)
+            profile = getattr(form, 'profile_form', form)
+            education = profile.fields['education']
+            self.assertNotIn(data['education'], dict(education.choices))
+            self.assertIn(data['education'], dict(json.loads(education.widget.attrs['data-age-choices'])))
+
+    @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
+    def test_child_choices_survive_staff_review_without_rewriting_saved_information(self, _today):
+        for education in ('None / Not yet in school', 'Kindergarten', 'Elementary'):
+            data = association_data() | {'birthdate': '2021-11-14', 'education': education, 'employment_status': 'student',
+                'guardian_name': 'Guardian Example', 'guardian_contact': '9171234567'}
+            intake = OnlineRegistrationForm(data, policy=self.policy)
+            self.assertTrue(intake.is_valid(), intake.errors)
+            saved = intake.submitted_data()
+            fields = RegistrationForm(policy=self.policy).fields
+            review = RegistrationForm({key: value for key, value in saved.items() if key in fields}, initial=saved, policy=self.policy)
+            self.assertTrue(review.is_valid(), review.errors)
+            self.assertEqual(review.submitted_data()['education'], education)
+            self.assertEqual(review.submitted_data()['employment_status'], 'student')
+        data = pdao_data() | {'birthdate': '2021-11-14', 'education': 'Kindergarten', 'employment_status': 'Student'}
+        intake = PDAOOnlineForm(data)
+        self.assertTrue(intake.is_valid(), intake.errors)
+        saved = intake.submitted_data()
+        review = PDAOReviewForm({key: value for key, value in saved.items() if key in PDAOReviewForm.base_fields} |
+            {'version': 0, 'action': 'correct'}, initial=saved)
+        self.assertTrue(review.is_valid(), review.errors)
+        self.assertEqual(review.submitted_data()['employment_status'], 'Student')
 
     def test_married_requires_spouse_name_and_mobile_but_single_does_not(self):
         for cls in (OnlineRegistrationForm, OnsiteRegistrationForm):

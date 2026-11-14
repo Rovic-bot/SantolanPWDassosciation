@@ -99,9 +99,13 @@ class PDAOForwardForm(StyledForm, forms.Form):
         widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Explain what the applicant needs to check or correct.'}))
     confirmed = forms.BooleanField(label='I confirm that the information was verified onsite and the signed form and requirements have been forwarded to PDAO.',
                                   required=False)
+    ready_confirmed = forms.BooleanField(required=False,
+        label='I confirm that this application is ready to forward and understand the next step.')
 
     def clean(self):
         values = super().clean()
+        if values.get('action') == 'ready' and not values.get('ready_confirmed'):
+            self.add_error('ready_confirmed', 'Confirm that this application is ready before changing its status.')
         if values.get('action') == 'forwarded' and not values.get('confirmed'):
             self.add_error('confirmed', 'Confirm the actual forwarding before recording it.')
         if values.get('action') == 'needs_info' and not values.get('reason'):

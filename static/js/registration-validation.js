@@ -82,10 +82,34 @@ WorkspacePage.run(({on, cleanup}) => {
       return born ? Number(today.slice(0, 4)) - Number(born.slice(0, 4)) -
         Number(today.slice(5) < born.slice(5)) : null;
     };
+    const ageChoices = [...form.querySelectorAll('[data-age-choices]')].map(input => ({
+      input, choices: JSON.parse(input.dataset.ageChoices), allowed: JSON.parse(input.dataset.childValues), child: null,
+    }));
+    const restrictByAge = years => {
+      ageChoices.forEach(item => {
+        const child = years !== null && years <= Number(item.input.dataset.childMaxAge);
+        if (child === item.child) return;
+        const selected = item.input.value;
+        const choices = item.choices.filter(([value]) => !child || !value || item.allowed.includes(value));
+        item.input.replaceChildren(...choices.map(([value, label]) => new Option(label, value)));
+        item.input.value = choices.some(([value]) => value === selected) ? selected : '';
+        item.child = child;
+      });
+      if (field('application_type')) {
+        const child = years !== null && years < 15;
+        ['employment_category', 'employment_nature', 'occupation', 'occupation_other'].forEach(name => {
+          const input = field(name);
+          if (child) input.value = '';
+          input.disabled = child;
+        });
+      }
+    };
     const conditional = () => {
+      const years = age();
+      restrictByAge(years);
       const married = field('civil_status')?.value === 'Married';
       required('spouse_name', married); required('spouse_contact', married);
-      const guardian = (age() !== null && age() < 18) || !!field('guardian_name')?.value || !!field('guardian_contact')?.value;
+      const guardian = (years !== null && years < 18) || !!field('guardian_name')?.value || !!field('guardian_contact')?.value;
       required('guardian_name', guardian); required('guardian_contact', guardian);
       if (field('application_type')) {
         required('pwd_number', field('application_type').value === 'Renewal');

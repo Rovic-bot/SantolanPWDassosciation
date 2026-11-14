@@ -37,13 +37,50 @@ class NoticeHelpers(PDAOHelpers):
 
     def transition(self, action='ready', **changes):
         return services.transition(self.item.pk, self.staff, {'version': self.item.version, 'action': action,
-            'prpwd_lookup_number': self.item.current_data.get('pwd_number', ''), **changes})
+            'prpwd_lookup_number': self.item.current_data.get('pwd_number', ''), 'ready_confirmed': 'on', **changes})
 
 
 @override_settings(PDAO_REGISTRATION_ENABLED=True, EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class PDAOReviewNoticeTests(NoticeHelpers, TestCase):
     def setUp(self):
         self.setup_review()
+
+    def test_ready_without_confirmation_leaves_status_audit_and_email_unchanged(self):
+        for channel in ('online', 'walk_in'):
+            with self.subTest(channel=channel):
+                if channel == 'walk_in':
+                    self.client.force_login(self.staff)
+                    page = self.client.get(reverse('membership:pdao_onsite'))
+                    data = pdao_data() | {'submission_token': page.context['form'].initial['submission_token']}
+                    self.assertEqual(self.client.post(reverse('membership:pdao_onsite'), data).status_code, 302)
+                    item = PDAORegistration.objects.exclude(pk=self.item.pk).get()
+                else:
+                    item = self.item
+                event_count = item.events.count()
+                values = {'version': item.version, 'action': 'ready', 'prpwd_lookup_number': item.current_data.get('pwd_number', '')}
+                with self.captureOnCommitCallbacks(execute=True) as callbacks:
+                    with self.assertRaises(ValidationError):
+                        services.transition(item.pk, self.staff, values)
+                item.refresh_from_db()
+                self.assertEqual((item.status, item.version), ('received', 0))
+                self.assertEqual(item.events.count(), event_count)
+                self.assertEqual(callbacks, [])
+                self.assertFalse(Email.objects.exists())
+                self.assertEqual(mail.outbox, [])
+
+    def test_http_requires_explicit_ready_confirmation_and_renders_recovery(self):
+        self.client.force_login(self.staff)
+        url = reverse('membership:pdao_detail', args=[self.item.pk])
+        values = {'version': 0, 'action': 'ready', 'prpwd_lookup_number': self.original['pwd_number']}
+        response = self.client.post(url, values)
+        self.assertContains(response, 'Confirm that this application is ready', status_code=400)
+        self.assertContains(response, 'id="pdao-ready-dialog"', status_code=400)
+        self.assertFalse(Email.objects.exists())
+        with self.captureOnCommitCallbacks(execute=True):
+            self.assertEqual(self.client.post(url, values | {'ready_confirmed': 'on'}).status_code, 302)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.status, 'ready')
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_ready_requires_manual_lookup_and_sends_only_after_commit_once(self):
         for number in ('', 'wrong-number'):
@@ -156,7 +193,7 @@ class PDAOReviewNoticeTests(NoticeHelpers, TestCase):
     def test_http_ignores_recipient_override_and_enforces_csrf(self):
         self.client.force_login(self.staff)
         url = reverse('membership:pdao_detail', args=[self.item.pk])
-        values = {'version': 0, 'action': 'ready', 'prpwd_lookup_number': self.original['pwd_number'], 'email': 'wrong@example.invalid'}
+        values = {'version': 0, 'action': 'ready', 'ready_confirmed': 'on', 'prpwd_lookup_number': self.original['pwd_number'], 'email': 'wrong@example.invalid'}
         csrf_client = Client(enforce_csrf_checks=True)
         csrf_client.force_login(self.staff)
         self.assertEqual(csrf_client.post(url, values).status_code, 403)
@@ -184,13 +221,13 @@ class PDAOReviewNoticeTests(NoticeHelpers, TestCase):
     def test_onsite_can_ready_and_forward_without_email_or_registry(self):
         self.client.force_login(self.staff)
         page = self.client.get(reverse('membership:pdao_onsite'))
-        values = pdao_data() | {'email': '', 'submission_token': page.context['form'].initial['submission_token']}
+        values = pdao_data() | {'submission_token': page.context['form'].initial['submission_token']}
         self.assertEqual(self.client.post(reverse('membership:pdao_onsite'), values).status_code, 302)
         onsite = PDAORegistration.objects.exclude(pk=self.item.pk).get()
         with self.captureOnCommitCallbacks(execute=True):
             with self.assertRaises(ValidationError):
                 services.transition(onsite.pk, self.staff, {'version': 0, 'action': 'needs_info', 'reason': 'No email'})
-            services.transition(onsite.pk, self.staff, {'version': 0, 'action': 'ready'})
+            services.transition(onsite.pk, self.staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
             services.transition(onsite.pk, self.staff, {'version': 1, 'action': 'forwarded', 'confirmed': 'on'})
         onsite.refresh_from_db()
         self.assertEqual(onsite.status, 'forwarded')

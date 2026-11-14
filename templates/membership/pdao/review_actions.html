@@ -16,6 +16,10 @@
   <form method="post" id="pdao-forward-form">{% csrf_token %}<input type="hidden" name="version" value="{{ registration.version }}">
     <input type="hidden" name="action" value="{% if registration.status == 'ready' %}forwarded{% else %}ready{% endif %}">
     {{ form.non_field_errors }}{{ form.prpwd_lookup_number.errors }}
+    {% if registration.status != 'ready' %}
+    <div class="form-check" data-pdao-ready-fallback>{{ form.ready_confirmed }}<label class="form-check-label" for="{{ form.ready_confirmed.id_for_label }}">{{ form.ready_confirmed.label }}</label></div>
+    {{ form.ready_confirmed.errors }}
+    {% endif %}
     {% if registration.status == 'ready' %}
       <div class="form-check">{{ form.confirmed }}<label class="form-check-label" for="{{ form.confirmed.id_for_label }}">{{ form.confirmed.label }}</label>{{ form.confirmed.errors }}</div>
     {% elif online_review and submitted.pwd_number %}
@@ -25,6 +29,18 @@
     {% endif %}
     <button class="btn btn-primary" type="submit"{% if online_review and submitted.pwd_number and registration.status != 'ready' %} data-pdao-decision{% endif %}>{% if registration.status == 'ready' %}Record forwarded to PDAO{% else %}Mark ready to forward{% endif %}</button>
   </form>
+  {% if registration.status != 'ready' %}
+  <dialog class="membership-review-dialog pdao-ready-dialog" id="pdao-ready-dialog" aria-labelledby="pdao-ready-title" aria-describedby="pdao-ready-description">
+    <header><h2 id="pdao-ready-title">Mark this application ready?</h2><button type="button" class="membership-dialog-close" data-pdao-ready-cancel aria-label="Cancel ready action">×</button></header>
+    <div class="membership-pending-form">
+      <p id="pdao-ready-description">This changes the application status to <strong>Ready to forward</strong>. It does not record actual forwarding or issue a PWD ID.</p>
+      {% if online_review %}<p class="pending-recipient">An office-verification invitation will be queued for <strong>{{ submitted.email|default:'the applicant’s saved email' }}</strong>.</p>
+      {% else %}<p>This is an onsite application. No review email will be sent.</p>{% endif %}
+      <p>Continue only after reviewing the application{% if online_review and submitted.pwd_number %} and manually checking the saved PWD number in PRPWD{% endif %}.</p>
+      <footer><button type="button" class="btn btn-outline-secondary" data-pdao-ready-cancel autofocus>Cancel</button><button type="button" class="btn btn-primary" data-pdao-ready-confirm>Confirm ready to forward</button></footer>
+    </div>
+  </dialog>
+  {% endif %}
   {% if online_review and registration.status != 'needs_info' %}
     <details class="pdao-information-request"{% if needs_form.is_bound %} open{% endif %}>
       <summary class="btn btn-outline-primary">Needs information</summary>

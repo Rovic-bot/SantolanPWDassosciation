@@ -30,7 +30,7 @@ class PDAORecordLayoutTests(PDAOHelpers, TestCase):
         self.assertContains(response, 'id="pdao-review-form"', status_code=400)
         self.assertNotContains(response, 'id="pdao-editor"', status_code=400)
         self.assertContains(response, 'This field is required.', status_code=400)
-        services.transition(item.pk, staff, {'version': 0, 'action': 'ready'})
+        services.transition(item.pk, staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
         services.transition(item.pk, staff, {'version': 1, 'action': 'forwarded', 'confirmed': 'on'})
         response = self.client.get(url)
         self.assertContains(response, 'These details are now locked.')

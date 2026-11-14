@@ -1,7 +1,7 @@
 {% extends 'admin_portal/base.html' %}{% load static %}
 {% block title %}PDAO application · Santolan PWD{% endblock %}
 {% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/member-record.css' %}?v=20261106-activity-disclosures"><link rel="stylesheet" href="{% static 'css/pdao-record.css' %}?v=20261109-review"><link rel="stylesheet" href="{% static 'css/pdao-claim.css' %}?v=20261109"><link rel="stylesheet" href="{% static 'css/membership-review-dialogs.css' %}?v=20261108-1">{% endblock %}
-{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/member-record.js' %}?v=20261106-registration-tabs" defer></script><script src="{% static 'js/prpwd-review.js' %}?v=20261105" defer></script><script src="{% static 'js/pdao-review.js' %}?v=20261109-review" defer></script>{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/registration.js' %}?v=20261108-income" defer></script><script src="{% static 'js/member-record.js' %}?v=20261106-registration-tabs" defer></script><script src="{% static 'js/prpwd-review.js' %}?v=20261105" defer></script><script src="{% static 'js/pdao-review.js' %}?v=20261114-ready" defer></script>{% endblock %}
 {% block content %}
 <div class="container content-section member-record pdao-record" data-record-content>
   <div class="member-record-breadcrumbs">

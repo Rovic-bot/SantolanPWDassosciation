@@ -92,7 +92,7 @@ class PDAOReviewTests(PDAOHelpers, TestCase):
         item, _ = self.submit()
         staff = actor(services.VIEW, services.CORRECT, services.FORWARD)
         stale = review_data(item, first_name='Stale')
-        services.transition(item.pk, staff, {'version': 0, 'action': 'ready'})
+        services.transition(item.pk, staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
         with self.assertRaises(ValidationError):
             services.correct(item.pk, staff, stale)
         item.refresh_from_db()
@@ -108,7 +108,7 @@ class PDAOReviewTests(PDAOHelpers, TestCase):
         services.correct(item.pk, staff, review_data(item))  # Unchanged save is idempotent.
         item.refresh_from_db()
         self.assertEqual(item.version, 2)
-        services.transition(item.pk, staff, {'version': 2, 'action': 'ready'})
+        services.transition(item.pk, staff, {'version': 2, 'action': 'ready', 'ready_confirmed': 'on'})
         services.transition(item.pk, staff, {'version': 3, 'action': 'forwarded', 'confirmed': 'on'})
         item.refresh_from_db()
         with self.assertRaises(ValidationError):

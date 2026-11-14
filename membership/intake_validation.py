@@ -17,6 +17,9 @@ from django.utils import timezone
 CATALOGUE_PATH = Path(__file__).resolve().parent.parent / 'static/data/psgc-2026-q2'
 NO_PROVINCE = 'Not applicable (independent city)'
 NCR_PROVINCE = 'Metro Manila (NCR - no province)'
+CHILD_MAX_AGE = 14
+CHILD_EDUCATION = ('None', 'None / Not yet in school', 'Kindergarten', 'Elementary')
+CHILD_EMPLOYMENT = ('student', 'unemployed', 'Student', 'Unemployed')
 
 
 def normalized(value):
@@ -134,7 +137,8 @@ class NewIntakeValidationMixin:
         is_pdao = 'application_type' in self.fields
         required = ['house_street', 'barangay', 'city', 'region', 'email', 'civil_status', 'education', 'employment_status']
         required += (['province', 'sex', 'disability_types', 'disability_cause',
-                      'emergency_name', 'emergency_relationship'] if is_pdao else
+                      'emergency_name', 'emergency_relationship', 'father_first_name', 'father_last_name',
+                      'mother_first_name', 'mother_last_name'] if is_pdao else
                      ['zip_code', 'nationality', 'gender', 'family_members', 'four_ps_member', 'disability_type'])
         for name in required:
             self.fields[name].required = True
@@ -160,6 +164,8 @@ class NewIntakeValidationMixin:
         self.groups = tuple((title, tuple(name for name in address_order if name in names)
                             if 'house_street' in names else names) for title, names in self.groups)
         if is_pdao:
+            for name in ('father_middle_name', 'mother_middle_name'):
+                self.fields[name].label += ' (if any)'
             self.fields['date_applied'].disabled = True
             self.initial['date_applied'] = today
             self.fields['date_applied'].help_text = 'Set automatically to today in Philippine time when you submit.'
@@ -169,12 +175,32 @@ class NewIntakeValidationMixin:
             self.fields['zip_code'].widget.attrs.update(pattern='[0-9]{4}', maxlength=4)
             self.fields['family_members'].min_value = 1
             self.fields['family_members'].widget.attrs['min'] = 1
-            self.fields['education'].choices = [('', 'Select an option'), ('None / Not yet in school', 'None / Not yet in school'),
-                                               *list(self.fields['education'].choices)[1:]]
             self.fields['spouse_name'].help_text = 'Required when civil status is Married.'
             self.fields['spouse_contact'].help_text += ' Required when civil status is Married.'
             self.fields['guardian_name'].help_text = 'Required for applicants under 18, or when providing a guardian contact.'
             self.fields['guardian_contact'].help_text += ' Required for applicants under 18, or when providing a guardian name.'
+        try:
+            born_value = self.data.get('birthdate') if self.is_bound else self.initial.get('birthdate')
+            born_value = self.fields['birthdate'].clean(born_value)
+        except forms.ValidationError:
+            born_value = None
+        child = born_value is not None and age_at(born_value, today) <= CHILD_MAX_AGE
+        for name, allowed in (('education', CHILD_EDUCATION), ('employment_status', CHILD_EMPLOYMENT)):
+            field = self.fields[name]
+            all_choices = list(field.choices)
+            field.widget.attrs.update({
+                'data-age-choices': json.dumps(all_choices),
+                'data-child-values': json.dumps(allowed),
+                'data-child-max-age': CHILD_MAX_AGE,
+            })
+            field.help_text = ('For applicants under 15, choose education up to elementary.'
+                               if name == 'education' else
+                               'For applicants under 15, choose Student or Unemployed, as applicable.')
+            if child:
+                field.choices = [(key, label) for key, label in all_choices if not key or key in allowed]
+                field.error_messages['invalid_choice'] = (
+                    'Applicants under 15 can select education only up to elementary.' if name == 'education' else
+                    'Applicants under 15 must select Student or Unemployed.')
         self.style_fields()
 
     def clean(self):
@@ -203,6 +229,10 @@ class NewIntakeValidationMixin:
                 required += ['employment_category', 'employment_nature', 'occupation']
             elif values.get('employment_status') == 'Self employed':
                 required.append('occupation')
+            if born and age_at(born, today) <= CHILD_MAX_AGE:
+                for name in ('employment_category', 'employment_nature', 'occupation', 'occupation_other'):
+                    if values.get(name):
+                        self.add_error(name, 'Employment details do not apply to applicants under 15.')
         for name in required:
             if not values.get(name) and name not in self.errors:
                 self.add_error(name, 'Complete this field for the details you selected.')

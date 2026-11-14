@@ -49,6 +49,7 @@ def pdao_data():
         'contact_number': '9171234567', 'sex': 'Female', 'civil_status': 'Single',
         'disability_cause': 'Acquired', 'education': 'College', 'employment_status': 'Unemployed',
         'emergency_name': 'Emergency Example', 'emergency_relationship': 'Sibling', 'emergency_phone': '9181234567',
+        'father_first_name': 'Father', 'father_last_name': 'Example', 'mother_first_name': 'Mother', 'mother_last_name': 'Example',
         'accomplished_by': 'Applicant', 'acknowledgement': 'on'}
 
 

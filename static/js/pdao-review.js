@@ -1,6 +1,46 @@
 /* Inline PDAO editing and a private, same-page print preview. */
 (() => {
   const initialize = ({on, cleanup}) => {
+    const readyForm = document.querySelector('#pdao-forward-form');
+    const readyDialog = document.querySelector('#pdao-ready-dialog');
+    if (readyForm && readyDialog?.showModal) {
+      const checkbox = readyForm.elements.namedItem('ready_confirmed');
+      const fallback = readyForm.querySelector('[data-pdao-ready-fallback]');
+      const confirm = readyDialog.querySelector('[data-pdao-ready-confirm]');
+      let opener, confirmed = false, sending = false;
+      fallback.hidden = true;
+      checkbox.required = false;
+      checkbox.checked = false;
+      on(readyForm, 'submit', event => {
+        if (sending) { event.preventDefault(); return; }
+        if (confirmed) { sending = true; return; }
+        event.preventDefault();
+        opener = event.submitter || readyForm.querySelector('button[type=submit]');
+        if (opener?.disabled) return;
+        readyDialog.showModal();
+        document.documentElement.classList.add('membership-dialog-open');
+        readyDialog.querySelector('[autofocus]').focus();
+      });
+      readyDialog.querySelectorAll('[data-pdao-ready-cancel]').forEach(button =>
+        on(button, 'click', () => readyDialog.close()));
+      on(readyDialog, 'close', () => {
+        document.documentElement.classList.remove('membership-dialog-open');
+        if (!confirmed) checkbox.checked = false;
+        opener?.focus({preventScroll: true});
+      });
+      on(confirm, 'click', () => {
+        if (sending || opener?.disabled) return;
+        confirmed = true; checkbox.checked = true;
+        readyDialog.close();
+        readyForm.requestSubmit(opener);
+        // Native validation can block a submission; a later attempt must ask again.
+        if (!sending) { confirmed = false; checkbox.checked = false; }
+      });
+      cleanup(() => {
+        if (readyDialog.open) readyDialog.close();
+        document.documentElement.classList.remove('membership-dialog-open');
+      });
+    }
     const review = document.querySelector('#pdao-manual-review');
     if (review?.dataset.pdaoNumber) {
       const decisions = review.querySelectorAll('[data-pdao-decision]');

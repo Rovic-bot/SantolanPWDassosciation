@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
-from datetime import datetime, timezone
 from types import SimpleNamespace
 from uuid import UUID
 
@@ -40,6 +39,7 @@ class PDAOSourceBrowserTests(SimpleTestCase):
             'philhealth_number': '00-000000000-0', 'philhealth_membership': 'Member',
         }
         for name, payload in [('filled', data), ('minimal', pdao_data()),
+                              ('student', pdao_data() | {'birthdate': '2021-11-14', 'education': 'Kindergarten', 'employment_status': 'Student'}),
                               ('long', data | {field: 'Long example ' * (limit // 13)
                                for field, limit in [('house_street', 255), ('organization_address', 255),
                                                      ('organization', 150), ('emergency_name', 150)]})]:
@@ -51,16 +51,8 @@ class PDAOSourceBrowserTests(SimpleTestCase):
                                                 short_reference='PDAO-000001')})
             html = html.replace('/static/', (root / 'static').as_uri() + '/')
             (output / f'{name}.html').write_text(html, encoding='utf-8')
-        # Use the same validated filled declaration as the staff print fixture.
-        form = PDAOForm(data)
-        self.assertTrue(form.is_valid(), form.errors)
-        receipt = render_to_string('membership/pdao/receipt.html', {
-            'submitted': form.submitted_data() | {'intake_channel': 'online'},
-            'reference': 'PDAO-00000000-0000-4000-8000-000000000001',
-            'received_at': datetime(2026, 11, 5, 4, 21, tzinfo=timezone.utc),
-            'csrf_token': 'synthetic-browser-fixture',
-        })
-        (output / 'receipt.html').write_text(receipt.replace('/static/', (root / 'static').as_uri() + '/'), encoding='utf-8')
+        # The authenticated receipt/iframe/print workflow is covered by
+        # pdao_review_notices_browser_qa; these fixtures verify the source pages.
         result = subprocess.run(['node', str(root / 'scripts/pdao_source_print_qa.cjs'), str(output)],
                                 capture_output=True, text=True, encoding='utf-8', timeout=90,
                                 creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))

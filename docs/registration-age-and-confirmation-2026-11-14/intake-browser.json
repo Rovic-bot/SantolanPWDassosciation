@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "route": "/association.html",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "under15EducationAndEmployment": true,
+      "fifteenthBirthdayRestoresChoices": true,
+      "familyNames": "existing family fields",
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "route": "/pdao.html",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "under15EducationAndEmployment": true,
+      "fifteenthBirthdayRestoresChoices": true,
+      "familyNames": true,
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "route": "/onsite-association.html",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "under15EducationAndEmployment": true,
+      "fifteenthBirthdayRestoresChoices": true,
+      "familyNames": "existing family fields",
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "route": "/onsite-pdao.html",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "under15EducationAndEmployment": true,
+      "fifteenthBirthdayRestoresChoices": true,
+      "familyNames": true,
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "addressDownloadFailure": "Manual input remains available; server validation applies"
+    },
+    {
+      "noJavaScript": "Form and server validation retained"
+    }
+  ],
+  "errors": [],
+  "applicationPosts": []
+}

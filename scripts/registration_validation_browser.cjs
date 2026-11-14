@@ -91,6 +91,45 @@ fs.mkdirSync(output, {recursive: true});
       assert.equal(await born.evaluate(input => input.checkValidity()), false);
       await born.fill('1990-01-02'); await born.dispatchEvent('change');
       assert.match(await page.locator('[data-registration-age]').textContent(), /^3[6-9] years$/);
+      const pdao = await page.locator('[name=application_type]').count();
+      const education = page.locator('[name=education]'), employment = page.locator('[name=employment_status]');
+      const adultEducation = await education.locator('option').allTextContents();
+      await education.selectOption(pdao ? 'College' : 'College Undergraduate');
+      await employment.selectOption(pdao ? 'Employed' : 'employed');
+      if (pdao) await page.locator('[name=occupation]').selectOption('Professional');
+      await change('birthdate', max);
+      assert.equal(await education.inputValue(), '');
+      assert.equal(await employment.inputValue(), '');
+      assert.deepEqual(await education.locator('option').allTextContents(),
+        ['Select an option', pdao ? 'None' : 'None / Not yet in school', 'Kindergarten', 'Elementary']);
+      assert.deepEqual((await employment.locator('option').allTextContents()).sort(), ['Select an option', 'Student', 'Unemployed'].sort());
+      await employment.selectOption(pdao ? 'Student' : 'student');
+      await education.selectOption('Kindergarten');
+      if (pdao) {
+        for (const name of ['employment_category', 'employment_nature', 'occupation', 'occupation_other']) {
+          assert.equal(await page.locator('[name=' + name + ']').isDisabled(), true);
+          assert.equal(await page.locator('[name=' + name + ']').inputValue(), '');
+        }
+        for (const name of ['father_first_name', 'father_last_name', 'mother_first_name', 'mother_last_name'])
+          assert.equal(await page.locator('[name=' + name + ']').evaluate(input => input.required), true);
+        for (const name of ['father_middle_name', 'mother_middle_name'])
+          assert.equal(await page.locator('[name=' + name + ']').evaluate(input => input.required), false);
+      }
+      const today = await born.getAttribute('data-intake-today');
+      const fifteen = (Number(today.slice(0, 4)) - 15) + today.slice(4);
+      const almostFifteen = new Date(fifteen + 'T12:00:00Z');
+      almostFifteen.setUTCDate(almostFifteen.getUTCDate() + 1);
+      await change('birthdate', almostFifteen.toISOString().slice(0, 10));
+      assert.equal(await education.locator('option').count(), 4);
+      await change('birthdate', fifteen);
+      assert.deepEqual(await education.locator('option').allTextContents(), adultEducation);
+      assert.equal(await employment.inputValue(), pdao ? 'Student' : 'student');
+      assert(await employment.locator('option').count() > 3);
+      if (pdao) assert.equal(await page.locator('[name=occupation]').isEnabled(), true);
+      await change('birthdate', max);
+      await education.scrollIntoViewIfNeeded();
+      await page.screenshot({path: path.join(output, 'child-options-' + index + '.png')});
+      await change('birthdate', '1990-01-02');
       if (await page.locator('[name=spouse_name]').count()) {
         await page.locator('[name=civil_status]').selectOption('Married');
         assert.equal(await page.locator('[name=spouse_name]').evaluate(input => input.required), true);
@@ -114,7 +153,8 @@ fs.mkdirSync(output, {recursive: true});
       await page.setViewportSize({width: index % 2 ? 390 : 1440, height: 1000});
       await page.locator('[name=city]').scrollIntoViewIfNeeded();
       await page.screenshot({path: path.join(output, 'address-' + index + '.png')});
-      checks.push({route, address: true, mobile: true, minimumAge: true, requiredFields: true, widths: [1440, 390, 320]});
+      checks.push({route, address: true, mobile: true, minimumAge: true, requiredFields: true,
+        under15EducationAndEmployment: true, fifteenthBirthdayRestoresChoices: true, familyNames: pdao ? true : 'existing family fields', widths: [1440, 390, 320]});
     }
     // Progressive fallback: typed values remain possible if catalogue loading fails.
     await context.route('**/data/psgc-2026-q2/**', route => route.abort());

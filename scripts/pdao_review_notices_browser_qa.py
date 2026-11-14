@@ -33,7 +33,7 @@ class PDAOReviewBrowserTests(PDAOHelpers, StaticLiveServerTestCase):
         self.client = Client()
         self.client.force_login(staff)
         page = self.client.get(reverse('membership:pdao_onsite'))
-        self.client.post(reverse('membership:pdao_onsite'), pdao_data() | {'first_name': 'Onsite', 'email': '',
+        self.client.post(reverse('membership:pdao_onsite'), pdao_data() | {'first_name': 'Onsite',
             'submission_token': page.context['form'].initial['submission_token']})
         onsite = PDAORegistration.objects.exclude(pk=online.pk).get()
         MembershipSettings.objects.update_or_create(pk=1, defaults={'prpwd_url': 'https://registry.example.test/check'})

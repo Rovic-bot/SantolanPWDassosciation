@@ -183,9 +183,9 @@ class PDAORegistrationTests(PDAOHelpers, TestCase):
         item, _ = self.submit()
         staff = actor(services.VIEW)
         with self.assertRaises(PermissionDenied):
-            services.transition(item.pk, staff, {'version': 0, 'action': 'ready'})
+            services.transition(item.pk, staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
         staff.user_permissions.add(Permission.objects.get(codename='forward_pdaoregistration'))
-        services.transition(item.pk, staff, {'version': 0, 'action': 'ready'})
+        services.transition(item.pk, staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
         with self.assertRaises(ValidationError):
             services.transition(item.pk, staff, {'version': 0, 'action': 'forwarded', 'confirmed': 'on'})
         with self.assertRaises(ValidationError):
@@ -202,7 +202,7 @@ class PDAORegistrationTests(PDAOHelpers, TestCase):
         staff = actor(services.VIEW, services.FORWARD)
         with patch.object(services, 'record_event', side_effect=RuntimeError('Synthetic audit failure')):
             with self.assertRaises(RuntimeError):
-                services.transition(item.pk, staff, {'version': 0, 'action': 'ready'})
+                services.transition(item.pk, staff, {'version': 0, 'action': 'ready', 'ready_confirmed': 'on'})
         item.refresh_from_db()
         self.assertEqual(item.status, 'received')
         self.assertEqual(item.version, 0)

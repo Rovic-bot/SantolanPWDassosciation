@@ -147,7 +147,8 @@ class AssociationPDFForm(SourceForm):
     date_issued = date_field('PWD ID date issued (if known)')
     philhealth_number = number_field('PhilHealth ID no. (if any)', hyphenated=True)
     education = choice_field('Educational attainment', [
-        'Elementary', 'High School', 'College Graduate', 'College Undergraduate', 'Vocational'])
+        'None / Not yet in school', 'Kindergarten', 'Elementary', 'High School',
+        'College Graduate', 'College Undergraduate', 'Vocational'])
     print_groups = (
         ('Personal information', ('last_name', 'first_name', 'middle_name', 'suffix', 'birthdate', 'civil_status', 'nationality', 'gender')),
         ('Address and contact information', ('house_street', 'barangay', 'city', 'region', 'zip_code', 'contact_number', 'email')),
@@ -207,7 +208,7 @@ class PDAOForm(SourceForm):
     civil_status = choice_field('Civil status', ['Single', 'Married', 'Separated', 'Widow/er', 'Cohabitation (Live-in)'])
     education = choice_field('Educational attainment', ['None', 'Kindergarten', 'Elementary',
         'Junior High School', 'Senior High School', 'College', 'Vocational', 'Post Graduate'])
-    employment_status = choice_field('Employment status', ['Employed', 'Unemployed', 'Self employed'])
+    employment_status = choice_field('Employment status', ['Employed', 'Unemployed', 'Self employed', 'Student'])
     employment_category = choice_field('Category of employment', ['Government', 'Private'])
     employment_nature = choice_field('Nature of employment', ['Permanent / Regular', 'Casual', 'Seasonal', 'Emergency'])
     occupation = choice_field('Occupation', ['Manager', 'Professional', 'Technician and Associate Professionals',
