@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
+const cardFixture = require('./document_ocr_card_fixture.cjs');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.env.USERPROFILE,
   '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
 const root = process.cwd();
@@ -106,6 +107,34 @@ async function imageFor(page, lines) {
     assert.equal(await page.locator('[name=pwd_number]').inputValue(), '');
     assert.equal(await page.locator('[name=email]').inputValue(), '');
     results.push({receiptCustomerOnly: true});
+    // Phone screenshot with a sideways card, small bilingual labels, graphics
+    // and app chrome. Never substitute the user's actual ID for this fixture.
+    for (const angle of [90, 180]) {
+      await page.goto(base + routes[0]);
+      await page.evaluate(() => {
+        const read = DocumentOCRReader.prototype.read;
+        DocumentOCRReader.prototype.read = async function (...args) {
+          const result = await read.apply(this, args); window.ocrFictionalResult = result; return result;
+        };
+      });
+      await page.locator('[data-ocr-file]').setInputFiles(await cardFixture(page, angle));
+      await page.locator('[data-ocr-read]').click();
+      await page.locator('[data-ocr-results]:visible').waitFor({timeout:100000});
+      await page.locator('[data-ocr-apply]').click();
+      for (const [field,value] of Object.entries({first_name:'ANA MARIA',last_name:'REYES',middle_name:'SANTOS',birthdate:'1988-05-14',
+        house_street:'88 EXAMPLE STREET',barangay:'DEMO BARANGAY',city:'CITY OF EXAMPLE',region:'NCR',zip_code:'1234'})) {
+        const actual = await page.locator(`[name=${field}]`).inputValue();
+        if (actual !== value) fs.writeFileSync(path.join(output, `fictional-card-debug-${angle}.json`),
+          JSON.stringify(await page.evaluate(() => window.ocrFictionalResult)));
+        assert.equal(actual,value,`rotated card ${angle}: ${field}`);
+      }
+      assert.equal(await page.locator('[name=pwd_number]').inputValue(),'');
+      assert.match(await page.locator('[data-ocr-image]').getAttribute('src'),/^data:image/);
+      assert.equal(await page.locator('[name=acknowledgement]').isChecked(),false);
+      await page.setViewportSize({width:390,height:1000});
+      if(angle===90)await page.locator('[data-document-ocr]').screenshot({path:path.join(output,'fictional-rotated-card.png')});
+      results.push({rotatedNationalID:angle,reviewedAutofill:true,identityNumberBoundary:true});
+    }
     await page.locator('[data-ocr-clear]').click();
     await page.locator('[data-ocr-camera]').click();
     await page.waitForFunction(() => document.querySelector('[data-ocr-video]').videoWidth > 0);

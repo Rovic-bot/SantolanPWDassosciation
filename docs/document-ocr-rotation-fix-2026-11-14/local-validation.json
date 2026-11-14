@@ -1,0 +1,72 @@
+{
+  "passed": 13,
+  "results": [
+    {
+      "route": "/association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "receiptCustomerOnly": true
+    },
+    {
+      "rotatedNationalID": 90,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "rotatedNationalID": 180,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "syntheticCameraCaptureAndRelease": true
+    },
+    {
+      "corruptImageFallback": true
+    },
+    {
+      "cameraDeniedManualFallback": true
+    },
+    {
+      "cancelReleasesWorker": true
+    },
+    {
+      "failedDownloadReleasesWorker": true
+    },
+    {
+      "manualFormWithoutJavaScript": true
+    }
+  ],
+  "javascript_errors": [],
+  "non_get_requests": 0,
+  "external_ocr_requests": 0,
+  "fixtures": "Only generated fictional ID and receipt images."
+}

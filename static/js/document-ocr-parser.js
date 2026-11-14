@@ -58,11 +58,24 @@
     if (parts.length !== 2 || !parts.every(Boolean)) return {};
     return {last_name: parts[0], first_name: parts[1]};
   }
-  function extract(text, kind = 'id') {
+  function labelMatcher(kind) {
     const source = kind === 'receipt' ? receiptLabels : labels;
     const patterns = Object.entries(source).flatMap(([key, aliases]) =>
       aliases.map(alias => ({key, pattern: new RegExp(`^(?:${alias})(?=$|[\\s:：])\\s*[:：]?\\s*(.*)$`, 'i')})));
-    const matchLabel = line => {
+    return line => {
+      if (kind === 'id') {
+        const bilingual = [
+          ['last_name', 'APELYIDO\\s*/?\\s*LAST\\s*NAME'],
+          ['first_name', 'MGA\\s*PANGALAN\\s*/?\\s*GIVEN\\s*NAMES?'],
+          ['middle_name', 'GITNANG\\s*APELYIDO\\s*/?\\s*MIDDLE\\s*NAME'],
+          ['birthdate', 'PETSA\\s*NG\\s*KAPANGANAKAN\\s*/?\\s*DATE\\s*OF\\s*BIRTH'],
+          ['address', 'TIRAHAN\\s*/?\\s*ADDRESS'],
+        ];
+        for (const [key, alias] of bilingual) {
+          const found = line.match(new RegExp(`^(${alias})(?=$|[\\s:：])\\s*[:：]?\\s*(.*)$`, 'i'));
+          if (found) return {key, value: clean(found[2]), labelText: found[1], bilingual: true};
+        }
+      }
       // Bilingual labels on National IDs: Apelyido / Last Name.
       const normalized = line.replace(/^([^:]+)\s*\/\s*([^:]+)(:.*)?$/, (all, left, right, rest) => {
         if (patterns.some(item => item.pattern.test(left.trim())) && patterns.some(item => item.pattern.test(right.trim()))) {
@@ -74,10 +87,14 @@
       for (const item of patterns) {
         const found = normalized.match(item.pattern);
         const length = found ? found[0].length - found[1].length : 0;
-        if (found && !/[:：]|^(?:of|and|ng)\b/i.test(found[1]) && (!best || length > best.length)) best = {key: item.key, value: clean(found[1]), length};
+        if (found && !/[:：]|^(?:of|and|ng)\b/i.test(found[1]) && (!best || length > best.length)) best = {
+          key: item.key, value: clean(found[1]), length, labelText: normalized.slice(0, length).replace(/[:：]\s*$/, '').trim()};
       }
       return best;
     };
+  }
+  function extract(text, kind = 'id') {
+    const matchLabel = labelMatcher(kind);
     const lines = String(text).slice(0, 30000).split(/\r?\n/).map(clean).filter(Boolean);
     const values = {}, conflicts = new Set();
     const put = (key, value) => {
@@ -130,11 +147,15 @@
       // for review instead of assuming every applicant lives in Santolan.
       const parts = values.address.split(',').map(clean).filter(Boolean);
       const street = [], unmatched = [];
+      const national = kind === 'id' && /pambansang\s+pagkakakilanlan|philippine\s+national\s+id|apelyido\s*\/?\s*last\s*name/i.test(text);
+      const cityIndex = parts.findIndex(part => /^(?:city of\s+.+|.+\s+city)$/i.test(part));
       for (const [index, part] of parts.entries()) {
         if (/^(brgy\.?|barangay)\s+/i.test(part)) values.barangay ||= part.replace(/^(brgy\.?|barangay)\s+/i, '');
-        else if (/\bcity\b|^city of\b/i.test(part)) values.city ||= part;
+        else if (/^(?:city of\s+.+|.+\s+city)$/i.test(part)) values.city ||= part;
         else if (/^(NCR|National Capital Region|Metro Manila)$/i.test(part)) values.region ||= part;
         else if (/^\d{4}$/.test(part)) values.zip_code ||= part;
+        else if (national && /^(?:philippines|(?:first|second|third|fourth|fifth|sixth|\d+(?:st|nd|rd|th)?)\s+district)$/i.test(part)) continue;
+        else if (national && cityIndex === 2 && index === 1) values.barangay ||= part;
         else if (index === 0) street.push(part);
         else unmatched.push(part);
       }
@@ -144,7 +165,64 @@
     if (conflicts.size) notes.push('Conflicting values were left out. Check the document and complete those fields manually.');
     return {values: Object.fromEntries(Object.entries(values).filter(([, value]) => value)), notes: [...new Set(notes)]};
   }
-  const api = {extract, dateValue};
+  function fromResult(result, kind = 'id', nationalContext = false) {
+    // Sparse-text OCR includes fragments from photographs, watermarks and QR
+    // codes. Pair labels with nearby aligned text, never an unrelated fragment
+    // merely because it happens to be next in the engine's reading order.
+    const matchLabel = labelMatcher(kind);
+    const lines = (result.blocks || []).flatMap(block => (block.paragraphs || []).flatMap(paragraph => paragraph.lines || []))
+      .map(line => {
+        const raw = clean(line.text), label = matchLabel(raw);
+        // Preserve a complete known label even when an unfamiliar Filipino
+        // word has a weak score. Personal values still use the word filter.
+        const text = label && !label.value ? raw : line.words?.length ? line.words.filter(word => word.confidence >= 45 &&
+          (!/^[\p{L}]{1,2}\.?$/u.test(word.text) || word.confidence >= 75)).map(word => word.text).join(' ') : line.text;
+        return {...line, text: clean(text)};
+      }).filter(line => line.bbox && line.confidence >= 55 && (/([\p{L}\p{N}]){2}/u.test(line.text) ||
+        (/^[\p{L}]\.?$/u.test(line.text) && line.confidence >= 85)));
+    if (!lines.length) return {...extract(result.text || '', kind), matchedLabels: 0};
+    const labelled = lines.map(line => ({...line, label: matchLabel(line.text)}));
+    const pairs = [], regions = {};
+    const nationalId = kind === 'id' && (nationalContext || /pambansang\s+pagkakakilanlan|philippine\s+national\s+id|apelyido\s*\/?\s*last\s*name/i.test(result.text || ''));
+    for (const anchor of labelled.filter(line => line.label)) {
+      let value = anchor.label.value;
+      const height = Math.max(10, anchor.bbox.y1 - anchor.bbox.y0);
+      const aligned = line => Math.abs(line.bbox.x0 - anchor.bbox.x0) <= Math.max(height * 2, 24);
+      const lowerLabel = labelled.filter(line => line.label && line !== anchor && aligned(line) && line.bbox.y0 > anchor.bbox.y0 + height)
+        .sort((a, b) => a.bbox.y0 - b.bbox.y0)[0];
+      const candidates = labelled.filter(line => !line.label && aligned(line) &&
+        (line.bbox.y0 + line.bbox.y1) / 2 > (anchor.bbox.y0 + anchor.bbox.y1) / 2 + height * .4 &&
+        line.bbox.y0 < Math.min(anchor.bbox.y1 + height * 7, lowerLabel?.bbox.y0 ?? Infinity))
+        .sort((a, b) => a.bbox.y0 - b.bbox.y0);
+      const used = [anchor];
+      if ((!value || anchor.label.bilingual) && candidates.length) {
+        value = candidates[0].text;
+        used.push(candidates[0]);
+        if (anchor.label.key === 'address') {
+          let previous = candidates[0];
+          for (const line of candidates.slice(1, 3)) {
+            if (line.bbox.y0 - previous.bbox.y1 > height * 3 ||
+                /\b(?:digital id|signature|issued|expiry|valid|total|receipt|close|show back|enlarge)\b/i.test(line.text)) break;
+            value += ` ${line.text}`; previous = line; used.push(line);
+          }
+        }
+      }
+      // Preserve the recognized label, including bilingual National ID context.
+      if (value) {
+        pairs.push(`${anchor.label.labelText}: ${value}`);
+        regions[anchor.label.key] = {x0: Math.min(...used.map(line => line.bbox.x0)), y0: Math.min(...used.map(line => line.bbox.y0)),
+          x1: Math.max(...used.map(line => line.bbox.x1)), y1: Math.max(...used.map(line => line.bbox.y1))};
+      }
+    }
+    const text = (nationalId ? 'Philippine National ID\n' : '') + pairs.join('\n');
+    const parsed = extract(text, kind);
+    return {...parsed, matchedLabels: pairs.length, regions, nationalId};
+  }
+  function quality(parsed, confidence = 0) {
+    const weights = {first_name: 4, last_name: 4, middle_name: 3, birthdate: 5, address: 3, full_name: 4};
+    return Object.keys(parsed.values).reduce((sum, key) => sum + (weights[key] || 1), 0) + Math.max(0, confidence) / 100;
+  }
+  const api = {extract, dateValue, fromResult, quality};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.DocumentOCRParser = api;
 })(typeof window !== 'undefined' ? window : globalThis);

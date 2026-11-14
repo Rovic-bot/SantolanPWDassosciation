@@ -105,8 +105,9 @@ WorkspacePage.run(({on, cleanup}) => {
       'house_street', 'address', 'barangay', 'city', 'province', 'region', 'zip_code', 'contact_number', 'email',
       'sex', 'gender', 'civil_status', 'nationality', 'pwd_number', 'date_issued', 'philhealth_number',
       'voter_certification_number', 'sss_number', 'gsis_number', 'psn_number']);
-    function review(text) {
-      const parsed = window.DocumentOCRParser.extract(text, get('kind').value);
+    function review(result) {
+      const text = result.text || '';
+      const parsed = result.parsed || window.DocumentOCRParser.extract(text, get('kind').value);
       get('text').textContent = text.slice(0, 30000); get('notes').textContent = parsed.notes.join(' ');
       const values = {...parsed.values};
       if (values.sex && form.elements.namedItem('gender')) { values.gender = values.sex; delete values.sex; }
@@ -140,7 +141,7 @@ WorkspacePage.run(({on, cleanup}) => {
         suggestions.push({target, editor, checkbox, current, before: target.value});
       }
       get('results').hidden = false; get('apply').hidden = !suggestions.length;
-      say(suggestions.length ? 'Reading complete. Review the suggestions before adding them to the form.' : 'No matching personal fields found. View the extracted text, try a clearer image, or complete the form manually.');
+      say(suggestions.length ? `${result.rotation ? 'Image rotated automatically. ' : ''}Reading complete. Review the suggestions before adding them to the form.` : 'No matching personal fields found. View the extracted text, try a clearer image, or complete the form manually.');
       get('review-heading').focus({preventScroll: true});
     }
     on(get('read'), 'click', async () => {
@@ -155,16 +156,21 @@ WorkspacePage.run(({on, cleanup}) => {
           corePath: new URL(panel.dataset.core, location.href).href,
           langPath: new URL(panel.dataset.language, location.href).href,
           progress: message => {
+            if (active() && message.status === 'checking orientation') say(`Checking image direction (${message.attempt} of 4)…`);
+            if (active() && message.status === 'refining address') say('Checking the small address text…');
             if (active() && message.status === 'recognizing text') {
               const percent = Math.round(message.progress * 100); get('meter').value = percent;
-              say(`Reading document on this device… ${percent}%`);
+              say(`Reading document on this device (pass ${message.attempt})… ${percent}%`);
             }
           },
         });
         if (!active()) { localWorker.terminate(); return; }
         worker = localWorker;
-        const result = await worker.read(canvas);
-        if (active()) review(result.text || '');
+        const result = await worker.read(canvas, get('kind').value);
+        if (active()) {
+          if (result.rotation) { canvas = window.DocumentOCRReader.rotate(canvas, result.rotation); showCanvas(); }
+          review(result);
+        }
       };
       try {
         await Promise.race([task(), new Promise((resolve, reject) => { timer = window.setTimeout(() => reject(new Error('timeout')), 90000); })]);

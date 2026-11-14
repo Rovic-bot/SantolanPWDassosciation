@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
-const {extract, dateValue} = require('../static/js/document-ocr-parser.js');
+const {extract, dateValue, fromResult} = require('../static/js/document-ocr-parser.js');
 
 test('reads explicitly labelled PWD details and preserves leading zeroes', () => {
   const {values} = extract('PWD ID No: 00-1234-001-0000042\nLast Name: DELA CRUZ\nFirst Name: JUAN MIGUEL\nMiddle Name: SANTOS\nDate of Birth: 21 January 1990\nSex: Male\nAddress: 123 Mabini Street, Barangay Santolan, Pasig City, NCR\nMobile number: 09171234567');
@@ -54,4 +54,51 @@ test('names and uncertain addresses remain available without guessing their divi
   const {values, notes} = extract('Name: ANA MARIA DE LOS SANTOS\nAddress: 12 Test St, Santolan, Pasig');
   assert.equal(values.full_name, 'ANA MARIA DE LOS SANTOS'); assert.equal(values.first_name, undefined);
   assert.equal(values.house_street, undefined); assert(notes.length);
+});
+test('bilingual National ID labels work without separator slashes', () => {
+  assert.equal(extract('GITNANG APELYIDOMIDDLE NAME\nSANTOS').values.middle_name,'SANTOS');
+  const {values} = extract('Philippine National ID\nAPELYIDO LAST NAME\nREYES\nMGA PANGALAN GIVEN NAMES\nANA MARIA\nGITNANG APELYIDO MIDDLE NAME\nSANTOS\nPETSA NG KAPANGANAKAN DATE OF BIRTH\nMay 14, 1988\nTIRAHAN ADDRESS\n88 Example Street, Demo Barangay, CITY OF EXAMPLE, NCR, SECOND DISTRICT, PHILIPPINES, 1234');
+  assert.equal(values.last_name, 'REYES'); assert.equal(values.first_name, 'ANA MARIA');
+  assert.equal(values.middle_name, 'SANTOS'); assert.equal(values.birthdate, '1988-05-14');
+  assert.equal(values.house_street, '88 Example Street'); assert.equal(values.barangay, 'Demo Barangay');
+  assert.equal(values.city, 'CITY OF EXAMPLE'); assert.equal(values.region, 'NCR'); assert.equal(values.zip_code, '1234');
+  assert.equal(values.pwd_number, undefined);
+});
+function line(text, x, y, confidence = 95, height = 14) {
+  return {text, confidence, bbox: {x0:x, y0:y, x1:x+Math.max(40,text.length*7), y1:y+height},
+    words:text.split(' ').map(text => ({text, confidence}))};
+}
+test('uses aligned label/value geometry instead of portrait and QR reading order', () => {
+  const lines = [line('APELYIDO/LAST NAME',300,100),line('WRONG PERSON',25,120),line('REYES',300,122),
+    line('MGA PANGALAN/GIVEN NAMES',300,165),line('QR NOISE',600,181),line('ANA MARIA',300,190),
+    line('GITNANG APELYIDO/MIDDLE NAME',300,230),line('+',50,250,31),line('SANTOS',300,255),
+    line('PETSA NG KAPANGANAKAN/DATE OF BIRTH',300,290),line('[=]',700,310),line('May 14, 1988',300,315),
+    line('TIRAHAN/ADDRESS',80,380),line('88 Example Street, Demo Barangay, CITY OF EXAMPLE, NCR,',80,405),
+    line('SECOND DISTRICT, PHILIPPINES, 1234',80,427),line('Enlarge QR',600,440)];
+  const result=fromResult({text:lines.map(line=>line.text).join('\n'),blocks:[{paragraphs:[{lines}]}]});
+  assert.equal(result.values.last_name, 'REYES'); assert.equal(result.values.first_name, 'ANA MARIA');
+  assert.equal(result.values.middle_name, 'SANTOS'); assert.equal(result.values.birthdate, '1988-05-14');
+  assert.equal(result.values.house_street, '88 Example Street'); assert.equal(result.values.zip_code, '1234');
+  assert(!result.values.address.includes('Enlarge')); assert(result.regions.address); assert(result.nationalId);
+});
+test('drops weak one-letter graphics without deleting a confident name initial', () => {
+  const address=line('SECOND DISTRICT, PHILIPPINES, 1234 j',80,450);
+  address.words[address.words.length-1].confidence=55;
+  const lines=[line('GITNANG APELYIDO/MIDDLE NAME',300,230),line('A.',300,255),
+    line('TIRAHAN/ADDRESS',80,380),line('88 Example Street, Demo Barangay, CITY OF EXAMPLE, NCR,',80,410), address];
+  const result=fromResult({text:'Philippine National ID',blocks:[{paragraphs:[{lines}]}]});
+  assert.equal(result.values.middle_name,'A.'); assert.equal(result.values.zip_code,'1234');
+});
+test('geometry leaves absent values empty rather than borrowing from the next field', () => {
+  const lines=[line('APELYIDO/LAST NAME',300,100),line('MGA PANGALAN/GIVEN NAMES',300,130),line('ANA MARIA',300,154)];
+  const result=fromResult({text:'Philippine National ID',blocks:[{paragraphs:[{lines}]}]});
+  assert.equal(result.values.last_name,undefined); assert.equal(result.values.first_name,'ANA MARIA');
+});
+test('retains complete bilingual labels containing a low-confidence known word', () => {
+  const label = line('PETSA NG KAPANGANAKAN/DATE OF BIRTH', 300, 290, 83);
+  label.words[2].confidence = 39;
+  const lines = [label, line('May 14, 1988', 300, 315)];
+  const result = fromResult({text: lines.map(item => item.text).join('\n'), blocks: [{paragraphs: [{lines}]}]});
+  assert.equal(result.values.birthdate, '1988-05-14');
+  assert.equal(result.matchedLabels, 1);
 });
