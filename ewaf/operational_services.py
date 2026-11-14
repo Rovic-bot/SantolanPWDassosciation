@@ -388,59 +388,104 @@ def latest_decisions(program):
 def record_decision(program_id, *, user, run_id, application_id, expected_revision, outcome, reason, tie_reason=''):
     with fence(program_id, user, 'ewaf.decide_operational') as (current, program, applications):
         require_workspace_permissions(current, 'assistance.decide_assistance')
-        fields = reasoned(current, reason, True)
-        if type(expected_revision) is not int or outcome not in ('SELECTED', 'NOT_SELECTED', 'DEFERRED'):
-            raise ValidationError('A supported decision and revision are required.')
         run = current_result_run(program, applications, current, run_id)
-        from .revised import rolling_pool
-        if rolling_pool.selection_waiting(run.snapshot, run.configuration):
-            raise ValidationError('Generate a final ranking after registration closes and the assessment cutoff is reached before selecting beneficiaries.')
-        application = next((app for app in applications if str(app.pk) == str(application_id)), None)
-        if not application or str(application.pk) not in run.calculations:
-            raise ValidationError('Choose an eligible application in the current calculation.')
-        from assistance.models import AssistanceRelease
-        if AssistanceRelease.objects.filter(application=application, voided_at__isnull=True).exists():
-            raise ValidationError('Actual assistance is already recorded; use the authorized release review procedure.')
-        previous = Decision.objects.filter(application=application).order_by('-revision').first()
-        if expected_revision != (previous.revision if previous else 0):
-            if previous and previous.run_id == run.pk and previous.outcome == outcome and previous.reason == fields['reason'] and previous.tie_reason == tie_reason and previous.actor_id == current.pk and previous.revision == expected_revision + 1:
-                previous.clean()
-                return previous
-            raise ValidationError('Decision changed. Reload the latest human decision before saving.')
-        compared = run.calculations[str(application.pk)]['comparison']
-        tied = compared['equal'] > 1
-        if run.configuration.uses_dataset_scoring:
-            tied = compared['capacity_boundary_tie']
-        if outcome in ('SELECTED', 'NOT_SELECTED') and tied:
-            if run.configuration.policy['tie_rule'] in ('hold', 'hold_boundary'):
-                raise ValidationError('tie_rule: this authorized policy holds exact ties for further review')
-            if not isinstance(tie_reason, str) or not tie_reason.strip() or len(tie_reason) > 2000:
-                raise ValidationError('tie_reason: explain how the authorized tie procedure was applied')
-        choices = list(latest_decisions(program))
-        for choice in choices:
-            choice.clean()
-        from programs.mandatory_ewaf import retained_selected_ids
-        selected_ids = retained_selected_ids(program)
-        selected_ids.update(row.application_id for row in choices if row.outcome == 'SELECTED')
-        selected = len(selected_ids - {application.pk})
-        if outcome == 'SELECTED' and (program.slots is None or selected >= program.slots):
-            raise ValidationError('program.slots: all approved beneficiary slots are reserved')
-        row = persist(Decision(program=program, application=application, run=run, previous=previous,
-            revision=expected_revision + 1, outcome=outcome, tie_reason=tie_reason.strip(),
-            review={'run_digest': run.digest, 'configuration_digest': run.configuration.digest,
-                    'score': run.calculations[str(application.pk)], 'slots': program.slots,
-                    'tie_rule': run.configuration.policy['tie_rule'],
-                    # Fixed scoring holds boundary ties through tie_rule; it has
-                    # no separate discretionary tie-procedure text to copy.
-                    'tie_procedure': run.configuration.policy.get('tie_procedure', ''),
-                    **({'selection_timing': {'rule': rolling_pool.SELECTION_RULE,
-                         'registration_open': timezone.now() < program.registration_closes_at,
-                         'ranking_window': run.snapshot[rolling_pool.KEY]}}
-                       if rolling_pool.enabled(run.configuration.policy) else {}),
-                    **({'eligibility_rechecks': run.eligibility_rechecks}
-                       if getattr(run, 'eligibility_rechecks', None) else {})}, **fields))
+        row = _record_decision_locked(current, program, applications, run,
+            application_id=application_id, expected_revision=expected_revision,
+            outcome=outcome, reason=reason, tie_reason=tie_reason)
         current_result_run(program, applications, current, run.pk)
         return row
+
+
+def _record_decision_locked(current, program, applications, run, *, application_id, expected_revision, outcome, reason, tie_reason=''):
+    fields = reasoned(current, reason, True)
+    if type(expected_revision) is not int or outcome not in ('SELECTED', 'NOT_SELECTED', 'DEFERRED'):
+        raise ValidationError('A supported decision and revision are required.')
+    from .revised import rolling_pool
+    if rolling_pool.selection_waiting(run.snapshot, run.configuration):
+        raise ValidationError('Generate a final ranking after registration closes and the assessment cutoff is reached before selecting beneficiaries.')
+    application = next((app for app in applications if str(app.pk) == str(application_id)), None)
+    if not application or str(application.pk) not in run.calculations:
+        raise ValidationError('Choose an eligible application in the current calculation.')
+    from assistance.models import AssistanceRelease
+    if AssistanceRelease.objects.filter(application=application, voided_at__isnull=True).exists():
+        raise ValidationError('Actual assistance is already recorded; use the authorized release review procedure.')
+    previous = Decision.objects.filter(application=application).order_by('-revision').first()
+    if expected_revision != (previous.revision if previous else 0):
+        if previous and previous.run_id == run.pk and previous.outcome == outcome and previous.reason == fields['reason'] and previous.tie_reason == tie_reason and previous.actor_id == current.pk and previous.revision == expected_revision + 1:
+            previous.clean()
+            return previous
+        raise ValidationError('Decision changed. Reload the latest human decision before saving.')
+    compared = run.calculations[str(application.pk)]['comparison']
+    tied = compared['equal'] > 1
+    if run.configuration.uses_dataset_scoring:
+        tied = compared['capacity_boundary_tie']
+    if outcome in ('SELECTED', 'NOT_SELECTED') and tied:
+        if run.configuration.policy['tie_rule'] in ('hold', 'hold_boundary'):
+            raise ValidationError('tie_rule: this authorized policy holds exact ties for further review')
+        if not isinstance(tie_reason, str) or not tie_reason.strip() or len(tie_reason) > 2000:
+            raise ValidationError('tie_reason: explain how the authorized tie procedure was applied')
+    choices = list(latest_decisions(program))
+    for choice in choices:
+        choice.clean()
+    from programs.mandatory_ewaf import retained_selected_ids
+    selected_ids = retained_selected_ids(program)
+    selected_ids.update(row.application_id for row in choices if row.outcome == 'SELECTED')
+    selected = len(selected_ids - {application.pk})
+    if outcome == 'SELECTED' and (program.slots is None or selected >= program.slots):
+        raise ValidationError('program.slots: all approved beneficiary slots are reserved')
+    row = persist(Decision(program=program, application=application, run=run, previous=previous,
+        revision=expected_revision + 1, outcome=outcome, tie_reason=tie_reason.strip(),
+        review={'run_digest': run.digest, 'configuration_digest': run.configuration.digest,
+                'score': run.calculations[str(application.pk)], 'slots': program.slots,
+                'tie_rule': run.configuration.policy['tie_rule'],
+                # Fixed scoring holds boundary ties through tie_rule; it has
+                # no separate discretionary tie-procedure text to copy.
+                'tie_procedure': run.configuration.policy.get('tie_procedure', ''),
+                **({'selection_timing': {'rule': rolling_pool.SELECTION_RULE,
+                     'registration_open': timezone.now() < program.registration_closes_at,
+                     'ranking_window': run.snapshot[rolling_pool.KEY]}}
+                   if rolling_pool.enabled(run.configuration.policy) else {}),
+                **({'eligibility_rechecks': run.eligibility_rechecks}
+                   if getattr(run, 'eligibility_rechecks', None) else {})}, **fields))
+    return row
+
+
+def select_assistance_batch(program_id, *, user, run_id, selections, reason):
+    """Record one explicit checked batch, or roll back every decision and audit.
+
+    A batch is bounded to the displayed page. It does not choose applicants by
+    rank, truncate to remaining slots, publish results, or record actual release.
+    """
+    if not isinstance(selections, list) or not 1 <= len(selections) <= 50:
+        raise ValidationError('Check between 1 and 50 applicants on this page.')
+    normalized, seen = [], set()
+    for item in selections:
+        if not isinstance(item, dict) or set(item) - {'application_id', 'expected_revision', 'tie_reason'}:
+            raise ValidationError('Reload the ranked list before selecting applicants.')
+        try:
+            application_id = UUID(str(item['application_id']))
+        except (KeyError, ValueError, TypeError, AttributeError):
+            raise ValidationError('Choose applicants from this ranked list.') from None
+        revision = item.get('expected_revision')
+        tie_reason = item.get('tie_reason', '')
+        if type(revision) is not int or revision < 0 or not isinstance(tie_reason, str) or len(tie_reason) > 2000:
+            raise ValidationError('Reload the selection revisions and tie-review details before saving.')
+        if application_id in seen:
+            raise ValidationError('Each applicant may be checked only once.')
+        seen.add(application_id)
+        normalized.append({'application_id': application_id, 'expected_revision': revision,
+                           'tie_reason': tie_reason.strip()})
+    with fence(program_id, user, 'ewaf.decide_operational') as (current, program, applications):
+        require_workspace_permissions(current, 'assistance.decide_assistance')
+        run = current_result_run(program, applications, current, run_id)
+        decisions = []
+        for item in normalized:
+            decisions.append(_record_decision_locked(current, program, applications, run,
+                outcome='SELECTED', reason=reason, **item))
+        # Source or authority failures roll back the complete batch, including
+        # every immutable decision and its associated audit records.
+        current_result_run(program, applications, current, run.pk)
+        return decisions
 
 
 def unselect_assistance(program_id, *, user, run_id, application_id, expected_revision):

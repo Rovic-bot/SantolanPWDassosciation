@@ -1,0 +1,14 @@
+<dialog class="document-preview-dialog" data-document-preview-dialog aria-labelledby="document-preview-title">
+  <header class="document-preview-toolbar">
+    <div><p>Submitted document</p><h2 id="document-preview-title" data-document-preview-title>Document preview</h2></div>
+    <button type="button" class="document-preview-close" data-document-preview-close aria-label="Close document preview">&times;</button>
+  </header>
+  <div class="document-preview-content" data-document-preview-content aria-busy="false">
+    <p class="document-preview-status" role="status" aria-live="polite" data-document-preview-status></p>
+    <div class="document-preview-viewer" data-document-preview-viewer></div>
+  </div>
+  <footer class="document-preview-footer">
+    <p data-document-preview-help>Download a copy if you need to view it separately.</p>
+    <div><button type="button" class="btn btn-outline-secondary" data-document-preview-retry hidden>Try again</button><a class="btn btn-primary" data-document-preview-download download>Download document</a></div>
+  </footer>
+</dialog>

@@ -2,8 +2,35 @@
 WorkspacePage.run(({on, fetch, setTimeout}) => {
   if (!document.querySelector('.ewaf-page')) return;
   document.documentElement.classList.add('ewaf-enhanced');
-  let timer, controller, saving = false;
+  let timer, controller, saving = false, bulkNativePending = false;
   let loadedUrl = new URL(location.href);
+
+  function updateBulkSelection() {
+    const form = document.getElementById('bulk-assistance-form');
+    if (!form) return false;
+    const boxes = [...document.querySelectorAll('[data-bulk-application]:not(:disabled)')];
+    const checked = boxes.filter(box => box.checked);
+    const slots = checked.reduce((total, box) => total + Number(box.dataset.slotNeeded || 0), 0);
+    const remaining = Number(form.dataset.remainingSlots);
+    const all = document.querySelector('[data-bulk-select-all]');
+    if (all) {
+      all.checked = boxes.length > 0 && checked.length === boxes.length;
+      all.indeterminate = checked.length > 0 && checked.length < boxes.length;
+      all.disabled = !boxes.length || form.dataset.bulkAvailable !== 'true';
+    }
+    form.querySelector('[data-bulk-count]').textContent = String(checked.length);
+    const valid = checked.length > 0 && slots <= remaining && form.dataset.bulkAvailable === 'true';
+    form.querySelector('[data-bulk-submit]').disabled = !valid || saving;
+    form.querySelector('[data-bulk-feedback]').textContent = slots > remaining
+      ? `These applicants need ${slots} new slots, but only ${remaining} are available. Uncheck applicants before selecting.` : '';
+    for (const detail of document.querySelectorAll('[data-bulk-tie]')) {
+      const box = boxes.find(item => item.value === detail.dataset.bulkTie);
+      const selected = Boolean(box?.checked);
+      detail.querySelector('textarea').required = selected;
+      if (selected) detail.open = true;
+    }
+    return valid;
+  }
 
   function replaceWorkspace(parsed, url) {
     for (const selector of ['#ranking-body', '#ranking-state', '#readiness', '#workspace-notice', '#unranked-applicants', '#applicant-panels']) {
@@ -22,6 +49,7 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
       const {count, total} = body.dataset;
       countLabel.textContent = count === total ? `${total} applicants` : `${count} of ${total} applicants`;
     }
+    updateBulkSelection();
   }
 
   function replaceSelection(parsed, url, focusOnSubmit) {
@@ -94,6 +122,7 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
       saving = false;
       controls.forEach(control => { if (control.isConnected) control.disabled = false; });
       document.getElementById('readiness')?.removeAttribute('aria-busy');
+      updateBulkSelection();
     }
   }
 
@@ -172,7 +201,7 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
   on(document, 'click', event => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
     let link = event.target.closest('[data-applicant-open]');
-    if (!link && !event.target.closest('a,button,input,select,textarea')) {
+    if (!link && !event.target.closest('a,button,input,select,textarea,[data-bulk-tie]')) {
       link = event.target.closest('tr[data-applicant]')?.querySelector('[data-applicant-open]');
     }
     if (!link || !document.getElementById('readiness')) return;
@@ -182,20 +211,48 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
     if (!showLoadedApplicant(url, options)) updateWorkspace(url, options);
   });
   on(document, 'change', event => {
+    if (event.target.matches('[data-bulk-select-all]')) {
+      document.querySelectorAll('[data-bulk-application]:not(:disabled)').forEach(box => { box.checked = event.target.checked; });
+      updateBulkSelection();
+    } else if (event.target.matches('[data-bulk-application]')) updateBulkSelection();
     const select = event.target.closest('[data-auto-submit]');
     if (select) select.form.requestSubmit();
   });
   on(document, 'submit', event => {
+    if (event.target.matches('#bulk-assistance-form')) {
+      if (saving || !updateBulkSelection()) {
+        event.preventDefault();
+        return;
+      }
+      clearTimeout(timer);
+      controller?.abort();
+      saving = true;
+      bulkNativePending = true;
+      event.target.setAttribute('aria-busy', 'true');
+      event.target.querySelector('[data-bulk-submit]').textContent = 'Selecting checked applicants…';
+      return; // One ordinary POST; never retry a selection automatically.
+    }
     const form = event.target.closest('#readiness .selection-form, #readiness .selection-unselect-form, #readiness .selection-review-form');
     if (!form) return;
     event.preventDefault();
     saveSelection(form);
+  });
+  on(window, 'pageshow', () => {
+    if (!bulkNativePending) return;
+    saving = bulkNativePending = false;
+    const form = document.getElementById('bulk-assistance-form');
+    form?.removeAttribute('aria-busy');
+    const button = form?.querySelector('[data-bulk-submit]');
+    if (button) button.textContent = 'Select checked for assistance';
+    updateBulkSelection();
   });
   on(window, 'popstate', () => {
     if (!document.getElementById('readiness')) return;
     const url = new URL(location.href), options = {historyMode: null};
     if (!showLoadedApplicant(url, options)) updateWorkspace(url, options);
   });
+
+  updateBulkSelection();
 
   const filter = document.getElementById('ranking-filters');
   if (!filter) return;

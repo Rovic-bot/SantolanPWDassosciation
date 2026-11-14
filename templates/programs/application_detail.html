@@ -1,7 +1,7 @@
 {% extends 'admin_portal/base.html' %}{% load static %}
 {% block title %}Applicant review &middot; Santolan PWD{% endblock %}
 {% block body_class %}{{ block.super }} applicant-review-workspace{% endblock %}
-{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/application-review.css' %}?v=20261106-decision-email">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/member-profile.css' %}"><link rel="stylesheet" href="{% static 'css/application-review.css' %}?v=20261106-decision-email"><link rel="stylesheet" href="{% static 'css/document-preview.css' %}?v=20261114">{% endblock %}
 {% block content %}<div class="container content-section applicant-review-page">
 <nav class="review-breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'core:application_programs' %}">Program Applications &amp; Eligibility</a><span aria-hidden="true">/</span><a href="{% url 'programs:applications' program.pk %}">{{ program.name }}</a><span aria-hidden="true">/</span><span>{{ application.member.full_name }}</span></nav>
 <div class="section-heading review-page-title"><h1>Application review</h1><div class="workspace-actions">{% if perms.members.view_member %}<a class="btn btn-outline-primary" href="{% url 'members:detail' application.member_id %}">Member record</a>{% endif %}{% if can_decide_application and decision_available %}<a class="btn btn-primary" href="#eligibility">Review Eligibility</a>{% endif %}</div></div>
@@ -23,3 +23,4 @@
 </section>
 </div>
 </div><script src="{% static 'js/admin-review.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block extra_scripts %}{{ block.super }}{% include 'programs/document_preview_dialog.html' %}<script src="{% static 'js/document-preview.js' %}?v=20261114" defer></script>{% endblock %}

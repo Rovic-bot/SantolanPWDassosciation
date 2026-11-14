@@ -1,0 +1,19 @@
+# Submitted-document popups and checked assistance selection
+
+The applicant review page now opens submitted photographs and PDF/PNG/JPEG documents in a popup. Preview and Download continue to use the existing authenticated attachment endpoints and access audits. The popup supports keyboard dismissal and focus return, downloads, retry/failure messages, responsive layouts, and cleanup when closed or navigated away from. Files are limited to 20 MiB for in-page preview, with MIME and signature checks; unsupported files retain the protected download option. No attachment permissions, response security headers, storage, or public media routes changed.
+
+The generated EWAF ranked list now has an applicant checkbox, a current-page select-all checkbox, a checked count, remaining capacity, and **Select checked for assistance**. The batch is explicit and limited to 50 applicants. Held ties, already-selected applicants, and recorded releases remain unavailable; reasoned ties require each applicant's explanation. Filtering or changing pages starts a new checked set.
+
+Batch selection reuses the individual decision writer inside one program selection transaction. It checks the current ranking and authority before and after writing, validates every applicant and revision, and preserves all existing eligibility, tie, release, reserved-capacity and audit rules. Any failure rolls back the entire batch. Successful exact retries reuse existing decisions. Scoring, ranks, publication, and actual assistance releases are unchanged.
+
+## Validation
+
+- New `programs.test_document_preview` tests pass: current review markup, protected URLs and permissions, security headers, auditing, program scope and missing files.
+- `scripts/document_preview_browser.cjs` passes with real Chrome: native PDF rendering, PNG/JPEG, same-page behavior, protected download, keyboard focus, errors and retry, file type/size handling, abort/reopen races, blob cleanup, workspace/page navigation, and desktop/mobile light and dark layouts.
+- All 12 focused backend/HTTP tests in `ewaf.test_bulk_selection.BulkSelectionTests` pass. They cover successful audited selections, exact retries, full rollback, capacity and concurrent requests, stale run/revisions, malformed/foreign/duplicate applicants, permissions, ties, final freshness, retained and previous-run reservations, and HTTP/CSRF behavior.
+- `ewaf.test_bulk_selection.BulkSelectionBrowserTests` and `scripts/ewaf_bulk_selection_browser.cjs` pass with real Chrome: capacity warnings, page select-all/indeterminate controls, tie-summary and label interaction, required tie explanations, explicit batch POST, disabled selected rows, filtering, unchanged scores, no JavaScript errors, and mobile layout without page overflow. Desktop and mobile screenshots were inspected.
+- Independent browser integration against a disposable PostgreSQL database selected three fictional checked applicants with one POST. All three decisions and audits validated, remaining capacity became zero, and selected rows became disabled. No assistance release or public result revision was created.
+- A broader run of `ewaf.test_operational.OperationalTests`, `ewaf.test_selection_workspace`, and `programs.test_inline_document_review` passed 24 of 26 tests. The other two failures were reproduced unchanged at baseline `a32b4ad`: an older publication fixture omits the required selection explanation, and an older inline-review fixture expects a member-document link absent from the current submitted-application view. These are recorded baseline failures, not passing checks.
+- Django configuration/database checks, migration drift check (no changes), static collection and `git diff --check` pass. No database migrations are required.
+
+All verification used fictional records in separate disposable databases on the isolated local PostgreSQL cluster. The user's localhost snapshot and the deployed application's records were not used for test writes.

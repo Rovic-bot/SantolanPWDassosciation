@@ -178,3 +178,32 @@ class UnselectAssistanceForm(forms.Form):
     run_id = forms.IntegerField(widget=forms.HiddenInput)
     application_id = forms.UUIDField(widget=forms.HiddenInput)
     expected_revision = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+
+
+class BulkSelectAssistanceForm(forms.Form):
+    audit_reason = 'Administrator selected this checked applicant for assistance from the current EWAF ranking.'
+    run_id = forms.IntegerField(min_value=1, widget=forms.HiddenInput)
+    applications = forms.MultipleChoiceField(label='Checked applicants')
+
+    def __init__(self, *args, application_ids=(), **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['applications'].choices = [(str(value), str(value)) for value in application_ids]
+
+    def clean_applications(self):
+        applications = self.cleaned_data['applications']
+        if not 1 <= len(applications) <= 50 or len(set(applications)) != len(applications):
+            raise forms.ValidationError('Check between 1 and 50 different applicants on this page.')
+        return applications
+
+    def clean(self):
+        values = super().clean()
+        selections = []
+        for application in values.get('applications', []):
+            try:
+                revision = forms.IntegerField(min_value=0).clean(self.data.get('bulk-revision-' + application))
+                tie_reason = forms.CharField(required=False, max_length=2000).clean(self.data.get('bulk-tie-' + application))
+            except forms.ValidationError:
+                raise forms.ValidationError('Reload the selection revisions and check the tie-review explanations.') from None
+            selections.append({'application_id': application, 'expected_revision': revision, 'tie_reason': tie_reason})
+        values['selections'] = selections
+        return values

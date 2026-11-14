@@ -1,0 +1,33 @@
+/* Private attachments remain over the current applicant review. */
+html.document-preview-open, html.document-preview-open body { overflow: hidden; }
+.admin-workspace .document-preview-dialog { width: min(1120px, calc(100vw - 2rem)); height: min(850px, calc(100dvh - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 1.25rem; color: var(--ink); background: var(--surface); box-shadow: 0 24px 90px rgb(0 0 0 / .4); overflow: hidden; }
+.document-preview-dialog[open] { display: flex; flex-direction: column; }
+.document-preview-dialog::backdrop { background: rgb(2 8 20 / .72); backdrop-filter: blur(6px); }
+.document-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 1.25rem; border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+.document-preview-toolbar > div { min-width: 0; }
+.document-preview-toolbar p { margin: 0 0 .2rem; color: var(--muted); font-size: .75rem; }
+.admin-workspace .document-preview-toolbar h2 { margin: 0; font-size: 1.05rem; line-height: 1.4; overflow-wrap: anywhere; }
+.document-preview-close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--glass); color: var(--ink); font-size: 1.8rem; line-height: 1; }
+.document-preview-close:hover { border-color: var(--cyan); background: var(--glass-highlight); }
+.document-preview-content { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.document-preview-status { flex: 0 0 auto; margin: 0; padding: 1rem 1.25rem; color: var(--muted); }
+.document-preview-status:empty { display: none; }
+.document-preview-status[data-error] { color: var(--ink); }
+.document-preview-viewer { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; background: #e5e7eb; }
+.document-preview-viewer:empty { display: none; }
+.document-preview-viewer img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.document-preview-viewer iframe { display: block; width: 100%; height: 100%; min-height: 280px; border: 0; background: white; }
+.document-preview-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; flex: 0 0 auto; border-top: 1px solid var(--line); padding: .75rem 1.25rem; }
+.document-preview-footer p { margin: 0; color: var(--muted); font-size: .8rem; }
+.document-preview-footer > div { display: flex; gap: .5rem; flex-wrap: wrap; flex-shrink: 0; }
+.document-preview-footer .btn { min-height: 44px; display: inline-flex; align-items: center; }
+.document-preview-dialog [hidden] { display: none; }
+.document-preview-dialog :is(a,button):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 639px) {
+  .admin-workspace .document-preview-dialog { width: calc(100vw - 1rem); height: calc(100dvh - 1rem); max-height: calc(100dvh - 1rem); border-radius: .9rem; }
+  .document-preview-toolbar, .document-preview-footer { padding: .65rem .85rem; }
+  .document-preview-footer { flex-wrap: wrap; }
+  .document-preview-footer > div { width: 100%; }
+  .document-preview-footer .btn { justify-content: center; flex: 1; }
+}
+@media (forced-colors: active) { .document-preview-dialog, .document-preview-close { border-color: CanvasText; } }

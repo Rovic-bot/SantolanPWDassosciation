@@ -345,3 +345,18 @@ html[data-dashboard-theme=light] .ewaf-calculation-table-card { --breakdown-acce
 }
 @media (prefers-reduced-motion: reduce) { .ewaf-page * { scroll-behavior: auto!important; } }
 @media print { .ewaf-drawer,.ewaf-ranking-filters,.ewaf-header-actions,.ewaf-review-link { display: none!important; } .ewaf-card { break-inside: avoid; } }
+
+/* Explicit checked batches in the ranked applicant list. */
+.ewaf-bulk-selection{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--bs-border-color,#dce5e3);background:var(--bs-tertiary-bg,#f6f9f8)}
+.ewaf-bulk-selection p{margin:.35rem 0 0;font-size:.82rem;line-height:1.5}
+.ewaf-bulk-capacity{margin-left:1rem;font-size:.85rem;color:var(--bs-secondary-color,#54646a)}
+.ewaf-bulk-warning{flex-basis:100%;color:var(--bs-danger,#a52834)}
+.ewaf-bulk-warning:empty{display:none}
+.ewaf-ranking-table .ewaf-bulk-check{width:3rem;min-width:3rem;text-align:center;vertical-align:middle}
+.ewaf-bulk-check input[type=checkbox]{width:1.1rem;height:1.1rem;accent-color:var(--bs-primary,#176b56);cursor:pointer}
+.ewaf-bulk-check input:disabled{cursor:not-allowed;opacity:.45}
+.ewaf-bulk-tie{margin-top:.5rem;min-width:15rem;white-space:normal;font-size:.8rem;font-weight:400}
+.ewaf-bulk-tie summary{cursor:pointer;color:var(--bs-primary,#176b56)}
+.ewaf-bulk-tie label{display:block;margin:.5rem 0 .35rem}
+.ewaf-bulk-tie textarea{min-width:14rem;font-size:.85rem}
+@media(max-width:600px){.ewaf-bulk-selection{padding:1rem}.ewaf-bulk-selection .btn{width:100%}.ewaf-bulk-capacity{display:block;margin:.25rem 0 0}}

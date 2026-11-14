@@ -1,4 +1,4 @@
 {% extends 'admin_portal/base.html' %}{% load static %}
 {% block body_class %}{{ block.super }} ewaf-screen{% endblock %}
-{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}?v=20261114-typed-weights"><link rel="stylesheet" href="{% static 'css/ewaf-breakdown.css' %}"><link rel="stylesheet" href="{% static 'css/ewaf-workspace.css' %}?v=20261110-stable-member-switch">{% endblock %}
-{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/ewaf-workspace.js' %}?v=20261111-processing" defer></script><script src="{% static 'js/ewaf-score-swipe.js' %}?v=20261111-admin-motion" defer></script>{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}?v=20261114-typed-weights"><link rel="stylesheet" href="{% static 'css/ewaf-breakdown.css' %}"><link rel="stylesheet" href="{% static 'css/ewaf-workspace.css' %}?v=20261114-bulk-selection">{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/ewaf-workspace.js' %}?v=20261114-bulk-selection" defer></script><script src="{% static 'js/ewaf-score-swipe.js' %}?v=20261111-admin-motion" defer></script>{% endblock %}

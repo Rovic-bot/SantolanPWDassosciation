@@ -12,7 +12,7 @@ from . import operational_services as service
 from .operational_policy import findings, MAX_POOL, CRITERIA
 from .household_criteria import criteria_for, LEGACY_CRITERIA
 from .operational_models import OperationalConfiguration as Configuration, OperationalRun as Run, OperationalDecision as Decision
-from .operational_forms import WeightConfigurationForm, GenerateForm, DecisionForm, SelectAssistanceForm, UnselectAssistanceForm
+from .operational_forms import WeightConfigurationForm, GenerateForm, DecisionForm, SelectAssistanceForm, UnselectAssistanceForm, BulkSelectAssistanceForm
 from .presentation import messages_for_officers, simplify_form_errors
 from .workspace_read_cache import reuse_workspace_inventory
 
@@ -228,7 +228,7 @@ def workspace(request, pk):
         expected = service.context(pk, user=current)
     except ValidationError as error:
         problems = error.messages
-    generating = request.method == 'POST' and request.POST.get('action') not in ('DRAFT', 'LOCKED', 'PREVIEW_WEIGHTS', 'DECISION', 'SELECT_ASSISTANCE', 'UNSELECT_ASSISTANCE')
+    generating = request.method == 'POST' and request.POST.get('action') not in ('DRAFT', 'LOCKED', 'PREVIEW_WEIGHTS', 'DECISION', 'SELECT_ASSISTANCE', 'UNSELECT_ASSISTANCE', 'BULK_SELECT_ASSISTANCE')
     form = GenerateForm(request.POST if generating else None, auto_id='id_generate_%s',
         initial={'expected': expected, 'request_key': uuid4()})
     applications_by_id = {str(item.pk): item for item in program.applications.select_related('member')}
@@ -418,6 +418,25 @@ def result_context(request, program, run, current, legacy_post=False):
     except ValidationError as error:
         problems = error.messages
     choices = {str(row.application_id): row for row in service.latest_decisions(program)}
+    bulk_selecting = request.method == 'POST' and request.POST.get('action') == 'BULK_SELECT_ASSISTANCE'
+    bulk_form = BulkSelectAssistanceForm(request.POST if bulk_selecting else None, prefix='bulk',
+        application_ids=run.calculations, initial={'run_id': run.pk})
+    if bulk_selecting and bulk_form.is_valid():
+        try:
+            if bulk_form.cleaned_data['run_id'] != run.pk:
+                raise ValidationError('Submitted calculation does not match this page.')
+            decisions = service.select_assistance_batch(pk, user=current, run_id=run.pk,
+                selections=bulk_form.cleaned_data['selections'], reason=BulkSelectAssistanceForm.audit_reason)
+            from django.contrib import messages
+            from django.urls import reverse
+            label = 'applicant' if len(decisions) == 1 else 'applicants'
+            messages.success(request, f'{len(decisions)} checked {label} selected for assistance.')
+            query = request.GET.copy()
+            query['run'] = str(run.pk)
+            return redirect(reverse('ewaf:operational_workspace', kwargs={'pk': pk}) + '?' + query.urlencode() + '#results')
+        except ValidationError as error:
+            bulk_form.add_error(None, error)
+    simplify_form_errors(bulk_form)
     selecting = request.method == 'POST' and request.POST.get('action') == 'SELECT_ASSISTANCE'
     unselecting = request.method == 'POST' and request.POST.get('action') == 'UNSELECT_ASSISTANCE'
     deciding = request.method == 'POST' and (legacy_post or request.POST.get('action') == 'DECISION' or selecting or unselecting)
@@ -452,6 +471,14 @@ def result_context(request, program, run, current, legacy_post=False):
     from assistance.models import AssistanceRelease
     received = {str(key) for key in AssistanceRelease.objects.successful().filter(
         application__program=program).values_list('application_id', flat=True)}
+    from programs.mandatory_ewaf import retained_selected_ids
+    reserved_ids = {str(value) for value in retained_selected_ids(program)}
+    reserved_ids.update(key for key, choice in choices.items() if choice.outcome == 'SELECTED')
+    remaining_slots = max(0, (program.slots or 0) - len(reserved_ids))
+    from .revised.rolling_pool import selection_waiting as waiting_for_final
+    selection_waiting = waiting_for_final(run.snapshot, run.configuration)
+    can_decide = not selection_waiting and current.has_perms(('ewaf.decide_operational', 'assistance.decide_assistance'))
+    checked_ids = set(request.POST.getlist('bulk-applications')) if bulk_selecting else set()
     for row in rows:
         row['reference'] = references[row['application']]
         row['member_name'] = members.get(row['application'], '')
@@ -479,6 +506,11 @@ def result_context(request, program, run, current, legacy_post=False):
         row['tie_review'] = (row['comparison']['capacity_boundary_tie'] if run.configuration.uses_dataset_scoring
                              else row['comparison']['equal'] > 1)
         row['tie_held'] = row['tie_review'] and run.configuration.policy['tie_rule'] in ('hold', 'hold_boundary')
+        row['bulk_selectable'] = active and can_decide and not row['is_selected'] and not row['received'] and not row['tie_held']
+        row['bulk_slot_needed'] = 0 if row['application'] in reserved_ids else 1
+        row['bulk_checked'] = row['application'] in checked_ids and row['bulk_selectable']
+        row['bulk_revision'] = previous.revision if previous else 0
+        row['bulk_tie_reason'] = request.POST.get('bulk-tie-' + row['application'], '') if bulk_selecting else ''
         row['select_form'] = SelectAssistanceForm(prefix='decision', auto_id='id_select_' + row['application'] + '_%s', initial={
             'run_id': run.pk, 'application_id': row['application'], 'expected_revision': previous.revision if previous else 0})
         row['unselect_form'] = UnselectAssistanceForm(prefix='decision', auto_id='id_unselect_' + row['application'] + '_%s', initial={
@@ -515,12 +547,11 @@ def result_context(request, program, run, current, legacy_post=False):
     history = Paginator(Decision.objects.filter(program=program), 50).get_page(request.GET.get('decisions_page'))
     for item in history:
         item.clean()
-    from .revised.rolling_pool import selection_waiting as waiting_for_final
-    selection_waiting = waiting_for_final(run.snapshot, run.configuration)
     return {'run': run, 'rows': page, 'pool_size': pool_size, 'query': query,
-        'contribution_columns': contribution_columns, 'table_columns': len(contribution_columns) + 4,
+        'contribution_columns': contribution_columns, 'table_columns': len(contribution_columns) + 5,
         'selected_row': selected_row,
         'decision_filter': decision_filter, 'decision_options': DECISIONS,
         'active': active, 'problems': messages_for_officers(problems), 'submitted': submitted, 'history': history,
-        'selection_waiting': selection_waiting,
-        'can_decide': not selection_waiting and current.has_perms(('ewaf.decide_operational', 'assistance.decide_assistance'))}
+        'selection_waiting': selection_waiting, 'bulk_form': bulk_form, 'remaining_slots': remaining_slots,
+        'bulk_available': active and can_decide,
+        'can_decide': can_decide}
