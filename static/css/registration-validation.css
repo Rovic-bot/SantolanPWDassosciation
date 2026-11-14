@@ -1,0 +1,23 @@
+.registration-editor .registration-mobile {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  width: 100%;
+}
+.registration-editor .registration-mobile > .input-group-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 3.4rem;
+  color: inherit;
+  background: transparent;
+  border-color: var(--bs-border-color, #c9c7c2);
+  border-radius: .7rem 0 0 .7rem;
+}
+.registration-editor .registration-mobile > input {
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

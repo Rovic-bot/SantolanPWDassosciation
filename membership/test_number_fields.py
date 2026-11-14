@@ -33,7 +33,10 @@ class OnlineNumberValidationTests(SimpleTestCase):
 
     def test_leading_zeroes_are_retained_in_submitted_payloads(self):
         for make, names in ((self.association, ASSOCIATION_NUMBERS), (self.pdao, PDAO_NUMBERS)):
-            values = {name: '001234' for name in names}
+            # Mobile intake uses +63; leading zeroes remain significant in IDs
+            # and in the retained historical Association form.
+            values = {name: '001234' for name in names
+                      if make != self.pdao or name not in ('contact_number', 'emergency_phone')}
             form = make(**values)
             self.assertTrue(form.is_valid(), form.errors)
             payload = form.submitted_data()
@@ -53,11 +56,15 @@ class OnlineNumberValidationTests(SimpleTestCase):
                         self.assertFalse(invalid.is_valid())
                         self.assertIn(name, invalid.errors)
 
-    def test_contact_numbers_remain_optional_and_address_still_accepts_street_names(self):
+    def test_current_mobile_is_required_and_historical_contact_remains_optional(self):
         for make in (self.association, self.pdao):
             form = make(house_street='12A Example Street', contact_number='')
-            self.assertTrue(form.is_valid(), form.errors)
-            self.assertEqual(form.submitted_data()['house_street'], '12A Example Street')
+            if make == self.pdao:
+                self.assertFalse(form.is_valid())
+                self.assertIn('contact_number', form.errors)
+            else:
+                self.assertTrue(form.is_valid(), form.errors)
+                self.assertEqual(form.submitted_data()['house_street'], '12A Example Street')
             for value in ('0917-000-0000', '12.3', '+639170000000', '0' * 31):
                 invalid = make(contact_number=value)
                 self.assertFalse(invalid.is_valid())
@@ -67,7 +74,8 @@ class OnlineNumberValidationTests(SimpleTestCase):
         source = self.association()
         self.assertTrue(source.is_valid(), source.errors)
         previous = source.submitted_data() | {'pwd_number': 'OLD-ID', 'contact_number': '(02) 1234'}
-        revision = SimpleNamespace(data=previous, policy_snapshot=pdf_policy())
+        revision = SimpleNamespace(data=previous, policy_snapshot=pdf_policy(),
+                                   intake=SimpleNamespace(category='association', channel='walk_in'))
         data = association_data() | {'pwd_number': 'OLD-ID', 'contact_number': '(02) 1234', 'version': 0}
         for editable in (True, False):
             editor = RegistrationEditorForm(data, revision=revision, version=0, editable=editable)

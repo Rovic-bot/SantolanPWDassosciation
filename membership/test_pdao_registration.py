@@ -1,6 +1,7 @@
 """Synthetic end-to-end checks; run only on the disposable native MySQL runner."""
 from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
+from datetime import timedelta
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -10,6 +11,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import close_old_connections, connection
 from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from config.registration_workflow import association_policy
 from members.models import Member
@@ -44,6 +46,17 @@ class PDAOHelpers:
 
 @override_settings(PDAO_REGISTRATION_ENABLED=True)
 class PDAORegistrationTests(PDAOHelpers, TestCase):
+    def test_retry_across_midnight_keeps_original_application_date(self):
+        item, data = self.submit()
+        original_date = item.data['date_applied']
+        with patch('membership.intake_validation.timezone.localdate', return_value=timezone.localdate() + timedelta(days=1)):
+            self.assertEqual(self.client.post(reverse('membership:pdao_apply'), data).status_code, 302)
+            self.assertEqual(self.client.post(reverse('membership:pdao_apply'), data | {'first_name': 'Changed'}).status_code, 400)
+        item.refresh_from_db()
+        self.assertEqual(item.data['date_applied'], original_date)
+        self.assertEqual(PDAORegistration.objects.count(), 1)
+        self.assertEqual(item.events.count(), 1)
+
     def test_original_pdao_form_link_saves_to_staff_queue(self):
         url = reverse('membership:pdao_prepare')
         response = self.client.get(url)

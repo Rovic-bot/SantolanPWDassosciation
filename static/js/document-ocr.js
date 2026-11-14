@@ -121,6 +121,9 @@ WorkspacePage.run(({on, cleanup}) => {
         if (!allowed.has(name) || !target || !['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName) ||
             target.disabled || target.readOnly || ['hidden', 'checkbox', 'radio', 'file'].includes(target.type)) continue;
         let proposed = value;
+        if (target.hasAttribute('data-ph-mobile')) {
+          proposed = value.replace(/\s/g, '').replace(/^(?:\+63|63|0)(?=9[0-9]{9}$)/, '');
+        }
         if (target.tagName === 'SELECT') {
           proposed = [...target.options].find(option => option.value &&
             [option.value, option.textContent].some(label => label.toLowerCase() === value.toLowerCase()))?.value;
@@ -136,6 +139,7 @@ WorkspacePage.run(({on, cleanup}) => {
         editor.removeAttribute('aria-describedby');
         if (target.tagName !== 'SELECT') { editor.type = ['date', 'email'].includes(target.type) ? target.type : 'text'; editor.maxLength = target.maxLength > 0 ? target.maxLength : 1000; }
         editor.className = 'form-control'; editor.value = proposed; editor.setAttribute('aria-label', `Review ${title}`);
+        if (target.hasAttribute('data-ph-mobile')) editor.pattern = '9[0-9]{9}';
         const current = document.createElement('small'); current.textContent = target.value ? `Current entry: ${target.value}` : 'Empty form field';
         row.append(label, editor, current); get('fields').append(row);
         suggestions.push({target, editor, checkbox, current, before: target.value});

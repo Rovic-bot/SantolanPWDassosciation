@@ -34,15 +34,21 @@ def association_data():
         'city': 'Pasig', 'region': 'NCR', 'family_members': '6', 'four_ps_member': 'Yes',
         'disability_type': 'Visual Disability', 'education': 'College Undergraduate',
         'household_monthly_income': '14500.50', 'household_members': '5', 'employment_status': 'unemployed',
-        'email': 'fictional@example.invalid', 'pwd_number': '00-0000-000-0000001', 'acknowledgement': 'on'}
+        'email': 'fictional@example.invalid', 'pwd_number': '00-0000-000-0000001', 'acknowledgement': 'on',
+        'zip_code': '1610', 'contact_number': '9171234567', 'civil_status': 'Single',
+        'nationality': 'Filipino', 'gender': 'Female'}
 
 
 def pdao_data():
-    return {'application_type': 'Renewal', 'date_applied': timezone.localdate().isoformat(),
+    return {'application_type': 'New applicant', 'date_applied': timezone.localdate().isoformat(),
         'email': 'fictional@example.invalid',
         'last_name': 'Example', 'first_name': 'Fictional', 'birthdate': '1990-01-02',
         'house_street': '12 Example Street', 'barangay': 'Santolan', 'city': 'Pasig',
         'disability_types': ['Visual Disability', 'Physical Disability'],
+        'province': 'Metro Manila', 'region': 'NCR',
+        'contact_number': '9171234567', 'sex': 'Female', 'civil_status': 'Single',
+        'disability_cause': 'Acquired', 'education': 'College', 'employment_status': 'Unemployed',
+        'emergency_name': 'Emergency Example', 'emergency_relationship': 'Sibling', 'emergency_phone': '9181234567',
         'accomplished_by': 'Applicant', 'acknowledgement': 'on'}
 
 

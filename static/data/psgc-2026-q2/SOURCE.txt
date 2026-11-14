@@ -1,0 +1,5 @@
+Source: Philippine Statistics Authority (PSA), Philippine Standard Geographic Code, 30 June 2026.
+https://psa.gov.ph/classification/psgc
+JSON transcription: https://github.com/Tenasia/ph-psgc/tree/2026-Q2
+Pinned source commit: 3d7528b6625e4e7990ac1b96d89505a6bab157ec
+PSA requires source attribution. Only geographic codes and names are included; no map points.

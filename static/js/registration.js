@@ -120,7 +120,8 @@ document.querySelectorAll('[data-registration-age]').forEach(output => {
   if (!input) return;
   const update = () => {
     const born = new Date(`${input.value}T00:00:00`);
-    const today = input.max ? new Date(`${input.max}T00:00:00`) : new Date();
+    const referenceDate = input.dataset.intakeToday || input.max;
+    const today = referenceDate ? new Date(`${referenceDate}T00:00:00`) : new Date();
     if (Number.isNaN(born.getTime()) || born > today) {
       output.textContent = 'Calculated from date of birth';
       return;

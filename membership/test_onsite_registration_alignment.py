@@ -24,10 +24,10 @@ class OnsiteRegistrationAlignmentTests(TestCase):
         self.onsite_url = reverse('membership:encode')
         self.public_url = reverse('membership:registration_apply')
         self.data = association_data() | {
-            'pwd_number': '00-0000-000-0000001', 'zip_code': '01610',
-            'contact_number': '09170000000', 'email': 'fictional@example.test',
-            'spouse_name': 'Fictional Spouse', 'spouse_contact': '09170000001',
-            'guardian_name': 'Fictional Guardian', 'guardian_contact': '09170000002',
+            'pwd_number': '00-0000-000-0000001', 'zip_code': '1610',
+            'contact_number': '9170000000', 'email': 'fictional@example.test',
+            'spouse_name': 'Fictional Spouse', 'spouse_contact': '9170000001',
+            'guardian_name': 'Fictional Guardian', 'guardian_contact': '9170000002',
             'voter_certification_number': '001-002', 'philhealth_number': '003-004',
         }
 
@@ -77,7 +77,7 @@ class OnsiteRegistrationAlignmentTests(TestCase):
         onsite = self.client.get(self.onsite_url)
         self.assertContains(onsite, 'data-onsite-section=', count=7)
         self.assertContains(onsite, 'data-review-application', count=1)
-        self.assertContains(onsite, 'data-dashboard-theme-toggle', count=1)
+        self.assertContains(onsite, 'data-preference="dark"', count=1)
         for url in (self.public_url, reverse('core:home'), reverse('core:dashboard')):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
@@ -153,15 +153,18 @@ class OnsiteRegistrationAlignmentTests(TestCase):
         self.assertEqual(intake.channel, 'walk_in')
         source = intake.revisions.get(number=1)
         self.assertEqual(source.actor, self.actor)
+        canonical = {'city': 'City of Pasig', 'region': 'National Capital Region (NCR)',
+                     'contact_number': '+639170000000', 'spouse_contact': '+639170000001',
+                     'guardian_contact': '+639170000002'}
         for name, value in self.data.items():
             if name not in ('family_members', 'household_members', 'acknowledgement'):
-                self.assertEqual(source.data[name], value)
+                self.assertEqual(source.data[name], canonical.get(name, value))
         self.assertFalse(Member.objects.exists())
         self.assertFalse(MembershipApplication.objects.exists())
         self.client.post(self.onsite_url, posted)
         self.assertEqual(RegistrationIntake.objects.count(), 1)
         decide_registration(intake.reference, user=self.actor, action='approve_registration',
-            data=self.data | {'version': intake.version, 'action': 'approve_registration',
+            data=self.data | canonical | {'version': intake.version, 'action': 'approve_registration',
                 'prpwd_lookup_number': self.data['pwd_number']})
         member = Member.objects.get()
         self.assertEqual(member.control_number, self.data['pwd_number'])

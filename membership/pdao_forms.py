@@ -3,6 +3,7 @@ from uuid import UUID
 
 from .forms import StyledForm
 from .pdf_registration_forms import PDAOForm
+from .intake_validation import NewIntakeValidationMixin
 
 PRIVACY_VERSION = 'pdao-online-20261109-v3'
 ONSITE_PRIVACY_VERSION = 'pdao-onsite-20261109-v2'
@@ -18,7 +19,7 @@ PRIVACY_NOTICE = (
 )
 
 
-class PDAOOnlineForm(PDAOForm):
+class PDAOOnlineForm(NewIntakeValidationMixin, PDAOForm):
     placeholder_examples = {
         'pwd_number': 'e.g. 00-0000-000-0000000',
         'last_name': 'e.g. Dela Cruz', 'first_name': 'e.g. Juan',
@@ -26,7 +27,7 @@ class PDAOOnlineForm(PDAOForm):
         'house_street': 'e.g. 123 Mabini Street', 'barangay': 'e.g. Santolan',
         'city': 'e.g. Pasig City', 'province': 'Enter province, if applicable',
         'region': 'e.g. NCR', 'landline': 'e.g. 0281234567',
-        'contact_number': 'e.g. 09171234567', 'email': 'e.g. juan.delacruz@example.com',
+        'contact_number': '987 876 5610', 'email': 'e.g. juan.delacruz@example.com',
         'occupation_other': 'e.g. Online seller',
         'organization': 'Enter your organization, if any',
         'organization_contact': 'e.g. Maria Santos',
@@ -41,7 +42,7 @@ class PDAOOnlineForm(PDAOForm):
         'mother_last_name': 'e.g. Santos', 'mother_first_name': 'e.g. Maria',
         'mother_middle_name': 'e.g. Garcia',
         'emergency_name': 'e.g. Ana Dela Cruz', 'emergency_relationship': 'e.g. Sister',
-        'emergency_phone': 'e.g. 09181234567',
+        'emergency_phone': '918 123 4567',
     }
     email = forms.EmailField(label='Email address', help_text='We will email you about office verification, corrections, and PWD ID collection.')
     submission_token = forms.CharField(widget=forms.HiddenInput, max_length=1000)
@@ -77,8 +78,8 @@ class PDAOReviewForm(PDAOForm):
 
 class PDAOOnsiteForm(PDAOOnlineForm):
     placeholder_examples = {}
-    email = forms.EmailField(label='Email address', required=False,
-        help_text='Optional for onsite registration. Used for PWD ID collection notices after forwarding; onsite review actions do not send email.')
+    email = forms.EmailField(label='Email address',
+        help_text='Provide an email address for PWD ID collection notices after forwarding; onsite review actions do not send email.')
     acknowledgement = forms.BooleanField(label=(
         'I confirm that these details were provided during the onsite visit, '
         'the privacy information was explained, and the applicant requested PDAO form preparation.'))

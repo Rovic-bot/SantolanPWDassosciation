@@ -89,6 +89,17 @@ def record_event(registration, action, actor=None, *, details=None):
         details=details or {})
 
 
+def _same_intake_on_retry(original, submitted):
+    """A retry retains its first issued date/age even across Philippine midnight."""
+    def applicant_values(payload):
+        values = {key: value for key, value in payload.items() if key not in ('date_applied', 'age', 'profile_sections')}
+        values['profile_sections'] = [[title, [[label, value] for label, value in rows
+            if label not in ('Date applied', 'Age on preparation date')]]
+            for title, rows in payload.get('profile_sections', [])]
+        return values
+    return applicant_values(original) == applicant_values(submitted)
+
+
 def submit(request, *, onsite=False):
     actor = require_staff(request.user, ADD) if onsite else None
     if not onsite:
@@ -103,7 +114,7 @@ def submit(request, *, onsite=False):
 
     def existing_submission():
         existing = PDAORegistration.objects.filter(submission_key=key).first()
-        if existing is not None and (existing.payload_digest != payload_digest or existing.binding_digest != binding
+        if existing is not None and ((existing.payload_digest != payload_digest and not _same_intake_on_retry(existing.data, data)) or existing.binding_digest != binding
                                      or (not onsite and (existing.receipt_revoked_at or existing.receipt_expires_at <= timezone.now()))):
             raise ValidationError('This form was already submitted. Use your receipt or contact the Help Desk.')
         return existing

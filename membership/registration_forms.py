@@ -7,6 +7,11 @@ from .forms import StyledForm, validate_portrait
 from .registration_policy import SLOTS
 from .registration_profile import ApplicantProfileForm, GROUPS, INPUT_FIELDS, PROFILE_KIND, profile_payload
 from .pdf_registration_forms import AssociationPDFForm, ASSOCIATION_PDF_KIND
+from .intake_validation import NewIntakeValidationMixin
+
+
+class AssociationIntakeForm(NewIntakeValidationMixin, AssociationPDFForm):
+    pass
 
 
 def add_registration_document_fields(form, slots):
@@ -37,15 +42,17 @@ class RegistrationForm(StyledForm, forms.Form):
         self.profile_input_fields = INPUT_FIELDS
         if policy.get('applicant_profile') in (PROFILE_KIND, ASSOCIATION_PDF_KIND):
             profile_class = AssociationPDFForm if policy['applicant_profile'] == ASSOCIATION_PDF_KIND else ApplicantProfileForm
+            if profile_class is AssociationPDFForm and getattr(self, 'validate_new_intake', False):
+                profile_class = AssociationIntakeForm
             self.profile_form = profile_class(self.data if self.is_bound else None, initial=self.initial)
-            if profile_class is AssociationPDFForm:
-                self.profile_groups = AssociationPDFForm.groups
+            if issubclass(profile_class, AssociationPDFForm):
+                self.profile_groups = self.profile_form.groups
                 self.profile_input_fields = tuple(self.profile_form.fields)
             self.fields.pop('full_name')
             self.fields.pop('address')
             for name in self.profile_input_fields:
                 self.fields[name] = self.profile_form.fields[name]
-        self.fields['birthdate'].widget.attrs['max'] = timezone.localdate().isoformat()
+        self.fields['birthdate'].widget.attrs.setdefault('max', timezone.localdate().isoformat())
         add_registration_document_fields(self, policy['upload_slots'])
         self.style_fields()
 
@@ -106,6 +113,7 @@ class RegistrationForm(StyledForm, forms.Form):
 
 class OnlineRegistrationForm(RegistrationForm):
     """Required contact/identity fields for new online Association submissions."""
+    validate_new_intake = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -113,10 +121,10 @@ class OnlineRegistrationForm(RegistrationForm):
             examples = {
                 'last_name': 'Dela Cruz', 'first_name': 'Juan', 'middle_name': 'Santos',
                 'house_street': '123 Mabini Street', 'barangay': 'Santolan', 'city': 'Pasig City',
-                'region': 'NCR', 'zip_code': '1610', 'contact_number': '09171234567',
+                'region': 'NCR', 'zip_code': '1610', 'contact_number': '987 876 5610',
                 'email': 'juan.delacruz@example.com', 'nationality': 'Filipino',
-                'family_members': '4', 'spouse_name': 'Maria Dela Cruz', 'spouse_contact': '09181234567',
-                'guardian_name': 'Ana Dela Cruz', 'guardian_contact': '09191234567',
+                'family_members': '4', 'spouse_name': 'Maria Dela Cruz', 'spouse_contact': '918 123 4567',
+                'guardian_name': 'Ana Dela Cruz', 'guardian_contact': '919 123 4567',
                 'pwd_number': '00-0000-000-0000000', 'voter_certification_number': '123456789',
                 'philhealth_number': '00-000000000-0', 'household_monthly_income': '1000',
                 'household_members': '4',
@@ -137,6 +145,7 @@ class OnlineRegistrationForm(RegistrationForm):
 
 class OnsiteRegistrationForm(RegistrationForm):
     """Require a contact email and PWD number for onsite Association intake."""
+    validate_new_intake = True
     prpwd_lookup_number = forms.CharField(required=False, max_length=100, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):

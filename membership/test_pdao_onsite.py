@@ -36,7 +36,7 @@ class PDAOOnsiteTests(TestCase):
             self.assertEqual(type(field), type(onsite.fields[name]))
             if name == 'email':
                 self.assertTrue(field.required)
-                self.assertFalse(onsite.fields[name].required)
+                self.assertTrue(onsite.fields[name].required)
             else:
                 self.assertEqual(field.required, onsite.fields[name].required)
             self.assertEqual(getattr(field, 'choices', None), getattr(onsite.fields[name], 'choices', None))
