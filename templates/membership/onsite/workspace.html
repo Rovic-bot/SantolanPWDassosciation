@@ -27,6 +27,7 @@
 
   <div class="onsite-workspace-grid">
     <div class="onsite-form-column">
+      {% include 'membership/registration/ocr_scan.html' %}
       <p class="onsite-privacy"><span aria-hidden="true">●</span><strong>Private staff workspace</strong><span>Required fields are marked *. Submission creates a pending record.</span></p>
       <form id="onsite-registration-form" method="post" enctype="multipart/form-data" autocomplete="off" class="onsite-form registration-editor" data-onsite-form data-prpwd-url="{{ prpwd_lookup_url }}"{% if policy %} data-file-limit="{{ policy.file_max_bytes }}" data-total-limit="{{ policy.total_max_bytes }}"{% endif %}>
         {% csrf_token %}{% if context_id %}<input type="hidden" name="context_id" value="{{ context_id }}">{% endif %}

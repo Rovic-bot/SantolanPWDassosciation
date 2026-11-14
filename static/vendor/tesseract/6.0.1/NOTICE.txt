@@ -1,0 +1,25 @@
+Tesseract OCR browser assets
+
+Engine project requested by the owner:
+https://github.com/tesseract-ocr/tesseract
+
+Unmodified distributions from npm (downloaded November 14, 2026):
+- tesseract.js 6.0.1, https://github.com/naptha/tesseract.js, Apache-2.0.
+- tesseract.js-core 6.1.2, https://github.com/naptha/tesseract.js-core,
+  Apache-2.0. Contains the WebAssembly builds of Tesseract/Leptonica.
+- @tesseract.js-data/eng 1.0.0, https://github.com/naptha/tessdata.
+  English 4.0.0_best_int/eng.traineddata.gz, the integer LSTM model.
+  The upstream tessdata repository distributes trained data under Apache-2.0;
+  its license is retained in LICENSE-tessdata. The npm package metadata labels
+  its packaging MIT. No package wrapper code from that package is distributed.
+
+Upstream licenses and bundled JavaScript dependency notices are retained beside
+these files. The four embedded-WASM .wasm.js variants are included so the worker
+can choose a compatible SIMD or non-SIMD build. Language and engine downloads
+use the application's own static origin. No OCR service or CDN is contacted.
+
+The application adapter static/js/document-ocr-reader.js uses the pinned worker
+protocol from tesseract.js/src/createWorker.js to own the native Worker from
+startup and release it on cancellation, failed downloads or timeout. Re-run
+the real browser OCR checks before upgrading these assets. App-specific code
+does not modify the upstream bundles. See manifest.json for SHA-256 checksums.

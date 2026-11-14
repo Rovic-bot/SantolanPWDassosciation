@@ -6,6 +6,7 @@
   <section class="onsite-lookup" aria-labelledby="pdao-existing-heading"><div class="onsite-lookup-heading"><span class="onsite-id-mark" aria-hidden="true">ID</span><div><h2 id="pdao-existing-heading">Already applied online?</h2><p>Find the existing PDAO application before creating a new record.</p></div></div><a data-workspace-tab class="btn btn-outline-primary" href="{% url 'membership:pdao_inbox' %}">Find a PDAO application</a></section>
   <div class="onsite-workspace-grid">
     <div class="onsite-form-column">
+      {% include 'membership/registration/ocr_scan.html' %}
       <p class="onsite-privacy"><strong>Private staff workspace</strong><span>Required fields are marked *. Save the PDAO form for review and manual forwarding.</span></p>
       <form method="post" autocomplete="off" class="onsite-form registration-editor" data-onsite-form>
         {% csrf_token %}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}

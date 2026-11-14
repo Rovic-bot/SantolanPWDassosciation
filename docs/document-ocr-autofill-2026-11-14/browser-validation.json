@@ -1,0 +1,72 @@
+{
+  "results": [
+    {
+      "route": "/association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "receiptCustomerOnly": true
+    },
+    {
+      "syntheticCameraCaptureAndRelease": true
+    },
+    {
+      "corruptImageFallback": true
+    },
+    {
+      "cameraDeniedManualFallback": true
+    },
+    {
+      "cancelReleasesWorker": true
+    },
+    {
+      "failedDownloadReleasesWorker": true
+    },
+    {
+      "manualFormWithoutJavaScript": true
+    }
+  ],
+  "errors": [],
+  "blocked": [
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    }
+  ]
+}

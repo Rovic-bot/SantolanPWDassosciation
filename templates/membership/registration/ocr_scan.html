@@ -1,0 +1,36 @@
+{% load static %}
+<section class="document-ocr" data-document-ocr hidden aria-labelledby="ocr-heading"
+  data-worker="{% static 'vendor/tesseract/6.0.1/worker.min.js' %}"
+  data-core="{% static 'vendor/tesseract/6.0.1/core' %}"
+  data-language="{% static 'vendor/tesseract/6.0.1/lang' %}">
+  <header class="document-ocr-heading"><span class="document-ocr-icon" aria-hidden="true">ID</span><div><p class="document-ocr-eyebrow">Optional · Save time typing</p><h2 id="ocr-heading">Fill from an ID or receipt</h2></div></header>
+  <p>Take a clear photo or choose an image. Review the details we find, then add them to your application.</p>
+  <p class="document-ocr-hint">The image is read on this device and is not uploaded or attached to your application. Only details you choose are copied into the form. This does not verify your identity or approve an application.</p>
+  <div class="document-ocr-actions">
+    <label class="document-ocr-kind">Document <select class="form-select" data-ocr-kind><option value="id">ID card</option><option value="receipt">Receipt with applicant details</option></select></label>
+    <button type="button" class="btn btn-primary" data-ocr-camera>Use camera</button>
+    <button type="button" class="btn btn-outline-primary" data-ocr-upload>Choose image</button>
+    <input type="file" accept="image/jpeg,image/png,image/webp" data-ocr-file hidden aria-label="Choose ID or receipt image">
+    <input type="file" accept="image/*" capture="environment" data-ocr-photo hidden aria-label="Take a photo of ID or receipt">
+    <button type="button" class="btn btn-outline-secondary" data-ocr-phone hidden>Take photo with phone</button>
+  </div>
+  <p class="document-ocr-hint">JPG, PNG or WebP · Up to 12 MB. Keep the whole document upright, close and free of glare. A receipt may contain only a few personal details.</p>
+  <div class="document-ocr-camera" data-ocr-camera-panel hidden>
+    <video data-ocr-video autoplay muted playsinline aria-label="Live camera preview"></video>
+    <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-capture>Capture photo</button><button type="button" class="btn btn-outline-secondary" data-ocr-stop>Close camera</button></div>
+  </div>
+  <div class="document-ocr-preview" data-ocr-preview hidden>
+    <img data-ocr-image alt="Selected document. Check that the text is clear before reading it.">
+    <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-read>Read information</button><button type="button" class="btn btn-outline-secondary" data-ocr-rotate>Rotate image</button><button type="button" class="btn btn-outline-secondary" data-ocr-clear>Clear scan</button></div>
+  </div>
+  <p class="document-ocr-status" data-ocr-status role="status" aria-live="polite" aria-atomic="true"></p>
+  <div class="document-ocr-actions" data-ocr-progress hidden><progress max="100" value="0" data-ocr-meter aria-label="Reading document"></progress><button type="button" class="btn btn-outline-secondary" data-ocr-cancel>Cancel reading</button></div>
+  <div class="document-ocr-results" data-ocr-results hidden>
+    <h3 tabindex="-1" data-ocr-review-heading>Review extracted details</h3>
+    <p>Check spelling, dates and ID numbers. Select only details that belong to the applicant. Existing entries are unchecked; select one explicitly to replace it.</p>
+    <p data-ocr-notes class="document-ocr-hint"></p>
+    <div data-ocr-fields class="document-ocr-fields"></div>
+    <details class="document-ocr-text"><summary>View text read from the document</summary><p>Use this text to complete any remaining fields. Names without separate labels and uncertain dates may need manual entry.</p><pre data-ocr-text></pre></details>
+    <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-apply>Add selected details to form</button><button type="button" class="btn btn-outline-secondary" data-ocr-continue>Go to application form</button><button type="button" class="btn btn-outline-secondary" data-ocr-undo hidden>Undo last autofill</button></div>
+  </div>
+</section>
