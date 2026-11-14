@@ -23,3 +23,11 @@ Suggestions remain editable and require the user's selection before insertion. A
 Public regression evidence uses fictional data only: [browser checks](document-ocr-rotation-fix-2026-11-14/local-validation.json) and [rotated-card review](document-ocr-rotation-fix-2026-11-14/fictional-rotated-card.png). Use the reproduction commands in the original implementation record; `scripts/document_ocr_card_fixture.cjs` generates the new fictional artwork.
 
 This validates the supplied example and the documented regression cases. Unreadable or absent information still needs manual entry; OCR suggestions must be reviewed before submission.
+
+## Hosted activation
+
+Render deploy `dep-dbs1adbbc2fs73aa208g` reached **live** at 08:02:24 UTC on November 14, 2026, running code commit `0ef357b60a11bea6a1c6413b2c2bbed0172cad62`. The existing service configuration and database were retained. The health endpoint returned HTTP 200 with `status: ok`.
+
+Eleven hosted Chrome scenarios passed against the public Association and PDAO application pages, including real Tesseract recognition, reviewed autofill, both rotated fictional card cases and the existing fallback/cleanup checks. There were no JavaScript errors, POST requests or external OCR downloads. Render returned no application error logs between activation and the 08:03:40 UTC check. The hosted mobile review screenshot was inspected. No real application was submitted and no member email was sent.
+
+Hosted evidence contains fictional data only: [browser checks](document-ocr-rotation-fix-2026-11-14/hosted-validation.json) and [rotated-card review](document-ocr-rotation-fix-2026-11-14/hosted-fictional-rotated-card.png). Task-generated private OCR diagnostics and comparison scripts were removed after local validation; the owner's supplied source image was not modified. This activation record is a documentation-only follow-up to the deployed code.

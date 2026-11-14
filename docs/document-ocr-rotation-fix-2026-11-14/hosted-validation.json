@@ -1,0 +1,60 @@
+{
+  "deployment": "dep-dbs1adbbc2fs73aa208g",
+  "code_commit": "0ef357b60a11bea6a1c6413b2c2bbed0172cad62",
+  "live_at": "2026-11-14T08:02:24Z",
+  "passed": 11,
+  "results": [
+    {
+      "route": "/membership/registration/apply/",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/membership/registration/pdao/apply/",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "receiptCustomerOnly": true
+    },
+    {
+      "rotatedNationalID": 90,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "rotatedNationalID": 180,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "syntheticCameraCaptureAndRelease": true
+    },
+    {
+      "corruptImageFallback": true
+    },
+    {
+      "cameraDeniedManualFallback": true
+    },
+    {
+      "cancelReleasesWorker": true
+    },
+    {
+      "failedDownloadReleasesWorker": true
+    },
+    {
+      "manualFormWithoutJavaScript": true
+    }
+  ],
+  "javascript_errors": [],
+  "non_get_requests": 0,
+  "external_ocr_requests": 0,
+  "health_http_status": 200,
+  "fixtures": "Only generated fictional ID and receipt images."
+}
