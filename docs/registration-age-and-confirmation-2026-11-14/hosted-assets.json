@@ -1,0 +1,18 @@
+{
+  "commit": "453a085c5cd45e2cc8095b7c0b69499dfadb1229",
+  "health": "ok",
+  "assets": [
+    {
+      "asset": "static/js/registration-validation.js",
+      "http_status": 200,
+      "sha256": "09028db97b96b7b4b2315b5e2629d419f143fd713c6be38f017d371628ac6288",
+      "matches_release": true
+    },
+    {
+      "asset": "static/js/pdao-review.js",
+      "http_status": 200,
+      "sha256": "2cd40c77cd42f662dc70b5cabc4af18a7950b4ef5ba83854afeaafad0fdd1bed",
+      "matches_release": true
+    }
+  ]
+}

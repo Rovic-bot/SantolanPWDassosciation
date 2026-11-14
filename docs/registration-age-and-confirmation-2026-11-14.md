@@ -27,4 +27,10 @@ Evidence: [intake browser results](registration-age-and-confirmation-2026-11-14/
 
 ## Activation
 
-Hosted activation and read-only verification will be recorded after Render reports the release live. No real applicant record or production email is used for testing.
+Render deploy `dep-dbs3dtgae00c73digh70` reached **live** on November 14, 2026 at **10:26:31 UTC / 6:26:31 PM Philippine time**, running commit `453a085c5cd45e2cc8095b7c0b69499dfadb1229` on the existing [hosted system](https://santolan-pwd-system.onrender.com).
+
+Four hosted Chrome scenarios passed: both public forms with age/choice/family/address/mobile checks at 1440/390/320 px, unavailable address suggestions, and the no-JavaScript fallback. No JavaScript errors or application POSTs occurred. The hosted child PDAO screenshot was inspected. The health endpoint returned HTTP 200 with `status: ok`; both changed JavaScript assets matched the committed release bytes. Render returned no application error logs from activation through 10:27:49 UTC.
+
+The scoped changes were also applied to the main workspace, preserving its unrelated work and existing source-form layout. Its 17 database-free checks passed. Staff transitions were tested with disposable records and in-memory email, without changing real applicants or sending production notices. The service remains on its existing Free plan with automatic deployment off.
+
+Hosted evidence: [browser results](registration-age-and-confirmation-2026-11-14/hosted-browser.json), [child PDAO options](registration-age-and-confirmation-2026-11-14/hosted-child-pdao.png), [health and committed-asset checks](registration-age-and-confirmation-2026-11-14/hosted-assets.json). This activation evidence is a documentation-only follow-up and does not require another deployment.
