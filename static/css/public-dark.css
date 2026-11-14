@@ -26,6 +26,18 @@
         .receipt-card,.resident-message-card,.account-card,.information-aside,
         .portal-membership-layout > div,.make-resource-layout > div,.section-about-reading > div
     ) { background: #242220 !important; border-color: #5d5851 !important; box-shadow: 0 6px 18px #0002 !important; }
+    /* Keep the chosen service distinct from the shared dark card surface. */
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .portal-service-selector > a[aria-selected="true"] {
+        background: #e6dfd2 !important;
+        border-color: #e6dfd2 !important;
+        color: #1c1a18 !important;
+    }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .portal-service-selector > a[aria-selected="true"] :is(span,strong,small,svg) {
+        color: inherit !important;
+    }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .portal-service-selector > a[aria-selected="true"] .portal-icon {
+        background: #1c1a1814 !important;
+    }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal dialog :is(.event-dialog-heading,.home-guidance-dialog-heading,.event-popup-layout aside) { background: #242220 !important; border-color: #5d5851 !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal dialog :is(.event-dialog-heading button,.home-guidance-close) { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(.portal-navigation,dialog,.display-panel,.display-trigger) { background: #242220 !important; color: #f4f2ec !important; border-color: #8d867b !important; }
