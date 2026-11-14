@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "route": "/membership/registration/apply/",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/membership/registration/pdao/apply/",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "receiptCustomerOnly": true
+    },
+    {
+      "syntheticCameraCaptureAndRelease": true
+    },
+    {
+      "corruptImageFallback": true
+    },
+    {
+      "cameraDeniedManualFallback": true
+    },
+    {
+      "cancelReleasesWorker": true
+    },
+    {
+      "failedDownloadReleasesWorker": true
+    },
+    {
+      "manualFormWithoutJavaScript": true
+    }
+  ],
+  "errors": [],
+  "blocked": [
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    },
+    {
+      "url": "https://cdn.tailwindcss.com/",
+      "method": "GET"
+    }
+  ],
+  "code_commit": "9dfb5e3be51808abe8e69d9616ee1b6760625080",
+  "deploy_id": "dep-dbs0ntqfngtc73bdfh70",
+  "health_status": 200,
+  "non_get_requests": 0,
+  "external_ocr_requests": 0
+}

@@ -36,3 +36,11 @@ git diff --check
 The browser harness uses the existing Playwright/Chrome installation or the `PLAYWRIGHT_MODULE` / `CHROME_EXECUTABLE` overrides. It blocks application submissions. Setting `OCR_URL` selects the two public routes for a hosted smoke test using fictional documents, without submitting an application.
 
 OCR accuracy varies with document layout, resolution, lighting and handwriting. PDF/HEIC input requires conversion to a supported image. These checks establish the tested functionality, not universal ID-layout coverage, physical camera quality, full mobile-device compatibility, WCAG certification or automatic identity verification.
+
+## Hosted activation
+
+Render deploy `dep-dbs0ntqfngtc73bdfh70` reached **live** on November 14, 2026 at 07:22:53 UTC, running code commit `9dfb5e3be51808abe8e69d9616ee1b6760625080`. The existing Free service, database, storage, email configuration and manual-deploy setting are retained. No migration, seed, data import or application submission was performed.
+
+Nine hosted browser journeys passed against `https://santolan-pwd-system.onrender.com`, using fictional image buffers only: real OCR/reviewed autofill on both public applications, receipt customer extraction, synthetic camera capture/release, corrupt-image handling, denied-camera fallback, worker cancellation, failed-download cleanup and the manual form with JavaScript disabled. Both forms reflowed at 1440, 390 and 320 pixels, with no JavaScript errors. No POST requests or external OCR/CDN requests occurred. The deployment health endpoint returned HTTP 200 with `status: ok`. Render returned no application error logs from activation through the final 07:25 UTC check.
+
+Hosted evidence: [browser results](document-ocr-autofill-2026-11-14/hosted-validation.json), [Association desktop](document-ocr-autofill-2026-11-14/hosted-association-desktop.png), [PDAO mobile](document-ocr-autofill-2026-11-14/hosted-pdao-mobile.png). These checks did not exercise a physical camera, create member records or send member emails. Staff entry points were verified against their actual rendered templates locally; no production staff application was submitted. Documentation-only verification commits do not require replacing the tested code deployment.
