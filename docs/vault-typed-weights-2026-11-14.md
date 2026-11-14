@@ -18,3 +18,9 @@ The AHP projection, limits, saved-version policy, authorization and server-side 
 ## Release
 
 Target: the existing `deployment/free-render-supabase` branch and `santolan-pwd-system` Render service. The implementation is prepared in an isolated worktree from the deployed repository; unrelated local development changes are excluded.
+
+Commit `2e009d36dc3a59dc3b9065c9d37dc6d6461d4c33` reached **live** in deployment `dep-dbrtp5d6e07s7387u2m0` on November 14, 2026, at 04:00:31 UTC (12:00:31 PM Manila).
+
+Six hosted HTTP checks passed: homepage and `/healthz/` returned 200; the anonymous Vault request retained its login redirect; the published editor JavaScript and both weight stylesheets returned 200 and matched the reviewed source after line-ending normalization. No application error logs appeared in the checked post-live interval. Authenticated production editing/approval was not exercised, and no live weights were saved. These results confirm delivery of the tested assets, not a new production AHP acceptance test.
+
+The same scoped patch was applied to the original local development tree, preserving its other changes; all three local DOM scenarios passed. The release-evidence commit is documentation-only and does not require another deployment.
