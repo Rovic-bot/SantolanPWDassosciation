@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "route": "/membership/registration/apply/",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "route": "/membership/registration/pdao/apply/",
+      "address": true,
+      "mobile": true,
+      "minimumAge": true,
+      "requiredFields": true,
+      "widths": [
+        1440,
+        390,
+        320
+      ]
+    },
+    {
+      "addressDownloadFailure": "Manual input remains available; server validation applies"
+    },
+    {
+      "noJavaScript": "Form and server validation retained"
+    }
+  ],
+  "errors": [],
+  "applicationPosts": []
+}

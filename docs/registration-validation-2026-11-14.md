@@ -39,3 +39,13 @@ The database suite uses the existing fresh-instance `g12_test_runner.py` with `s
 ## Deployment
 
 No database migration, data import, application submission, notification send or service-plan change is part of this release. Hosted activation evidence will be recorded after Render reports live and the public forms pass the read-only browser checks.
+
+### Hosted activation
+
+Render deploy `dep-dbs2s63bc2fs73adss3g` reached **live** on November 14, 2026 at **09:48:41 UTC / 5:48:41 PM Philippine time**, running commit `5c7e78cd8119960a429af38ae77c69bd1e4cc30c`. The existing Free service, PostgreSQL data, private storage, manual deployment and email configuration were retained.
+
+Four hosted browser scenarios passed on the public Association and PDAO forms: the full address/mobile/age/conditional-field checks at 1440/390/320 px, failed catalogue loading, and no-JavaScript fallback. No JavaScript errors or application POSTs occurred. The hosted mobile screenshot was inspected. Staff intake was tested through its actual templates locally and through synthetic database workflows; no production staff application was submitted.
+
+The health endpoint returned HTTP 200 with `status: ok`. Six hosted static assets, including the catalogue index, Manila/Pasig barangays, validation JavaScript/CSS and OCR integration, matched the exact committed release bytes. An initial comparison against the Windows working copy differed only in its CRLF newline; the committed-byte check passed. Render returned no application error logs between activation and 09:50:17 UTC.
+
+Evidence: [hosted browser results](registration-validation-2026-11-14/hosted-browser.json), [hosted PDAO mobile](registration-validation-2026-11-14/hosted-pdao-mobile.png), [onsite Association](registration-validation-2026-11-14/onsite-association.png). The scoped patch was also applied to the main local workspace while retaining its unrelated unfinished changes and existing onsite-script version. This activation record is a documentation-only follow-up; it does not require another deployment.
