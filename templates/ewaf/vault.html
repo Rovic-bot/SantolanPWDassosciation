@@ -1,7 +1,7 @@
 {% extends 'admin_portal/base.html' %}{% load static l10n %}
 {% block title %}EWAF Configuration Vault{% endblock %}
-{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}">{% endblock %}
-{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-vault.css' %}?v=20261106-slider-fill">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}?v=20261114-typed-weights">{% endblock %}
+{% block final_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-vault.css' %}?v=20261114-typed-weights">{% endblock %}
 {% block content %}<div class="configuration-vault"><h1>EWAF Configuration Vault</h1>
 {% include 'ewaf/tabs.html' %}{% include 'partials/workspace_messages.html' %}
 {% if can_configure or can_authorize %}<section id="configuration" class="mb-4" aria-label="Adjust criterion weights">
@@ -15,8 +15,8 @@
 {% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
 {% if direct_weights %}<p class="alert alert-info">The approved version retains its exact percentages. This editor calculates Saaty-compatible weights for a new version; existing programs keep their assigned version.</p>{% endif %}
 {% include 'ewaf/vault_weight_editor.html' %}
-<noscript><p class="alert alert-info">Enable JavaScript to adjust the sliders and review their calculated weights.</p></noscript>
-</form>{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261111-processing" defer></script>
+<noscript><p class="alert alert-info">Enable JavaScript to slide or type proposed weights and review their calculated weights.</p></noscript>
+</form>{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261114-typed-weights" defer></script>
 {% elif form.weight_fields %}
 <form method="post" id="ewaf-configuration-form">{% csrf_token %}{{ form.non_field_errors }}
 {% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}

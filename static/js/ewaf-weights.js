@@ -101,6 +101,7 @@
     const accepted = form.elements.accept_derived_weights;
     const saveButtons = [...form.querySelectorAll('[data-save-configuration]')];
     const percent = value => (value / 100).toFixed(2) + '%';
+    const invalidNumbers = new Set();
     function clearConsistency() {
         if (!vaultCards) return;
         const consistency = document.getElementById('weight-consistency');
@@ -108,7 +109,7 @@
         consistency.dataset.result = '';
     }
     const canSave = () => {
-        if (!proposal) {
+        if (!proposal || invalidNumbers.size) {
             saveButtons.forEach(button => { button.disabled = true; });
             return;
         }
@@ -131,12 +132,22 @@
         clearConsistency();
         if (form.elements.weight_review) form.elements.weight_review.value = '';
         form.elements.slider_proposal.value = proposal ? JSON.stringify(proposal) : '';
+        if (invalidNumbers.size) {
+            clearTimeout(calculationTimer);
+            calculatedRevision = -1;
+            preview.hidden = true;
+            document.getElementById('preview-weights').disabled = true;
+            if (vaultCards) document.getElementById('weight-consistency').textContent = 'Check entered weights';
+            status.textContent = 'Correct the highlighted weight before calculating or saving.';
+            canSave();
+            return;
+        }
         if (!proposal) {
             clearTimeout(calculationTimer);
             calculatedRevision = -1;
             preview.hidden = true;
             document.getElementById('preview-weights').disabled = true;
-            status.textContent = 'Move the top slider to choose your weights. No proposal has been saved.';
+            status.textContent = 'Move the top slider or type its percentage to choose your weights. No proposal has been saved.';
             canSave();
             return;
         }
@@ -155,6 +166,16 @@
         canSave();
     }
     const controls = {};
+    function clearNumberDrafts() {
+        invalidNumbers.clear();
+        Object.values(controls).forEach(control => {
+            control.numberAnchor = null;
+            control.number.setCustomValidity('');
+            control.number.setAttribute('aria-invalid', 'false');
+            control.error.hidden = true;
+            control.error.textContent = '';
+        });
+    }
     for (const code of codes) {
         const row = document.createElement('div');
         row.className = 'weight-row';
@@ -164,6 +185,14 @@
         label.textContent = displayNames[code] + ' (' + code + ')';
         const output = document.createElement('output'); output.id = 'weight-output-' + code;
         output.htmlFor = 'weight-' + code;
+        output.className = 'visually-hidden';
+        const numberGroup = document.createElement('div'); numberGroup.className = 'weight-number-group';
+        const number = document.createElement('input');
+        number.type = 'number'; number.id = 'weight-number-' + code; number.className = 'weight-number';
+        number.step = '0.01'; number.inputMode = 'decimal'; number.placeholder = 'Not set';
+        number.setAttribute('aria-label', displayNames[code] + ' (' + code + ') proposed weight (%)');
+        const unit = document.createElement('span'); unit.textContent = '%'; unit.setAttribute('aria-hidden', 'true');
+        numberGroup.append(number, unit);
         const order = document.createElement('div'); order.className = 'weight-order';
         const buttons = [-1, 1].map(direction => {
             const button = document.createElement('button');
@@ -177,7 +206,8 @@
                     if (other < 0 || other >= pendingOrder.length) return;
                     [pendingOrder[index], pendingOrder[other]] = [pendingOrder[other], pendingOrder[index]];
                 }
-                anchor = null; invalidate('Priority changed in this proposal. Review and authorize it before use.'); render();
+                anchor = null; clearNumberDrafts();
+                invalidate('Priority changed in this proposal. Review and authorize it before use.'); render();
                 if (button.disabled) controls[code].buttons[direction === -1 ? 1 : 0].focus();
                 else button.focus();
             });
@@ -189,6 +219,9 @@
         const hint = document.createElement('p'); hint.className = 'small text-secondary mb-0';
         hint.id = 'weight-hint-' + code;
         range.setAttribute('aria-describedby', 'weight-rules weight-output-' + code + ' ' + hint.id);
+        const error = document.createElement('p'); error.id = 'weight-error-' + code;
+        error.className = 'weight-input-error'; error.hidden = true; error.setAttribute('role', 'status');
+        number.setAttribute('aria-describedby', 'weight-rules ' + hint.id + ' ' + error.id);
         const source = document.createElement('span'); source.className = 'weight-source';
         const scale = document.createElement('div'); scale.className = 'weight-scale'; scale.setAttribute('aria-hidden', 'true');
         const minimum = document.createElement('span'); minimum.textContent = '0%';
@@ -197,21 +230,57 @@
         range.addEventListener('pointerdown', () => { anchor = copy(proposal); });
         range.addEventListener('change', () => { anchor = null; });
         range.addEventListener('input', () => {
+            clearNumberDrafts();
             proposal = proposal ? cascade(anchor || proposal, proposal.order.indexOf(code), Number(range.value) * 100) :
                 begin(pendingOrder, Number(range.value) * 100);
             document.getElementById('preview-weights').disabled = false;
             invalidate(); render(false);
         });
+        number.addEventListener('focus', () => {
+            controls[code].numberAnchor = copy(proposal || begin(pendingOrder, 10000 / codes.length));
+        });
+        function updateNumber(format = false) {
+            if (number.disabled || number.readOnly) return;
+            anchor = null;
+            const base = controls[code].numberAnchor || proposal;
+            const index = base ? base.order.indexOf(code) : 0;
+            const allowed = choices(base || begin(pendingOrder, 10000 / codes.length), index);
+            const requested = /^\d+(?:\.\d{0,2})?$/.test(number.value) ? Math.round(Number(number.value) * 100) : NaN;
+            let message = '';
+            if (!Number.isFinite(requested)) message = 'Enter a percentage with up to two decimal places.';
+            else if (requested < allowed[0] || requested > allowed[1])
+                message = 'Enter ' + percent(allowed[0]) + ' to ' + percent(allowed[1]) + ', or change the priority order.';
+            const next = message ? null : base ? cascade(base, index, requested) : begin(pendingOrder, requested);
+            if (next && next.weights[code] !== requested)
+                message = 'This value cannot keep the priority order at 100%. Try ' + percent(next.weights[code]) + '.';
+            number.setCustomValidity(message);
+            number.setAttribute('aria-invalid', message ? 'true' : 'false');
+            error.textContent = message; error.hidden = !message;
+            if (message) {
+                invalidNumbers.add(code); invalidate(); return;
+            }
+            invalidNumbers.delete(code);
+            proposal = next;
+            document.getElementById('preview-weights').disabled = false;
+            invalidate(); render(false, format ? null : code);
+        }
+        number.addEventListener('input', () => updateNumber());
+        number.addEventListener('change', () => updateNumber(true));
+        number.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault(); updateNumber(true); }
+        });
+        number.addEventListener('blur', () => { controls[code].numberAnchor = null; });
         if (vaultCards) {
             const footer = document.createElement('div'); footer.className = 'weight-row-footer';
-            heading.append(label, output); footer.append(hint, source, order);
-            row.append(heading, range, footer);
+            heading.append(label, numberGroup, output); footer.append(hint, source, order);
+            row.append(heading, range, error, footer);
         } else {
-            heading.append(label, output, order); row.append(heading, range, scale, hint);
+            heading.append(label, numberGroup, output, order); row.append(heading, range, scale, error, hint);
         }
-        controls[code] = {row, range, output, buttons, hint, source};
+        controls[code] = {row, range, number, numberAnchor: null, error, output, buttons, hint, source};
     }
-    function render(reorderRows = true) {
+    function render(reorderRows = true, editingCode = null) {
+        document.getElementById('preview-weights').disabled = !proposal || Boolean(invalidNumbers.size);
         const order = proposal ? proposal.order : pendingOrder;
         order.forEach((code, index) => {
             const control = controls[code];
@@ -220,19 +289,29 @@
             control.range.min = 0; control.range.max = 100;
             if (vaultCards) control.range.style.setProperty('--weight-fill', proposal ? percent(proposal.weights[code]) : '0%');
             control.buttons[0].disabled = index === 0; control.buttons[1].disabled = index === order.length - 1;
+            control.number.readOnly = index === order.length - 1;
             if (!proposal) {
                 control.range.value = 0;
                 control.range.disabled = index !== 0;
                 control.range.setAttribute('aria-valuetext', 'Weight not selected');
                 control.output.textContent = 'Not set';
-                control.hint.textContent = index === 0 ? 'Move this slider to start. The remaining weight is shared below it.' :
+                control.number.disabled = index !== 0;
+                const allowed = choices(begin(order, 10000 / codes.length), 0);
+                control.number.min = (allowed[0] / 100).toFixed(2);
+                control.number.max = (allowed[1] / 100).toFixed(2);
+                if (code !== editingCode && !invalidNumbers.has(code)) control.number.value = '';
+                control.hint.textContent = index === 0 ? 'Move this slider or type a percentage to start. The remaining weight is shared below it.' :
                     index === order.length - 1 ? 'Receives the remaining weight automatically. Move it higher for direct adjustment.' :
-                    'Choose the top weight first, then adjust this slider.';
-                if (vaultCards) control.hint.textContent = index === 0 ? 'Move this slider to start' :
+                    'Choose the top weight first, then adjust this weight.';
+                if (vaultCards) control.hint.textContent = index === 0 ? 'Slide or type to start' :
                     index === order.length - 1 ? 'Auto remaining' : 'Choose the top weight first';
                 return;
             }
-            const allowed = choices(proposal, index);
+            const allowed = choices(control.numberAnchor || proposal, index);
+            control.number.disabled = false;
+            control.number.min = (allowed[0] / 100).toFixed(2);
+            control.number.max = (allowed[allowed.length - 1] / 100).toFixed(2);
+            if (code !== editingCode && !invalidNumbers.has(code)) control.number.value = (proposal.weights[code] / 100).toFixed(2);
             control.range.value = proposal.weights[code] / 100; control.range.disabled = index === proposal.order.length - 1;
             control.range.setAttribute('aria-valuetext', percent(proposal.weights[code]) + (index === proposal.order.length - 1 ? ', remaining weight' : ''));
             control.output.textContent = percent(proposal.weights[code]);
@@ -246,7 +325,7 @@
                 'Range: ' + percent(allowed[0]) + ' – ' + percent(allowed[allowed.length - 1]);
         });
         if (!initial) document.getElementById('weight-origin').textContent = proposal ?
-            (state.requireSavedProposal ? 'Unsaved weights selected with the sliders. Review all four before saving a draft.' :
+            (state.requireSavedProposal ? 'Unsaved proposed weights. Review all weights before saving a draft.' :
                 'Review the calculated weights, then approve the configuration.') : state.startingLabel;
         if (!proposal) {
             document.getElementById('weight-summary').textContent = 'Start with ' + pendingOrder[0] + '. Once selected, the combined total stays at 100.00%.';
@@ -257,6 +336,7 @@
         document.getElementById('weight-total').textContent = percent(Object.values(proposal.weights).reduce((a, b) => a + b, 0));
     }
     document.getElementById('reset-weights').addEventListener('click', () => {
+        clearNumberDrafts();
         proposal = copy(initial); pendingOrder = [...codes]; anchor = null; revision++; dirty = false;
         if (oneClick) {
             invalidate();
@@ -270,7 +350,7 @@
     });
     async function calculate() {
         clearTimeout(calculationTimer);
-        if (!proposal) return;
+        if (!proposal || invalidNumbers.size) return;
         if (!oneClick) invalidate('Checking the AHP result...');
         else {
             calculatedRevision = -1;
@@ -337,7 +417,7 @@
                 status.textContent = error.message;
                 if (vaultCards) document.getElementById('weight-consistency').textContent = 'Review needed';
             }
-        } finally { finish?.(); button.disabled = !proposal; canSave(); }
+        } finally { finish?.(); button.disabled = !proposal || Boolean(invalidNumbers.size); canSave(); }
     }
     document.getElementById('preview-weights').addEventListener('click', calculate);
     if (!oneClick) {

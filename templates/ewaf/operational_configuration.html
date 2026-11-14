@@ -1,5 +1,5 @@
 {% extends 'admin_portal/base.html' %}{% load static %}{% block title %}EWAF Configuration &middot; Santolan PWD{% endblock %}
-{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}">{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/ewaf-weights.css' %}?v=20261114-typed-weights">{% endblock %}
 {% block content %}<div class="container content-section"><a href="{% url 'ewaf:operational_programs' %}?mode=configuration">All EWAF configurations</a><h1>EWAF Configuration</h1><h2 class="h5">{{ program.name }}</h2>{% include 'ewaf/operational_banner.html' %}
 <p><a href="{% url 'ewaf:evidence_policy' program.pk %}">Program evidence definitions</a></p>
 {% if configuration %}<p>Version {{ configuration.revision }} &middot; {{ configuration.get_status_display }}</p>{% endif %}
@@ -13,4 +13,4 @@
 <noscript><p class="alert alert-info">JavaScript is required to adjust and review weight proposals. Existing saved AHP weights remain unchanged.</p></noscript>
 {% for label, fields in form.sections %}<details class="workflow-section"><summary>{{ label }}</summary><div class="table-responsive"><table class="table criterion-table"><caption>{{ label }}</caption><thead><tr><th>Setting</th><th>Approved value</th></tr></thead><tbody>{% for field in fields %}<tr><th>{{ field.label_tag }}</th><td>{{ field }}{{ field.errors }}{% if field.help_text %}<p class="form-text">{{ field.help_text }}</p>{% endif %}</td></tr>{% endfor %}</tbody></table></div></details>{% endfor %}
 {% if can_configure %}<button name="action" value="DRAFT" class="btn btn-outline-secondary" data-save-configuration>Save configuration</button>{% endif %} {% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration>Authorize and lock configuration</button>{% endif %}</form>
-{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261111-processing" defer></script>{% endif %}</div>{% endblock %}
+{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261114-typed-weights" defer></script>{% endif %}</div>{% endblock %}

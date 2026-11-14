@@ -19,6 +19,8 @@
 .admin-workspace .configuration-vault .weight-row-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: .6rem; }
 .admin-workspace .configuration-vault .weight-row-heading label { flex: 1 1 auto; color: var(--ink); font-size: .82rem; line-height: 1.4; font-weight: 600; }
 .admin-workspace .configuration-vault .weight-row output { flex: 0 0 auto; min-width: 0; border: 1px solid color-mix(in srgb,var(--vault-blue) 30%,var(--line)); border-radius: .3rem; padding: .1rem .5rem; color: var(--vault-blue); background: color-mix(in srgb,var(--vault-blue) 8%,transparent); font: 600 .8rem/1.4 ui-monospace,Consolas,monospace; }
+.admin-workspace .configuration-vault .weight-number-group { color: var(--vault-blue); }
+.admin-workspace .configuration-vault .weight-number { border-color: var(--line); background: var(--vault-inset); color: var(--ink); font-size: .9rem; }
 .admin-workspace .configuration-vault .weight-range { appearance: none; width: 100%; height: 22px; margin: .5rem 0 .35rem; background: transparent; accent-color: var(--vault-blue); }
 .admin-workspace .configuration-vault .weight-range::-webkit-slider-runnable-track { height: 5px; border-radius: 10px; background: linear-gradient(to right, #2464eb 0%, #2464eb var(--weight-fill, 0%), var(--chart-track) var(--weight-fill, 0%), var(--chart-track) 100%); }
 .admin-workspace .configuration-vault .weight-range::-webkit-slider-thumb { appearance: none; width: 17px; height: 17px; margin-top: -6px; border-radius: 50%; background: #2464eb; border: 2px solid #e6efff; box-shadow: 0 0 9px #468fff55; }

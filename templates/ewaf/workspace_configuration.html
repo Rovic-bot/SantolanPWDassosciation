@@ -17,6 +17,6 @@
 {% if can_configure %}<button name="action" value="DRAFT" class="btn btn-outline-secondary" data-save-configuration>Save configuration</button>{% endif %}
 {% if can_authorize %}<button name="action" value="LOCKED" class="btn btn-primary" data-save-configuration>Lock configuration</button>{% endif %}
 </form>
-{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261111-processing" defer></script>
+{{ weight_state|json_script:"ewaf-weight-state" }}<script src="{% static 'js/ewaf-weights.js' %}?v=20261114-typed-weights" defer></script>
 {% endif %}
 </section>
