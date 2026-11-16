@@ -43,7 +43,7 @@ HOME_CONTENT_KEYS = {key for key, _ in HOME_INFORMATION} | {'accessibility'}
 @require_safe
 def home(request):
     from announcements.notices import public_notice
-    from .content import published_content
+    from .content import published_contents
     from events.models import Event
     from events.services import public_observance_calendar
     from members.models import Member
@@ -52,7 +52,7 @@ def home(request):
     scheduled_events = published_events.filter(ends_at__gt=now).order_by('starts_at', 'pk')
     current_event = scheduled_events.filter(starts_at__lte=now).order_by('-starts_at', 'pk').first()
     current_event_initials = ''.join(word[0] for word in current_event.title.split()[:2]).upper() if current_event else ''
-    information = {key: published_content(key) for key in HOME_CONTENT_KEYS}
+    information = published_contents(HOME_CONTENT_KEYS | {'home'})
     guidance_cards = [
         {'anchor': 'contact', 'title': 'Contact / Help Desk',
          'excerpt': 'A helping hand with applications, services and your next steps.',
@@ -77,7 +77,7 @@ def home(request):
     for card in guidance_cards:
         card['content'] = card.get('content') or information[card['anchor']]
     return render(request, 'public/home.html', {
-        'home_content': published_content('home'),
+        'home_content': information['home'],
         'home_information': [
             {'anchor': key, 'label': label, 'content': information[key]}
             for key, label in HOME_INFORMATION

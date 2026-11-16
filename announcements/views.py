@@ -40,7 +40,10 @@ def public_detail(request, pk):
         'published_result': result_with_claim_status(item) if item.result_revision_id else None})
 
 
-def image_response(item):
+def image_response(item, request=None):
+    if request is not None and request.GET.get('thumbnail') == '1':
+        from core.artwork import card_image_response
+        return card_image_response(item.image)
     if not item.image:
         raise Http404
     try:
@@ -56,7 +59,7 @@ def image_response(item):
 @never_cache
 @require_safe
 def public_image(request, pk):
-    return image_response(get_object_or_404(Announcement.objects.in_category('general').filter(pk=pk).published()))
+    return image_response(get_object_or_404(Announcement.objects.in_category('general').filter(pk=pk).published()), request)
 
 
 @never_cache

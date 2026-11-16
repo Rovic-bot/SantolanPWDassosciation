@@ -156,7 +156,7 @@ def observance_public_detail(request, pk):
 def observance_image(request, pk):
     from .models import AnnualObservance
     _observance_storage_or_404()
-    return image_response(get_object_or_404(AnnualObservance.objects.public(), pk=pk))
+    return image_response(get_object_or_404(AnnualObservance.objects.public(), pk=pk), request)
 
 
 @never_cache
@@ -193,7 +193,7 @@ def public_detail(request, pk):
 @never_cache
 @require_safe
 def public_image(request, pk):
-    return image_response(get_object_or_404(Event.objects.public(), pk=pk))
+    return image_response(get_object_or_404(Event.objects.public(), pk=pk), request)
 
 
 @never_cache

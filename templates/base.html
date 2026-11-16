@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Community updates and information from the Barangay Santolan PWD Association.">
   <title>{% block title %}Santolan PWD Association{% endblock %}</title>
-  <link rel="icon" type="image/png" href="{% static 'images/association-logo.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
   <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=20261103-blue">
   <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261104-tabs">
@@ -19,6 +19,7 @@
   {% block final_styles %}{% endblock %}
   {% block surface_styles %}{% endblock %}
   {% block accessibility_styles %}{% endblock %}
+  {% block utility_styles %}{% endblock %}
   <noscript><style>.navbar-collapse.collapse,.workspace-navigation.collapse{display:block!important}.navbar-collapse{max-height:none!important}.navbar-toggler,.workspace-menu{display:none!important}.site-header{position:relative!important}.home-page .hero-stage{padding-top:3rem}</style></noscript>
 </head>
 <body class="{% block body_class %}{% endblock %}">

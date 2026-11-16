@@ -12,7 +12,7 @@ from .models import Program, ProgramPicture
 @require_safe
 def public(request, pk):
     get_object_or_404(Program.objects.public(), pk=pk)
-    return image_response(get_object_or_404(ProgramPicture, program_id=pk))
+    return image_response(get_object_or_404(ProgramPicture, program_id=pk), request)
 
 
 @never_cache

@@ -28,6 +28,7 @@ class ProductionSettingsTests(SimpleTestCase):
             'ALLOWED_HOSTS': 'deployment.example.invalid',
             'CSRF_TRUSTED_ORIGINS': 'https://deployment.example.invalid',
             'DB_NAME': 'deployment_check_only',
+            'DB_ENGINE': 'mysql',
             'DB_TEST_NAME': 'test_deployment_check_only',
             'DB_USER': 'synthetic_deployment_user',
             'DB_PASSWORD': secrets.token_urlsafe(32),
@@ -79,7 +80,7 @@ print(json.dumps({
         self.assertEqual(data['ssl_mode'], 'VERIFY_IDENTITY')
         self.assertEqual(data['proxy'], ['HTTP_X_FORWARDED_PROTO', 'https'])
         self.assertTrue(data['https'] and data['session_secure'] and data['csrf_secure'])
-        self.assertEqual(data['storage'], 'whitenoise.storage.CompressedStaticFilesStorage')
+        self.assertEqual(data['storage'], 'config.static_storage.StaticStorage')
         self.assertNotEqual(data['media'], data['static'])
         self.assertEqual(data['dotenv_disabled'], '1')
         self.assertEqual(data['upload_mode'], 0o600)

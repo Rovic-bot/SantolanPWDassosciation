@@ -1,8 +1,8 @@
 {% load static %}
 <section class="document-ocr" data-document-ocr hidden aria-labelledby="ocr-heading"
   data-worker="{% static 'vendor/tesseract/6.0.1/worker.min.js' %}"
-  data-core="{% static 'vendor/tesseract/6.0.1/core' %}"
-  data-language="{% static 'vendor/tesseract/6.0.1/lang' %}">
+  data-core="{% get_static_prefix %}vendor/tesseract/6.0.1/core"
+  data-language="{% get_static_prefix %}vendor/tesseract/6.0.1/lang">
   <header class="document-ocr-heading"><span class="document-ocr-icon" aria-hidden="true">ID</span><div><p class="document-ocr-eyebrow">Optional · Save time typing</p><h2 id="ocr-heading">Fill from an ID or receipt</h2></div></header>
   <p>Take a clear photo or choose an image. Review the details we find, then add them to your application.</p>
   <p class="document-ocr-hint">The image is read on this device and is not uploaded or attached to your application. Only details you choose are copied into the form. This does not verify your identity or approve an application.</p>

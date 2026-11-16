@@ -35,7 +35,7 @@
             {% for announcement in page_obj %}{% if category %}{% include 'announcements/public_full_card.html' %}{% else %}<article class="notice-row" data-swipe-card{% if forloop.first and page_obj.number == 1 and not query and not category %} data-latest{% endif %}>
                 <div class="notice-card-artwork">
                     <span class="notice-card-initials" aria-hidden="true">{{ announcement.title|title_initials }}</span>
-                    {% if announcement.image_url %}<img src="{{ announcement.image_url }}" alt="{{ announcement.image_alt }}" loading="lazy" data-notice-image>{% endif %}
+                    {% if announcement.image_url %}<img src="{{ announcement.image_url }}?thumbnail=1" alt="{{ announcement.image_alt }}" loading="lazy" data-notice-image>{% endif %}
                 </div>
                 <div class="notice-metadata">
                     <span class="notice-card-icon" aria-hidden="true">{% if announcement.category == 'results' %}{% include 'public/icon.html' with name='check' %}{% elif announcement.category == 'programs' %}{% include 'public/icon.html' with name='heart' %}{% else %}{% include 'public/icon.html' with name='document' %}{% endif %}</span>

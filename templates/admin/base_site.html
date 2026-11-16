@@ -1,6 +1,6 @@
 {% extends 'admin/base.html' %}
 {% load static %}
-{% block extrahead %}<script src="{% static 'js/workspace-page.js' %}?v=20261104"></script><link rel="stylesheet" href="{% static 'css/action-feedback.css' %}?v=20261111"><script src="{% static 'js/action-feedback.js' %}?v=20261111" defer></script>{{ block.super }}<link rel="icon" type="image/png" href="{% static 'images/association-logo.png' %}"><link rel="stylesheet" href="{% static 'css/branding.css' %}">{% if has_permission %}<script src="{% static 'js/admin-input-examples.js' %}?v=20261110" defer></script>{% endif %}{% endblock %}
+{% block extrahead %}<script src="{% static 'js/workspace-page.js' %}?v=20261104"></script><link rel="stylesheet" href="{% static 'css/action-feedback.css' %}?v=20261111"><script src="{% static 'js/action-feedback.js' %}?v=20261111" defer></script>{{ block.super }}<link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}"><link rel="stylesheet" href="{% static 'css/branding.css' %}">{% if has_permission %}<script src="{% static 'js/admin-input-examples.js' %}?v=20261110" defer></script>{% endif %}{% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=20261103-blue">{% if not has_permission or is_popup %}<link rel="stylesheet" href="{% static 'css/django-admin.css' %}?v=20261103-blue">{% endif %}{% endblock %}
 {% block dark-mode-vars %}{% if not has_permission %}{{ block.super }}{% endif %}{% endblock %}
 {% block responsive %}{{ block.super }}{% if has_permission and not is_popup %}

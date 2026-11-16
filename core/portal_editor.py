@@ -198,6 +198,10 @@ def image(request, key, field, token):
         value = item.content.get(field)
     if not isinstance(value, dict) or value.get('token') != token:
         raise Http404
+    if request.GET.get('thumbnail') == '1':
+        from .artwork import artwork_response
+        return artwork_response(default_storage, value['file'],
+            max_size=1600 if key == 'home' and field == 'picture_1' else 960)
     try:
         handle = default_storage.open(value['file'], 'rb')
     except FileNotFoundError:

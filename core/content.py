@@ -49,9 +49,15 @@ def current_editor(user, *, publication=False):
 
 
 def published_content(key):
-    item = PublicContent.objects.filter(key=key).first()
-    title, body = DEFAULTS[key]
-    return item.published if item and item.published else {'title': title, 'body': body}
+    return published_contents((key,))[key]
+
+
+def published_contents(keys):
+    """Read only published snapshots in one query, without cross-request caches."""
+    keys = tuple(dict.fromkeys(keys))
+    published = dict(PublicContent.objects.filter(key__in=keys).values_list('key', 'published'))
+    return {key: published.get(key) or {'title': DEFAULTS[key][0], 'body': DEFAULTS[key][1]}
+            for key in keys}
 
 
 class ContentForm(StyledForm, forms.Form):

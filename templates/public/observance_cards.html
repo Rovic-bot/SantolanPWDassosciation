@@ -12,7 +12,7 @@
             <a class="notice-row observance-card-link" data-swipe-card href="{{ item.detail_url }}" data-public-popup data-popup-label="Observance details" aria-label="View {{ item.title }}">
                 <div class="notice-card-artwork">
                     <span class="notice-card-initials" aria-hidden="true">{{ item.title|title_initials }}</span>
-                    {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.image_alt }}" loading="lazy" data-notice-image>{% endif %}
+                    {% if item.image_url %}<img src="{{ item.image_url }}?thumbnail=1" alt="{{ item.image_alt }}" loading="lazy" data-notice-image>{% endif %}
                 </div>
                 <div class="notice-metadata"><span class="notice-card-icon" aria-hidden="true">{% include 'public/icon.html' with name='calendar' %}</span><span class="notice-category">{{ month.name }}</span></div>
                 <div class="notice-copy">

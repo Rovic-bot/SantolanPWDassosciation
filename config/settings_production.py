@@ -25,6 +25,7 @@ LOGGING = REQUEST_LOGGING
 ROOT_URLCONF = 'config.urls_production'
 MIDDLEWARE = list(MIDDLEWARE)
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+MIDDLEWARE.insert(2, 'django.middleware.gzip.GZipMiddleware')
 
 if any('*' in host or host.startswith('.') for host in ALLOWED_HOSTS):
     raise ImproperlyConfigured('Production ALLOWED_HOSTS must use explicit hosts, not wildcard domains.')
@@ -73,9 +74,7 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o700
 STORAGES = {
     'default': {'BACKEND': 'documents.storage.SupabasePrivateStorage',
                 'OPTIONS': supabase_storage_options()},
-    # Vendored Bootstrap references source maps that are not in the repository.
-    # Compression without manifest rewriting preserves the approved assets.
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+    'staticfiles': {'BACKEND': 'config.static_storage.StaticStorage'},
 }
 WHITENOISE_AUTOREFRESH = False
 WHITENOISE_USE_FINDERS = False

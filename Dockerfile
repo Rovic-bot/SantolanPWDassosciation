@@ -20,5 +20,6 @@ COPY --chown=santolan:santolan . /app
 RUN install -d -o santolan -g santolan /app/staticfiles
 USER santolan
 RUN test -w /app/staticfiles && python scripts/check_certificate_runtime.py
+RUN DJANGO_SETTINGS_MODULE=config.settings_static_build python manage.py collectstatic --noinput --verbosity 0
 EXPOSE 10000
 CMD ["sh", "/app/scripts/render-start.sh"]

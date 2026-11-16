@@ -38,6 +38,8 @@ class PortalNode(template.Node):
                 url = reverse('core:portal_image', args=[state['key'], name, value['token']])
                 if state['preview']:
                     url += '?preview=1'
+                else:
+                    url += '?thumbnail=1'
                 if re.search(r'<img\b', html):
                     html = re.sub(r'<source\b[^>]*>', '', html)
                     html = re.sub(r'(<img\b[^>]*\bsrc=)["\'][^"\']*["\']', lambda m: m[1] + '"' + str(escape(url)) + '"', html, count=1)

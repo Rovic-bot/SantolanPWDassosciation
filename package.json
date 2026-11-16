@@ -2,6 +2,7 @@
   "name": "santolan-pwd-frontend",
   "private": true,
   "scripts": {
+    "build:public": "tailwindcss -c tailwind.public.config.cjs -i static/css/src/public-utilities.css -o static/css/public-utilities.css --minify",
     "build:guidance": "tailwindcss -c tailwind.guidance.config.cjs -i static/css/src/home-guidance.css -o static/css/home-guidance.css --minify"
   },
   "devDependencies": {

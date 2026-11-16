@@ -109,7 +109,7 @@ patch.object(DatabaseWrapper, 'get_new_connection',
     side_effect=AssertionError('Unexpected database connection in diagnostic tests')).start()
 client = Client(raise_request_exception=False)
 cases = [
-    ('/', 'core.content.published_content', OperationalError(2026, 'PRIVATE_SECRET TLS hostname')),
+    ('/', 'events.models.Event.objects.public', OperationalError(2026, 'PRIVATE_SECRET TLS hostname')),
     ('/about/', 'core.content.published_content', TemplateDoesNotExist('PRIVATE_SECRET template')),
     ('/programs/', 'programs.views.Program.objects.public', ProgrammingError(1054, 'PRIVATE_SECRET SQL')),
 ]

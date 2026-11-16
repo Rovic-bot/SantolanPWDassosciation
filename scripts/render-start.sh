@@ -3,7 +3,9 @@ set -eu
 # Runtime-only secrets never enter image layers. Migrations and restores are
 # deliberately separate operator actions; startup never seeds or resets data.
 python manage.py check --deploy
-python manage.py collectstatic --noinput --verbosity 0
+# Assets are already compressed and fingerprinted in the image. Rebuilding
+# them here delays every wake-up on the free service.
+test -s /app/staticfiles/staticfiles.json
 exec gunicorn config.wsgi:application --bind "0.0.0.0:${PORT:-10000}" \
     --workers 1 --threads 3 --timeout 180 --graceful-timeout 180 \
     --max-requests 500 --max-requests-jitter 50 --error-logfile -

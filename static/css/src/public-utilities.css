@@ -1,0 +1,3 @@
+/* npm run build:public; no browser compiler or external script required. */
+@tailwind base;
+@tailwind utilities;
