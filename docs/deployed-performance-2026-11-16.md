@@ -28,4 +28,20 @@ Private profiling snapshots, test databases, credentials and rendered verificati
 
 Render Free still spins down after 15 minutes without inbound traffic and can take about a minute to wake. Moving asset work into the build removes application startup work, but does not remove the provider's idle wake-up delay. The Free plan is preserved. Reference: <https://render.com/docs/free#spinning-down-on-idle>.
 
-The exact live commit, deployment result and hosted measurements are recorded after deployment verification.
+## Live deployment and measurements
+
+Render deployment `dep-dbtgqem7bikc73ckb2gg` reached `live` on November 16, 2026 at 14:04:46 UTC (22:04:46 Manila), running commit `8b605f95e514ff4c5dd09cf40ccd4e0703ca4f24`. The existing service, Free plan, region, environment, worker settings and manual deployment setting were preserved. The Linux image built and started successfully.
+
+Hosted Chrome measurements use the same seven-route sequence before and after, with a fresh browser context for each desktop/mobile width, without network throttling. Shared assets can be cached after the first route. Decimal MB are used below.
+
+| Desktop route | Before transfer | After transfer | Reduction |
+| --- | ---: | ---: | ---: |
+| Homepage | 6,320,812 bytes | 517,905 bytes | 91.8% |
+| Programs | 3,856,235 bytes | 648,381 bytes | 83.2% |
+| Events | 14,513,140 bytes | 968,908 bytes | 93.3% |
+
+On the warm server, the final homepage load-event measurement was 1.68 seconds on desktop and 1.80 seconds on mobile, compared with 2.80 and 2.16 seconds in the original sample. These are individual measurements, not a latency guarantee. The first homepage measurement after the earlier deployment took 11.1 seconds while preview bytes were being generated and other verification requests were running. Preview creation still has a first-request cost after worker restarts, and the hosting wake-up limit above still applies.
+
+Final live checks covered fourteen public page/viewport combinations, dark mode and high-contrast controls, event dialogs, all ten event/observance images and 29 immutable stylesheets on each viewport. No page errors or horizontal overflow were detected. Offscreen lazy images were fetched explicitly by the UI checks. A separate 179-check hosted run covered public pages, registration forms, restricted staff pages, anonymous access denial, no-store responses and fingerprinted static assets. Its temporary verification session was removed in a `finally` block. No application error logs were returned for the post-deploy verification window.
+
+The original working checkout still has its 1,586 pre-existing status entries. Implementation was committed only in the isolated deployment checkout. The temporary local preview server and disposable PostgreSQL cluster were stopped after testing; private evidence remains outside the committed source. This final evidence update is documentation-only and does not require another application deployment.
