@@ -26,4 +26,8 @@ Keyboard semantics follow the [WAI-ARIA combobox pattern](https://www.w3.org/WAI
 
 ## Deployment
 
-The final live commit and hosted verification are recorded after Render activation. No hosting-plan or environment change is needed.
+Render deployment `dep-dbthndon74is73bv50a0` reached **live** on November 16, 2026 at **15:06:37 UTC / 23:06:37 Manila**, running commit `a7fd90017c67176ee76292743c25f82682fe1665`. The existing hosting plan, environment and manual-deploy configuration were preserved.
+
+The same **36 browser scenarios passed on the deployed system**, exercising the two public forms and both authenticated staff onsite routes. No JavaScript errors or application POSTs occurred. The temporary staff verification session and local cookie-state file were removed afterward. The health endpoint returned HTTP 200 with `status: ok`, and Render returned no error logs for the activation/verification window through 15:08:42 UTC. Hosted screenshots remain private; the linked screenshots above use synthetic template fixtures.
+
+The original working checkout retains its 1,586 pre-existing status entries. This final evidence update is documentation-only; the running application remains the verified commit above.
