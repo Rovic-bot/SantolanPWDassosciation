@@ -32,6 +32,11 @@ def card_image_response(image):
 def artwork_response(storage, name, *, max_size=960):
     if max_size not in (960, 1600):
         raise ValueError('Unsupported artwork preview size.')
+    # Keep the production storage adapter's fail-closed bucket verification,
+    # including when the encoded preview is already in this worker's memory.
+    check_private_bucket = getattr(storage, 'check_private_bucket', None)
+    if check_private_bucket is not None:
+        check_private_bucket()
     try:
         # Bound concurrent decoding memory on the free instance. The cache
         # contains at most 32 encoded previews; originals are never changed.

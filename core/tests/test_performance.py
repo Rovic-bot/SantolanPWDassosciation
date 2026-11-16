@@ -108,6 +108,27 @@ class ArtworkPerformanceTests(TestCase):
         page.save(update_fields=['published'])
         self.assertEqual(self.client.get(url).status_code, 404)
 
+    def test_cached_artwork_still_requires_private_bucket_verification(self):
+        from core.artwork import artwork_response
+        from django.core.files.storage import FileSystemStorage
+
+        class CheckedStorage(FileSystemStorage):
+            verified = True
+
+            def check_private_bucket(self):
+                if not self.verified:
+                    raise OSError('Private bucket cannot be verified.')
+
+        storage = CheckedStorage()
+        name = storage.save('checked-artwork.png', ContentFile(self.original))
+        self.assertEqual(artwork_response(storage, name).status_code, 200)
+        hits = self.cache.cache_info().hits
+        self.assertEqual(artwork_response(storage, name).status_code, 200)
+        self.assertEqual(self.cache.cache_info().hits, hits + 1)
+        storage.verified = False
+        with self.assertRaises(OSError):
+            artwork_response(storage, name)
+
 
 class PublishedContentPerformanceTests(TestCase):
     def test_bulk_lookup_has_one_query_and_excludes_drafts(self):
