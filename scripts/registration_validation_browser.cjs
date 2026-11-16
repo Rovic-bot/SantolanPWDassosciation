@@ -45,7 +45,7 @@ fs.mkdirSync(output, {recursive: true});
   };
   async function open(route) {
     await page.goto(base + route);
-    await page.waitForFunction(() => document.querySelectorAll('#id_city_addresses option').length === 1642);
+    await page.waitForFunction(() => document.querySelector('[name=city]').dataset.addressCount === '1642');
     const privacy = page.locator('[data-registration-privacy-open]');
     if (await privacy.isVisible()) {
       await privacy.click();
@@ -56,14 +56,14 @@ fs.mkdirSync(output, {recursive: true});
     for (const [index, route] of routes.entries()) {
       await open(route);
       await change('city', 'Manila');
-      await page.waitForFunction(() => document.querySelectorAll('#id_barangay_addresses option').length > 800);
+      await page.waitForFunction(() => Number(document.querySelector('[name=barangay]').dataset.addressCount) > 800);
       assert.equal(await page.locator('[name=city]').inputValue(), 'City of Manila');
       assert.equal(await page.locator('[name=region]').inputValue(), 'National Capital Region (NCR)');
       await change('barangay', 'Barangay 1');
       await change('region', 'Region III (Central Luzon)');
       assert.equal(await page.locator('[name=region]').evaluate(input => input.checkValidity()), false);
       await change('city', 'Pasig City');
-      await page.waitForFunction(() => document.querySelectorAll('#id_barangay_addresses option').length === 30);
+      await page.waitForFunction(() => document.querySelector('[name=barangay]').dataset.addressCount === '30');
       assert.equal(await page.locator('[name=barangay]').inputValue(), '');
       await change('barangay', 'Santolan');
       assert.equal(await page.locator('[name=barangay]').evaluate(input => input.checkValidity()), true);

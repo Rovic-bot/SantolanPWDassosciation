@@ -21,3 +21,75 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+/* A shared, opaque address menu for public and staff forms. The top layer
+   keeps it clear of clipped section panels and sticky navigation. */
+.registration-address-menu {
+  position: fixed;
+  inset: auto;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: .35rem;
+  overflow: hidden;
+  color: var(--ink, #1c1a18);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #8d867b);
+  border-radius: .75rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  font: inherit;
+  text-align: start;
+}
+.registration-address-menu[hidden] { display: none !important; }
+.registration-address-menu::backdrop { background: transparent; pointer-events: none; }
+.registration-address-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.registration-address-option {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: .65rem .75rem;
+  border: 1px solid transparent;
+  border-radius: .45rem;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  cursor: pointer;
+}
+.registration-address-option[aria-selected="true"] {
+  background: var(--ink, #1c1a18);
+  color: var(--surface, #fff);
+  border-color: currentColor;
+}
+@media (hover: hover) {
+  .registration-address-option:not([aria-selected="true"]):hover { background: var(--stone, #e1ddd5); }
+}
+.registration-address-menu .registration-address-message {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: .6rem .75rem .3rem;
+  color: var(--muted, #625d56);
+  font-size: .8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+@media (forced-colors: active) {
+  .registration-address-menu { background: Canvas; color: CanvasText; border-color: CanvasText; }
+  .registration-address-option[aria-selected="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .registration-address-menu .registration-address-message { color: CanvasText; }
+}
+@media print { .registration-address-menu { display: none !important; } }
