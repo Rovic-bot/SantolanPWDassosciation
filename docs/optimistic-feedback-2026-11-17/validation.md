@@ -18,4 +18,13 @@ Owner request: optimistic UI across all loading and send actions, especially ema
 - `.venv\Scripts\python.exe scripts/current_development.py check`: no issues.
 - JavaScript syntax and `git diff --check` passed. Changes were applied independently to the current local source and isolated deployment checkout, preserving preexisting template differences and unfinished work.
 
-No real email, membership record, application, ranking or release was created or changed during validation. Simulated delivery responses verify UI behavior, not external inbox delivery. Live verification will be recorded after deployment.
+No real email, membership record, application, ranking or release was created or changed during validation. Simulated delivery responses verify UI behavior, not external inbox delivery.
+
+## Live verification
+
+- Render deploy `dep-dbu2vojm8hqs73dvfj7g` became live at `2026-11-17T10:44:56.46253Z`, running commit `7cc09bc621158152fa71aa4f3be11489fe496936` on the existing deployment branch. Service configuration and automatic-deploy settings were preserved.
+- `https://santolan-pwd-system.onrender.com/healthz/` returned HTTP 200 and `status: ok`.
+- Nine content-hashed published CSS/JavaScript assets matched the release Git bytes exactly. The Home page loads the new shared feedback and public-conversation assets. See `hosted-assets.json` for URLs and SHA-256 hashes.
+- A read-only live Announcements filter request was held briefly in the verification browser. The existing results remained visible, the new progress bar appeared while waiting, and it cleared when the actual server response arrived. No production POSTs, blocked requests or JavaScript errors occurred.
+- The 16 conversation/feedback checks passed again using the downloaded, byte-verified deployed assets and fictional loopback responses. See `hosted-checks.json`. This confirms published client behavior without sending real emails.
+- Render returned no application error logs between activation and the post-deployment check at `2026-11-17T10:46:02Z`.

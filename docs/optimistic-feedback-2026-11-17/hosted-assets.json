@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-11-17T10:45:55.508Z",
+  "commit": "7cc09bc621158152fa71aa4f3be11489fe496936",
+  "checks": [
+    "Live health endpoint returned ok",
+    "Nine published hashed assets match the release commit exactly",
+    "Home uses the new feedback and conversation scripts",
+    "Read-only live announcement filter shows and clears the progress bar"
+  ],
+  "assets": [
+    {
+      "file": "css/action-feedback.css",
+      "url": "https://santolan-pwd-system.onrender.com/static/css/action-feedback.f4ebd00aba64.css",
+      "sha256": "2a1906aca81d86e7431fcf39e84c337bd18159e1a3e87901aef1893f61ec1d2e"
+    },
+    {
+      "file": "js/action-feedback.js",
+      "url": "https://santolan-pwd-system.onrender.com/static/js/action-feedback.2a6149abdf4e.js",
+      "sha256": "4fe90a3c13bec6bb483ba368fcea3b5e4afe861b3e96337c5f533c7a955e3c7c"
+    },
+    {
+      "file": "js/public-conversations.js",
+      "url": "https://santolan-pwd-system.onrender.com/static/js/public-conversations.75961462d28e.js",
+      "sha256": "537879ffdc10201fa473d7dc91f238cf510621baebf754a5492fe519f0b69a95"
+    },
+    {
+      "file": "js/referral-live.js",
+      "url": "https://santolan-pwd-system.onrender.com/static/js/referral-live.3da2106ddf29.js",
+      "sha256": "cd5aef8816bab78c2a54653a5537aaf8284b14178c5b33a8547f891434663252"
+    },
+    {
+      "file": "js/workspace-page.js",
+      "url": "https://santolan-pwd-system.onrender.com/static/js/workspace-page.fcdae7240ff7.js",
+      "sha256": "28021ed944db6f31cf629095760c4f731d16537f925d71b765ba591b1a3dffa4"
+    },
+    {
+      "file": "css/tokens.css",
+      "url": "https://santolan-pwd-system.onrender.com/static/css/tokens.779a1086dd8a.css",
+      "sha256": "6eaf6905f29601a6c7cf4908c6ce1a997556f0ce34986abe1fa21fe9c2ad3367"
+    },
+    {
+      "file": "css/site.css",
+      "url": "https://santolan-pwd-system.onrender.com/static/css/site.44dade0be61d.css",
+      "sha256": "eb71ce4f84569d344f9b09c56e46416253f3ffc48f6ea712248d33eeed5a5517"
+    },
+    {
+      "file": "css/public-conversations.css",
+      "url": "https://santolan-pwd-system.onrender.com/static/css/public-conversations.5317cc094312.css",
+      "sha256": "7efc6b299c27c34a7bc3faaefe368ffd633e7371b35f83b9a2c0740188de82ac"
+    },
+    {
+      "file": "css/referral-ticket.css",
+      "url": "https://santolan-pwd-system.onrender.com/static/css/referral-ticket.2f600aff80bf.css",
+      "sha256": "a7e2985e74720715bfd7bafb069b961f641c27333dedee4aad40e53bc5e4c467"
+    }
+  ],
+  "errors": [],
+  "blocked": []
+}
