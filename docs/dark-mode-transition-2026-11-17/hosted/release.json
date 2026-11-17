@@ -1,0 +1,37 @@
+{
+  "health": {
+    "http_status": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "assets": {
+    "js/theme-transition.js": {
+      "http_status": 200,
+      "path": "/static/js/theme-transition.076e8a04da54.js",
+      "sha256": "acbe72e71a759fb2736e0aec6f42cf9cda171283884a02b13fec3bde60db725c",
+      "matches_release": true
+    },
+    "css/theme-transition.css": {
+      "http_status": 200,
+      "path": "/static/css/theme-transition.c02ea1b37618.css",
+      "sha256": "706920c71ccec0ed807836f1b44addc0502b831ae17539b3e280f6002f6e2b93",
+      "matches_release": true
+    },
+    "js/accessibility.js": {
+      "http_status": 200,
+      "path": "/static/js/accessibility.c7d7c2d6e4fd.js",
+      "sha256": "fa9c6d2faa04c3e3df6c5d0e6de641fe1730a2217bb345f1e9b4c5a7ff9be296",
+      "matches_release": true
+    },
+    "js/dashboard-theme.js": {
+      "http_status": 200,
+      "path": "/static/js/dashboard-theme.732a023b19d4.js",
+      "sha256": "9e7b0ef719044a8dc08b11fc383b66f913ca2feb6c39e0ce59875eb24082fe7a",
+      "matches_release": true
+    }
+  },
+  "commit": "d63370ba6919df37e9c388cce6d4800e6167d630",
+  "deploy": "dep-dbu16ton74is73f4j860",
+  "live_at": "2026-11-17T08:43:49.814039Z"
+}
