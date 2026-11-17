@@ -3,7 +3,7 @@
 {% block title %}Home &middot; Santolan PWD{% endblock %}
 {% block public_class %}home-page{% endblock %}
 {% block surface_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/public-home-v2.css' %}?v=20261110-events">{% endblock %}
-{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/home-guidance.css' %}?v=20261110-card-click">{% endblock %}
+{% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/home-guidance.css' %}?v=20261117-equal-guidance">{% endblock %}
 {% block content %}
 <section class="bento-home-hero home-landing" aria-labelledby="welcome-heading">
     {% portal_picture "picture_1" %}<picture><source media="(max-width: 600px)" srcset="{% static 'images/home-pavilion-illustration-mobile.webp' %}"><img src="{% static 'images/home-pavilion-illustration-web.webp' %}" alt="" fetchpriority="high" width="1672" height="941"></picture>{% endportal_picture %}
