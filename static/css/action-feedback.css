@@ -34,3 +34,71 @@
 @keyframes action-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .action-spinner { animation: none; } }
 html[data-motion=reduce] .action-spinner { animation: none; }
+
+/* Keep pending work visible even when its form is below the viewport. */
+.action-status-tray {
+  position: fixed;
+  inset: max(1rem, env(safe-area-inset-top)) 1rem auto auto;
+  z-index: 2100;
+  display: grid;
+  gap: .65rem;
+  width: min(360px, calc(100vw - 2rem));
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink, #1c1a18);
+  overflow: visible;
+  pointer-events: none;
+}
+.action-status-card {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: 1rem;
+  border: 1px solid var(--control-edge, #8d867b);
+  border-radius: 1rem;
+  background: var(--surface, #f4f2ec);
+  box-shadow: 0 8px 28px #0002;
+  overflow-wrap: anywhere;
+}
+.action-status-card > .action-spinner { margin: .2rem 0 0; }
+.action-status-card strong { display: block; color: inherit; font-size: .9rem; line-height: 1.5; }
+.action-status-card p { margin: .25rem 0 0; color: inherit; font-size: .8rem; line-height: 1.5; }
+
+/* Local message previews never receive a saved message ID or a delivery claim. */
+.action-outgoing-preview {
+  align-self: flex-end;
+  max-width: 85%;
+  margin-left: auto;
+  padding: .85rem 1rem;
+  border: 1px dashed var(--chat-line, var(--control-edge, #8d867b));
+  border-radius: 1rem 1rem .25rem 1rem;
+  background: var(--chat-member, var(--surface, #f4f2ec));
+  color: var(--chat-ink, var(--ink, #1c1a18));
+  overflow-wrap: anywhere;
+}
+.action-outgoing-preview > strong { font-size: .8rem; }
+.action-outgoing-preview > p { margin: .5rem 0; color: inherit; font-size: .9rem; line-height: 1.6; white-space: pre-wrap; }
+.action-outgoing-status { display: flex; align-items: center; gap: .35rem; font-size: .75rem; line-height: 1.5; }
+.action-outgoing-status .action-spinner { margin: 0; }
+
+/* Read-only filters and navigation already expose aria-busy while loading. */
+.action-loading-bar { display: none; position: fixed; z-index: 2050; inset: 0 0 auto; height: 3px; overflow: hidden; pointer-events: none; }
+body:has([aria-busy="true"]) > .action-loading-bar { display: block; }
+.action-loading-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: var(--ink, #1c1a18);
+  transform-origin: left;
+  animation: action-loading 1.4s ease-in-out infinite;
+}
+@keyframes action-loading { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .action-loading-bar::after { animation: none; } }
+html[data-motion=reduce] .action-loading-bar::after { animation: none; }
+@media (forced-colors: active) {
+  .action-status-card, .action-outgoing-preview { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }
+  .action-loading-bar::after { background: Highlight; }
+}

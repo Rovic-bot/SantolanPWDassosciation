@@ -131,7 +131,7 @@ const server = http.createServer(async (request, response) => {
     await page.getByRole('button', {name: 'Ineligible', exact: true}).click();
     assert.equal(count('/review/'), 0); assert.equal(await page.locator('.is-processing').count(), 0);
     await page.getByRole('button', {name: 'Eligible', exact: true}).click();
-    await page.locator('.action-spinner').waitFor();
+    await page.locator('.is-processing .action-spinner').waitFor();
     assert.match(await page.locator('.action-progress').innerText(), /Saving decision and sending email/);
     await page.evaluate(() => document.querySelector('form').requestSubmit(document.querySelector('button[value=ineligible]')));
     await page.locator('#delivery').waitFor(); assert.equal(count('/review/'), 1);
@@ -148,7 +148,7 @@ const server = http.createServer(async (request, response) => {
 
     mode = 'success'; await visit('/ewaf/');
     await page.getByRole('button', {name: 'Generate EWAF Ranking', exact: true}).click();
-    await page.locator('.action-spinner').waitFor();
+    await page.locator('.is-processing .action-spinner').waitFor();
     assert.equal(await page.locator('[data-ranking-preview]').innerText(), 'Saved ranking 1');
     await page.evaluate(() => document.querySelector('[data-generate-ranking]').requestSubmit());
     await page.waitForFunction(() => document.querySelector('[data-ranking-preview]')?.textContent === 'Saved ranking 2');
@@ -161,27 +161,27 @@ const server = http.createServer(async (request, response) => {
     pass('EWAF server rejection retains the previous ranking and restores a usable form');
     mode = 'disconnect'; await page.getByRole('button', {name: 'Generate EWAF Ranking', exact: true}).click();
     await page.getByRole('link', {name: 'Reload ranking status'}).waitFor();
-    assert.equal(await page.locator('.action-spinner').count(), 0);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 0);
     assert.equal(count('/ewaf/run/'), 3);
     pass('uncertain EWAF write stops its spinner and offers a read-only status reload, without replaying the calculation');
 
     mode = 'reject'; await visit('/releases/');
     await page.getByRole('link', {name: 'View releases'}).click();
     await page.getByRole('button', {name: 'Retry email', exact: true}).click();
-    await page.locator('.action-spinner').waitFor();
+    await page.locator('.is-processing .action-spinner').waitFor();
     assert.match(await page.locator('[data-release-dialog-status]').innerText(), /Sending beneficiary email/);
     await page.evaluate(() => document.querySelector('dialog form').requestSubmit());
     await page.getByRole('button', {name: 'Retry email', exact: true}).waitFor();
     assert.equal(count('/receipts/email/retry/'), 1);
-    assert.equal(await page.locator('.action-spinner').count(), 0);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 0);
     pass('dynamically loaded receipt email retry has immediate pending feedback and a working retry after server failure');
 
     mode = 'success'; await visit('/reports/');
     const downloaded = page.waitForEvent('download'); await page.getByRole('link', {name: 'Export CSV'}).click();
-    await page.locator('.action-spinner').waitFor();
+    await page.locator('.is-processing .action-spinner').waitFor();
     const download = await downloaded; assert.equal(download.suggestedFilename(), 'synthetic-report.csv');
     await page.getByRole('link', {name: 'Export CSV'}).waitFor();
-    assert.equal(await page.locator('.action-spinner').count(), 0);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 0);
     mode = 'reject'; await page.getByRole('link', {name: 'Export CSV'}).click();
     await page.waitForFunction(() => document.querySelector('[data-download-feedback]')?.textContent.includes('could not'));
     assert.equal(await page.getByRole('link', {name: 'Export CSV'}).getAttribute('aria-disabled'), null);
@@ -199,24 +199,24 @@ const server = http.createServer(async (request, response) => {
       window.secondPending = ActionFeedback.start(form);
       window.firstPending();
     });
-    assert.equal(await page.locator('.action-spinner').count(), 1);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 1);
     await page.evaluate(() => window.secondPending());
-    assert.equal(await page.locator('.action-spinner').count(), 0);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 0);
     pass('overlapping previews keep feedback active until every request finishes');
     await page.clock.install();
     await page.evaluate(() => { window.finishPending = ActionFeedback.start(document.querySelector('form')); });
     await page.clock.fastForward(16000);
     assert.match(await page.locator('.action-progress').innerText(), /taking longer.*still pending/);
-    assert.equal(await page.locator('.action-spinner').count(), 1);
+    assert.equal(await page.locator('.is-processing .action-spinner').count(), 1);
     await page.evaluate(() => window.finishPending());
     await page.clock.resume();
     pass('slow requests remain pending and never manufacture a success or retry');
     await page.emulateMedia({reducedMotion: 'reduce'});
     await page.evaluate(() => { window.finishPending = ActionFeedback.start(document.querySelector('form')); });
-    assert.equal(await page.locator('.action-spinner').evaluate(node => getComputedStyle(node).animationName), 'none');
+    assert.equal(await page.locator('.is-processing .action-spinner').evaluate(node => getComputedStyle(node).animationName), 'none');
     await page.emulateMedia({reducedMotion: 'no-preference'});
     await page.evaluate(() => { document.documentElement.dataset.motion = 'reduce'; });
-    assert.equal(await page.locator('.action-spinner').evaluate(node => getComputedStyle(node).animationName), 'none');
+    assert.equal(await page.locator('.is-processing .action-spinner').evaluate(node => getComputedStyle(node).animationName), 'none');
     for (const width of [390, 320]) {
       await page.setViewportSize({width, height: 800});
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);

@@ -1,0 +1,167 @@
+{
+  "checks": [
+    {
+      "kind": "public",
+      "width": 1440,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "public",
+      "width": 1440,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "public",
+      "width": 1440,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(0, 0, 0)",
+        "color": "rgb(255, 255, 255)"
+      }
+    },
+    {
+      "kind": "public",
+      "width": 320,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "public",
+      "width": 320,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "public",
+      "width": 320,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(0, 0, 0)",
+        "color": "rgb(255, 255, 255)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 1440,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 1440,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 1440,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(255, 255, 255)",
+        "color": "rgb(17, 17, 17)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 320,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 320,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "admin",
+      "width": 320,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(255, 255, 255)",
+        "color": "rgb(17, 17, 17)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 1440,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 1440,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 1440,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(255, 255, 255)",
+        "color": "rgb(17, 17, 17)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 320,
+      "mode": "light",
+      "colors": {
+        "background": "rgb(244, 242, 236)",
+        "color": "rgb(28, 26, 24)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 320,
+      "mode": "dark",
+      "colors": {
+        "background": "rgb(36, 34, 32)",
+        "color": "rgb(244, 242, 236)"
+      }
+    },
+    {
+      "kind": "native",
+      "width": 320,
+      "mode": "contrast",
+      "colors": {
+        "background": "rgb(255, 255, 255)",
+        "color": "rgb(17, 17, 17)"
+      }
+    }
+  ],
+  "errors": []
+}

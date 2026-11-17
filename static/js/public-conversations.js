@@ -131,6 +131,7 @@
         if (sending || expired || !form.reportValidity()) return;
         const body = new FormData(form);
         const finish = window.ActionFeedback?.start(form, {button, label: 'Sending message…'});
+        const clearPreview = window.ActionFeedback?.previewMessage(log, {text: editor.value});
         controller?.abort(); sending = true;
         button.disabled = true; editor.readOnly = true;
         form.setAttribute('aria-busy', 'true'); notice.textContent = 'Sending…';
@@ -138,7 +139,7 @@
           const data = await read(await fetch(form.action, {method: 'POST', body,
             credentials: 'same-origin', cache: 'no-store', headers: {'Accept': 'application/json'}}));
           if (!data || !root.isConnected) return;
-          uncertain = false; apply(data, {sent: data.sent, recover: true});
+          uncertain = false; clearPreview?.(); apply(data, {sent: data.sent, recover: true});
           if (expired) return;
           if (data.sent) { editor.value = ''; resizeEditor(); notice.textContent = 'Message sent.'; }
           else notice.textContent = data.errors?.join(' ') || 'Your message could not be sent. Your draft is kept.';
@@ -146,6 +147,7 @@
           uncertain = true;
           if (root.isConnected) notice.textContent = 'Could not confirm sending. Your draft is kept. Check the conversation before trying Send again.';
         } finally {
+          clearPreview?.();
           finish?.();
           sending = false; button.disabled = expired; editor.readOnly = false;
           form.removeAttribute('aria-busy');

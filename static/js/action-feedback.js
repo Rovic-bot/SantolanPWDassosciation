@@ -2,6 +2,12 @@
 'use strict';
 WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
   const active = new Map(), submissions = new WeakMap();
+  const previews = new Set();
+  let statusTray;
+  const loadingBar = document.createElement('div');
+  loadingBar.className = 'action-loading-bar';
+  loadingBar.setAttribute('aria-hidden', 'true');
+  document.body.append(loadingBar);
   const isSubmit = node => node instanceof HTMLButtonElement ? node.type === 'submit' :
     node instanceof HTMLInputElement && ['submit', 'image'].includes(node.type);
   const buttons = form => [...(form.elements || form.querySelectorAll('button, input'))].filter(isSubmit);
@@ -18,6 +24,7 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
     const action = `${form.getAttribute('action') || ''} ${form.elements?.namedItem('action')?.value || ''}`.toLowerCase();
     if (/ranking/.test(text) || /ewaf/.test(action) && /generate/.test(action)) return 'Generating ranking…';
     if (/generat.*certificate/.test(text)) return 'Generating certificate…';
+    if (/certificate/.test(text) && /retry|send/.test(text)) return 'Sending certificate emails…';
     if (/test.*(email|connection)|check.*connection/.test(text)) return 'Checking email connection…';
     if (/email/.test(text) || /email.*retry|retry.*email/.test(action)) return 'Sending email…';
     if (/sign in|log in/.test(text)) return 'Signing in…';
@@ -34,6 +41,50 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
     return 'Processing…';
   }
 
+  function pendingStatus(form, label) {
+    if (!statusTray?.isConnected) {
+      statusTray = document.createElement('aside');
+      statusTray.className = 'action-status-tray';
+      // The existing live region announces this status outside the busy form.
+      statusTray.setAttribute('aria-hidden', 'true');
+      if (typeof statusTray.showPopover === 'function') {
+        statusTray.setAttribute('popover', 'manual');
+        document.body.append(statusTray);
+        statusTray.showPopover();
+      } else {
+        (form.closest('dialog[open]') || document.body).append(statusTray);
+      }
+    }
+    const card = document.createElement('div'), spinner = document.createElement('span');
+    const copy = document.createElement('div'), title = document.createElement('strong'), detail = document.createElement('p');
+    card.className = 'action-status-card'; spinner.className = 'action-spinner';
+    title.textContent = label;
+    detail.textContent = 'Waiting for confirmation. Please keep this page open.';
+    copy.append(title, detail); card.append(spinner, copy); statusTray.append(card);
+    return {
+      slow() { detail.textContent = 'Still waiting for the server. Please keep this page open.'; },
+      remove() {
+        card.remove();
+        if (statusTray && !statusTray.childElementCount) { statusTray.remove(); statusTray = undefined; }
+      }
+    };
+  }
+
+  function previewMessage(log, {text, label = 'Sending message…'} = {}) {
+    if (!log || !text) return () => {};
+    const article = document.createElement('article'), author = document.createElement('strong');
+    const content = document.createElement('p'), status = document.createElement('small'), spinner = document.createElement('span');
+    article.className = 'action-outgoing-preview'; article.dataset.pendingMessage = '';
+    author.textContent = 'You'; content.textContent = text;
+    status.className = 'action-outgoing-status'; spinner.className = 'action-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+    status.append(spinner, document.createTextNode(label));
+    article.append(author, content, status); log.append(article);
+    log.scrollTop = log.scrollHeight;
+    previews.add(article);
+    return () => { article.remove(); previews.delete(article); };
+  }
+
   function start(form, {button, label, message, native = false} = {}) {
     if (!form) return () => {};
     if (active.has(form)) return active.get(form).acquire();
@@ -44,6 +95,7 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
     if (original && !saved.includes(original)) saved.push(original);
     const busy = submitted ? submitted.busy : form.getAttribute('aria-busy');
     label ||= description(form, button);
+    const pending = pendingStatus(form, label);
     const notice = document.createElement('p'), announcement = document.createElement('span');
     notice.className = 'action-progress';
     announcement.className = 'action-announcement'; announcement.setAttribute('role', 'status');
@@ -70,7 +122,7 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
     let ended = false;
     const finish = ({restoreDisabled = false} = {}) => {
       if (ended) return;
-      ended = true; active.delete(form); submissions.delete(form); notice.remove(); announcement.remove();
+      ended = true; active.delete(form); submissions.delete(form); notice.remove(); announcement.remove(); pending.remove();
       restoreAttribute(form, 'aria-busy', busy);
       saved.forEach(item => {
         restoreAttribute(item.node, 'aria-disabled', item.unavailable);
@@ -96,7 +148,10 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
     };
     active.set(form, {finish, native, acquire});
     setTimeout(() => {
-      if (!ended) notice.textContent = announcement.textContent = `${label} This is taking longer than usual. Keep this page open; the request is still pending.`;
+      if (!ended) {
+        notice.textContent = announcement.textContent = `${label} This is taking longer than usual. Keep this page open; the request is still pending.`;
+        pending.slow();
+      }
     }, 15000);
     return acquire();
   }
@@ -165,10 +220,12 @@ WorkspacePage.run(({on, fetch, cleanup, setTimeout}) => {
       link.insertAdjacentElement('afterend', notice);
     }
   });
-  const api = {start, pending: form => active.has(form)};
+  const api = {start, previewMessage, pending: form => active.has(form)};
   window.ActionFeedback = api;
   cleanup(() => {
     [...active.values()].forEach(item => item.finish());
+    previews.forEach(node => node.remove()); previews.clear();
+    statusTray?.remove(); loadingBar.remove();
     if (window.ActionFeedback === api) delete window.ActionFeedback;
   });
 });

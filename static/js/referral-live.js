@@ -127,8 +127,10 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
       event.preventDefault(); event.stopPropagation();
       if (sending || stopped || !form.reportValidity()) return;
       const body = new FormData(form);
+      const sendingLabel = channel.value === 'email' ? 'Sending email…' : 'Sending message…';
       const finish = window.ActionFeedback?.start(form, {button,
-        label: channel.value === 'email' ? 'Sending email…' : 'Sending message…'});
+        label: sendingLabel});
+      const clearPreview = window.ActionFeedback?.previewMessage(log, {text: editor.value, label: sendingLabel});
       controller?.abort(); sending = true;
       button.disabled = true; channel.disabled = true; editor.readOnly = true;
       form.setAttribute('aria-busy', 'true'); say('Sending…');
@@ -136,6 +138,7 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
         const data = await json(form.action, {method: 'POST', body});
         if (!ticket.isConnected) return;
         uncertain = false;
+        clearPreview?.();
         apply(data, {sent: data.sent, recover: true});
         if (data.sent) { editor.value = ''; say(data.notice, data.delivery_error); }
         else say(data.errors?.join(' ') || 'Your message could not be sent. Your draft is kept.', true);
@@ -145,6 +148,7 @@ WorkspacePage.run(({on, fetch, setTimeout}) => {
         say(error.message === 'access' ? 'Your access has ended. Save your draft, then sign in again.' :
           'Could not confirm sending. Your draft is kept. Check the conversation before trying Send again.', true);
       } finally {
+        clearPreview?.();
         finish?.();
         sending = false; button.disabled = stopped; channel.disabled = stopped; editor.readOnly = stopped;
         form.removeAttribute('aria-busy');

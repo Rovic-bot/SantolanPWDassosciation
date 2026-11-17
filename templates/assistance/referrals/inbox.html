@@ -1,7 +1,7 @@
 {% extends 'admin_portal/base.html' %}{% load static %}
 {% block title %}Community Assistance Desk Inbox · Santolan PWD{% endblock %}
 {% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-workspace.css' %}">{% endblock %}
-{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-live.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-live.js' %}?v=20261117-optimistic" defer></script>{% endblock %}
 {% block content %}<div class="container content-section referral-page" data-referral-inbox data-inbox-url="{% url 'assistance:referral_inbox' %}"{% if ticket_closed %} data-record-content data-referral-closed{% endif %}>
   <h1 class="visually-hidden">Community Assistance Desk Inbox</h1>
   {% include 'partials/workspace_messages.html' %}

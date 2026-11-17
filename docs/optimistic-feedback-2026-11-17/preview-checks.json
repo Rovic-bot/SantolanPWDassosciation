@@ -1,0 +1,54 @@
+{
+  "checks": [
+    {
+      "name": "staff immediate pending message is text-only and blocks duplicate sends"
+    },
+    {
+      "name": "staff replaces preview with one server-confirmed message"
+    },
+    {
+      "name": "staff rejected request rolls back preview and keeps the draft"
+    },
+    {
+      "name": "staff lost response keeps the draft and original retry revision without replaying a write"
+    },
+    {
+      "name": "public immediate pending message is text-only and blocks duplicate sends"
+    },
+    {
+      "name": "public replaces preview with one server-confirmed message"
+    },
+    {
+      "name": "public rejected request rolls back preview and keeps the draft"
+    },
+    {
+      "name": "public lost response keeps the draft and original retry revision without replaying a write"
+    },
+    {
+      "name": "saved reply and failed email delivery remain distinct"
+    },
+    {
+      "name": "expired private access clears the preview and disables further sends"
+    },
+    {
+      "name": "pending status stays above modal dialogs without taking keyboard focus"
+    },
+    {
+      "name": "responsive pending status at 390 px in light, dark and high contrast"
+    },
+    {
+      "name": "responsive pending status at 320 px in light, dark and high contrast"
+    },
+    {
+      "name": "read-only loading bar follows existing busy states and reduced motion"
+    },
+    {
+      "name": "overlapping requests share one pending card until both finish"
+    },
+    {
+      "name": "workspace disposal removes pending UI and private message previews"
+    }
+  ],
+  "errors": [],
+  "syntheticPosts": 10
+}

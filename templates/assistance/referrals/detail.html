@@ -3,7 +3,7 @@
 {% block body_class %}{{ block.super }} referral-chat-page{% endblock %}
 {% block accessibility_styles %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-ticket-screen.css' %}?v=20261111-back">{% endblock %}
 {% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/referral-workspace.css' %}"><link rel="stylesheet" href="{% static 'css/referral-ticket.css' %}?v=20261111-full-page">{% endblock %}
-{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-workspace.js' %}?v=20261111-screen" defer></script><script src="{% static 'js/referral-live.js' %}?v=20261111-processing" defer></script>{% endblock %}
+{% block extra_scripts %}{{ block.super }}<script src="{% static 'js/referral-workspace.js' %}?v=20261111-screen" defer></script><script src="{% static 'js/referral-live.js' %}?v=20261117-optimistic" defer></script>{% endblock %}
 {% block content %}<div class="container content-section referral-page referral-detail-page" data-record-content>
   <article class="referral-ticket" aria-labelledby="referral-ticket-title" data-referral-ticket="{{ ticket.pk }}" data-updates-url="{% url 'assistance:referral_updates' ticket.pk %}" data-version="{{ ticket.version }}" data-channel-key="referral-delivery-{{ request.user.pk }}" data-member-name="{{ member_name }}">
     <header class="referral-ticket-header">
