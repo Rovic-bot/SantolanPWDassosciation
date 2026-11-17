@@ -1,0 +1,16 @@
+{
+  "health": {
+    "http_status": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "asset": "/static/css/home-guidance.2b3bef6702d6.css",
+  "sha256": "0a7b2952cec1bcbd8d0a262c63da29b2c211d41ad339e7921fcb60bdc2b4c987",
+  "matches_release": true,
+  "six_updated_cards": true,
+  "theme_transition_retained": true,
+  "commit": "1ee7a262ade6bec8f38337545bdf6284cb92c1ec",
+  "deploy": "dep-dbu1dkmk1f9s73a1ndh0",
+  "live_at": "2026-11-17T08:58:01.243028Z"
+}

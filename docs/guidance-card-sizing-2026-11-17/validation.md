@@ -12,4 +12,15 @@ Changed four presentation files: `templates/public/guidance/section.html`, `temp
 - No JavaScript errors or write requests occurred. Desktop and mobile screenshots were inspected; fixed viewport controls are excluded from section captures where applicable.
 - [Preview measurements](preview/checks.json) and [desktop layout](preview/1440-light.png).
 
-The scoped release is based on deployment branch head `0ed3d9a66f16eac53da8042e50e6dc843d5b8320`. The previously deployed smooth dark-mode transition is retained, and unfinished work in the main local checkout is preserved. Hosted activation will be recorded after verification.
+The scoped release is based on deployment branch head `0ed3d9a66f16eac53da8042e50e6dc843d5b8320`. The previously deployed smooth dark-mode transition is retained, and unfinished work in the main local checkout is preserved.
+
+## Hosted activation
+
+Commit `1ee7a262ade6bec8f38337545bdf6284cb92c1ec` was deployed through the existing Render service. Deploy `dep-dbu1dkmk1f9s73a1ndh0` reached **live** on November 17, 2026 at **08:58:01 UTC / 4:58:01 PM Philippine time**.
+
+All 19 checks passed again against the actual hosted Home page, with no substituted HTML or assets. For example, all six cards measured 576 × 250 px at a 1440 px viewport and 309 × 278 px at a 390 px viewport. Larger text, translated content and expanded details increased the shared height without clipping. Dark mode, high contrast, keyboard disclosures, action links and JavaScript-disabled layout passed. No JavaScript errors or write requests occurred.
+
+The served stylesheet matched the release's exact Git bytes, all six updated card templates were present in the returned HTML, and the existing theme-transition asset remained linked. `/healthz/` returned HTTP 200 with `status: ok`. Render returned no application error logs from activation through **08:59:01 UTC**. Hosted desktop and mobile screenshots were visually inspected.
+
+- [Hosted checks](hosted/checks.json) and [release verification](hosted/release.json)
+- [Desktop cards](hosted/1440-light.png), [mobile cards](hosted/390-light.png), and [dark-mode cards](hosted/1440-dark.png)
