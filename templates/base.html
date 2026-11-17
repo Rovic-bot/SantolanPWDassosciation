@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="{% static 'css/branding.css' %}">
   <link rel="stylesheet" href="{% static 'css/action-feedback.css' %}?v=20261111">
   <script src="{% static 'js/workspace-page.js' %}?v=20261104"></script>
+  <script src="{% static 'js/theme-transition.js' %}?v=20261117"></script>
+  <link rel="stylesheet" href="{% static 'css/theme-transition.css' %}?v=20261117">
   <script src="{% static 'js/csrf-forms.js' %}?v=20261105" data-csrf-cookie="{{ csrf_cookie_name }}" defer></script>
   <script src="{% static 'js/action-feedback.js' %}?v=20261111" defer></script>
   {% block extra_head %}{% endblock %}
@@ -29,7 +31,7 @@
   {% block footer %}{% endblock %}
   {% include 'partials/accessibility.html' %}
   <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}" defer></script>
-  <script src="{% static 'js/accessibility.js' %}?v=20261110-admin-display" defer></script>
+  <script src="{% static 'js/accessibility.js' %}?v=20261117-theme-transition" defer></script>
   <script src="{% static 'js/site.js' %}?v=20261104-tabs" defer></script>
   <script src="{% static 'js/workspace-navigation.js' %}?v=20261110-stable-member-switch" defer></script>
   {% block extra_scripts %}{% endblock %}

@@ -37,7 +37,7 @@ WorkspacePage.run(({on}) => {
     for (const opener of [trigger, ...otherOpeners]) opener.setAttribute('aria-expanded', String(value));
   };
   let returnFocus = trigger;
-  const apply = (announce = false, themeChanged = false) => {
+  const applyPreferences = (announce, themeChanged) => {
     root.dataset.text = preferences.text;
     root.dataset.contrast = String(preferences.contrast);
     root.dataset.motion = preferences.motion ? 'reduce' : 'system';
@@ -64,6 +64,11 @@ WorkspacePage.run(({on}) => {
     } catch (_) {}
     document.dispatchEvent(new CustomEvent('santolan:displaychange'));
     if (announce) status.textContent = 'Display preferences updated.';
+  };
+  const apply = (announce = false, themeChanged = false) => {
+    const update = () => applyPreferences(announce, themeChanged);
+    if (isPublic && themeChanged && window.ThemeTransition) window.ThemeTransition.run(update);
+    else update();
   };
   const close = (restore = true) => {
     if (panel.hidden) return;

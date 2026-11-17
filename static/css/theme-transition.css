@@ -1,0 +1,39 @@
+/* Capture the whole palette, including gradients, as one stationary surface. */
+html[data-theme-transition="fade"] *,
+html[data-theme-transition="fade"] *::before,
+html[data-theme-transition="fade"] *::after {
+  view-transition-name: none !important;
+  transition: none !important;
+}
+html[data-theme-transition="fade"]::view-transition { pointer-events: none; }
+html[data-theme-transition="fade"]::view-transition-group(root) { animation: none; }
+html[data-theme-transition="fade"]::view-transition-image-pair(root) { isolation: isolate; }
+html[data-theme-transition="fade"]::view-transition-old(root) {
+  animation: none;
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+html[data-theme-transition="fade"]::view-transition-new(root) {
+  animation: theme-palette-in 360ms cubic-bezier(.22, .61, .36, 1) both;
+  mix-blend-mode: normal;
+}
+@keyframes theme-palette-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Older browsers interpolate colors without affecting layout or page loading. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme-transition="colors"]:not([data-motion="reduce"]),
+  html[data-theme-transition="colors"]:not([data-motion="reduce"]) *,
+  html[data-theme-transition="colors"]:not([data-motion="reduce"]) *::before,
+  html[data-theme-transition="colors"]:not([data-motion="reduce"]) *::after {
+    transition: background-color 320ms ease, color 320ms ease, border-color 320ms ease,
+      box-shadow 320ms ease, fill 320ms ease, stroke 320ms ease !important;
+  }
+}
+html[data-motion="reduce"]::view-transition-group(*),
+html[data-motion="reduce"]::view-transition-old(*),
+html[data-motion="reduce"]::view-transition-new(*) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition]::view-transition-group(*),
+  html[data-theme-transition]::view-transition-old(*),
+  html[data-theme-transition]::view-transition-new(*) { animation: none !important; }
+}

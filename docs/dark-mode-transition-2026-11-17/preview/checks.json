@@ -1,0 +1,305 @@
+{
+  "hosted": false,
+  "checks": [
+    {
+      "name": "home-1440 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "home-1440 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "home-1440 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "home-1440 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "home-1440 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "membership-1440 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "membership-1440 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "membership-1440 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "membership-1440 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "membership-1440 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-1440 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "theme_admin-1440 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-1440 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-1440 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-1440 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "home-390 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "home-390 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "home-390 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "home-390 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "home-390 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "membership-390 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "membership-390 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "membership-390 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "membership-390 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "membership-390 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-390 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "theme_admin-390 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-390 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-390 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "theme_admin-390 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "theme_native-1440 keyboard fade to dark; focus and layout retained",
+      "detail": {
+        "duration": 360,
+        "keyframes": [
+          {
+            "offset": 0,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": 1,
+            "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            "composite": "auto",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "theme_native-1440 fade back to light",
+      "detail": true
+    },
+    {
+      "name": "theme_native-1440 saved dark preference restores without theme animation",
+      "detail": true
+    },
+    {
+      "name": "theme_native-1440 reset restores light",
+      "detail": true
+    },
+    {
+      "name": "theme_native-1440 Reduce motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "rapid repeated toggles keep the final requested theme",
+      "detail": true
+    },
+    {
+      "name": "enabling reduced motion during a fade settles immediately",
+      "detail": true
+    },
+    {
+      "name": "operating system reduced motion bypasses fade",
+      "detail": true
+    },
+    {
+      "name": "high contrast remains in control of colors",
+      "detail": true
+    },
+    {
+      "name": "older browser uses a 320ms color transition",
+      "detail": "0.32s, 0.32s, 0.32s, 0.32s, 0.32s, 0.32s"
+    },
+    {
+      "name": "older browser fades back and removes temporary styles",
+      "detail": true
+    },
+    {
+      "name": "theme switching works when browser storage is unavailable",
+      "detail": true
+    },
+    {
+      "name": "no JavaScript errors, unhandled promises, or write requests",
+      "detail": true
+    }
+  ],
+  "errors": [],
+  "blocked": []
+}
