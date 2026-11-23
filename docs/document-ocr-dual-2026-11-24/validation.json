@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-24",
+  "feature": "Two-sided PWD ID transcription",
+  "changes": [
+    "Separate front and back images with independent capture, replacement, rotation and removal",
+    "One reviewed autofill result from both sides; conflicting details omitted",
+    "PWD captions below values, date-of-birth/age notation, explicitly printed middle initials and disability text",
+    "Back-side emergency contacts mapped to guardian or emergency fields rather than applicant contact number",
+    "Local contrast and isolated field passes for faded text; uncertain values require explicit selection"
+  ],
+  "validation": {
+    "parser_tests": 23,
+    "database_free_template_tests": 2,
+    "browser_scenarios": 15,
+    "browser_javascript_errors": [],
+    "forms": ["Public Association", "Public PDAO", "Staff Association", "Staff PDAO"],
+    "static_asset_collection": "passed",
+    "syntax_and_whitespace": "passed",
+    "visual_inspection": "Fictional mobile front/back review inspected"
+  },
+  "privacy": {
+    "images_processed_in_browser": true,
+    "application_submissions_during_testing": 0,
+    "external_ocr_services": false,
+    "sample_photos_or_personal_text_in_repository": false,
+    "database_or_schema_changes": false
+  },
+  "limitations": [
+    "The supplied faded photographs were checked locally. Some name/address characters remain uncertain and handwritten dates require manual entry.",
+    "OCR suggestions must be checked against the original card; this feature does not verify identity or approve an application."
+  ]
+}

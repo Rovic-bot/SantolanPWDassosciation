@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
-const {extract, dateValue, fromResult} = require('../static/js/document-ocr-parser.js');
+const {extract, dateValue, fromResult, merge} = require('../static/js/document-ocr-parser.js');
 
 test('reads explicitly labelled PWD details and preserves leading zeroes', () => {
   const {values} = extract('PWD ID No: 00-1234-001-0000042\nLast Name: DELA CRUZ\nFirst Name: JUAN MIGUEL\nMiddle Name: SANTOS\nDate of Birth: 21 January 1990\nSex: Male\nAddress: 123 Mabini Street, Barangay Santolan, Pasig City, NCR\nMobile number: 09171234567');
@@ -101,4 +101,59 @@ test('retains complete bilingual labels containing a low-confidence known word',
   const result = fromResult({text: lines.map(item => item.text).join('\n'), blocks: [{paragraphs: [{lines}]}]});
   assert.equal(result.values.birthdate, '1988-05-14');
   assert.equal(result.matchedLabels, 1);
+});
+
+test('PWD captions can sit below values, with dates in separate columns', () => {
+  const lines = [line('ID NO.', 25, 100), line('00-1234-001-0000042', 100, 90),
+    line('NAME:', 25, 155), line('JUAN M. DELA CRUZ', 100, 145),
+    line('PHYSICAL DISABILITY(ORTHO)', 25, 195), line('TYPE OF DISABILITY', 100, 225),
+    line('08-22-67/56', 25, 280), line('01-24-2024', 250, 280),
+    line('DATE OF BIRTH / AGE', 25, 310), line('DATE OF ISSUE', 250, 310),
+    line('08-22-2029', 250, 360), line('EXPIRY DATE', 250, 390)];
+  const {values} = fromResult({text: lines.map(l => l.text).join('\n'), blocks:[{paragraphs:[{lines}]}]}, 'pwd-front');
+  assert.equal(values.pwd_number, '00-1234-001-0000042');
+  assert.equal(values.first_name, 'JUAN'); assert.equal(values.middle_name, 'M.'); assert.equal(values.last_name, 'DELA CRUZ');
+  assert.equal(values.birthdate, '1967-08-22'); assert.equal(values.date_issued, '2024-01-24');
+  assert.equal(values.expiry_date, undefined); assert.equal(values.disability_type, 'PHYSICAL DISABILITY(ORTHO)');
+});
+
+test('PWD back distinguishes emergency contact and splits an explicitly named locality', () => {
+  const {values} = extract('Address: 27 TEST STREET Santolan, Pasig City\nSex: Male\nBlood type: (OPTIONAL)\nParent/Guardian: ANA S. REYES\nCONTACT NO: 09171234567', 'pwd-back');
+  assert.equal(values.house_street, '27 TEST STREET'); assert.equal(values.barangay, 'Santolan');
+  assert.equal(values.city, 'Pasig City'); assert.equal(values.sex, 'Male');
+  assert.equal(values.guardian_name, 'ANA S. REYES'); assert.equal(values.guardian_contact, '09171234567');
+  assert.equal(values.contact_number, undefined); assert.equal(values.blood_type, undefined); assert.equal(values.full_name, undefined);
+});
+
+test('generic IDs do not copy emergency contacts as applicant contact numbers', () => {
+  const {values} = extract('Name: CRUZ, JUAN\nIN CASE OF EMERGENCY NOTIFY:\nCONTACT NO: 09171234567');
+  assert.equal(values.contact_number, undefined); assert.equal(values.guardian_contact, '09171234567');
+});
+
+test('PWD two-digit birth years require consistent age and issue date', () => {
+  assert.equal(extract('Date of birth / age: 08-22-67', 'pwd-front').values.birthdate, undefined);
+  assert.equal(extract('Date of birth / age: 08-22-67/12\nDate of issue: 01-24-2024', 'pwd-front').values.birthdate, undefined);
+  assert.equal(extract('Date of birth / age: 08-22-1967/56', 'pwd-front').values.birthdate, '1967-08-22');
+});
+
+test('merging sides retains complementary fields and omits persistent conflicts', () => {
+  const combined = merge([extract('Name: JUAN M. CRUZ\nPWD No: 00-0000-000-0000001', 'pwd-front'),
+    extract('Address: 27 TEST STREET Santolan, Pasig City\nContact No: 09171234567', 'pwd-back')]);
+  assert.equal(combined.values.first_name, 'JUAN'); assert.equal(combined.values.guardian_contact, '09171234567');
+  const conflict = merge([{values:{full_name:'JUAN M. CRUZ',first_name:'JUAN'}}, {values:{full_name:'JOSE M. CRUZ'}}, {values:{full_name:'JUAN M. CRUZ'}}]);
+  assert.equal(conflict.values.full_name, undefined); assert.equal(conflict.values.first_name, undefined); assert(conflict.notes.length);
+});
+
+test('city government header is not an applicant city', () => {
+  assert.equal(extract('CITY GOVERNMENT OF PASIG\nName: JUAN M. CRUZ', 'pwd-front').values.city, undefined);
+});
+
+test('uncertain address readings keep derived fields marked for explicit review', () => {
+  const result = merge([{values:{address:'27 TEST STREET, Pasig City',house_street:'27 TEST STREET',city:'Pasig City'},uncertain:['address']}]);
+  assert(result.uncertain.includes('house_street')); assert(result.uncertain.includes('city'));
+});
+
+test('a blank PWD name is not filled with the next disability value', () => {
+  const lines = [line('NAME:',25,100),line('PHYSICAL DISABILITY',25,130),line('TYPE OF DISABILITY',60,160)];
+  assert.equal(fromResult({blocks:[{paragraphs:[{lines}]}]}, 'pwd-front').values.full_name, undefined);
 });

@@ -4,6 +4,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
 const cardFixture = require('./document_ocr_card_fixture.cjs');
+const pwdFixture = require('./document_ocr_pwd_fixture.cjs');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.env.USERPROFILE,
   '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));
 const root = process.cwd();
@@ -57,8 +58,9 @@ async function imageFor(page, lines) {
       'First Name: JUAN MIGUEL', 'Middle Name: SANTOS', 'Date of Birth: 21 January 1990',
       'PWD ID No: 00-1234-001-0000042', 'Address: 123 Mabini Street, Barangay Santolan, Pasig City',
       'Sex: Male', 'Mobile Number: 09171234567', 'Email: applicant@example.test'];
-    for (const [index, route] of routes.entries()) {
+    for (const [index, route] of (process.env.OCR_PWD_ONLY ? [] : routes).entries()) {
       await page.goto(base + route); await page.locator('[data-document-ocr]:visible').waitFor();
+      await page.locator('[data-ocr-kind]').selectOption('id');
       // Avoid the existing first-interaction privacy popup: set the preexisting
       // value through the form DOM and keep this test focused on OCR.
       await page.locator('[name=last_name]').evaluate(input => {input.value = 'KEEP MY ENTRY';});
@@ -96,6 +98,52 @@ async function imageFor(page, lines) {
       assert.equal(await page.locator('[name=first_name]').inputValue(), 'JUAN MIGUEL');
       results.push({route, actualOCR: true, reviewedAutofill: true, existingValues: true, noSubmissionFields: true, mobileReflow: true});
     }
+    // Both PWD sides are read in one review without turning a guardian's phone
+    // into the applicant's contact or attaching either image to the form.
+    for (const route of routes.slice(0, 2)) {
+      await page.goto(base + route);
+      await page.evaluate(() => {
+        const read = DocumentOCRReader.prototype.read; window.pwdTestResults = [];
+        DocumentOCRReader.prototype.read = async function (...args) {
+          const result = await read.apply(this, args); window.pwdTestResults.push(result); return result;
+        };
+      });
+      const before = await page.locator('form.registration-editor').evaluate(form => [...new FormData(form).keys()]);
+      await page.locator('[data-ocr-file]').setInputFiles(await pwdFixture(page, 'front'));
+      await page.locator('[data-ocr-thumbnail=front]:visible').waitFor();
+      await page.locator('[data-ocr-side=back]').click();
+      await page.locator('[data-ocr-file]').setInputFiles(await pwdFixture(page, 'back'));
+      await page.locator('[data-ocr-thumbnail=back]:visible').waitFor();
+      assert.equal(await page.locator('[data-ocr-read]').textContent(), 'Read both sides');
+      await page.locator('[data-ocr-read]').click();
+      await page.locator('[data-ocr-results]:visible').waitFor({timeout:190000});
+      fs.writeFileSync(path.join(output,`pwd-fictional-${route.includes('pdao')?'pdao':'association'}.json`), JSON.stringify(await page.evaluate(() => window.pwdTestResults)));
+      await page.locator('[data-ocr-apply]').click();
+      for (const [field, value] of Object.entries({pwd_number:'00-1234-001-0000042',first_name:'JUAN',middle_name:'M.',last_name:'DELA CRUZ',
+        birthdate:'1967-08-22',house_street:'27 TEST STREET',barangay:'Santolan',city:'City of Pasig'})) {
+        assert.equal(await page.locator(`[name=${field}]`).inputValue(), value, `two-sided ${route}: ${field}`);
+      }
+      const guardian = route.includes('pdao') ? 'emergency_name' : 'guardian_name';
+      const phone = route.includes('pdao') ? 'emergency_phone' : 'guardian_contact';
+      assert.equal(await page.locator(`[name=${guardian}]`).inputValue(), 'ANA S. REYES');
+      assert.equal(await page.locator(`[name=${phone}]`).inputValue(), '9171234567');
+      assert.equal(await page.locator('[name=contact_number]').inputValue(), '');
+      if (route.includes('pdao')) {
+        assert.equal(await page.locator('[name=disability_types][value="Physical Disability"]').isChecked(), true);
+      } else assert.equal(await page.locator('[name=disability_type]').inputValue(), 'Physical / Orthopedic');
+      assert.equal(await page.locator('[name=acknowledgement]').isChecked(), false);
+      assert.deepEqual(await page.locator('form.registration-editor').evaluate(form => [...new FormData(form).keys()].filter(name => name !== 'disability_types')), before.filter(name => name !== 'disability_types'));
+      await page.setViewportSize({width:390,height:1000});
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      await page.locator('[data-document-ocr]').screenshot({path:path.join(output,`pwd-dual-${route.includes('pdao')?'pdao':'association'}.png`)});
+      await page.locator('[data-ocr-side=back]').click(); await page.locator('[data-ocr-remove]').click();
+      assert(await page.locator('[data-ocr-thumbnail=front]').isVisible());
+      assert.equal(await page.locator('[data-ocr-thumbnail=back]').isVisible(), false);
+      assert.equal(await page.locator('[data-ocr-results]').isVisible(), false);
+      assert.equal(await page.locator('[name=first_name]').inputValue(), 'JUAN');
+      results.push({route, twoSidedPWD:true, emergencyContactSeparated:true, independentRemoval:true});
+    }
+    if (process.env.OCR_PWD_ONLY) { console.log(JSON.stringify({results, errors})); return; }
     // Receipt mode must not confuse merchant details with applicant details.
     await page.goto(base + routes[0]); await page.locator('[data-ocr-kind]').selectOption('receipt');
     await page.locator('[data-ocr-file]').setInputFiles(await imageFor(page, ['FICTIONAL TEST RECEIPT',
@@ -111,6 +159,7 @@ async function imageFor(page, lines) {
     // and app chrome. Never substitute the user's actual ID for this fixture.
     for (const angle of [90, 180]) {
       await page.goto(base + routes[0]);
+      await page.locator('[data-ocr-kind]').selectOption('id');
       await page.evaluate(() => {
         const read = DocumentOCRReader.prototype.read;
         DocumentOCRReader.prototype.read = async function (...args) {

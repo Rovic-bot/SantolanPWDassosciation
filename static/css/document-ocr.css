@@ -8,6 +8,13 @@
 .document-ocr p.document-ocr-eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px;color:var(--ocr-muted)}
 .document-ocr .document-ocr-hint{font-size:.875rem;color:var(--ocr-muted)}
 .document-ocr-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.document-ocr-sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+.document-ocr-side{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:18px;border:2px dashed var(--ocr-line);border-radius:12px;color:var(--ocr-ink);background:transparent;text-align:center;cursor:pointer;font:inherit}
+.document-ocr-side[aria-pressed=true]{border-style:solid;border-color:#337cae;box-shadow:0 0 0 2px var(--ocr-line)}
+.document-ocr-side:focus-visible{outline:3px solid #337cae;outline-offset:3px}
+.document-ocr-side span{font-size:.85rem;color:var(--ocr-muted)}
+.document-ocr-side img{width:100%;height:110px;object-fit:contain;border-radius:6px}
+.document-ocr button:disabled{opacity:.6;cursor:default}
 .document-ocr-kind{display:grid;gap:4px;font-size:.85rem;font-weight:650;flex:1 1 240px;max-width:100%}
 .document-ocr .form-select,.document-ocr .form-control{width:100%;min-height:44px;color:#15324c;background:#fff;border:1px solid #8baec9;border-radius:9px;padding:10px 12px;font-size:1rem}
 .document-ocr .btn{min-height:44px;white-space:normal}
@@ -26,6 +33,6 @@
 .document-ocr-text pre{white-space:pre-wrap;max-height:220px;overflow:auto;font-size:.9rem;color:var(--ocr-ink);background:transparent;padding:12px;border:1px solid var(--ocr-line);border-radius:10px}
 [data-public-theme=dark] .document-ocr,[data-dashboard-theme=dark] .document-ocr{--ocr-ink:#e7f2fc;--ocr-muted:#b7cde0;--ocr-line:#48647d;--ocr-bg:#1c3045}
 [data-public-theme=dark] .document-ocr .document-ocr-icon,[data-dashboard-theme=dark] .document-ocr .document-ocr-icon{background:#27465f}
-@media(max-width:600px){.document-ocr-fields{grid-template-columns:1fr}.document-ocr-actions>.btn{flex:1 1 130px}.document-ocr-kind{flex-basis:100%}}
+@media(max-width:600px){.document-ocr-fields{grid-template-columns:1fr}.document-ocr-actions>.btn{flex:1 1 130px}.document-ocr-kind{flex-basis:100%}.document-ocr-sides{gap:8px}.document-ocr-side{padding:12px 8px}}
 @media(prefers-contrast:more){.document-ocr{border:2px solid currentColor}.document-ocr .document-ocr-hint{color:var(--ocr-ink)}}
 @media print{.document-ocr{display:none!important}}
