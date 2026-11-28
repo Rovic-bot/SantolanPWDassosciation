@@ -60,8 +60,8 @@ def queue_certificates(item, *, user):
         .filter(application__in=applications).defer('document', 'body')
         .select_related('application__member').prefetch_related('attempts')}
     pending = [application for application in applications if application.pk not in existing]
-    documents = certificate_pdfs([certificate_document(member_name=application.member.full_name,
-        program_name=payload['program_name'], issued_on=issued_on) for application in pending])
+    documents = certificate_pdfs(pending, render=lambda application: certificate_document(
+        member_name=application.member.full_name, program_name=payload['program_name'], issued_on=issued_on))
     with certificate_write():
         # Republishing may resume a safely failed/blocked notification, but never
         # creates a new certificate or replaces a previously submitted payload.

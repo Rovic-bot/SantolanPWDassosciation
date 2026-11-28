@@ -109,26 +109,28 @@ class GmailCertificateTests(fixtures.OperationalHelpers, TestCase):
 
 class GmailCertificateMigrationTests(TransactionTestCase):
     def test_provider_field_defaults_to_resend_for_historical_records(self):
-        from scripts.durable_test_runner import require_disposable
-        require_disposable()
-        state = ProjectState.from_apps(apps)
-        state.remove_field('announcements', 'selectioncertificateemail', 'provider')
-        migration = import_module('announcements.migrations.0007_certificate_email_provider').Migration(
-            '0007_certificate_email_provider', 'announcements')
-        field = Email._meta.get_field('provider')
-        try:
-            with connection.schema_editor() as editor:
-                editor.remove_field(Email, field)
-            with connection.schema_editor() as editor:
-                migration.apply(state, editor)
-            with connection.cursor() as cursor:
-                columns = connection.introspection.get_table_description(cursor, Email._meta.db_table)
-                self.assertIn('provider', {column.name for column in columns})
-            operation = next(op for op in migration.operations if type(op).__name__ == 'AddField')
-            self.assertEqual(operation.field.default, 'resend')
-        finally:
-            with connection.cursor() as cursor:
-                names = {col.name for col in connection.introspection.get_table_description(cursor, Email._meta.db_table)}
-            if 'provider' not in names:
-                with connection.schema_editor() as editor:
-                    editor.add_field(Email, field)
+        from scripts.migration_test_support import migration_database, historical_apps, copy_historical_rows
+        from django.db.migrations.executor import MigrationExecutor
+        from assistance.tests import create_application
+        from hashlib import sha256
+        application = create_application()
+        parent = [('announcements', '0006_selection_certificate_email')]
+        target = [('announcements', '0007_certificate_email_provider')]
+        with migration_database(parent) as database:
+            old = historical_apps(database, parent)
+            copy_historical_rows(database, old, [application])
+            Announcement = old.get_model('announcements', 'Announcement')
+            Revision = old.get_model('announcements', 'ProgramResultRevision')
+            OldEmail = old.get_model('announcements', 'SelectionCertificateEmail')
+            notice = Announcement.objects.using(database.alias).create(title='Synthetic retained notice')
+            revision = Revision.objects.using(database.alias).create(announcement=notice, number=1,
+                public_payload={}, source_digest='0' * 64, reason='Synthetic historical fixture')
+            email = OldEmail.objects.using(database.alias).create(application_id=application.pk,
+                revision=revision, issued_on=timezone.localdate(), document=b'SYNTHETIC',
+                document_sha256=sha256(b'SYNTHETIC').hexdigest(), state='sent')
+            original = OldEmail.objects.using(database.alias).values().get(pk=email.pk)
+            MigrationExecutor(database).migrate(target)
+            Updated = historical_apps(database, target).get_model('announcements', 'SelectionCertificateEmail')
+            result = Updated.objects.using(database.alias).get(pk=email.pk)
+            self.assertEqual(result.provider, 'resend')
+            self.assertEqual(Updated.objects.using(database.alias).values(*original).get(pk=email.pk), original)

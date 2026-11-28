@@ -303,7 +303,9 @@ class ProcessingTests(SourceHelpers, DurableHelpers, TransactionTestCase):
             return original(snapshot)
         with patch.object(durable, '_calculate', side_effect=pause), ThreadPoolExecutor(2) as pool:
             calculation = pool.submit(worker, lambda: self.process_new(request))
-            self.assertTrue(entered.wait(15))
+            if not entered.wait(15):
+                calculation.result(timeout=1)  # Surface the real pre-calculation failure.
+                self.fail('Calculation did not reach the mutation barrier.')
             try:
                 pool.submit(worker, mutation).result(timeout=15)
             finally:
@@ -496,9 +498,11 @@ class CrossProgramReceiptProcessingTests(SourceHelpers, DurableHelpers, Transact
         self.setup_durable()
         self.receipt_program = create_program(name='Fictional receipt-only source program')
         self.receipt_application = create_application(program=self.receipt_program, member=self.member)
-        review_eligibility(self.receipt_application.pk, user=self.officer, data=review_data(self.receipt_application))
+        from assistance.testsupport import historical_selection
+        from announcements.testsupport import publish_selection
+        historical_selection(self.receipt_application, self.officer)
         close_non_ewaf_program(self.receipt_program)
-        decide_assistance(self.receipt_application.pk, user=self.officer, data=decision_data(self.receipt_application))
+        publish_selection(self.receipt_program, self.officer)
         if 'void' in self._testMethodName:
             self.receipt = record_release(self.receipt_application.pk, user=self.officer, data=release_data(self.receipt_application))
             for code in ('SI', 'ES', 'PA', 'ND', 'PR'):

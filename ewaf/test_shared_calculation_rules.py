@@ -96,11 +96,12 @@ class SharedCalculationRulesTests(TransactionTestCase):
             for key, result in run.calculations.items():
                 traces = {row['criterion']: row for row in result['traces']}
                 old_traces = {row['criterion']: row for row in old.calculations[key]['traces']}
-                for code in ('SES', 'ES', 'PA'):
+                for code in ('SES', 'PA'):
                     self.assertGreater(Fraction(traces[code]['contribution']['exact']), 0)
                     self.assertEqual(traces[code]['minimum'], old_traces[code]['minimum'])
                     self.assertEqual(traces[code]['maximum'], old_traces[code]['maximum'])
                     self.assertEqual(traces[code]['weight'], old_traces[code]['weight'])
+                self.assertEqual(traces['ES'], old_traces['ES'])
                 self.assertEqual(traces['HM'], old_traces['HM'])
             old.refresh_from_db(); old.clean()
             self.configuration.refresh_from_db()
@@ -112,8 +113,7 @@ class SharedCalculationRulesTests(TransactionTestCase):
                 self.assertContains(page, f'data-contribution="{code}"', count=2)
             self.assertContains(page, 'Total / 100')
             guide = self.client.get(reverse('ewaf:operational_calculation_guide', args=[self.program.pk]))
-            self.assertContains(guide, 'use normalized value 1')
-            self.assertContains(guide, 'Equal income: I = 1; SES = 1')
+            self.assertRedirects(guide, reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#results')
             bad = deepcopy(run.snapshot)
             bad[rules.KEY]['constant_rule'] = 'zero_contribution_v1'
             with self.assertRaisesMessage(ValidationError, 'exact approved version'):
@@ -169,7 +169,14 @@ class SharedCalculationRulesTests(TransactionTestCase):
             a.member.save(update_fields=['version'])
             page = self.client.get(reverse('ewaf:operational_workspace', args=[self.program.pk]))
             self.assertFalse(page.context['ready'])
-            self.assertContains(page, 'Review the flagged applicants before ranking.')
-            self.assertContains(page, 'changed after eligibility was reviewed')
+            self.assertContains(page, 'review; select a marked row to see why.')
+            flagged = next(row for row in page.context['inventory'] if row['application'] == str(a.pk))
+            self.assertIn('ELIGIBILITY_STALE', flagged['errors'])
+            self.assertTrue(any('changed after eligibility was reviewed' in message
+                                for message in flagged['readiness_errors']))
+            self.assertTrue(flagged['needs_review'])
+            self.assertIn('updated information', flagged['review_summary'])
+            self.assertContains(page, flagged['review_summary'])
+            self.assertContains(page, 'Review eligibility')
             self.assertNotContains(page, 'Scoring settings are incomplete')
             self.assertFalse(OperationalRun.objects.exists())

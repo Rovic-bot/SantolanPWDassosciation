@@ -36,7 +36,7 @@ class AccountTests(TestCase):
     def test_superuser_login_and_safe_default_destination(self):
         response = self.sign_in('supervisor')
         self.assertRedirects(response, reverse('core:dashboard'))
-        self.assertContains(self.client.get(reverse('core:dashboard')), 'Manage roles (groups)')
+        self.assertEqual(self.client.get(reverse('admin:auth_group_changelist')).status_code, 200)
 
     def test_external_next_url_is_rejected_by_login_and_legacy_redirect(self):
         for route in ('accounts:login', 'admin:login'):
@@ -94,7 +94,8 @@ class AccountTests(TestCase):
         self.staff.groups.add(group)
         self.client.force_login(self.staff)
         response = self.client.get(reverse('core:dashboard'))
-        self.assertContains(response, group.name)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.wsgi_request.user.groups.filter(pk=group.pk).exists())
         self.assertNotContains(response, 'Manage accounts')
         self.assertIn('no-store', response['Cache-Control'])
         group.permissions.clear()

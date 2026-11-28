@@ -19,6 +19,8 @@ class ApplicationRetryTests(TestCase):
         workflow_tests.ConfirmedApplicationTests.setUp(self)
         self.document = ProgramRequirement.objects.create(program=self.program, label='Required attachment', kind='document')
         self.statement = ProgramRequirement.objects.create(program=self.program, label='Required statement', kind='text')
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC fixture requirements before intake.')
         self.document_key = f'requirement_{self.document.pk}'
         self.statement_key = f'requirement_{self.statement.pk}'
         self.client.post(self.verify_url, self.identity())

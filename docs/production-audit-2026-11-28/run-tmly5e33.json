@@ -1,0 +1,94 @@
+[
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_applicant_errors_are_not_mislabeled_as_scoring_configuration",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_equal_values_receive_full_weight_and_ses_retains_4ps_adjustment",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_varied_values_keep_exact_pool_minmax_and_existing_zero_endpoints",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_audited_date_only_correction_keeps_eligibility_without_a_new_review",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_frozen_observation_replay_rejects_future_cutoff_and_reuses_request_key",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_missing_eligible_inputs_still_block_and_no_values_are_imputed",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_new_applicant_invalidates_token_and_prior_current_ranking_without_rewriting_it",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_intake_http_ranking_uses_student_mapping_zero_constants_and_frozen_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_rank_requires_calculation_permission_and_rolls_back_audit_failure",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_selection_keeps_exact_boundary_ties_held",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_selection_preserves_capacity_and_excludes_pending_applications",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_selection_rejects_changed_sources_and_preserves_earlier_selection",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_open_selection_requires_both_permissions_and_a_successful_audit",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_pending_applications_do_not_block_open_ranking_but_require_resolution_after_close",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_philippine_time_binding_and_historical_signed_cutoff_roundtrip",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_policy_revision_preserves_unscored_binding_weights_and_rejects_changed_math",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_select_during_registration_through_http_retains_ranking_and_audited_timing",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_single_person_pool_zero_score_then_final_rank_after_close",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_rolling_pool.RollingPoolTests.test_unexplained_schedule_log_or_member_change_cannot_reuse_eligibility",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_approval_permission_rule_pairing_and_audit_rollback",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_changed_member_review_is_specific_and_still_blocks_ranking",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_reviewed_inputs_keep_their_bindings_when_shared_math_changes",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_shared_rule_changes_new_runs_preserves_old_history_and_shows_every_contribution",
+    "status": "PASS"
+  }
+]

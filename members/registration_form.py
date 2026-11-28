@@ -98,12 +98,14 @@ class MemberRegistrationForm(AssociationPDFForm):
 
     @property
     def document_fields(self):
-        return [self[slot] for slot in SLOTS]
+        return [self[slot] for slot in SLOTS if slot in self.fields]
 
     @property
     def profile_sections(self):
-        return super().profile_sections + [('Supporting documents and acknowledgement',
-            [self['acknowledgement'], *self.document_fields, self['civil_alternative']])]
+        documents = self.document_fields
+        civil = [self['civil_alternative']] if 'civil_alternative' in self.fields else []
+        title = 'Supporting documents and acknowledgement' if documents else 'Acknowledgement'
+        return super().profile_sections + [(title, [self['acknowledgement'], *documents, *civil])]
 
     def apply_to_member(self):
         """Update the current profile; the original application and its revisions stay intact."""

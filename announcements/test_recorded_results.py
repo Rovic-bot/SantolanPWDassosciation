@@ -33,7 +33,7 @@ class RecordedResultsTests(TestCase):
     def test_popup_publication_returns_refreshed_preview_and_rejects_replay(self):
         url = reverse('announcements:prepare_results', args=[self.program.pk])
         plan = self.client.get(url).context['preview']
-        data = {'action': 'PUBLISH_RECORDED_RESULTS', 'expected': plan['expected'], 'version': plan['version']}
+        data = {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.', 'expected': plan['expected'], 'version': plan['version']}
         response = self.client.post(url, data, HTTP_X_ANNOUNCEMENT_DIALOG='1', follow=True)
         self.assertEqual(response.redirect_chain, [(url, 302)])
         self.assertContains(response, 'id="program-results-dialog"')
@@ -51,7 +51,7 @@ class RecordedResultsTests(TestCase):
         user = user or self.admin
         plan = plan or recorded_preview(self.program.pk, user=user)
         return publish_recorded_results(self.program.pk, user=user,
-            expected=plan['expected'], version=plan['version'])
+            expected=plan['expected'], version=plan['version'], selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
 
     def test_publish_pending_reviews_open_period_and_missing_policy_without_changing_records(self):
         pending = application_fixture(self.program, create_member('RECORD-PENDING'))
@@ -89,11 +89,11 @@ class RecordedResultsTests(TestCase):
         self.assertFalse(Announcement.objects.exists())
         plan = response.context['preview']
         self.assertEqual(plan['payload']['rows'][0]['name'], 'J*** D*** C***')
-        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS',
+        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.',
             'expected': plan['expected'], 'version': plan['version']})
         item = Announcement.objects.get()
-        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]))
-        response = self.client.get(response.url)
+        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]), fetch_redirect_response=False)
+        response = self.client.get(response.url + '?popup=1')
         self.assertContains(response, self.member.full_name, count=4)
         self.assertNotContains(response, 'J*** D*** C***')
         item.result_revision.refresh_from_db()
@@ -102,7 +102,7 @@ class RecordedResultsTests(TestCase):
         self.assertNotContains(self.client.get(reverse('core:result_detail', args=[item.pk])), self.member.full_name)
 
     def test_legacy_history_resolves_only_unambiguous_names_without_mutating_payload(self):
-        old = prepare_results(self.program.pk, user=self.admin, version=0, reason='Historical decision.')
+        old = prepare_results(self.program.pk, user=self.admin, version=0, reason='Historical decision.', selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         payload = deepcopy(old.result_revision.public_payload)
         result = admin_projection(self.program, payload, user=self.admin)
         self.assertEqual(result['rows'][0]['name'], self.member.full_name)
@@ -121,7 +121,7 @@ class RecordedResultsTests(TestCase):
         self.member.full_name = 'Updated Member Name'
         self.member.save()
         url = reverse('announcements:prepare_results', args=[self.program.pk])
-        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS',
+        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.',
             'expected': plan['expected'], 'version': plan['version']})
         self.assertContains(response, 'recorded results changed')
         self.assertFalse(Announcement.objects.exists())
@@ -140,7 +140,7 @@ class RecordedResultsTests(TestCase):
         url = reverse('announcements:prepare_results', args=[self.program.pk])
         client = Client(enforce_csrf_checks=True)
         client.force_login(user)
-        self.assertEqual(client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS',
+        self.assertEqual(client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.',
             'expected': plan['expected'], 'version': 0}).status_code, 403)
         user.user_permissions.clear()
         with self.assertRaises(PermissionDenied):
@@ -215,7 +215,7 @@ class RecordedResultsTests(TestCase):
         for status in ('draft', 'cancelled'):
             self.program.status = status
             self.program.save()
-            response = self.client.get(reverse('announcements:manage_list'), {'status': status})
+            response = self.client.get(reverse('announcements:choose_results'), {'status': status})
             self.assertContains(response, self.program.name)
             self.assertNotContains(response, 'Saved announcements')
             item = self.publish()
@@ -266,7 +266,7 @@ class RecordedEWAFResultsTests(OperationalHelpers, TransactionTestCase):
         response = self.client.get(url)
         self.assertContains(response, self.member.full_name)
         plan = response.context['preview']
-        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS',
+        response = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.',
             'expected': plan['expected'], 'version': plan['version']})
         self.assertEqual(response.status_code, 302)
         item = Announcement.objects.get()
@@ -294,7 +294,7 @@ class RecordedEWAFResultsTests(OperationalHelpers, TransactionTestCase):
         plan = recorded_preview(self.program.pk, user=self.officer)
         self.assertEqual(len(plan['payload']['rows']), 1)
         item = publish_recorded_results(self.program.pk, user=self.officer,
-            expected=plan['expected'], version=plan['version'])
+            expected=plan['expected'], version=plan['version'], selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         self.assertTrue(results_current(item))
         self.assertEqual(list(OperationalDecision.objects.order_by('pk').values()), before)
         run.refresh_from_db()

@@ -40,9 +40,12 @@ class ClaimHelpers:
 
     def record(self, name='One', *, email=None, channel='online', status='forwarded'):
         form = PDAOOnsiteForm(pdao_data() | {'submission_token': 'synthetic', 'first_name': name,
-            'email': email if email is not None else f'{name.lower()}@example.invalid'})
+            'email': email or f'{name.lower()}@example.invalid'})
         assert form.is_valid(), form.errors
         data = form.submitted_data() | {'intake_channel': channel}
+        # A retained legacy record may lack email; current intake requires it.
+        if email == '':
+            data['email'] = ''
         with registration_write():
             item = PDAORegistration.objects.create(submission_key=uuid4(), data=data, payload_digest=digest(data),
                 privacy_version=ONSITE_PRIVACY_VERSION, binding_digest='synthetic',

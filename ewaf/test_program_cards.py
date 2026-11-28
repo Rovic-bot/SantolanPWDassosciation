@@ -2,6 +2,7 @@ from copy import deepcopy
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -36,8 +37,9 @@ class EWAFCardTests(OperationalHelpers, TestCase):
         self.assertEqual([row['percent'] for row in program.ewaf_card['rows']],
                          [f'{actual[code] / 100:.2f}' for code in proposal['order']])
         self.assertEqual(saved.validation, result)
+        response = self.client.get(program.selection['panel_url'])
         for code, value in actual.items():
-            self.assertContains(response, f'value="{value / 100:.2f}" max="100"')
+            self.assertContains(response, f'{value / 100:.2f}%')
         self.assertNotContains(response, 'program-card-dates')
         self.assertNotContains(response, 'program-category')
         self.assertNotContains(response, 'Created ')
@@ -54,7 +56,11 @@ class EWAFCardTests(OperationalHelpers, TestCase):
         self.assertEqual(summary['state'], 'draft')
         self.assertTrue(all(row['percent'] is None for row in summary['rows']))
         page = self.client.get(self.url)
-        self.assertFalse(page.context['page_obj'][0].selection['can_generate'])
+        self.assertEqual(page.context['page_obj'][0].ewaf_card['state'], 'draft')
+        page = self.client.get(page.context['page_obj'][0].selection['panel_url'])
+        self.assertFalse(page.context['selection']['can_generate'])
+        with self.assertRaises(ValidationError):
+            service.latest_configuration(self.program)
         self.assertNotContains(page, 'Approved criteria weights')
         self.assertNotContains(page, 'aria-label="Socioeconomic Indicator weight"')
         locked.refresh_from_db()

@@ -30,12 +30,34 @@ def has_required_types(program):
 
 
 def retained_selected_ids(program):
-    row = adoption(program)
-    if not row or row.changes.get('ewaf_applicable', {}).get('before') is not False:
-        return set()
-    return set(program.applications.filter(pk__in=row.changes.get('retained_selection_ids', []),
-        status__in=('SELECTED', 'COMPLETED'), assistance_case__decision='approved',
-        assistance_case__decided_at__lte=row.occurred_at).values_list('pk', flat=True))
+    return retained_selections((program,)).get(program.pk, set())
+
+
+def retained_selections(programs):
+    """Read retained selections for a portfolio with at most two queries."""
+    from django.db.models import Q
+    from .models import ProgramApplication, ProgramLog
+
+    result = {program.pk: set() for program in programs if not program._state.adding}
+    if not result:
+        return result
+    first_rows = {}
+    for row in ProgramLog.objects.filter(program_id__in=result, action=ACTION).order_by(
+            'program_id', 'occurred_at', 'pk'):
+        # Exactly the first adoption event is authoritative, as in adoption().
+        first_rows.setdefault(row.program_id, row)
+    candidates = Q(pk__in=[])
+    for program_id, row in first_rows.items():
+        if (row.changes.get('contract') == CONTRACT
+                and row.changes.get('ewaf_applicable', {}).get('before') is False):
+            candidates |= Q(program_id=program_id,
+                pk__in=row.changes.get('retained_selection_ids', []),
+                assistance_case__decided_at__lte=row.occurred_at)
+    selected = ProgramApplication.objects.filter(candidates,
+        status__in=('SELECTED', 'COMPLETED'), assistance_case__decision='approved')
+    for program_id, application_id in selected.values_list('program_id', 'pk'):
+        result[program_id].add(application_id)
+    return result
 
 
 def retained_receipt(receipt):

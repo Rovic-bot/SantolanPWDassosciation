@@ -54,6 +54,8 @@ class ConfiguredApplicationTests(TestCase):
         item = ProgramRequirement.objects.create(program=self.program,
             label='Current calendar photo', kind='document', is_required=True,
             instructions='Upload a current photo holding a calendar.')
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC requirement fixture before intake.')
         with self.assertRaises(ValidationError):
             self.submit()
         self.assertFalse(ProgramApplication.objects.exists())
@@ -73,6 +75,8 @@ class ConfiguredApplicationTests(TestCase):
 
     def test_missing_configured_file_still_blocks_eligibility(self):
         item = ProgramRequirement.objects.create(program=self.program, label='Required evidence', kind='document')
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC requirement fixture before intake.')
         application = submit_application(self.program.pk, grant=self.grant(), data=self.data(),
             files=MultiValueDict({f'requirement_{item.pk}': [image_upload()]}))
         document = application.documents.get()
@@ -83,6 +87,8 @@ class ConfiguredApplicationTests(TestCase):
 
     def test_new_application_correction_preserves_not_required_policy(self):
         item = ProgramRequirement.objects.create(program=self.program, label='Applicant statement', kind='text')
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC requirement fixture before intake.')
         application = self.submit(**{f'requirement_{item.pk}': 'First submitted answer'})
         form = CorrectionForm(application=application)
         self.assertNotIn('calendar_photo', form.fields)

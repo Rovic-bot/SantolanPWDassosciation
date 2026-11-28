@@ -1,0 +1,82 @@
+{
+  "discovered": 3121,
+  "final": {
+    "PASS": 3121
+  },
+  "by_component": {
+    "accounts": {
+      "PASS": 72
+    },
+    "analytics": {
+      "PASS": 27
+    },
+    "announcements": {
+      "PASS": 157
+    },
+    "assistance": {
+      "PASS": 147
+    },
+    "audit": {
+      "PASS": 17
+    },
+    "core": {
+      "PASS": 161
+    },
+    "documents": {
+      "PASS": 62
+    },
+    "events": {
+      "PASS": 157
+    },
+    "ewaf": {
+      "PASS": 1311
+    },
+    "main_testing": {
+      "PASS": 9
+    },
+    "members": {
+      "PASS": 102
+    },
+    "membership": {
+      "PASS": 386
+    },
+    "program_intake": {
+      "PASS": 45
+    },
+    "programs": {
+      "PASS": 465
+    },
+    "reports": {
+      "PASS": 3
+    }
+  },
+  "baseline_selected": 3077,
+  "baseline_recorded": 2737,
+  "baseline": {
+    "PASS": 2127,
+    "FAIL": 610
+  },
+  "reconciliation": "Each final-discovery ID counted once. Latest reviewed retest supersedes earlier runs. Removed/renamed historical cases and import placeholders are retained in raw run ledgers, not silently counted as current passes.",
+  "outside_default_discovery": [
+    {
+      "id": "scripts.quality_layout_shifts.LayoutShiftAudit.test_layout_shifts",
+      "status": "PASS",
+      "evidence": "run-3ducu8pz.json"
+    },
+    {
+      "id": "scripts.quality_audit_browser.QualityBrowserAudit.test_rendered_pages",
+      "status": "PASS",
+      "evidence": "run-3ducu8pz.json"
+    },
+    {
+      "id": "scripts.quality_crossbrowser.CrossBrowserAudit.test_firefox_routes_keyboard_and_reflow",
+      "status": "PASS",
+      "evidence": "run-cj2fx665.json"
+    },
+    {
+      "id": "scripts.quality_crossbrowser.CrossBrowserAudit.test_webkit_routes_keyboard_and_reflow",
+      "status": "PASS",
+      "evidence": "run-cj2fx665.json"
+    }
+  ]
+}

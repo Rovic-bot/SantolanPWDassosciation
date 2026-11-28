@@ -25,14 +25,14 @@ class PublicResultsTests(TestCase):
         self.member.full_name = 'Juan Dela Cruz'
         self.member.save()
         self.application = application_fixture(self.program, self.member)
-        review_eligibility(self.application.pk, user=self.admin, data=review_data(self.application))
+        from assistance.testsupport import historical_selection
+        historical_selection(self.application, self.admin)
         close_non_ewaf_program(self.program)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
         self.list_url = reverse('core:announcements') + '?category=results'
 
     def draft(self, version=0):
         return prepare_results(self.program.pk, user=self.admin, version=version,
-                               reason='Synthetic private revision reason; never public.')
+                               reason='Synthetic private revision reason; never public.', selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
 
     def publish(self, item):
         return change_publication(item.pk, user=self.admin, version=item.version, action='published')
@@ -64,7 +64,7 @@ class PublicResultsTests(TestCase):
         self.client.force_login(self.admin)
         self.assert_withheld(item)
 
-    def test_result_details_keep_projection_while_notice_only_links_to_results(self):
+    def test_result_details_and_inline_notices_use_authorized_projection(self):
         item = self.publish(self.draft())
         board = reverse('core:announcements')
         for category in ('', 'results'):
@@ -74,21 +74,21 @@ class PublicResultsTests(TestCase):
         response = self.client.get(self.detail_url(item))
         self.assertContains(response, 'J*** D*** C***')
         self.assertContains(response, '****' + self.application.public_reference[-4:])
-        self.assertContains(response, 'Eligible applicants')
-        self.assertContains(response, 'Approved selection method')
+        self.assertContains(response, 'Submitted applications')
+        self.assertContains(response, 'Selection criteria')
         self.assertContains(response, reverse('core:contact'))
         result = response.context['result']
         self.assertIsInstance(result, dict)
-        self.assertEqual(set(result), {'pk', 'published_at', 'public_payload'})
+        self.assertEqual(set(result), {'pk', 'published_at', 'public_payload', 'capacity_label', 'schedule', 'notice'})
         self.assertEqual(result['public_payload'], item.result_revision.public_payload)
         notice = self.client.get(reverse('announcements:detail', args=[item.pk]))
         popup = self.client.get(reverse('announcements:detail', args=[item.pk]), {'popup': '1'})
         self.assertTemplateUsed(popup, 'announcements/public_popup.html')
-        self.assertContains(popup, f'href="{self.detail_url(item)}"')
-        self.assertContains(notice, f'href="{self.detail_url(item)}"')
+        self.assertContains(popup, 'data-public-result')
+        self.assertContains(notice, 'data-public-result')
         self.assertNotIn('result_revision', notice.context['announcement'])
-        self.assertNotContains(notice, 'J*** D*** C***')
-        self.assertNotContains(notice, '****' + self.application.public_reference[-4:])
+        self.assertContains(notice, 'J*** D*** C***')
+        self.assertContains(notice, '****' + self.application.public_reference[-4:])
         self.assertEqual(notice.context['announcement']['category'], 'results')
         for value in (self.member.full_name, self.member.control_number, self.member.contact_number,
                       str(self.member.birthdate), self.member.address, self.member.disability_information,
@@ -192,12 +192,12 @@ class PublicResultsTests(TestCase):
         other = ProgramApplication.objects.create(program=self.program, member=other_member,
             public_reference='OLD-' + self.application.public_reference[-4:])
         verified_photo(other)
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other))
+        from assistance.testsupport import historical_selection
+        historical_selection(other, self.admin)
         item = self.publish(self.draft())
         response = self.client.get(self.detail_url(item))
         self.assertContains(response, 'Similar entry')
-        self.assertContains(response, 'not proof of identity')
+        self.assertContains(response, 'Confirm privately with the Help Desk.')
         self.assertContains(response, '&lt;script&gt;')
         self.assertNotContains(response, '<script>synthetic()</script>')
         self.assertNotContains(response, other_member.full_name)
@@ -210,7 +210,7 @@ class PublicResultsTests(TestCase):
         response = self.client.get(self.list_url, {'category': 'results', 'page': 'invalid',
                                                   'reference': self.application.public_reference})
         self.assertContains(response, self.program.name)
-        self.assertContains(response, f'href="{reverse("announcements:detail", args=[item.pk])}"')
+        self.assertContains(response, 'data-public-result')
         self.assertNotContains(response, self.application.public_reference)
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
         self.assertEqual(response.context['page_obj'][0]['destination'], self.detail_url(item))
@@ -223,7 +223,7 @@ class PublicResultsTests(TestCase):
         for query in (item.title, self.program.description):
             response = self.client.get(url, {'q': query, 'category': 'results'})
             self.assertEqual(response.context['page_obj'].paginator.count, 1)
-            self.assertContains(response, f'href="{reverse("announcements:detail", args=[item.pk])}"')
+            self.assertContains(response, 'data-public-result')
             self.assertNotContains(response, 'PRIVATE-LEGACY-NOTICE-CONTENT')
             self.assertNotIn('public_payload', response.context['page_obj'][0])
         for query in ('PRIVATE-LEGACY-NOTICE-CONTENT', self.member.full_name,

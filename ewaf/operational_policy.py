@@ -81,7 +81,14 @@ def findings(policy, judgments):
         except (NumericIssue, ValueError, TypeError):
             errors.append(f'{code}: invalid exact number or encoding')
     from .vault_policy import CONTRACT as VAULT_CONTRACT
-    for role in (() if policy.get('source_contract') == VAULT_CONTRACT else ('functional_need', 'consent', 'accessible_alternative')):
+    from .intake_integration import source_adapter
+    intake = source_adapter(policy)
+    if intake:
+        errors.extend(intake.policy_findings(policy))
+    roles = (() if policy.get('source_contract') == VAULT_CONTRACT else
+             tuple(policy.get('eligibility', {})) if intake and isinstance(policy.get('eligibility'), dict) else
+             ('functional_need', 'consent', 'accessible_alternative'))
+    for role in roles:
         rule = policy.get('eligibility', {}).get(role, {})
         for key in ('item', 'accepted_outcome'):
             missing(f'PR.{role}.{key}', rule.get(key))

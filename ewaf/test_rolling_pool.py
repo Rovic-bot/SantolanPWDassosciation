@@ -69,12 +69,12 @@ class RollingPoolTests(TransactionTestCase):
             run.clean()
             self.assertTrue(rolling.provisional(run.snapshot))
             self.assertEqual(rolling.observed_at(run.snapshot), self.open_at + timedelta(minutes=5))
-            self.assertEqual(run.snapshot['eligible'][str(a.pk)]['inputs']['ES']['value'], 'Unemployed')
+            self.assertEqual(run.snapshot['eligible'][str(a.pk)]['inputs']['ES']['value'], 'Student')
             self.assertEqual(Fraction(run.calculations[str(a.pk)]['score_exact']), Fraction(self.configuration.validation['weights']['HM']))
             for result in run.calculations.values():
                 for trace in result['traces']:
                     self.assertEqual(trace['weight'], self.configuration.validation['weights'][trace['criterion']])
-                    if trace['criterion'] != 'HM':
+                    if trace['criterion'] in ('SES', 'PA'):
                         self.assertEqual(trace['normalized']['exact'], '0')
                         self.assertEqual(trace['contribution']['exact'], '0')
                         self.assertEqual(trace['constant_rule'], rolling.ZERO_CONSTANTS)
@@ -268,7 +268,9 @@ class RollingPoolTests(TransactionTestCase):
             self.publish()
             app = self.applicant('ROLL-ONLY', employment_status='student')
             first = self.generate()
-            self.assertEqual(Fraction(first.calculations[str(app.pk)]['score_exact']), 0)
+            # Current HM rule uses baseline one; this single applicant has two household members.
+            self.assertEqual(Fraction(first.calculations[str(app.pk)]['score_exact']),
+                             Fraction(self.configuration.validation['weights']['HM']))
         with patch('django.utils.timezone.now', return_value=self.cutoff - timedelta(minutes=1)):
             with self.assertRaisesMessage(ValidationError, 'final ranking after registration closes'):
                 service.record_decision(self.program.pk, user=self.user, run_id=first.pk, application_id=app.pk,
@@ -325,14 +327,14 @@ class RollingPoolTests(TransactionTestCase):
         from programs.schedule_services import update_program_schedule
         from .evidence import source_context
         a, b = self.pool()
-        before = list(AssistanceCase.objects.filter(application__program=self.program).values())
+        before = list(AssistanceCase.objects.filter(application__program=self.program).order_by('pk').values())
         changed = update_program_schedule(self.program.pk, user=self.user, values={
             'version': self.program.version, 'notes': 'SYNTHETIC earlier opening, eligibility terms unchanged',
             'registration_opens_at': (self.program.registration_opens_at - timedelta(hours=1)).astimezone(ZoneInfo('Asia/Manila'))})
         a.program = changed
         context = source_context(a)
         self.assertTrue(context['eligibility_schedule_revision']['witnesses'])
-        self.assertEqual(list(AssistanceCase.objects.filter(application__program=self.program).values()), before)
+        self.assertEqual(list(AssistanceCase.objects.filter(application__program=self.program).order_by('pk').values()), before)
         run = self.generate()
         self.assertEqual(len(run.calculations), 2)
         run.clean()
@@ -345,15 +347,18 @@ class RollingPoolTests(TransactionTestCase):
             service.record_decision(self.program.pk, user=self.user, run_id=run.pk,
                 application_id=application.pk, expected_revision=0, outcome='SELECTED',
                 reason='SYNTHETIC selection after an audited date correction.')
+        from announcements.testsupport import publish_selection
+        publish_selection(self.program, self.user)
         for application in (a,):
             application.refresh_from_db()
             receipt = record_actual_receipt(application.pk, user=self.user, data={
-                'version': application.version, 'program_version': changed.version})
+                'version': application.version, 'program_version': changed.version,
+                'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True})
             self.assertEqual(receipt.approval_snapshot['eligibility_schedule_revision'],
                              context['eligibility_schedule_revision'])
             self.assertEqual(receipt.approval_snapshot['operational_run_id'], run.pk)
         self.assertEqual(AssistanceRelease.objects.filter(application__program=self.program).count(), 1)
-        self.assertEqual(list(AssistanceCase.objects.filter(application__program=self.program).values()), before)
+        self.assertEqual(list(AssistanceCase.objects.filter(application__program=self.program).order_by('pk').values()), before)
         run.refresh_from_db()
         self.assertEqual(run.payload(), retained)
 

@@ -82,9 +82,9 @@ class ApplicationHelpers(SourceHelpers):
         with CaptureQueriesContext(connection) as queries:
             action()
         locks = [q['sql'] for q in queries if 'FOR UPDATE' in q['sql']]
-        positions = [next(i for i, sql in enumerate(locks) if f'`{table}`' in sql) for table in expected_tables]
+        positions = [next(i for i, sql in enumerate(locks) if connection.ops.quote_name(table) in sql) for table in expected_tables]
         self.assertEqual(positions, sorted(set(positions)))
-        self.assertFalse(any('JOIN' in sql and '`programs_applicationphoto`' in sql for sql in locks))
+        self.assertFalse(any('JOIN' in sql and connection.ops.quote_name('programs_applicationphoto') in sql for sql in locks))
 
 
 class SubmissionTests(ApplicationHelpers, TransactionTestCase):

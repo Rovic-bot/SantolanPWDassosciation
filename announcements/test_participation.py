@@ -25,7 +25,7 @@ class ProgramParticipationTests(TestCase):
 
     def draft(self, version=0):
         return prepare_results(self.program.pk, user=self.admin, version=version,
-            reason='Synthetic owner-authorized roster preview.', roster=True)
+            reason='Synthetic owner-authorized roster preview.', roster=True, selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
 
     def notice(self):
         return Announcement.objects.create(linked_program=self.program, title='Program notice',
@@ -34,8 +34,8 @@ class ProgramParticipationTests(TestCase):
 
     def test_two_tables_include_all_applicants_and_only_confirmed_selections(self):
         other = application_fixture(self.program, create_member('ROSTER-OTHER'))
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other, decision='rejected'))
+        from assistance.testsupport import historical_selection
+        historical_selection(other, self.admin, selected=False)
         item = self.publish(self.draft())
         payload = item.result_revision.public_payload
         self.assertEqual(payload['schema'], 2)
@@ -44,8 +44,8 @@ class ProgramParticipationTests(TestCase):
         self.assertEqual(set(payload['applicants'][0]), {'name','reference','status','ambiguous'})
         for route in ('announcements:detail','core:result_detail'):
             response = Client().get(reverse(route, args=[item.pk]))
-            self.assertContains(response, 'Members who applied')
-            self.assertContains(response, 'Selected members')
+            self.assertContains(response, 'Submitted applications')
+            self.assertContains(response, 'Selected recipients')
             self.assertContains(response, self.application.public_reference, count=2)
             self.assertContains(response, other.public_reference, count=1)
             for private in (self.member.full_name, self.member.control_number, self.application.status_token,
@@ -86,30 +86,31 @@ class ProgramParticipationTests(TestCase):
         other.member.save()
         ProgramApplication.objects.filter(pk=other.pk).update(public_reference='OLD-'+self.application.public_reference[-4:])
         other.refresh_from_db()
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other))
+        from assistance.testsupport import historical_selection
+        historical_selection(other, self.admin)
         payload, _ = collect_program_results(self.program)
         self.assertEqual(len({row['reference'] for row in payload['rows']}), 2)
         self.assertEqual({row['name'] for row in payload['rows']}, {'J*** D*** C***'})
         self.assertTrue(all(not row['ambiguous'] for row in payload['rows']))
 
-    def test_unified_prepare_routes_need_no_typed_reason_and_use_same_schema(self):
+    def test_private_prepare_routes_preserve_roster_without_publishing(self):
         for route in ('announcements:prepare_results','announcements:prepare_recipients'):
             response = self.client.get(reverse(route, args=[self.program.pk]))
-            self.assertContains(response, 'Prepare and publish program results')
+            self.assertContains(response, 'Review &amp; selection pool')
             self.assertNotContains(response, 'name="reason"')
             self.assertNotContains(response, 'name="confirm"')
         response = self.client.post(reverse('announcements:prepare_recipients', args=[self.program.pk]),
                                     {'program':str(self.program.pk),'version':0})
         item = Announcement.objects.get(program=self.program)
-        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]))
+        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]), fetch_redirect_response=False)
+        self.assertEqual(item.status, 'draft')
         self.assertEqual(item.result_revision.public_payload['kind'], 'program_participation')
-        preview = self.client.get(reverse('announcements:manage_detail', args=[item.pk]))
+        preview = self.client.get(reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1')
         self.assertContains(preview, 'Publish program results')
         self.assertNotContains(preview, '<select name="action"')
 
     def test_historical_revision_remains_byte_for_byte_and_can_be_superseded(self):
-        old = prepare_results(self.program.pk, user=self.admin, version=0, reason='Historical mask.')
+        old = prepare_results(self.program.pk, user=self.admin, version=0, reason='Historical mask.', selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         previous = old.result_revision
         before = previous.public_payload.copy()
         new = self.draft(old.version)

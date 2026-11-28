@@ -174,6 +174,7 @@ def _decide_application(reference, *, user, version, decision, notes, address=No
             record_linked_review(intake, application, user, 'membership_' + decision, notes)
             return application
     except IntegrityError as error:
-        if error.args[0] != 1062:
+        from core.database_errors import is_unique_violation
+        if not is_unique_violation(error):
             raise
         raise ValidationError('A member with this control number or application already exists. Review the duplicate before deciding.')

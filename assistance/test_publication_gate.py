@@ -16,15 +16,15 @@ from announcements.results import results_current
 from announcements.testsupport import publish_selection
 from members.tests import create_member
 from programs.testsupport import application_fixture
-from programs.tests import create_program
+from programs.tests import create_program, program_data
 from . import services, tests as fixtures
 from .models import AssistanceRelease
 
 
 class PublishedReceiptTests(TestCase):
     def setUp(self):
-        with patch('assistance.tests.create_program',
-                side_effect=lambda **values: create_program(**(values | {'slots': 4}))):
+        with patch('programs.tests.program_data',
+                side_effect=lambda **values: program_data(**(values | {'slots': 4}))):
             fixtures.AssistanceTests.setUp(self)
     review = fixtures.AssistanceTests.review
     approve = fixtures.AssistanceTests.approve
@@ -33,7 +33,8 @@ class PublishedReceiptTests(TestCase):
         app = app or self.application
         app.refresh_from_db()
         return services.record_actual_receipt(app.pk, user=self.admin,
-            data={'version': app.version, 'program_version': self.program.version})
+            data={'version': app.version, 'program_version': self.program.version,
+                  'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True})
 
     def test_selected_but_unpublished_blocks_button_post_and_direct_release(self):
         self.approve(publish=False)
@@ -45,17 +46,26 @@ class PublishedReceiptTests(TestCase):
         with self.assertRaisesMessage(ValidationError, MESSAGE):
             services.record_release(self.application.pk, user=self.admin, data=fixtures.release_data(self.application))
         response = self.client.post(reverse('assistance:release', args=[self.application.pk]),
-            {'version': self.application.version, 'program_version': self.program.version}, follow=True)
+            {'version': self.application.version, 'program_version': self.program.version,
+                  'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True}, follow=True)
         self.assertContains(response, MESSAGE)
         self.assertFalse(AssistanceRelease.objects.exists())
 
     def test_new_selection_waits_but_previously_published_member_can_receive(self):
         self.approve()
         first = Announcement.objects.get(program=self.program)
-        added = application_fixture(self.program, create_member('PUBLISH-LATER'))
-        services.review_eligibility(added.pk, user=self.admin, data=fixtures.review_data(added))
-        services.decide_assistance(added.pk, user=self.admin, data=fixtures.decision_data(added))
+        from programs.testsupport import scoring_application
+        added = scoring_application(self.program, self.admin, 'PUBLISH-LATER')
+        fixtures.current_selection(added, self.admin, publish=False)
         self.assertFalse(results_current(first))
+        # Reranking requires renewed selection; the same member's published identity remains valid.
+        from ewaf import operational_services as operational
+        from ewaf.operational_models import OperationalDecision, OperationalRun
+        previous = OperationalDecision.objects.filter(application=self.application).first()
+        operational.record_decision(self.program.pk, user=self.admin,
+            run_id=OperationalRun.objects.filter(program=self.program).first().pk,
+            application_id=self.application.pk, expected_revision=previous.revision, outcome='SELECTED',
+            reason='Synthetic reconfirmation against the expanded current ranking.')
         with self.assertRaisesMessage(ValidationError, MESSAGE):
             self.receipt(added)
         receipt = self.receipt()
@@ -79,7 +89,7 @@ class PublishedReceiptTests(TestCase):
                 transaction.set_rollback(True)
         with transaction.atomic():
             item.events.filter(action='results_published').delete()
-            with self.assertRaisesMessage(ValidationError, MESSAGE):
+            with self.assertRaisesMessage(ValidationError, 'missing their original publication audit'):
                 self.receipt()
             transaction.set_rollback(True)
         original = item.result_revision.public_payload
@@ -98,7 +108,7 @@ class PublishedReceiptTests(TestCase):
                 self.receipt()
         self.assertFalse(AssistanceRelease.objects.exists())
         self.application.refresh_from_db()
-        self.assertEqual(self.application.status, 'SELECTED')
+        self.assertEqual(self.application.status, 'ELIGIBLE')
 
 
 class PublicationReceiptConcurrencyTests(TransactionTestCase):
@@ -108,11 +118,11 @@ class PublicationReceiptConcurrencyTests(TransactionTestCase):
         from announcements import release_publication
         from announcements.services import change_publication
         from programs.testsupport import close_non_ewaf_program
-        close_non_ewaf_program(self.program, self.admin)
-        services.decide_assistance(self.application.pk, user=self.admin, data=fixtures.decision_data(self.application))
+        fixtures.current_selection(self.application, self.admin, publish=False)
         item = publish_selection(self.program, self.admin)
         self.application.refresh_from_db()
-        data = {'version': self.application.version, 'program_version': self.program.version}
+        data = {'version': self.application.version, 'program_version': self.program.version,
+                  'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True}
         locked, proceed, withdrawing, withdrawn = Event(), Event(), Event(), Event()
         original = release_publication.published_selection
 

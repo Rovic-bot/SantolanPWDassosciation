@@ -44,11 +44,15 @@ class TransferHelpers:
         self.client.force_login(self.actor)
 
     def record(self, *, status='forwarded', **changes):
+        # Retained records can lack fields that current intake now requires.
+        legacy = {key: value for key, value in changes.items()
+                  if key in ('email', 'employment_status') and value == ''}
+        current_changes = {key: value for key, value in changes.items() if key not in legacy}
         form = PDAOOnsiteForm(pdao_data() | {'submission_token': 'fictional',
             'disability_types': ['Physical Disability'], 'suffix': 'Jr.',
-            'sex': 'Male', 'employment_status': 'Unemployed', **changes})
+            'sex': 'Male', 'employment_status': 'Unemployed', **current_changes})
         assert form.is_valid(), form.errors
-        data = form.submitted_data() | {'intake_channel': 'walk_in'}
+        data = form.submitted_data() | {'intake_channel': 'walk_in'} | legacy
         with registration_write():
             return PDAORegistration.objects.create(submission_key=uuid4(), data=data,
                 payload_digest=digest(data), privacy_version=ONSITE_PRIVACY_VERSION,
@@ -149,6 +153,18 @@ class PDAOToMembershipTests(TransferHelpers, TestCase):
                 self.assertFalse(form.is_valid())
                 self.assertIn(name, form.errors)
         self.assertFalse(RegistrationIntake.objects.exists())
+
+    def test_stored_international_phone_is_carried_as_national_input_and_remains_immutable(self):
+        record = self.record()
+        phone = record.current_data['contact_number']
+        self.assertEqual(phone, '+639171234567')
+        claim = self.claim(record)
+        initial, _ = transfer.initial_data(claim)
+        self.assertEqual(initial['contact_number'], '9171234567')
+        intake = self.submit(record, data={'contact_number': '9999999999'})
+        self.assertEqual(intake.revisions.get(number=intake.current_revision).data['contact_number'], phone)
+        record.refresh_from_db()
+        self.assertEqual(record.current_data['contact_number'], phone)
 
     def test_transfer_uses_server_record_and_creates_only_one_pending_application(self):
         record = self.record()

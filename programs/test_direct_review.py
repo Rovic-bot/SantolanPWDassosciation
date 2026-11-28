@@ -70,14 +70,15 @@ class DirectApplicationReviewTests(TestCase):
         if os.environ.get('G12_ARTIFACT_DIR'):
             (Path(os.environ['G12_ARTIFACT_DIR']) / 'direct-review.html').write_bytes(page.content)
 
-    def test_one_click_eligible_records_human_photo_and_automatic_selection(self):
+    def test_one_click_eligible_records_human_photo_without_selection(self):
         photo_count = PhotoVerification.objects.count()
         self.assertRedirects(self.client.post(self.url, self.decision()), self.url)
         self.application.refresh_from_db()
-        self.assertEqual(self.application.status, 'SELECTED')
+        self.assertEqual(self.application.status, 'ELIGIBLE')
         case = AssistanceCase.objects.get(application=self.application)
         self.assertEqual(case.reviewed_by, self.admin)
-        self.assertEqual(case.decision, 'approved')
+        self.assertEqual(case.decision, 'pending')
+        self.assertIsNone(case.decided_at)
         self.assertEqual(case.eligibility_id, 'eligible')
         self.assertTrue(case.review_notes)
         self.assertEqual(PhotoVerification.objects.count(), photo_count + 1)
@@ -197,4 +198,4 @@ class DirectReviewConcurrencyTests(TransactionTestCase):
         self.assertEqual(self.application.decision_emails.count(), 1)
         self.assertEqual(PhotoVerification.objects.count(), before)
         self.application.refresh_from_db()
-        self.assertEqual(self.application.status, 'SELECTED')
+        self.assertEqual(self.application.status, 'ELIGIBLE')

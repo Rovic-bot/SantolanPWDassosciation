@@ -84,7 +84,8 @@ class ContentTests(TestCase):
         self.assertContains(response, reverse('core:resources'))
 
     def test_home_uses_only_published_support_content_and_withdrawal_fallbacks(self):
-        keys = ('application-information', 'contact', 'faq', 'ewaf', 'privacy', 'accessibility')
+        # Application guidance is now a retained bookmark, not an editable card.
+        keys = ('contact', 'faq', 'ewaf', 'privacy', 'accessibility')
         for key in keys:
             save_content(key, user=self.admin, data={
                 'title': f'Approved {key}', 'body': f'Published instructions for {key}.',

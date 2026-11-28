@@ -44,18 +44,10 @@ class ConfigurationPreservationTests(ConfigurationHelpers, EvidenceHelpers, Term
         self.assertEqual(self.business_rows(), before)
 
     def test_additive_migration_no_backfill_or_inferred_authority(self):
-        executor = MigrationExecutor(connection)
-        leaves = executor.loader.graph.leaf_nodes()
-        before = self.business_rows()
-        try:
-            executor.migrate([('ewaf', '0002_verified_evidence')])
-            executor = MigrationExecutor(connection)
-            migration = executor.loader.get_migration('ewaf', '0003_configuration_foundation')
-            self.assertTrue(all(op.__class__.__name__ in ('CreateModel', 'AddConstraint', 'AddIndex') for op in migration.operations))
-            executor.migrate(leaves)
-            self.assertEqual(self.business_rows(), before)
-            for model in (ConfigurationRevision, ConfigurationValidation, ConfigurationReview, ConfigurationAuthorizationEvidence):
-                self.assertEqual(model.objects.count(), 0)
-            self.assertFalse(self.officer.groups.exists())
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
+        from scripts.migration_test_support import assert_additive_upgrade
+        migration = MigrationExecutor(connection).loader.get_migration('ewaf', '0003_configuration_foundation')
+        self.assertTrue(all(type(op).__name__ in ('CreateModel', 'AddConstraint', 'AddIndex') for op in migration.operations))
+        assert_additive_upgrade(self, [('ewaf', '0002_verified_evidence')], [('ewaf', '0003_configuration_foundation')],
+            ['ewaf.ConfigurationRevision', 'ewaf.ConfigurationValidation', 'ewaf.ConfigurationReview',
+             'ewaf.ConfigurationAuthorizationEvidence'])
+        self.assertFalse(self.officer.groups.exists())

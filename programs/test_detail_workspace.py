@@ -14,11 +14,13 @@ from .tests import program_data
 
 
 @override_settings(PROGRAM_APPLICATION_WORKFLOW_ENABLED=True, PDAO_ENFORCEMENT_ENABLED=False,
-                   EWAF_VAULT_ENABLED=True)
+                   EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
 class ProgramDetailWorkspaceTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.actor = get_user_model().objects.create_superuser('synthetic_profile_admin')
+        from .testsupport import approved_test_weights
+        approved_test_weights(cls.actor)
         cls.program = save_program(user=cls.actor, data=program_data(name='Medical Access Week',
             assistance_type='Healthcare & Medical Aid', benefit='Synthetic community health access.', slots=2))
         cls.url = reverse('programs:manage_detail', args=[cls.program.pk])
@@ -52,16 +54,16 @@ class ProgramDetailWorkspaceTests(TestCase):
             self.assertContains(response, reverse('programs:proposal', args=[self.program.pk]) + '?download=1')
             self.assertIn('no-store', response['Cache-Control'])
             self.assertNotContains(response, 'PRIVATE-PROFILE-APP-')
-            self.assertEqual(response.context['detail_completed'], 4)
+            self.assertEqual(response.context['detail_completed'], 5)
             self.assertTrue(response.context['detail_ready'])
         self.assertEqual(list(ProgramLog.objects.values_list('pk', flat=True)), before)
 
-    def test_unlimited_capacity_and_ewaf_capacity_are_presented_separately(self):
+    def test_recorded_and_missing_capacity_are_presented_without_invented_limits(self):
         response = self.client.get(self.url)
-        self.assertIsNone(response.context['detail_capacity']['demand'])
-        self.assertContains(response, '<strong>3 / Unlimited</strong>', html=True)
-        self.assertNotContains(response, 'data-capacity-available')
-        self.assertNotContains(response, 'application above capacity')
+        self.assertEqual(response.context['detail_capacity']['demand'], 150)
+        self.assertContains(response, '<strong>3 / 2</strong>', html=True)
+        self.assertContains(response, 'data-capacity-available')
+        self.assertContains(response, 'application above capacity')
         self.assertTrue(response.context['detail_ready'])
         self.assertFalse(response.context['detail_lifecycle'][-1]['done'])
         self.assertEqual([row['label'] for row in response.context['detail_lifecycle']], ['Draft', 'Published'])
@@ -86,13 +88,14 @@ class ProgramDetailWorkspaceTests(TestCase):
             starts_at=start, ends_at=end, resubmission_closes_at=end)
         response = self.client.get(self.url)
         for label in ('Schedule &amp; capacity', 'Registration', 'Opens', 'Closes',
-                      'Program dates', 'Starts', 'Ends', 'Correction deadline', 'Beneficiary slots', 'Use EWAF'):
+                      'Program dates', 'Starts', 'Ends', 'Correction deadline', 'Beneficiary slots'):
             self.assertContains(response, label)
         for value in (self.program.registration_opens_at, self.program.registration_closes_at, start, end):
             self.assertContains(response, date_format(timezone.localtime(value), 'M j, Y'))
             self.assertContains(response, date_format(timezone.localtime(value), 'g:i A'))
         self.assertContains(response, 'Application demand')
-        self.assertContains(response, '<dt>Use EWAF</dt><dd>No</dd>', html=True)
+        self.assertTrue(response.context['program'].ewaf_applicable)
+        self.assertNotContains(response, 'name="ewaf_applicable"')
         for removed in ('How selection works', 'Identity evidence'):
             self.assertNotContains(response, removed)
         # The collapsed audit history must retain the original policy values.
@@ -107,11 +110,11 @@ class ProgramDetailWorkspaceTests(TestCase):
         self.assertEqual(program.status, 'published')
         self.assertEqual(program.policy_authorized_by, self.actor)
         page = self.client.get(self.url)
-        self.assertEqual(page.context['detail_completed'], 5)
+        self.assertEqual(page.context['detail_completed'], 6)
         self.assertContains(page, 'Program is live')
         self.assertNotContains(page, 'aria-current="step"')
         self.assertNotContains(page, 'id="publish-program-form"')
-        self.assertContains(page, 'Unpublish and archive', html=True)
+        self.assertContains(page, '?action=unpublish#program-status-form')
         stale = self.client.post(self.url, {'version': self.program.version, 'action': 'published'})
         self.assertTrue(stale.context['publish_form'].errors)
         self.assertContains(stale, 'role="alert"')
@@ -123,7 +126,10 @@ class ProgramDetailWorkspaceTests(TestCase):
         self.assertNotContains(closed, 'Visible to the public and accepting applications.')
 
     def test_missing_ewaf_configuration_is_not_faked_or_marked_ready(self):
-        Program.objects.filter(pk=self.program.pk).update(ewaf_applicable=True)
+        from .tests import create_program
+        self.program = create_program(ewaf_applicable=True)
+        Program.objects.filter(pk=self.program.pk).update(status='draft', published_at=None)
+        self.url = reverse('programs:manage_detail', args=[self.program.pk])
         response = self.client.get(self.url)
         self.assertFalse(response.context['detail_ready'])
         self.assertNotContains(response, 'Open Configuration Vault')

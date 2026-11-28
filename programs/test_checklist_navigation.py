@@ -46,7 +46,8 @@ class ChecklistNavigationTests(OperationalHelpers, TestCase):
         for old in ('requirements-dialog', 'photo-dialog', 'qualification-dialog'):
             self.assertNotContains(response, old)
         self.assertContains(response, 'Submitted application')
-        self.assertEqual(response.context['membership_intake'].pk, self.member.application_id)
+        self.assertNotIn('membership_intake', response.context)
+        self.assertContains(response, reverse('members:detail', args=[self.member.pk]))
         self.assertEqual(before, (self.application.assistance_history.count(), self.application.current_photo.reviews.count(),
                                  CriterionAssessment.objects.count()))
 
@@ -82,7 +83,7 @@ class ChecklistNavigationTests(OperationalHelpers, TestCase):
     def test_disability_comparison_and_missing_optional_requirement_inventory(self):
         from members.models import DisabilityType
         other = DisabilityType.objects.create(name='Fictional other qualification')
-        program = create_program(eligible_disability_types=[self.member.disability_type_id, other.pk])
+        program = create_program(ewaf_applicable=True, eligible_disability_types=[self.member.disability_type_id, other.pk])
         missing = ProgramRequirement.objects.create(program=program, label='Fictional required certificate', kind='document', is_required=True)
         optional = ProgramRequirement.objects.create(program=program, label='Fictional optional file', kind='document', is_required=False)
         app = application_fixture(program, self.member)
@@ -94,9 +95,9 @@ class ChecklistNavigationTests(OperationalHelpers, TestCase):
         rows = {row['id']: row for row in response.context['program_requirement_rows']}
         self.assertEqual(rows[missing.pk]['status'], 'Missing')
         self.assertEqual(rows[optional.pk]['status'], 'Not required')
-        self.assertNotIn('qualification', {row['key'] for row in response.context['eligibility_checks']})
+        self.assertIn('qualification', {row['key'] for row in response.context['eligibility_checks']})
         response = self.client.post(reverse('programs:application_detail', args=[program.pk, app.pk]),
-            {**review_data(app), 'action': 'eligibility', f'check_{missing.pk}': 'pass', f'check_{optional.pk}': 'review'})
+            {**review_data(app), 'action': 'eligibility', 'eligibility': 'review', f'check_{missing.pk}': 'pass', f'check_{optional.pk}': 'review'})
         self.assertContains(response, 'no submission exists to validate')
 
     def test_restricted_users_have_no_evidence_or_review_controls(self):

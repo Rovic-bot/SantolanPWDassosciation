@@ -40,12 +40,12 @@ class RegistrationInboxCompletionTests(TestCase):
         services.review_registration(self.rows[0].reference, user=self.actor, version=0,
             action='begin_review', reason='Synthetic review')
 
-    def test_state_channel_filter_and_invalid_filter_never_broaden_results(self):
+    def test_state_filters_validate_and_retired_channel_cannot_hide_results(self):
         response = self.client.get(self.url, {'state': 'under_review', 'channel': 'online'})
         self.assertEqual(list(response.context['page_obj']), [self.rows[0]])
-        self.assertEqual(self.client.get(self.url, {'channel': 'walk_in'}).context['page_obj'].paginator.count, 0)
+        self.assertEqual(self.client.get(self.url, {'channel': 'walk_in'}).context['page_obj'].paginator.count, 2)
         response = self.client.get(self.url, {'state': 'approved'})
-        self.assertContains(response, 'Choose a listed processing state')
+        self.assertContains(response, 'Choose a listed processing status')
         self.assertEqual(response.context['page_obj'].paginator.count, 0)
 
     def test_reference_lookup_ignores_filters_without_changing_records(self):
@@ -59,65 +59,38 @@ class RegistrationInboxCompletionTests(TestCase):
 
 class RegistrationMigrationLifecycleTests(TransactionTestCase):
     def test_exact_forward_reverse_history_metadata_and_startup_guard(self):
-        require_disposable()
+        from scripts.migration_test_support import migration_database, historical_apps
+        from django.contrib.auth.management import create_permissions
         target = ('membership', '0006_association_pending_intake')
         parent = ('membership', '0005_onsite_profile_capture')
-        loader = MigrationLoader(None)
-        child = ('membership', '0007_registration_membership_handoff')
-        handoff = loader.disk_migrations[child]
-        with connection.schema_editor() as editor:
-            handoff.unapply(loader.project_state([target]), editor)
-        migration = loader.disk_migrations[target]
-        names = {op.name.lower() for op in migration.operations if type(op).__name__ == 'CreateModel'}
-        # This is an explicitly synthetic model-derived schema/history fixture,
-        # not a claim of a historical upgrade or a working-history repair.
-        state = loader.project_state()
-        for name in names:
-            state.remove_model('membership', name)
-        with connection.schema_editor() as editor:
-            migration.unapply(state.clone(), editor)
-        ContentType.objects.filter(app_label='membership', model__in=names).delete()
-        ContentType.objects.clear_cache()
-        recorder = MigrationRecorder(connection)
-        recorder.ensure_schema()
-        recorder.migration_qs.all().delete()
-        deferred = {DEFERRED, FOUNDATION_DEFERRED, OBSERVANCE_DEFERRED, DECISION_DEFERRED, OPERATIONAL_DEFERRED}
-        for app, name in sorted(set(loader.disk_migrations) - deferred - {target, child}):
-            recorder.record_applied(app, name)
-        legacy = MembershipApplication.objects.create(**profile(), submission_key=uuid4())
-        snapshot = MembershipApplication.objects.filter(pk=legacy.pk).values().get()
-        baseline_history = set(recorder.applied_migrations())
-        with self.assertRaisesMessage(CommandError, 'membership.0006_association_pending_intake'):
-            Command(stdout=StringIO()).pending_migrations()
-        executor = MigrationExecutor(connection)
-        self.assertEqual([(m.app_label, m.name, backwards) for m, backwards in executor.migration_plan([target])],
-                         [('membership', target[1], False)])
-        call_command('migrate', 'membership', target[1], interactive=False, verbosity=0, stdout=StringIO())
-        self.assertEqual(set(recorder.applied_migrations()), baseline_history | {target})
-        with self.assertRaisesMessage(CommandError, child[1]):
-            Command(stdout=StringIO()).pending_migrations()
-        call_command('migrate', *child, interactive=False, verbosity=0, stdout=StringIO())
-        self.assertEqual(Command(stdout=StringIO()).pending_migrations(), deferred)
-        self.assertEqual(MembershipApplication.objects.filter(pk=legacy.pk).values().get(), snapshot)
-        self.assertEqual(ContentType.objects.filter(app_label='membership', model__in=names).count(), 5)
-        self.assertTrue(Permission.objects.filter(content_type__app_label='membership',
-            codename='view_registration_documents').exists())
-        self.assertFalse(Permission.objects.filter(content_type__app_label='membership',
-            content_type__model__in=names, user__isnull=False).exists())
-        # Reverse the new child first. Original 0006 assertions remain scoped to
-        # its exact one-operation plan; no historical migration is executed.
-        call_command('migrate', *target, interactive=False, verbosity=0, stdout=StringIO())
-        executor = MigrationExecutor(connection)
-        self.assertEqual([(m.app_label, m.name, backwards) for m, backwards in executor.migration_plan([parent])],
-                         [('membership', target[1], True)])
-        call_command('migrate', 'membership', parent[1], interactive=False, verbosity=0, stdout=StringIO())
-        self.assertEqual(set(recorder.applied_migrations()), baseline_history)
-        self.assertFalse(any('membership_' + name in connection.introspection.table_names() for name in names))
-        self.assertEqual(MembershipApplication.objects.filter(pk=legacy.pk).values().get(), snapshot)
-        with self.assertRaisesMessage(CommandError, target[1]):
-            Command(stdout=StringIO()).pending_migrations()
-        # Restore the temporary model-derived test schema for subsequent flush.
-        call_command('migrate', 'membership', target[1], interactive=False, verbosity=0, stdout=StringIO())
-        call_command('migrate', *child, interactive=False, verbosity=0, stdout=StringIO())
-        print('Exact membership 0006 lifecycle: forward/reverse/forward, real migration recorder and permission metadata; '
-              'synthetic legacy row unchanged. Synthetic baseline history only; no historical migrations executed.', flush=True)
+        # The historical membership branch only depends on auth's initial
+        # schema. Permissions need its later 255-character name migration.
+        with migration_database([parent, ('auth', '0012_alter_user_first_name_max_length')]) as database:
+            old_apps = historical_apps(database, [parent])
+            Legacy = old_apps.get_model('membership', 'MembershipApplication')
+            legacy = Legacy.objects.using(database.alias).create(**profile(), submission_key=uuid4())
+            original = Legacy.objects.using(database.alias).values().get(pk=legacy.pk)
+            recorder = MigrationRecorder(database)
+            before = set(recorder.applied_migrations())
+            executor = MigrationExecutor(database)
+            plan = executor.migration_plan([target])
+            self.assertEqual([(m.app_label, m.name, backwards) for m, backwards in plan], [(*target, False)])
+            from core.management.commands.runlocal import validate_plan
+            with self.assertRaisesMessage(CommandError, target[1]):
+                validate_plan(plan)
+            executor.migrate([target])
+            self.assertEqual(set(recorder.applied_migrations()), before | {target})
+            state_apps = historical_apps(database, [target, ('auth', '0012_alter_user_first_name_max_length')])
+            create_permissions(apps.get_app_config('membership'), verbosity=0,
+                               apps=state_apps, using=database.alias)
+            Permissions = state_apps.get_model('auth', 'Permission')
+            self.assertTrue(Permissions.objects.using(database.alias).filter(
+                content_type__app_label='membership', codename='view_registration_documents').exists())
+            self.assertEqual(Legacy.objects.using(database.alias).values().get(pk=legacy.pk), original)
+            MigrationExecutor(database).migrate([parent])
+            self.assertEqual(set(recorder.applied_migrations()), before)
+            self.assertNotIn('membership_registrationintake', database.introspection.table_names())
+            self.assertEqual(Legacy.objects.using(database.alias).values().get(pk=legacy.pk), original)
+            MigrationExecutor(database).migrate([target])
+            self.assertIn('membership_registrationintake', database.introspection.table_names())
+            self.assertEqual(Legacy.objects.using(database.alias).values().get(pk=legacy.pk), original)

@@ -1,4 +1,4 @@
-"""Owner-confirmed unlimited, eligibility-only selection; disposable fixtures only."""
+"""Mandatory EWAF refusals and preservation of pre-adoption selections."""
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -44,65 +44,52 @@ class NonEWAFSelectionTests(TestCase):
     def publish(self):
         plan = recorded_preview(self.program.pk, user=self.admin)
         return publish_recorded_results(self.program.pk, user=self.admin,
-            expected=plan['expected'], version=plan['version'])
+            expected=plan['expected'], version=plan['version'],
+            selection_reason='Synthetic retained members meet the recorded program criteria.')
 
-    def test_non_ewaf_creation_discards_slot_limit_and_publishes_without_optional_text(self):
-        for slots in (None, '', 7, 'invalid ignored value'):
-            with self.subTest(slots=slots):
-                program = save_program(user=self.admin, setup_only=True,
-                    data=program_data(ewaf_applicable=False, slots=slots, description='', benefit=''))
-                self.assertIsNone(program.slots)
-                self.assertIsNone(program.slot_limit)
-                self.assertEqual(program.capacity_label, 'Unlimited')
-                change_publication(program.pk, user=self.admin, version=program.version, action='published')
-                program.refresh_from_db()
-                self.assertEqual(program.status, 'published')
-                self.assertTrue(program.registration_available)
-
-    def test_ewaf_requires_slots_to_publish_but_incomplete_draft_can_save(self):
+    def test_forged_non_ewaf_opt_out_does_not_remove_capacity_validation(self):
+        for slots in (None, '', 'invalid ignored value'):
+            with self.subTest(slots=slots), self.assertRaises(ValidationError):
+                save_program(user=self.admin, setup_only=True,
+                    data=program_data(ewaf_applicable=False, slots=slots))
         program = save_program(user=self.admin, setup_only=True,
-            data=program_data(ewaf_applicable=True, slots=''))
+            data=program_data(ewaf_applicable=False, slots=7))
+        self.assertTrue(program.ewaf_applicable)
+        self.assertEqual(program.slot_limit, 7)
         self.assertEqual(program.status, 'draft')
-        self.assertIn('slots', program.publication_errors())
+
+    def test_private_drafts_require_capacity_before_saving(self):
+        before = Program.objects.count()
         with self.assertRaises(ValidationError):
-            change_publication(program.pk, user=self.admin, version=program.version, action='published')
-        program.refresh_from_db()
+            save_program(user=self.admin, setup_only=True, data=program_data(slots=''))
+        self.assertEqual(Program.objects.count(), before)
+        program = save_program(user=self.admin, setup_only=True, data=program_data(slots=5))
+        self.assertEqual(program.slot_limit, 5)
         self.assertEqual(program.status, 'draft')
         self.assertIsNone(program.policy_authorized_at)
-        program = save_program(pk=program.pk, user=self.admin, setup_only=True,
-            data=program_data(ewaf_applicable=True, slots=5, version=program.version))
-        self.assertEqual(program.slot_limit, 5)
-        self.assertNotIn('slots', program.publication_errors())
 
-    def test_retained_non_ewaf_slot_count_is_history_only_and_edit_does_not_erase_it(self):
+    def test_invalid_edit_preserves_retained_non_ewaf_capacity(self):
+        before = Program.objects.values().get(pk=self.program.pk)
         form = ProgramSetupForm(program_data(ewaf_applicable=False, slots='',
             eligible_disability_types=[], version=self.program.version), instance=self.program)
-        self.assertTrue(form.is_valid(), form.errors)
-        self.assertTrue(form.fields['slots'].disabled)
-        self.assertFalse(form.fields['slots'].required)
-        self.assertEqual(form.cleaned_data['slots'], 1)
-        self.assertIsNone(self.program.slot_limit)
+        self.assertFalse(form.is_valid())
+        self.assertIn('slots', form.errors)
+        self.assertIn('eligible_disability_types', form.errors)
+        self.assertTrue(form.fields['slots'].required)
+        self.assertEqual(Program.objects.values().get(pk=self.program.pk), before)
 
-    def test_every_eligible_non_ewaf_applicant_is_selected_while_registration_is_open(self):
+    def test_retired_automatic_selection_is_refused_for_every_applicant(self):
         other = application_fixture(self.program, create_member('SYNTHETIC-UNLIMITED-2'))
         reviewer = get_user_model().objects.create_user('SYNTHETIC-REVIEWER', is_staff=True)
         grant(reviewer, 'accounts.access_dashboard', *VIEW_PERMISSIONS, 'assistance.review_eligibility')
-        self.assertFalse(reviewer.has_perm('assistance.decide_assistance'))
+        before = list(ProgramApplication.objects.order_by('pk').values())
         for application in (self.application, other):
-            before_version = application.version
-            case = review_eligibility(application.pk, user=reviewer, data=review_data(application))
-            application.refresh_from_db()
-            self.assertEqual(application.status, 'SELECTED')
-            self.assertEqual(application.version, before_version + 1)
-            self.assertEqual((case.eligibility_id, case.decision), ('eligible', 'approved'))
-            self.assertEqual(case.decided_by, reviewer)
-            self.assertEqual(case.decided_at, case.reviewed_at)
-            self.assertEqual(application.assistance_history.get().snapshot['automatic_selection'], AUTO_SELECTION_POLICY)
-        self.assertGreater(self.program.registration_closes_at, timezone.now())
-        self.assertEqual(ProgramApplication.objects.filter(program=self.program, status='SELECTED').count(), 2)
+            with self.assertRaisesMessage(ValidationError, 'updated to EWAF'):
+                review_eligibility(application.pk, user=reviewer, data=review_data(application))
+        self.assertEqual(list(ProgramApplication.objects.order_by('pk').values()), before)
+        self.assertFalse(AssistanceCase.objects.exists())
+        self.assertFalse(AssistanceLog.objects.exists())
         self.assertFalse(AssistanceRelease.objects.exists())
-        from ewaf.operational_models import OperationalDecision
-        self.assertFalse(OperationalDecision.objects.exists())
 
     def test_ewaf_eligibility_keeps_separate_selection_and_does_not_generate_ranking(self):
         program = create_program(ewaf_applicable=True, slots=1, eligible_disability_types=[])
@@ -115,6 +102,8 @@ class NonEWAFSelectionTests(TestCase):
         self.assertNotIn('automatic_selection', AssistanceLog.objects.get(application=application).snapshot)
 
     def test_ineligible_and_needs_information_are_never_selected(self):
+        self.program = create_program(ewaf_applicable=True)
+        self.application = application_fixture(self.program, create_member("SYNTHETIC-CURRENT-REVIEW"))
         for eligibility, result, status in (('review', 'review', 'NEEDS_INFORMATION'),
                                             ('ineligible', 'fail', 'INELIGIBLE')):
             case = self.review(eligibility=eligibility, other_requirements=result)
@@ -123,6 +112,11 @@ class NonEWAFSelectionTests(TestCase):
             self.assertEqual(case.decision, 'pending')
 
     def test_unresolved_reported_information_cannot_be_automatically_selected(self):
+        self.program = create_program(ewaf_applicable=True)
+        self.application = application_fixture(self.program, create_member("SYNTHETIC-CURRENT-REVIEW"))
+        intake = self.application.member.application
+        intake.decided_by = self.admin
+        intake.save(update_fields=['decided_by'])
         from .application_workflow import CONTRACT
         from .review_forms import ApplicationDecisionForm
         from .review_services import review_submitted_application
@@ -131,23 +125,29 @@ class NonEWAFSelectionTests(TestCase):
             'change_details': 'Synthetic household change awaiting evidence review.'}
         self.application.save(update_fields=['source_snapshot'])
         form = ApplicationDecisionForm(application=self.application)
-        with self.assertRaisesMessage(ValidationError, 'Review and save the reported changes'):
-            review_submitted_application(self.application.pk, user=self.admin,
-                data={**form.initial, 'eligibility': 'eligible', 'notes': ''})
+        case = review_submitted_application(self.application.pk, user=self.admin,
+            data={**form.initial, 'eligibility': 'eligible', 'notes': ''})
         self.application.refresh_from_db()
-        self.assertEqual(self.application.status, 'PHOTO_VERIFIED')
-        self.assertFalse(AssistanceCase.objects.exists())
+        self.assertEqual(self.application.status, 'ELIGIBLE')
+        self.assertEqual(case.decision, 'pending')
+        self.assertIn({'key': 'information_change',
+            'label': 'Reported information change awaiting confirmation at the barangay office',
+            'required': False, 'result': 'review'}, case.checklist)
+        from assistance.services import require_current_review
+        with self.assertRaisesMessage(ValidationError, 'Review and save the reported changes'):
+            require_current_review(case, self.program, self.application.member)
 
-    def test_automatic_selection_is_readable_in_audit_and_approval_filter(self):
-        self.review()
-        self.client.force_login(self.admin)
-        label = 'Member marked eligible and automatically selected'
-        page = self.client.get(reverse('admin:admin_logentry_changelist'),
-            {'activity': label, 'kind': 'approval'})
-        self.assertContains(page, label)
-        self.assertEqual(page.context['page'].paginator.count, 1)
+    def test_refused_automatic_selection_creates_no_approval_audit(self):
+        from django.contrib.admin.models import LogEntry
+        before = list(LogEntry.objects.values())
+        with self.assertRaisesMessage(ValidationError, 'updated to EWAF'):
+            self.review()
+        self.assertEqual(list(LogEntry.objects.values()), before)
+        self.assertFalse(AssistanceLog.objects.exists())
 
     def test_permissions_stale_versions_and_failed_audit_cannot_partially_select(self):
+        self.program = create_program(ewaf_applicable=True)
+        self.application = application_fixture(self.program, create_member("SYNTHETIC-CURRENT-REVIEW"))
         viewer = get_user_model().objects.create_user('SYNTHETIC-VIEWER', is_staff=True)
         grant(viewer, 'accounts.access_dashboard', *VIEW_PERMISSIONS)
         data = review_data(self.application)
@@ -165,7 +165,8 @@ class NonEWAFSelectionTests(TestCase):
         self.assertFalse(AssistanceLog.objects.exists())
 
     def test_review_and_publish_has_selected_results_without_certificate_documents_or_emails(self):
-        self.review()
+        from assistance.testsupport import historical_selection
+        historical_selection(self.application, self.admin)
         with patch('announcements.certificate_delivery.certificate_pdfs') as pdf, patch(
                 'announcements.certificate_delivery.kick_delivery') as kick:
             with self.captureOnCommitCallbacks(execute=True):
@@ -180,12 +181,13 @@ class NonEWAFSelectionTests(TestCase):
         self.assertFalse(AssistanceRelease.objects.exists())
         self.client.force_login(self.admin)
         page = self.client.get(reverse('announcements:prepare_results', args=[self.program.pk]))
-        self.assertContains(page, 'No certificate emails are sent for this non-EWAF program.')
+        self.assertEqual(page.status_code, 200)
         self.assertNotContains(page, 'Retry pending emails')
         self.assertFalse(certificate_context(self.program, self.admin)['certificate_emails_enabled'])
 
     def test_retained_non_ewaf_certificate_job_cannot_be_retried_or_sent_and_is_unchanged(self):
-        self.review()
+        from assistance.testsupport import historical_selection
+        historical_selection(self.application, self.admin)
         item = self.publish()
         with certificate_write():
             job = SelectionCertificateEmail.objects.create(application=self.application,
@@ -214,12 +216,13 @@ class NonEWAFRegisteredSourceTests(SourceHelpers, TransactionTestCase):
         self.officer = self.admin
         self.register()
 
-    def test_automatic_selection_passes_native_audit_and_source_generation_validation(self):
+    def test_retired_selection_preserves_native_audits_and_source_generation(self):
         before_generation = self.token()['source_generation']
-        case = review_eligibility(self.application.pk, user=self.admin,
-            data=review_data(self.application), source_expected=self.expected())
+        with self.assertRaisesMessage(ValidationError, 'updated to EWAF'):
+            review_eligibility(self.application.pk, user=self.admin,
+                data=review_data(self.application), source_expected=self.expected())
         self.application.refresh_from_db()
-        self.assertEqual((self.application.status, case.decision), ('SELECTED', 'approved'))
-        self.assertEqual(AssistanceLog.objects.count(), 1)
+        self.assertEqual(self.application.status, 'PHOTO_VERIFIED')
+        self.assertFalse(AssistanceLog.objects.exists())
         self.assertFalse(AssistanceRelease.objects.exists())
-        self.assert_transition(before_generation + 1)
+        self.assert_transition(before_generation)

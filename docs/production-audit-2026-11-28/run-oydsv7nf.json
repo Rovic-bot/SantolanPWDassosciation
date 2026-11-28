@@ -1,0 +1,82 @@
+[
+  {
+    "id": "ewaf.test_bulk_selection.BulkSelectionBrowserTests.test_capacity_tie_review_selection_filters_and_mobile_layout",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_all_five_current_approvals_apply_to_two_existing_programs_and_preserve_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_applicant_information_uses_member_profile_current_inputs_and_ledger",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_frozen_weight_replay_rejects_tampering_and_approval_during_generation_rolls_back",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_generate_without_reason_preserves_audit_history_and_permissions",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_preview_authority_stale_edits_and_approval_audit_rollback",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_publish_after_confirmed_delivery_preserves_pool_and_release",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_rounding_proposal_can_be_approved_repeatedly_without_manual_draft",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_select_and_publish_masked_results_preserves_scores_and_delivery",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_current_weights.CurrentWeightTests.test_selection_and_generation_reject_stale_or_unauthorized_requests",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_reranking.RerankingAfterDeliveryTests.test_browser_reranks_existing_pools_after_delivery_and_preserves_decisions",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_reranking.RerankingAfterDeliveryTests.test_other_source_changes_and_voids_still_block",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_reranking.RerankingAfterDeliveryTests.test_reranking_requires_current_authority_source_token_and_atomic_audit",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveIntegrationTests.test_balanced",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveIntegrationTests.test_es",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveIntegrationTests.test_hm",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveIntegrationTests.test_pa",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveIntegrationTests.test_ses",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_workspace_ui.WorkspaceUITests.test_browser_ranking_drawer_breakdown_and_selection_preserve_calculations",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_workspace_ui.WorkspaceUITests.test_drawer_filters_permissions_stale_inputs_and_no_script_fallback",
+    "status": "PASS"
+  }
+]

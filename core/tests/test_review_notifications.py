@@ -1,6 +1,8 @@
 """Review counters contain aggregates only and do not advance application states."""
 from datetime import timedelta
+import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
@@ -111,7 +113,9 @@ class ReviewNotificationTests(TestCase):
             self.assertEqual(self.client.get(self.url).json()['association'], 0)
 
     def test_badges_on_navigation_membership_and_filtered_program_cards(self):
-        output = Path(__file__).resolve().parents[2] / '.local/dashboard-badges-20261111'
+        artifacts = os.environ.get('G12_ARTIFACT_DIR')
+        output = (Path(artifacts) / 'dashboard-badges' if artifacts else
+                  Path(self.enterContext(TemporaryDirectory(prefix='santolan-dashboard-badges-'))))
         output.mkdir(parents=True, exist_ok=True)
         for name, route, query in [('membership', 'membership:review_home', {}),
                 ('programs', 'program_portfolio', {'q': self.programs[0].name})]:

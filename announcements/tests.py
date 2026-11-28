@@ -49,7 +49,7 @@ class AnnouncementTests(TestCase):
     def test_create_is_draft_even_when_post_forges_published_status(self):
         response = self.client.post(reverse('announcements:create'), {**self.data, 'status': 'published', 'created_by': self.editor.pk})
         item = Announcement.objects.get()
-        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]))
+        self.assertRedirects(response, reverse('announcements:manage_detail', args=[item.pk]), fetch_redirect_response=False)
         self.assertEqual(item.status, 'draft')
         self.assertEqual(item.created_by, self.admin)
         self.assertIsNone(item.published_at)
@@ -69,7 +69,7 @@ class AnnouncementTests(TestCase):
                     b''.join(response.streaming_content)
                 if visible:
                     self.assertIn('no-store', response['Cache-Control'])
-            for url in [reverse('core:home'), reverse('core:announcements')]:
+            for url in [reverse('core:announcements')]:
                 response = Client().get(url)
                 (self.assertContains if visible else self.assertNotContains)(response, item.title)
         self.assertEqual(Announcement.objects.count(), 1)
@@ -87,7 +87,7 @@ class AnnouncementTests(TestCase):
         item = self.draft()
         self.client.force_login(self.editor)
         edit_url = reverse('announcements:edit', args=[item.pk])
-        detail_url = reverse('announcements:manage_detail', args=[item.pk])
+        detail_url = reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'
         self.assertEqual(self.client.post(edit_url, {**self.data, 'version': item.version}).status_code, 302)
         self.assertEqual(self.client.post(detail_url, {'version': 2, 'action': 'published', 'confirm': 'on'}).status_code, 403)
         item.refresh_from_db()
@@ -101,14 +101,14 @@ class AnnouncementTests(TestCase):
         grant(self.editor, 'announcements.publish_announcement')
         self.client.force_login(self.editor)
         item = self.draft()
-        url = reverse('announcements:manage_detail', args=[item.pk])
+        url = reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'
         self.assertEqual(self.client.post(url, {'version': item.version, 'action': 'published', 'confirm': 'on'}).status_code, 302)
         self.assertEqual(self.client.post(url, {'version': 2, 'action': 'deleted', 'confirm': 'on'}).status_code, 403)
 
     def test_private_routes_and_services_enforce_staff_and_permissions(self):
         item = self.draft(image=True)
         for url in [reverse('announcements:manage_list'), reverse('announcements:create'),
-                    reverse('announcements:manage_detail', args=[item.pk]), reverse('announcements:preview_image', args=[item.pk])]:
+                    reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1', reverse('announcements:preview_image', args=[item.pk])]:
             self.assertEqual(Client().get(url).status_code, 302)
         with self.assertRaises(PermissionDenied):
             save_announcement(user=AnonymousUser(), data=self.data)
@@ -131,7 +131,7 @@ class AnnouncementTests(TestCase):
 
     def test_csrf_confirmation_and_get_requests_do_not_publish(self):
         item = self.draft()
-        url = reverse('announcements:manage_detail', args=[item.pk])
+        url = reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'
         csrf = Client(enforce_csrf_checks=True)
         csrf.force_login(self.admin)
         self.assertEqual(csrf.post(url, {'version': 1, 'action': 'published', 'confirm': 'on'}).status_code, 403)
@@ -144,26 +144,28 @@ class AnnouncementTests(TestCase):
         item = save_announcement(user=self.admin, data={**self.data, 'title': '<script>bad()</script>',
                                                       'content': '<img src=x onerror=bad()>'})
         item = self.change(item, 'published')
-        for url in [reverse('core:home'), reverse('core:announcements'),
-                    reverse('announcements:detail', args=[item.pk]), reverse('announcements:manage_detail', args=[item.pk])]:
+        for url in [reverse('core:announcements'),
+                    reverse('announcements:detail', args=[item.pk]), reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1']:
             response = self.client.get(url)
             self.assertNotContains(response, '<script>bad()</script>')
             self.assertNotContains(response, '<img src=x onerror=bad()>')
             self.assertContains(response, '&lt;script&gt;')
 
-    def test_search_pagination_and_homepage_latest_three(self):
+    def test_public_topic_pagination_and_private_notice_search(self):
         for number in range(12):
             item = save_announcement(user=self.admin, data={**self.data, 'title': f'Notice {number:02}'})
             self.change(item, 'published')
-        home = Client().get(reverse('core:home'))
-        self.assertEqual(len(home.context['announcements']), 3)
-        self.assertContains(home, 'Notice 11')
-        self.assertNotContains(home, 'Notice 08')
-        page = Client().get(reverse('core:announcements'), {'page': 2}).context['page_obj']
-        self.assertEqual(len(page), 5)
-        self.assertEqual(len(Client().get(reverse('core:announcements'), {'page': 3}).context['page_obj']), 2)
-        filtered = self.client.get(reverse('announcements:manage_notices'), {'q': 'Notice 03', 'status': 'published'})
-        self.assertEqual(filtered.context['page_obj'].paginator.count, 1)
+        board = Client().get(reverse('core:announcements'))
+        self.assertEqual(board.context['page_obj'].paginator.count, 12)
+        self.assertContains(board, 'Notice 11')
+        page = Client().get(reverse('core:announcements'), {'category': 'announcements', 'page': 2}).context['page_obj']
+        self.assertEqual(len(page), 1)
+        self.assertEqual(page.number, 2)
+        self.assertEqual(page[0]['title'], 'Notice 10')
+        last = Client().get(reverse('core:announcements'), {'category': 'announcements', 'page': 12}).context['page_obj']
+        self.assertEqual(last[0]['title'], 'Notice 00')
+        filtered = self.client.get(reverse('announcements:manage_list'), {'q': 'Notice 03', 'status': 'published'})
+        self.assertEqual(filtered.context['notice_page'].paginator.count, 1)
 
     def test_images_are_reencoded_and_served_without_raw_media_exposure(self):
         upload = image_upload()
@@ -230,7 +232,7 @@ class AnnouncementTests(TestCase):
     def test_publication_history_requires_separate_permission(self):
         item = self.draft()
         self.client.force_login(self.editor)
-        route = reverse('announcements:manage_detail', args=[item.pk])
+        route = reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'
         self.assertNotContains(self.client.get(route), 'Announcement saved as a private draft.')
         grant(self.editor, 'announcements.view_announcementevent')
         self.assertContains(self.client.get(route), 'Announcement saved as a private draft.')

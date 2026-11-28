@@ -28,10 +28,10 @@ class RegistrationReceiptQRTests(TestCase):
     def submit(self):
         page = self.client.get(self.apply_url)
         data = association_data() | {'context_id': page.context['context_id'],
-            'contact_number': '09170000001', 'email': 'fictional@example.test',
-            'spouse_name': 'Fictional Spouse', 'spouse_contact': '09170000002',
-            'guardian_name': 'Fictional Guardian', 'guardian_contact': '09170000003',
-            'voter_certification_number': '001-002', 'philhealth_number': '003-004', 'zip_code': '01610'}
+            'contact_number': '9170000001', 'email': 'fictional@example.test',
+            'spouse_name': 'Fictional Spouse', 'spouse_contact': '9170000002',
+            'guardian_name': 'Fictional Guardian', 'guardian_contact': '9170000003',
+            'voter_certification_number': '001-002', 'philhealth_number': '003-004', 'zip_code': '1610'}
         self.assertRedirects(self.client.post(self.apply_url, data), self.receipt_url,
                              fetch_redirect_response=False)
         return RegistrationIntake.objects.get()

@@ -93,6 +93,7 @@ class CatalogUITests(TestCase):
 class PublicationUITests(TermsHelpers, TestCase):
     def test_optional_fields_do_not_block_publication_but_pdao_does(self):
         self.setup_terms(draft=True)
+        self.program.ewaf_applicable = True
         self.program.photo_instructions = ''
         self.program.selection_method = ''
         self.program.requirements = ''
@@ -141,8 +142,8 @@ class ReviewUITests(OperationalHelpers, TestCase):
         for text in ('Program qualification finding', 'functional_need explanation', 'Original submission',
                      'Verify program inputs', 'Program qualification and functional need'):
             self.assertNotContains(response, text)
-        for label in ('Personal Information', 'Address Information', 'Submitted documents', 'Eligible',
-                      'Ineligible', 'Needs Information', 'Remarks (optional)'):
+        for label in ('Member record', 'Submitted application', 'Eligible',
+                      'Ineligible', 'Needs Information', 'Remarks:'):
             self.assertContains(response, label)
         self.assertNotContains(response, 'Review program fit')
         workspace = self.client.get(reverse('ewaf:operational_workspace', args=[self.program.pk]))

@@ -75,7 +75,11 @@ class RegistrationForm(StyledForm, forms.Form):
             if not self.profile_form.is_valid():
                 for name, errors in self.profile_form.errors.items():
                     for error in errors:
-                        self.add_error(name if name in self.fields else None, error)
+                        # Shared fields already ran their validators on this
+                        # form. Keep additional profile errors without repeating
+                        # the same message in the summary and beside the input.
+                        if error not in self.errors.get(name, ()):
+                            self.add_error(name if name in self.fields else None, error)
             if hasattr(self.data, 'getlist'):
                 ids = self.data.getlist('disability_types')
                 if len(ids) != len(set(ids)):

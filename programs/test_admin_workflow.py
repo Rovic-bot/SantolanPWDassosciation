@@ -56,7 +56,7 @@ class AdminWorkflowTests(TestCase):
         self.assertNotIn('amount', form.fields)
         self.assertNotIn('benefit', form.fields)
         self.assertEqual(dict(form.fields['assistance_type'].choices)[program.assistance_type], 'Historical category (retained)')
-        self.assertEqual(list(dict(ProgramForm().fields['assistance_type'].choices)),
+        self.assertEqual([value for value, label in ProgramForm().fields['assistance_type'].choices if value],
                          ['Food & Nutrition', 'Healthcare & Medical Aid', 'Assistive Devices'])
         data = program_data(version=program.version, assistance_type=program.assistance_type,
                             registration_opens_at=program.registration_opens_at,
@@ -68,14 +68,14 @@ class AdminWorkflowTests(TestCase):
 
     def test_program_first_reviews_and_integrated_photo(self):
         response = self.client.get(reverse('core:application_programs'))
-        self.assertContains(response, 'class="program-grid"')
-        self.assertContains(response, 'Created')
+        self.assertContains(response, self.program.name)
+        self.assertContains(response, reverse('programs:applications', args=[self.program.pk]))
         response = self.client.get(reverse('assistance:queue'), follow=True)
         self.assertContains(response, reverse('programs:applications', args=[self.program.pk]))
         response = self.client.get(reverse('assistance:queue'), {'program': self.program.pk}, follow=True)
         self.assertContains(response, self.member.full_name)
         url = reverse('programs:application_detail', args=[self.program.pk, self.application.pk])
-        self.assertContains(self.client.get(url), 'Verify Identity')
+        self.assertContains(self.client.get(url), 'Review Eligibility')
         response = self.client.post(url, {'action': 'photo', 'version': self.application.version,
             'photo_id': self.application.current_photo_id, 'outcome': 'VERIFIED',
             'reason': 'Verified the supplied program photo.', 'confirm': 'on'})
@@ -88,13 +88,16 @@ class AdminWorkflowTests(TestCase):
         self.assertEqual(self.client.post(url, {'action': 'photo'}).status_code, 403)
 
     def test_recipient_publication_requires_receipt_and_void_invalidates_publication(self):
-        review_eligibility(self.application.pk, user=self.admin, data=review_data(self.application))
+        from assistance.testsupport import historical_selection
+        from announcements.testsupport import publish_selection
+        historical_selection(self.application, self.admin)
         close_non_ewaf_program(self.program)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
         with self.assertRaisesMessage(ValidationError, 'actual assistance'):
             prepare_results(self.program.pk, user=self.admin, version=0, reason='Recipient notice', recipients=True)
+        selection_notice = publish_selection(self.program, self.admin)
         receipt = record_release(self.application.pk, user=self.admin, data=release_data(self.application))
-        item = prepare_results(self.program.pk, user=self.admin, version=0, reason='Confirmed recipients', recipients=True)
+        item = prepare_results(self.program.pk, user=self.admin, version=selection_notice.version, reason='Confirmed recipients', recipients=True,
+            selection_reason='Synthetic confirmed recipients met the published program requirements.')
         self.assertEqual(item.status, 'draft')
         self.assertFalse(Announcement.objects.published().exists())
         payload = item.result_revision.public_payload
@@ -103,14 +106,14 @@ class AdminWorkflowTests(TestCase):
         self.assertNotIn(self.application.public_reference, str(payload))
         publish_results(item.pk, user=self.admin, version=item.version)
         response = self.client.get(reverse('announcements:detail', args=[item.pk]))
-        self.assertContains(response, 'Confirmed assistance recipients')
+        self.assertContains(response, 'Confirmed recipients list')
         self.application.refresh_from_db()
         void_release(self.application.pk, receipt.pk, user=self.admin, data={
             'version': self.application.version, 'notes': 'Correct the receipt record.', 'confirm': True})
         item.refresh_from_db()
         self.assertFalse(results_current(item))
         self.assertEqual(self.client.get(reverse('announcements:detail', args=[item.pk])).status_code, 404)
-        self.assertEqual(ProgramResultRevision.objects.count(), 1)
+        self.assertEqual(ProgramResultRevision.objects.count(), 2)
 
     def test_reports_filters_privacy_exports_and_permissions(self):
         other = create_program(name='Another program')
@@ -154,12 +157,12 @@ class AdminWorkflowTests(TestCase):
         self.assertIn('Actually assisted', rows[0])
         workbook.close()
 
-    def test_retired_event_creation_and_navigation(self):
-        self.assertEqual(self.client.get(reverse('events:create')).status_code, 410)
-        self.assertEqual(self.client.post(reverse('events:create'), {}).status_code, 410)
+    def test_event_creation_and_current_navigation(self):
+        self.assertEqual(self.client.get(reverse('events:create')).status_code, 200)
+        self.assertEqual(self.client.post(reverse('events:create'), {}).status_code, 200)
         from core.tests.test_workspace_navigation import sidebar
         nav = sidebar(self.client.get(reverse('programs:create')))
         for removed in ('Create program', 'Create event', 'Photo Verification Queue', 'Criterion evidence',
                         'Scoring-policy diagnostics', 'Configuration drafts', 'Historical EWAF information', 'Prepare program results'):
             self.assertNotIn(removed, nav)
-        self.assertIn('aria-current="page">Program Management', nav)
+        self.assertIn('aria-current="page"><span class="workspace-concern-label">Program Management</span>', nav)

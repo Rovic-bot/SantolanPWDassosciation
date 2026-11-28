@@ -1,0 +1,120 @@
+[
+  {
+    "route": "/dashboard/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0.022093956127582862,
+    "shifts": [
+      {
+        "t": 1580.7000000001863,
+        "value": 0.022093956127582862,
+        "sources": [
+          {
+            "node": "SECTION.overview-section",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 246.578125,
+              "y": 831.3125,
+              "width": 584.421875,
+              "height": 68.6875,
+              "top": 831.3125,
+              "right": 831,
+              "bottom": 900,
+              "left": 246.578125
+            }
+          },
+          {
+            "node": "SECTION.overview-section",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 787,
+              "y": 831.3125,
+              "width": 579,
+              "height": 68.6875,
+              "top": 831.3125,
+              "right": 1366,
+              "bottom": 900,
+              "left": 787
+            }
+          },
+          {
+            "node": "DIV.overview-member-footer",
+            "old": {
+              "x": 932.0625,
+              "y": 589.34375,
+              "width": 384.359375,
+              "height": 25.796875,
+              "top": 589.34375,
+              "right": 1316.421875,
+              "bottom": 615.140625,
+              "left": 932.0625
+            },
+            "next": {
+              "x": 932.0625,
+              "y": 763.3125,
+              "width": 384.421875,
+              "height": 53,
+              "top": 763.3125,
+              "right": 1316.484375,
+              "bottom": 816.3125,
+              "left": 932.0625
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/ewaf/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0,
+    "shifts": []
+  },
+  {
+    "route": "/membership/registration/pdao/onsite/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0,
+    "shifts": []
+  },
+  {
+    "route": "/dashboard/",
+    "width": 390,
+    "status": 200,
+    "cls": 0,
+    "shifts": []
+  },
+  {
+    "route": "/ewaf/",
+    "width": 390,
+    "status": 200,
+    "cls": 0,
+    "shifts": []
+  },
+  {
+    "route": "/membership/registration/pdao/onsite/",
+    "width": 390,
+    "status": 200,
+    "cls": 0,
+    "shifts": []
+  }
+]

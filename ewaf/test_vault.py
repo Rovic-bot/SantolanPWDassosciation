@@ -257,11 +257,10 @@ class VaultTests(TestCase):
 class RegisteredInputTests(OperationalHelpers, TransactionTestCase):
     def setUp(self):
         self.setup_operational()
-        Program.objects.filter(pk=self.program.pk).update(policy_authorized_at=None, policy_authorized_by=None)
+        Program.objects.filter(pk=self.program.pk).update(policy_authorized_by=self.officer)
         self.program.refresh_from_db()
-        change_publication(self.program.pk, user=self.officer, version=self.program.version,
-            action='authorize_policy', notes='Synthetic explicit program policy authorization')
-        self.program.refresh_from_db()
+        # setup_operational retains the earlier authorization for this historical method.
+        # Reauthorizing today would bind the newer fixed scoring policy.
         self.member.household_monthly_income = Decimal('1000')
         self.member.household_members = 4
         self.member.employment_status = 'unemployed'
@@ -345,6 +344,8 @@ class RegisteredInputTests(OperationalHelpers, TransactionTestCase):
         self.review()
         run = self.calculate()
         self.choose(run)
+        from announcements.testsupport import publish_selection
+        publish_selection(self.application.program, self.officer)
         def count():
             return vault_sources.sources(self.application, self.configuration,
                 source_context(self.application))['inputs']['PA']['value']

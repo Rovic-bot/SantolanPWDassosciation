@@ -1,0 +1,468 @@
+[
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_all_disability_labels_map_without_changing_source",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_both_membership_entry_forms_require_disability_and_four_ps",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_and_transfer_roll_back_on_audit_failure_including_private_files",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_identity_is_immutable_and_link_must_be_complete",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_requires_forwarded_actual_collection_valid_id_and_current_version",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_http_buttons_prefill_consent_submission_and_duplicate_click",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_multiple_disabilities_require_an_explicit_recorded_choice",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_new_postgres_table_keeps_server_only_row_security",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_private_permissions_csrf_and_session_binding",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_ready_notice_does_not_unlock_membership_and_claim_stops_new_notices",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_remaining_required_fields_and_explicit_membership_request",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_stored_international_phone_is_carried_as_national_input_and_remains_immutable",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipTests.test_transfer_uses_server_record_and_creates_only_one_pending_application",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_composer_audit_failure_rolls_back_and_cleans_uploaded_file",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_each_topic_withholds_drafts_withdrawals_and_archived_notices",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_filtered_announcement_shows_complete_escaped_content_without_popup",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_filtered_results_render_only_authorized_public_projection_and_withdraw_immediately",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_image_is_sanitized_and_edit_preserves_the_existing_description",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_popup_enforces_permissions_csrf_and_stale_edits",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_popup_has_only_three_editor_fields_and_creates_a_private_draft",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_required_fields_and_invalid_upload_are_returned_inside_popup",
+    "status": "PASS"
+  },
+  {
+    "id": "assistance.test_publication_gate.PublishedReceiptTests.test_draft_withdrawn_future_unrelated_and_missing_audit_do_not_authorize_receipt",
+    "status": "PASS"
+  },
+  {
+    "id": "assistance.test_publication_gate.PublishedReceiptTests.test_new_selection_waits_but_previously_published_member_can_receive",
+    "status": "PASS"
+  },
+  {
+    "id": "assistance.test_publication_gate.PublishedReceiptTests.test_publication_and_release_audit_rollback_preserve_records",
+    "status": "PASS"
+  },
+  {
+    "id": "assistance.test_publication_gate.PublishedReceiptTests.test_selected_but_unpublished_blocks_button_post_and_direct_release",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_draft_editor_cannot_publish_archive_or_retrieve_private_cms_anonymously",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_external_verification_is_only_an_explicitly_published_link",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_navigation_canonical_guides_results_and_method_do_not_duplicate_private_records",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_public_topics_collect_no_data_and_do_not_leak_drafts",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_publication_requires_reviewed_source_provider_date_and_confirmation",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_publish_snapshot_remains_stable_during_draft_edit_and_archive_retains_history",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_stale_writes_audit_failure_and_permission_revocation",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_resources.ResourceTests.test_url_safety_plain_text_and_unknown_detail_keys",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_current_requirement_review_exposes_additional_review_form",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_document_review_permissions_csrf_and_application_binding",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_invalid_expiry_digest_member_version_and_reason_do_not_write",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_old_calculation_is_retained_and_becomes_stale_after_document_review",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_re_review_appends_history_and_rejects_retry_with_stale_token",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_relevance_matches_any_registered_type_and_is_separate_from_requirements",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_stale_requirement_review_shows_next_step_instead_of_unusable_form",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.test_reviews.TestingReviewTests.test_verified_document_has_working_review_link_and_return",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_case_whitespace_and_unicode_normalization_preserve_middle_and_suffix",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_changed_member_or_qualification_invalidates_grant",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_closed_program_cannot_verify",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_confirmed_receipts_only_and_voids_change_pa_source",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_corrected_si_appends_history_and_invalidates_old_run",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_disabled_optional_adapter_cannot_accept_its_distinct_evidence_contract",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_disputed_and_expired_si_block_recalculation",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_duplicate_returns_existing_application_and_preserves_original_evidence",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_form_has_ten_shared_multiselect_choices_and_no_private_profile",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_guessing_is_rate_limited_and_does_not_issue_grants",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_inactive_archived_and_unapproved_members_are_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_incomplete_or_old_code_grant_cannot_submit",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_incomplete_pool_rejects_generation",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_ip_limit_cannot_be_evaded_by_rotating_control_numbers",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_matching_restriction_accepts_any_registered_type",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_member_source_correction_invalidates_verified_inputs",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_missing_fields_and_invalid_choices_show_only_generic_failure",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_missing_required_document_rejects_without_creating_application",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_multiple_disabilities_match_by_identifier",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_name_belonging_to_other_control_number_is_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_new_public_ewaf_application_requires_authorized_program_si_source",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_nonmatching_program_restriction_rejects_verified_member",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_onsite_sources_are_collected_and_score_trace_has_four_criteria",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_optional_configuration_cannot_discard_an_authorized_rubric_item",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_out_of_bounds_si_is_not_clamped",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_private_match_failures_share_one_message",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_program_history_handles_retained_scalar_and_before_after_entries",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_public_multiple_disabilities_require_the_complete_recorded_set",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_recorded_no_middle_name_and_custom_suffix",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_selection_capacity_receipt_and_history_remain_separate",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_session_grant_is_program_bound_expiring_and_tamper_checked",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_source_policy_changes_are_versioned_and_preserve_ahp",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_source_preview_and_review_are_permission_checked",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_stale_review_token_is_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_successful_public_submission_has_documents_and_pending_status",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_unmapped_employment_is_not_fabricated",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_uploaded_si_is_not_verified_and_blocks_pool",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_verified_match_does_not_update_membership_or_create_codes",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_verified_nonmatching_qualification_explains_why_application_cannot_proceed",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.tests.IntakeTests.test_weight_revision_uses_ahp_and_preserves_previous_calculation",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_acknowledgement_is_required_and_removed_upload_fields_cannot_be_submitted",
+    "status": "FAIL",
+    "kind": "subtest"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_already_current_record_can_be_reviewed_without_fake_member_edit",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_permissions_csrf_and_closed_states_are_enforced",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_resolves_report_without_documents_or_scoring_and_then_allows_eligible",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_editor_displays_report_and_current_values_without_evidence_picker",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_eligible_does_not_require_member_edit_or_resolution_of_reported_change",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_invalid_values_and_duplicate_or_stale_forms_do_not_overwrite",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_later_member_change_invalidates_report_review",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_member_edit_and_resolution_roll_back_if_application_audit_fails",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_updating_an_eligible_application_returns_it_for_another_human_decision",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_cross_member_document_and_invalid_identifiers_cannot_be_reviewed",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_expired_or_unavailable_document_is_not_marked_reviewed",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_failed_audit_does_not_save_verification",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_permissions_csrf_and_hidden_controls",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_review_requires_current_member_document_and_review",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_review_status_saves_on_applicant_page_and_retains_history",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_inline_document_review.InlineDocumentReviewTests.test_source_change_blocks_stale_selection_and_preserves_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_prpwd_registration.PrpwdRegistrationTests.test_lookup_must_match_current_pwd_and_cannot_be_forged_as_a_result",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_prpwd_registration.PrpwdRegistrationTests.test_manual_approval_records_verifier_date_url_and_both_audits",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_prpwd_registration.PrpwdRegistrationTests.test_manual_negative_result_is_recorded_without_creating_a_member",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_prpwd_registration.PrpwdRegistrationTests.test_onsite_lookup_carries_to_review_but_leaves_verification_pending",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_prpwd_registration.PrpwdRegistrationTests.test_verification_permission_and_configured_registry_are_required",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_builder_multipart_upload_and_protected_preview",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_optional_picture_and_title_initials_in_shared_details",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_picture_audit_failure_rolls_back_file_and_program",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_reject_invalid_oversized_and_conflicting_uploads",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_retain_replace_and_remove_picture_without_changing_approved_terms",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_stale_picture_version_rolls_back_other_edits",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureTests.test_write_requires_program_permission_and_validates_images_in_service",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipConcurrencyTests.test_two_staff_submissions_create_one_linked_intake",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_profile_migrations.ProfileMigrationTests.test_old_fields_documents_classifications_and_calculations_survive_upgrade",
+    "status": "PASS"
+  },
+  {
+    "id": "assistance.test_publication_gate.PublicationReceiptConcurrencyTests.test_withdrawal_waits_for_a_receipt_that_locked_published_selection",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationConcurrencyTests.test_simultaneous_profile_reviews_save_one_update_and_one_resolution",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureMigrationTests.test_additive_picture_table_preserves_programs",
+    "status": "PASS"
+  }
+]

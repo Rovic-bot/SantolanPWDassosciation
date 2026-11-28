@@ -21,17 +21,19 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
     await page.locator('form button[type=submit]').click();
     await page.waitForURL(origin + '/dashboard/');
     await page.goto(`${origin}/programs/manage/${process.env.QA_PROGRAM}/applications/${process.env.QA_APPLICANT}/`, {waitUntil: 'networkidle'});
-    const info = page.locator('#household-information');
-    assert((await info.innerText()).includes('PHP 37,000.00'));
-    assert((await info.innerText()).includes('Verified No'));
-    assert((await info.innerText()).includes('Full-Time Worker'));
-    assert(!(await info.innerText()).includes('EWAF'));
-    assert((await page.locator('#overview').innerText()).includes('Family information'));
-    assert(await page.locator('#program-requirements').evaluate(element => element.open));
+    assert.equal(await page.locator('#household-information').count(), 0);
+    assert(await page.locator('#eligibility').count());
+    await page.getByRole('link', {name: 'Member record', exact: true}).click();
+    await page.waitForLoadState('networkidle');
+    assert(new URL(page.url()).pathname.startsWith('/members/'));
+    const info = page.locator('main');
+    assert((await info.innerText()).includes('Iris Testindia'));
+    assert((await info.innerText()).includes('Household members'));
+    assert((await info.innerText()).includes('Employed'));
     await page.screenshot({path: path.join(output, 'applicant-desktop.png'), fullPage: true});
     await page.setViewportSize({width: 390, height: 1000});
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    await info.screenshot({path: path.join(output, 'applicant-mobile.png')});
+    await page.screenshot({path: path.join(output, 'applicant-mobile.png'), fullPage: true});
     await page.setViewportSize({width: 1440, height: 1100});
     await page.goto(origin + '/ewaf/vault/', {waitUntil: 'networkidle'});
     assert.equal(await page.locator('button[value=DRAFT]').count(), 0);
@@ -48,7 +50,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
       await page.locator('[name=reason]').fill('SYNTHETIC repeated approval through the visible editor.');
       await page.locator('button[value=LOCKED]').click();
       await page.waitForLoadState('networkidle');
-      assert((await page.locator('main').innerText()).includes('Configuration approved.'));
+      assert((await page.locator('main').innerText()).includes('Configuration approved for programs without published results.'));
       assert.equal(await page.locator('button[value=DRAFT]').count(), 0);
     }
     await page.screenshot({path: path.join(output, 'vault-approved-desktop.png'), fullPage: true});

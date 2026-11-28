@@ -29,7 +29,7 @@ class PublicPortalTests(TestCase):
                 self.assertRedirects(self.client.get(reverse(f'core:{route}')), f'/#{anchor}')
                 self.assertEqual(self.client.head(reverse(f'core:{route}')).status_code, 302)
                 self.assertEqual(self.client.post(reverse(f'core:{route}')).status_code, 405)
-                self.assertContains(home, f'id="{anchor}" tabindex="-1"')
+                self.assertContains(home, f'id="{anchor}"', count=1)
 
     def test_help_desk_and_retired_referral_page_redirect_to_community_assistance(self):
         destination = reverse('core:resources') + '#referral-support'

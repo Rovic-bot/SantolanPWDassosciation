@@ -77,8 +77,11 @@ class EvidenceConcurrencyTests(EvidenceHelpers, TransactionTestCase):
     def other_selected_application(self):
         program = create_program(registration_closes_at=timezone.now() - timezone.timedelta(minutes=1))
         application = application_fixture(program, self.member)
-        review_eligibility(application.pk, user=self.officer, data=review_data(application))
-        decide_assistance(application.pk, user=self.officer, data=decision_data(application))
+        # Existing pre-adoption selection; exercise today's real release writer.
+        from assistance.testsupport import historical_selection
+        from announcements.testsupport import publish_selection
+        historical_selection(application, self.officer)
+        publish_selection(program, self.officer)
         application.refresh_from_db()
         return application
 
@@ -141,8 +144,10 @@ class EvidenceConcurrencyTests(EvidenceHelpers, TransactionTestCase):
         void_release(other.pk, release.pk, user=self.officer,
             data={'version': other.version, 'notes': 'Synthetic void', 'confirm': True})
         self.assertEqual(self.assess('PA').value, 0)
-        review_eligibility(other.pk, user=self.officer, data=review_data(other))
-        decide_assistance(other.pk, user=self.officer, data=decision_data(other))
+        from assistance.testsupport import historical_selection
+        from announcements.testsupport import publish_selection
+        historical_selection(other, self.officer)
+        publish_selection(other.program, self.officer)
         replacement = record_release(other.pk, user=self.officer, data=release_data(other))
         finding = self.assess('PA')
         self.assertEqual(finding.value, 1)

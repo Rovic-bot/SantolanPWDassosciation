@@ -56,7 +56,8 @@ class RollingDeliveryFixture:
     def receipt_data(self, app):
         app.refresh_from_db()
         self.program.refresh_from_db()
-        return {'version': app.version, 'program_version': self.program.version}
+        return {'version': app.version, 'program_version': self.program.version,
+                  'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True}
 
     def record(self, app):
         return assistance.record_actual_receipt(app.pk, user=self.user, data=self.receipt_data(app))
@@ -169,8 +170,8 @@ class RollingDeliveryTests(RollingDeliveryFixture, TransactionTestCase):
             other = create_program(registration_opens_at=self.base - timedelta(days=2),
                 registration_closes_at=self.base - timedelta(days=1))
             other_app = application_fixture(other, a.member)
-            assistance.review_eligibility(other_app.pk, user=self.user, data=review_data(other_app))
-            assistance.decide_assistance(other_app.pk, user=self.user, data=decision_data(other_app))
+            from assistance.testsupport import historical_selection
+            historical_selection(other_app, self.user)
             from announcements.testsupport import publish_selection
             publish_selection(other, self.user)
             assistance.record_release(other_app.pk, user=self.user, data=release_data(other_app))

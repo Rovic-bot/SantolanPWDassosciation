@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_criterion_comparisons_use_the_whole_pool_and_exact_values_even_when_display_matches",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_exact_ties_and_near_ties_are_not_resorted_using_rounded_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_four_criterion_example_explains_encoding_direction_and_joint_contributors",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_legacy_income_and_dependents_do_not_become_household_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_rational_traces_keep_saved_total_instead_of_summing_rounded_points",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_zero_total_has_no_invented_leading_criterion_or_division_by_zero",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_empty_tab_never_generates_a_calculation",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_historical_and_stale_results_keep_saved_values",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_permissions_invalid_identifiers_and_cross_program_requests_fail_closed",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_read_only_tab_and_applicant_switch_show_retained_inputs_and_no_decisions",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_tampered_calculation_cannot_be_presented_as_a_valid_explanation",
+    "status": "PASS"
+  }
+]

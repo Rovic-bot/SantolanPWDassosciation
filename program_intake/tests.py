@@ -437,10 +437,10 @@ class IntakeTests(TestCase):
             historical = create_program(self.actor, 'Actual receipt fixture', ewaf=False, closes=now - timedelta(days=1))
             historical_app = self.submit(program=historical)
             photo_review(historical_app, self.actor)
-            review(historical_app, self.actor)
-        historical_app.refresh_from_db()
-        decide_assistance(historical_app.pk, user=self.actor, data={'version': historical_app.version,
-            'decision': 'approved', 'notes': TEST, 'confirm': True})
+            from assistance.testsupport import historical_selection
+            historical_selection(historical_app, self.actor)
+        from announcements.testsupport import publish_selection
+        publish_selection(historical, self.actor)
         app = self.prepare()
         self.assertEqual(CriterionAssessment.objects.filter(application=app, criterion='PA').first().value, 0)
         receipt = receive(historical_app, self.actor, 'FICTIONAL-RECEIPT')
@@ -489,6 +489,8 @@ class IntakeTests(TestCase):
             decision = operational.record_decision(self.program.pk, user=self.actor, run_id=run.pk,
                 application_id=app.pk, expected_revision=0, outcome='SELECTED', reason=TEST)
             self.assertFalse(AssistanceRelease.objects.exists())
+            from announcements.testsupport import publish_selection
+            publish_selection(self.program, self.actor)
             receipt = receive(app, self.actor, 'FICTIONAL-SELECTED-RECEIPT')
             self.assertIsNone(receipt.voided_at)
             self.assertEqual(decision.outcome, 'SELECTED')
@@ -509,3 +511,24 @@ class IntakeTests(TestCase):
             self.calculate()
         original.refresh_from_db()
         original.clean()
+
+
+    def test_disabled_optional_adapter_cannot_accept_its_distinct_evidence_contract(self):
+        app = self.prepare()
+        from ewaf.readiness import evaluate
+        from ewaf.operational_policy import findings
+        with override_settings(PROGRAM_INTAKE_ENABLED=False):
+            result = evaluate(app)
+            self.assertFalse(result['criterion_completeness'])
+            self.assertTrue(any(item['code'] == 'EVIDENCE_CONTRACT_REVIEW_REQUIRED'
+                for item in result['reasons']['criteria']))
+            self.assertTrue(any(error.startswith('PR.') for error in
+                findings(self.configuration.policy, self.configuration.judgments)))
+
+    def test_optional_configuration_cannot_discard_an_authorized_rubric_item(self):
+        from types import SimpleNamespace
+        evidence = deepcopy(self.configuration.evidence_policy.snapshot)
+        evidence['criteria']['PR']['rubric_definition'] = {'items': [{'id': 'retained-condition'}]}
+        with self.assertRaisesMessage(ValidationError, 'retain every genuinely required'):
+            sources.validate_configuration(self.program, self.configuration.policy,
+                SimpleNamespace(snapshot=evidence))

@@ -243,8 +243,8 @@ class CompositeSesWorkflowTests(TransactionTestCase):
                 name='SYNTHETIC composite SES', benefit='Synthetic benefit', slots=1,
                 selection_method='Synthetic composite SES and separate human selection',
                 registration_opens_at=self.base+timedelta(hours=1), registration_closes_at=self.base+timedelta(days=1)))
-            change_publication(self.program.pk, user=self.user, version=self.program.version,
-                action='authorize_policy', notes='SYNTHETIC authority')
+            from programs.testsupport import historical_policy_authorization
+            historical_policy_authorization(self.program, self.user)
         self.program.refresh_from_db()
         helper = TermsHelpers(); helper.program, helper.officer = self.program, self.user; helper.reconcile()
         self.cutoff = self.program.registration_closes_at+timedelta(hours=1)
@@ -264,7 +264,7 @@ class CompositeSesWorkflowTests(TransactionTestCase):
 
     def accept(self, app, proof, *, low=False, selections=None, **changes):
         findings = {**evidence.periods(self.configuration), 'income_monthly': ['0' if low else '100000']*3,
-            'employment': 'Unemployed' if low else 'Full-Time Worker', 'household_members': 6 if low else 2,
+            'employment': 'Unemployed' if low else 'Employed', 'household_members': 6 if low else 2,
             'history_complete': True, 'assessment_finding': 'SYNTHETIC accepted findings',
             'income_consistency': 'consistent', 'income_resolution': '', 'household_four_ps': False,
             'four_ps_household_confirmed': True,
@@ -301,9 +301,10 @@ class CompositeSesWorkflowTests(TransactionTestCase):
         self.assertEqual(len(run.calculations[str(a.pk)]['traces']),4)
         self.assertFalse(OperationalDecision.objects.filter(program=self.program).exists())
         self.choose(run,a); self.choose(run,b,outcome='NOT_SELECTED')
-        item=prepare_results(self.program.pk,user=self.user,version=0,reason='SYNTHETIC permitted public result')
+        item=prepare_results(self.program.pk,user=self.user,version=0,reason='SYNTHETIC permitted public result', recorded=True, selection_reason='Synthetic eligible members selected under the recorded ranking and human decision.')
         public=str(item.result_revision.public_payload)
-        for value in ('household_four_ps','income_monthly','score_exact','multiplier',a.public_reference):
+        self.assertEqual(item.result_revision.public_payload['rows'][0]['reference'], a.public_reference)
+        for value in ('household_four_ps','income_monthly','score_exact','multiplier',a.member.full_name, a.member.control_number, str(a.pk), a.status_token):
             self.assertNotIn(value,public)
         item=publish_results(item.pk,user=self.user,version=item.version)
         self.assertTrue(results_current(item))
@@ -349,24 +350,10 @@ class CompositeSesWorkflowTests(TransactionTestCase):
         with self.assertRaises(ValidationError): approved.save()
 
     def test_http_policy_draft_approval_and_main_weight_reordering_keep_fixed_formula(self):
-        url=reverse('ewaf:dataset_policies')
-        data={'calculation_method':methods.COMPOSITE,'expected':policies.token(),'weight':self.weights.pk,
-              'reason':'SYNTHETIC HTTP composite policy','shared_cutoff':'application_close'}
-        for key,item in self.content['choices'].items():
-            data[key],data['specified_'+key]=item['value'],'on'
-        page=self.client.get(url)
-        self.assertEqual(page.context['method'], methods.COMPOSITE)
-        self.assertNotContains(page, 'aria-label="Scoring policy method"')
-        self.assertContains(page,'does not guarantee fairness')
-        self.assertContains(page,'name="four_ps_evidence_procedure"')
-        self.assertNotContains(page,'name="si_rubric"')
-        self.assertEqual(self.client.post(url,data).status_code,302)
-        draft=SharedDatasetPolicy.objects.first()
-        self.assertEqual(self.client.post(reverse('ewaf:dataset_policy_review',args=[draft.pk]),{
-            'expected':draft.digest,'group_A':'on','group_B':'on','group_C':'on','reason':'SYNTHETIC HTTP approval'}).status_code,302)
-        config=operational.latest_configuration(self.program)
-        self.assertEqual(config.dataset_policy_id, SharedDatasetPolicy.objects.first().pk)
-        retained=deepcopy(config.payload())
+        from .test_dataset_policy import assert_read_only_bookmark
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_policies'), reverse('ewaf:vault'))
+        config = self.bind()
+        retained = deepcopy(config.payload())
         url=reverse('ewaf:vault')
         page=self.client.get(url)
         self.assertEqual(page.context['method'], methods.COMPOSITE)
@@ -435,21 +422,11 @@ class CompositeSesWorkflowTests(TransactionTestCase):
         old_binding.refresh_from_db(); old_binding.clean(); self.assertEqual(old_binding.payload(),retained)
 
     def test_input_forms_show_reviewed_household_status_without_old_si_or_manual_ses_score(self):
-        a,ar,b,br=self.pool(); url=reverse('ewaf:dataset_inputs',args=[a.pk])
-        page=self.client.get(url)
-        self.assertContains(page,'Income-based SES with a verified 4Ps adjustment')
-        self.assertEqual(page.context['form']['household_four_ps'].value(),'no')
-        for name in ('si_indigency','si_four_ps','final_ses','ses_score','evidence_SI','evidence_HI'):
-            self.assertNotContains(page,'name="'+name+'"')
-        data={'expected':evidence.review_token(a,self.configuration),'state':'ACCEPTED','income_0':'50000','income_1':'50000','income_2':'50000',
-            'employment':'Unemployed','household_members':6,'history_complete':'on','assessment_finding':'SYNTHETIC form review',
-            'income_consistency':'consistent','income_resolution':'','household_four_ps':'yes','four_ps_household_confirmed':'on',
-            'four_ps_household_review':'SYNTHETIC permitted household evidence and relationship checked','confirmed':'on','reason':'SYNTHETIC HTTP acceptance',
-            **{'evidence_'+code:[ar.pk] for code in CODES}}
-        self.assertEqual(self.client.post(url,data).status_code,302)
-        self.assertEqual(DatasetInputReview.objects.filter(application=a).first().inputs['SES']['household_four_ps'],1)
-        data.pop('household_four_ps');data['expected']=evidence.review_token(a,self.configuration)
-        self.assertContains(self.client.post(url,data),'unresolved')
+        from .test_dataset_policy import assert_read_only_bookmark
+        a, ar, b, br = self.pool()
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_inputs', args=[a.pk]),
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#readiness')
+        self.assertEqual(DatasetInputReview.objects.filter(application=a).first().inputs['SES']['household_four_ps'], 0)
 
     def test_generating_ranking_exposes_private_scoring_and_calculation_tabs(self):
         from django.contrib.admin.models import LogEntry
@@ -471,25 +448,15 @@ class CompositeSesWorkflowTests(TransactionTestCase):
         retained = deepcopy(run.payload())
         counts = LogEntry.objects.count(), OperationalRun.objects.count(), OperationalDecision.objects.count()
         self.assertContains(generated, explanation + '?run=' + str(run.pk))
-        self.assertContains(generated, guide_url + '?run=' + str(run.pk))
-        guide = self.client.get(guide_url, {'run': run.pk, 'applicant': str(b.pk)})
-        self.assertContains(guide, 'SES = I × (0.90 + 0.10 × P)')
-        self.assertContains(guide, 'Full-Time Worker = 1')
-        self.assertContains(guide, 'Unemployed = 4')
-        self.assertEqual(guide.context['guide']['count'], 4)
-        self.assertTrue(guide.context['guide']['pool_bounds'])
-        self.assertTrue(guide.context['guide']['composite'])
-        self.assertEqual(guide.context['guide']['formula_version'], FORMULA['version'])
-        self.assertIn('no-store', guide['Cache-Control'])
-        for code in CODES:
-            self.assertContains(guide, 'data-rule-criterion="' + code + '"')
-        for code in ('HI', 'SI', 'ND'):
-            self.assertNotContains(guide, 'data-rule-criterion="' + code + '"')
+        self.assertNotContains(generated, guide_url)
+        from .test_dataset_policy import assert_read_only_bookmark
+        assert_read_only_bookmark(self, guide_url + '?run=' + str(run.pk),
+            workspace + '?run=' + str(run.pk) + '#results')
         page = self.client.get(explanation, {'run': run.pk, 'applicant': str(b.pk), 'page': 99})
         self.assertEqual(page.context['selected']['rank'], 2)
         self.assertEqual(page.context['selected']['higher'], 1)
         self.assertTrue(all(trace['pool_higher'] == 1 for trace in page.context['selected']['traces']))
-        self.assertContains(page, 'Lowest points in this pool')
+        self.assertContains(page, 'Applicant score comparison')
         page = self.client.get(explanation, {'run': run.pk, 'applicant': str(a.pk)})
         self.assertEqual(page.context['selected']['lower'], 1)
         self.assertTrue(all(trace['pool_lower'] == 1 for trace in page.context['selected']['traces']))
@@ -526,7 +493,7 @@ class CompositeSesWorkflowTests(TransactionTestCase):
             label='SYNTHETIC optional certificate',file=pdf(),content_type='application/pdf',size=50)
         review=verify_document(attachment.pk,user=self.user,member_version=a.member.version,verified=True,expires_on=None,
             reason='SYNTHETIC optional evidence reviewed')
-        args={'income_monthly':['100000']*3,'household_four_ps':True,'employment':'Seasonal Worker','household_members':4}
+        args={'income_monthly':['100000']*3,'household_four_ps':True,'employment':'Student','household_members':4}
         with self.assertRaises(ValidationError): self.accept(a,ar,**args,income_consistency='unresolved')
         self.accept(a,ar,**args,income_consistency='resolved',income_resolution='SYNTHETIC dates/circumstances reviewed; PHP 100,000 accepted.',
             selections={code:[ar.pk] for code in CODES}|{'SES':[ar.pk,review.pk]})

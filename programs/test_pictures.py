@@ -23,11 +23,14 @@ from .tests import program_data
 from .testsupport import private_media
 
 
-@override_settings(PDAO_ENFORCEMENT_ENABLED=False, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True)
+@override_settings(PDAO_ENFORCEMENT_ENABLED=False, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True,
+    EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
 class ProgramPictureTests(TestCase):
     def setUp(self):
         self.media = private_media(self)
         self.admin = get_user_model().objects.create_superuser('picture_admin')
+        from .testsupport import approved_test_weights
+        approved_test_weights(self.admin)
         self.client.force_login(self.admin)
 
     def create(self, upload=True):

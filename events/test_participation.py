@@ -64,7 +64,7 @@ class EventParticipationTests(TestCase):
         item = self.publish(self.event(event_category=''))
         self.assertEqual(item.status, 'published')
         self.assertEqual(item.history.count(), 2)
-        observance = save_observance(user=self.admin, data=draft_data(who_may_participate=''))
+        observance = save_observance(user=self.admin, data=draft_data(target_audience=''))
         with self.assertRaises(ValidationError):
             change_observance_publication(observance.pk, user=self.admin, version=observance.version,
                                          action='published', notes='Incomplete rules.')

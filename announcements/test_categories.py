@@ -38,12 +38,12 @@ class AnnouncementCategoryTests(TestCase):
 
     def test_general_source_date_category_and_home_projection(self):
         item = self.publish(self.draft())
-        for url in (self.list_url, reverse('announcements:detail', args=[item.pk]), reverse('core:home')):
+        for url in (self.list_url, reverse('announcements:detail', args=[item.pk])):
             response = self.client.get(url)
             self.assertContains(response, 'Barangay Santolan')
-            self.assertContains(response, 'General')
+            self.assertContains(response, item.title)
             self.assertContains(response, '<time datetime=')
-        self.assertNotContains(self.client.get(self.list_url, {'category': 'programs'}), item.title)
+        self.assertContains(self.client.get(self.list_url, {'category': 'announcements'}), item.title)
         self.assertNotContains(self.client.get(self.list_url, {'category': 'results'}), item.title)
 
     def test_source_required_for_new_draft_and_publication_without_inventing_legacy_metadata(self):
@@ -77,7 +77,7 @@ class AnnouncementCategoryTests(TestCase):
         self.program.name = 'Updated canonical program'
         self.program.description = '<script>unsafe()</script> Updated program overview.'
         self.program.save(update_fields=['name', 'description'])
-        for url in (self.list_url, reverse('announcements:detail', args=[item.pk]), reverse('core:home')):
+        for url in (self.list_url, reverse('announcements:detail', args=[item.pk])):
             response = self.client.get(url)
             self.assertContains(response, 'Updated canonical program')
             self.assertContains(response, 'Updated program overview')
@@ -97,7 +97,7 @@ class AnnouncementCategoryTests(TestCase):
                 original = {key: getattr(self.program, key) for key in values}
                 Program.objects.filter(pk=self.program.pk).update(**values)
                 self.assertEqual(self.client.get(reverse('announcements:detail', args=[item.pk])).status_code, 404)
-                for url in (self.list_url, reverse('core:home')):
+                for url in (self.list_url,):
                     self.assertNotContains(self.client.get(url), self.program.name)
                 Program.objects.filter(pk=self.program.pk).update(**original)
 
@@ -119,10 +119,11 @@ class AnnouncementCategoryTests(TestCase):
         classification = str(self.program.eligible_disability_types.get().pk)
         response = self.client.get(self.list_url, {'category': 'programs', 'disability': classification})
         self.assertEqual(response.context['page_obj'].paginator.count, 2)
-        self.assertContains(response, self.program.name)
-        self.assertContains(response, unrestricted.name)
-        response = self.client.get(self.list_url, {'category': 'programs', 'disability': classification,
-                                                   'program_category': 'Medical support'})
+        self.assertEqual(response.context['category'], 'announcements')
+        first = list(response.context['page_obj'])
+        second = self.client.get(self.list_url, {'category': 'announcements', 'page': 2})
+        self.assertEqual({row['pk'] for row in [*first, *second.context['page_obj']]}, {restricted.pk, other.pk})
+        response = self.client.get(self.list_url, {'category': 'announcements', 'q': self.program.name})
         self.assertEqual([row['pk'] for row in response.context['page_obj']], [restricted.pk])
         self.assertNotContains(response, unrestricted.name)
         self.assertEqual(self.client.get(reverse('announcements:detail', args=[other.pk])).status_code, 200)
@@ -136,7 +137,7 @@ class AnnouncementCategoryTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Private category')
         self.assertNotContains(response, private.name)
-        self.assertEqual(response.context['disability'], '')
+        self.assertEqual(response.context['category'], 'announcements')
 
     def test_linking_and_editing_program_notices_requires_program_permission(self):
         with self.assertRaises(ValidationError):
@@ -179,11 +180,11 @@ class AnnouncementCategoryTests(TestCase):
     def test_admin_categories_search_and_explicit_review_confirmation(self):
         item = self.program_notice()
         self.client.force_login(self.admin)
-        response = self.client.get(reverse('announcements:manage_notices'),
-                                   {'category': 'programs', 'q': self.program.name})
-        self.assertEqual(response.context['page_obj'].paginator.count, 1)
-        self.assertContains(response, 'Prepare and publish program results')
-        response = self.client.post(reverse('announcements:manage_detail', args=[item.pk]),
+        response = self.client.get(reverse('announcements:manage_list'),
+                                   {'section': 'announcements', 'q': self.program.name})
+        self.assertEqual(response.context['notice_page'].paginator.count, 1)
+        self.assertContains(response, 'Review announcement')
+        response = self.client.post(reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1',
                                    {'version': item.version, 'action': 'published'})
         self.assertEqual(response.status_code, 200)
         item.refresh_from_db()

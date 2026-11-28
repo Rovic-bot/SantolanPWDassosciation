@@ -57,10 +57,15 @@ class ReceiptButtonTests(TestCase):
         self.assertEqual(AssistanceLog.objects.filter(action='assistance_released').count(), 1)
 
     def test_empty_benefit_uses_program_title_and_zero_amount_is_retained(self):
-        self.program.benefit = ''
-        self.program.amount = Decimal('0.00')
-        self.program.save(update_fields=['benefit', 'amount'])
-        self.approve()
+        from programs.tests import create_program
+        from programs.testsupport import application_fixture
+        from assistance.testsupport import historical_selection
+        from announcements.testsupport import publish_selection
+        # Retained programs may have a zero cash amount; new creation no longer collects it.
+        self.program = create_program(benefit='', amount=Decimal('0.00'))
+        self.application = application_fixture(self.program, self.member)
+        historical_selection(self.application, self.admin)
+        publish_selection(self.program, self.admin)
         release = self.record()
         self.assertEqual(release.benefit, f'Assistance for {self.program.name}')
         self.assertEqual(release.amount, Decimal('0.00'))
@@ -128,7 +133,7 @@ class ReceiptButtonTests(TestCase):
                 self.record()
         self.assertFalse(AssistanceRelease.objects.exists())
         self.application.refresh_from_db()
-        self.assertEqual(self.application.status, 'SELECTED')
+        self.assertEqual(self.application.status, 'ELIGIBLE')
         self.assertEqual(services.previous_assistance_count(self.member), 0)
 
 
@@ -137,8 +142,7 @@ class ReceiptButtonConcurrencyTests(TransactionTestCase):
     race = fixtures.AssistanceConcurrencyTests.race
 
     def test_simultaneous_buttons_record_one_receipt(self):
-        close_non_ewaf_program(self.program, self.admin)
-        services.decide_assistance(self.application.pk, user=self.admin, data=fixtures.decision_data(self.application))
+        fixtures.current_selection(self.application, self.admin, publish=False)
         from announcements.testsupport import publish_selection
         publish_selection(self.program, self.admin)
         self.application.refresh_from_db()

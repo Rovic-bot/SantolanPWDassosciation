@@ -79,8 +79,12 @@ class WorkspaceNavigationTests(TestCase):
         self.assertIn(f'data-group-key="{group}" data-current="true"', nav)
         self.assertEqual(nav.count('data-current="true"'), 1)
         if label:
-            current = re.findall(r'<a[^>]*aria-current="page"[^>]*>(.*?)</a>', nav)
-            self.assertEqual([html.unescape(value) for value in current], [label])
+            current = re.findall(r'<a[^>]*aria-current="page"[^>]*>(.*?)</a>', nav, re.S)
+            labels = []
+            for value in current:
+                named = re.search(r'<span class="workspace-concern-label">(.*?)</span>', value, re.S)
+                labels.append(html.unescape(named[1] if named else value).strip())
+            self.assertEqual(labels, [label])
 
     def test_eight_modules_in_required_order_on_custom_and_native_admin(self):
         for route in ('core:dashboard', 'admin:index', 'admin:documents_documenttype_changelist'):
@@ -167,7 +171,7 @@ class WorkspaceNavigationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assert_current(response, 'content', 'Announcements')
         item = Announcement.objects.create(title='Synthetic restricted publication', content='Approved synthetic wording.')
-        detail = reverse('announcements:manage_detail', args=[item.pk])
+        detail = reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'
         self.assertNotContains(self.client.get(detail), '>Apply publication change</button>')
         self.assertEqual(self.client.post(detail, {'action': 'published', 'version': item.version, 'confirm': 'on'}).status_code, 403)
         item.refresh_from_db()

@@ -42,6 +42,10 @@ class ApprovedWeightsIntakeTests(TestCase):
         terms.program,terms.officer = self.program,self.user
         terms.reconcile()
         self.member = create_member('SYNTHETIC-WEIGHTS-APPLICANT')
+        # Stable contact keeps this retry test focused on schedule/grant checks;
+        # ApplicationEmailTests separately exercise filling a blank contact.
+        self.member.email = 'synthetic@example.invalid'
+        self.member.save(update_fields=['email'])
         self.member.application.decided_by = self.user
         self.member.application.save(update_fields=['decided_by'])
         self.member.refresh_from_db()
@@ -53,13 +57,13 @@ class ApprovedWeightsIntakeTests(TestCase):
 
     def grant(self):
         return workflow.verify(self.program.pk,version=self.program.version,control_number=self.member.control_number,
-            full_name=self.member.full_name,birthdate=self.member.birthdate,contact_number=self.member.contact_number)[0]
+            full_name=self.member.full_name)[0]
 
     def submit(self,grant):
         return submit_application(self.program.pk,grant=grant,data=dict(version=self.program.version,
             applicant_name=self.member.full_name,applicant_contact=self.member.contact_number,
             applicant_email='synthetic@example.invalid',pwd_id_number='SYNTHETIC-ID',current_information='unchanged',
-            change_details='',confirm_information=True),files=MultiValueDict({'calendar_photo':[image_upload()]}))
+            change_details='',confirm_information=True),files=MultiValueDict())
 
     def test_publication_retains_exact_weight_version_schedule_and_scoring_block(self):
         before = self.weights.payload()
@@ -145,12 +149,13 @@ class ApprovedWeightsIntakeTests(TestCase):
     def test_admin_ui_reports_publication_readiness_without_claiming_scoring_ready(self):
         self.client.force_login(self.user)
         response=self.client.get(reverse('programs:manage_detail',args=[self.program.pk]))
-        self.assertContains(response,'Approved EWAF weights are assigned')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['detail_ready'])
         self.assertNotContains(response,'Programs using this configuration cannot be published yet')
         from .program_cards import configuration_summary
         self.assertEqual(configuration_summary(self.program)['state'],'intake_ready')
         from .dataset_methods import HOUSEHOLD
-        self.assertContains(self.client.get(reverse('ewaf:vault')+'?method='+HOUSEHOLD),'Calculation, ranking and selection require')
+        self.assertContains(self.client.get(reverse('ewaf:vault')+'?method='+HOUSEHOLD),'Scoring is pending approved calculation rules.')
 
     @override_settings(EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
     def test_application_review_opens_with_approved_weights_and_pending_scoring_rules(self):
@@ -163,9 +168,9 @@ class ApprovedWeightsIntakeTests(TestCase):
         url = reverse('programs:application_detail', args=[self.program.pk, application.pk])
         response = self.client.get(url)
         self.assertContains(response, 'Application review')
-        self.assertContains(response, 'Current information needs review.')
-        self.assertEqual(response.context['household_members'], 'Not recorded')
-        self.assertEqual(response.context['household_income'], 'Not recorded')
+        self.assertContains(response, reverse('members:detail', args=[application.member_id]))
+        self.assertNotIn('household_members', response.context)
+        self.assertNotIn('household_income', response.context)
         self.assertNotContains(response, 'Reviewed information for this application.')
         from programs.review_forms import ApplicationDecisionForm
         from assistance.models import AssistanceCase

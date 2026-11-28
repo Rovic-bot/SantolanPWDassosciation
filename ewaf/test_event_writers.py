@@ -49,6 +49,13 @@ class EventHelpers(SourceHelpers):
         self.event = services.save_event(user=self.officer,
             data=event_data(application_program=self.program.pk, image_alt='Fictional event image'),
             files=MultiValueDict({'image': [image_upload()]}))
+        # New event editors no longer create program links. Preserve a
+        # fictional historical link to exercise its source invalidation guards.
+        from scripts.durable_test_runner import require_disposable
+        require_disposable()
+        Event.objects.filter(pk=self.event.pk).update(application_program=self.program)
+        self.event.refresh_from_db()
+        services.record_log(self.event, 'historical_link', 'SYNTHETIC retained program link.', user=self.officer)
         self.bootstrap([self.program.pk, self.other.pk])
         context = authority_services._disposable_authority_session(user=self.officer)
         context.__enter__()
@@ -98,12 +105,12 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
     def setUp(self):
         self.setup_event()
 
-    def test_linked_creation_uses_existing_program_state(self):
-        item = services.save_event(user=self.officer, data=event_data(application_program=self.other.pk), source_expected=self.tokens(self.other))
-        state = ProgramSourceState.objects.get(program=self.other)
-        self.assertEqual(state.generation, 2)
-        self.assertEqual((state.last_invalidation.batch.source_kind, state.last_invalidation.batch.source_id), ('event', str(item.pk)))
-        generation._validate_batch(state.last_invalidation.batch)
+    def test_new_creation_ignores_retired_program_link_and_keeps_sources_unchanged(self):
+        item = services.save_event(user=self.officer, data=event_data(application_program=self.other.pk), source_expected={})
+        self.assertIsNone(item.application_program_id)
+        self.assertEqual(item.event_category, 'general')
+        self.assertEqual(item.history.get().changes['event_category'], {'before': '', 'after': 'general'})
+        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 1)
         self.assert_transition(1)
 
     def test_linked_edit_retains_exact_native_audit(self):
@@ -128,18 +135,18 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         self.assertEqual(self.event.history.first().address, '2001:db8::1')
         self.assert_transition(2)
 
-    def test_relink_invalidates_union_once_with_one_batch(self):
-        self.save(application_program=self.other.pk, expected=self.tokens(self.program, self.other))
-        states = list(ProgramSourceState.objects.order_by('program_id'))
-        self.assertEqual([s.generation for s in states], [2, 2])
-        self.assertEqual(len({s.last_invalidation.batch_id for s in states}), 1)
-        self.assertEqual(states[0].last_invalidation.batch.scope_count, 2)
+    def test_removed_relink_field_preserves_original_link_and_invalidates_only_original_source(self):
+        self.save(application_program=self.other.pk)
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.application_program_id, self.program.pk)
+        self.assert_transition(2)
+        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 1)
 
-    def test_unlink_invalidates_old_program(self):
+    def test_removed_unlink_field_preserves_historical_context(self):
         self.save(application_program='')
         self.assert_transition(2)
         self.event.refresh_from_db()
-        self.assertIsNone(self.event.application_program_id)
+        self.assertEqual(self.event.application_program_id, self.program.pk)
 
     def test_unlinked_creation_edit_and_publication_make_no_batch(self):
         before = SourceMutationBatch.objects.count()
@@ -149,10 +156,12 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         self.assertEqual(SourceMutationBatch.objects.count(), before)
         self.assertEqual(self.event.history.count(), 3)
 
-    def test_unlinked_to_linked_uses_proposed_program(self):
+    def test_unlinked_event_cannot_acquire_program_link_through_removed_field(self):
         self.event = services.save_event(user=self.officer, data=event_data(), source_expected={})
-        self.save(application_program=self.other.pk, expected=self.tokens(self.other))
-        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 2)
+        self.save(application_program=self.other.pk, expected={})
+        self.event.refresh_from_db()
+        self.assertIsNone(self.event.application_program_id)
+        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 1)
         self.assert_transition(1)
 
     def test_publication_cancellation_withdrawal_archive_preserved(self):
@@ -185,18 +194,18 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         for expected in ({}, self.tokens(self.other), self.tokens(self.program, self.other), {str(self.program.pk): {}}):
             with self.subTest(expected=expected), self.assertRaises(ValidationError):
                 self.save(expected=expected)
-        with self.assertRaises(ValidationError):
-            self.save(application_program=self.other.pk, expected=self.tokens())
         self.assert_transition(1)
 
-    def test_missing_source_state_denied(self):
+    def test_missing_historical_link_source_state_denied(self):
         third = draft_program()
+        Event.objects.filter(pk=self.event.pk).update(application_program=third)
+        self.event.refresh_from_db()
         with self.assertRaisesMessage(ValidationError, 'SOURCE_STATE_NOT_INITIALIZED'):
-            self.save(application_program=third.pk, expected={**self.tokens(), str(third.pk): self.token()})
+            self.save(expected={str(third.pk): self.token()})
         self.assert_transition(1)
 
     def test_invalid_link_and_stale_event_version_denied(self):
-        for data in ({'application_program': 'invalid'}, {'version': 0}):
+        for data in ({'version': 0}, {'version': -1}):
             with self.subTest(data=data), self.assertRaises(ValidationError):
                 self.save(**data)
         with self.assertRaises(ValidationError):
@@ -228,13 +237,13 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         with self.assertRaises(PermissionDenied):
             services.save_event(pk=self.event.pk, user=user, data=data, source_expected=self.tokens())
 
-    def test_protected_terms_prevent_edit_relink_and_unlink(self):
+    def test_protected_terms_prevent_edits_and_historical_link_remains(self):
         Program.objects.filter(pk=self.program.pk).update(status='published', published_at=timezone.now())
-        for values in ({'title': 'Forbidden revision'}, {'application_program': ''}, {'application_program': self.other.pk}):
-            expected = self.tokens(self.program, self.other) if values.get('application_program') else self.tokens()
-            with self.subTest(values=values), self.assertRaisesMessage(ValidationError, 'protected'):
-                self.save(expected=expected, **values)
+        with self.assertRaisesMessage(ValidationError, 'protected'):
+            self.save(title='Forbidden revision')
         self.assert_transition(1)
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.application_program_id, self.program.pk)
 
     def test_protected_program_publication_does_not_approve_or_rewrite_program(self):
         Program.objects.filter(pk=self.program.pk).update(status='published', published_at=timezone.now())
@@ -255,8 +264,9 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         member = create_member('FICTIONAL-EVENT-APPLICATION')
         app = application_fixture(self.program, member)
         before = list(ProgramApplication.objects.values())
-        with self.assertRaisesMessage(ValidationError, 'once applications exist'):
-            self.save(application_program='')
+        self.save(application_program='')
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.application_program_id, self.program.pk)
         self.save(image_alt='Fictional accessible description')
         self.assertEqual(before, list(ProgramApplication.objects.values()))
         self.assertTrue(ProgramApplication.objects.filter(pk=app.pk).exists())
@@ -265,10 +275,13 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         for suffix in ('A', 'B'):
             historical_registration(self.event, create_member('FICTIONAL-REG-' + suffix))
         before = list(EventRegistration.objects.order_by('pk').values())
-        for values in ({'capacity': 1}, {'ends_at': self.event.starts_at - timedelta(hours=1)}):
+        for values in ({'ends_at': self.event.starts_at - timedelta(hours=1)},):
             with self.subTest(values=values), self.assertRaises(ValidationError):
                 self.save(**values)
-        self.save(image_alt='Fictional planning description')
+        capacity = self.event.capacity
+        self.save(capacity=1)
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.capacity, capacity)
         self.assertEqual(before, list(EventRegistration.objects.order_by('pk').values()))
 
     def test_missing_native_audit_rolls_back(self):
@@ -282,7 +295,7 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         self.rollback(self.save, 'events.services.record_log', duplicate)
 
     def test_foreign_event_audit_rolls_back(self):
-        other = services.save_event(user=self.officer, data=event_data(application_program=self.other.pk), source_expected=self.tokens(self.other))
+        other = services.save_event(user=self.officer, data=event_data(), source_expected={})
         original = services.record_log
         def foreign(item, *args, **kwargs):
             return original(other, *args, **kwargs)
@@ -340,7 +353,7 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
 
     def test_creation_failure_cleans_new_image(self):
         self.rollback(lambda: services.save_event(user=self.officer, data=event_data(application_program=self.other.pk, image_alt='Fictional image'),
-            files=self.upload(), source_expected=self.tokens(self.other)), 'ewaf.generation_services._invalidate')
+            files=self.upload(), source_expected={}), 'events.services.record_log')
 
     def test_image_collision_never_overwrites_retained_bytes(self):
         before = self.files()
@@ -351,12 +364,13 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
         self.assertEqual(len(self.files()), len(before) + 1)
 
     def test_image_alt_and_missing_image_guards(self):
-        with self.assertRaises(ValidationError):
-            self.save(image_alt='', files=self.upload())
+        self.save(image_alt='', files=self.upload())
+        self.event.refresh_from_db()
+        self.assertTrue(self.event.image_description)
         self.event.image.storage.delete(self.event.image.name)
         with self.assertRaises(ValidationError):
             self.publish()
-        self.assert_transition(1)
+        self.assert_transition(2)
 
     def test_overwriting_storage_denied(self):
         with patch.object(Event._meta.get_field('image').storage, '_allow_overwrite', True), self.assertRaises(ValidationError):
@@ -401,24 +415,22 @@ class EventWriterTests(EventHelpers, TransactionTestCase):
             self.save()
 
     def test_sql_all_programs_then_all_states_then_event(self):
-        # Relink from the larger ID to the smaller ID to exercise sorted union.
-        low, high = sorted((self.program, self.other), key=lambda item: item.pk)
-        if self.event.application_program_id != high.pk:
-            self.save(application_program=high.pk, expected=self.tokens(self.program, self.other))
-        expected = self.tokens(self.program, self.other)
+        # Current editing retains one historical link; preserve P-before-S
+        # ordering without attempting to restore the removed relink workflow.
+        expected = self.tokens()
         with CaptureQueriesContext(connection) as queries:
-            self.save(application_program=low.pk, expected=expected)
+            self.save(title='Fictional guarded edit', expected=expected)
         locks = [row['sql'] for row in queries if 'FOR UPDATE' in row['sql']]
         tables = ('programs_programtermslock', 'ewaf_authoritygeneration', 'programs_program', 'ewaf_programsourcestate', 'events_event')
-        first = {table: next(i for i, sql in enumerate(locks) if f'FROM `{table}`' in sql) for table in tables}
+        first = {table: next(i for i, sql in enumerate(locks) if ('FROM ' + connection.ops.quote_name(table)) in sql) for table in tables}
         self.assertEqual(list(first.values()), sorted(first.values()))
-        p = [i for i, sql in enumerate(locks) if 'FROM `programs_program`' in sql]
-        s = [i for i, sql in enumerate(locks) if 'FROM `ewaf_programsourcestate`' in sql]
+        p = [i for i, sql in enumerate(locks) if ('FROM ' + connection.ops.quote_name('programs_program')) in sql]
+        s = [i for i, sql in enumerate(locks) if ('FROM ' + connection.ops.quote_name('ewaf_programsourcestate')) in sql]
         self.assertLess(max(p), min(s))
         self.assertLess(max(s), first['events_event'])
-        for sql, pk in zip([locks[i] for i in p], sorted([self.program.pk, self.other.pk])):
+        for sql, pk in zip([locks[i] for i in p], [self.program.pk]):
             self.assertIn(str(pk).replace('-', ''), sql.replace('-', ''))
-        print('Gate 2D-2C actual SQL first lock order:', ' -> '.join(tables), '; two Programs then two SourceStates')
+        print('Gate 2D-2C actual SQL first lock order:', ' -> '.join(tables), '; linked Program then SourceState')
 
 
 class EventConcurrencyTests(EventHelpers, TransactionTestCase):
@@ -477,10 +489,12 @@ class EventConcurrencyTests(EventHelpers, TransactionTestCase):
         expected = self.tokens()
         self.race(lambda: self.publish(expected=expected))
 
-    def test_two_relinks_have_one_complete_union_winner(self):
-        expected = self.tokens(self.program, self.other)
+    def test_two_edits_with_removed_relink_field_keep_original_scope(self):
+        expected = self.tokens()
         self.race(lambda: self.save(application_program=self.other.pk, expected=expected))
-        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 2)
+        self.event.refresh_from_db()
+        self.assertEqual(self.event.application_program_id, self.program.pk)
+        self.assertEqual(ProgramSourceState.objects.get(program=self.other).generation, 1)
 
     def test_failed_image_replacement_allows_waiter_without_orphan(self):
         expected, files = self.tokens(), self.files()

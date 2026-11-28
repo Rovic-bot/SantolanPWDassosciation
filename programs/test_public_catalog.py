@@ -69,10 +69,12 @@ class PublicCatalogTests(TestCase):
         self.assertNotContains(response, '<script>alert(1)</script>')
         self.assertContains(response, 'Browse all programs')
 
-    @override_settings(PROGRAM_APPLICATION_WORKFLOW_ENABLED=True)
+    @override_settings(PROGRAM_APPLICATION_WORKFLOW_ENABLED=True, EWAF_VAULT_ENABLED=True,
+                       EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
     def test_open_count_and_unavailable_filter_honor_application_readiness(self):
         admin = get_user_model().objects.create_superuser('catalog-admin', password='synthetic-only')
-        ready = create_program(policy_authorized_by=admin)
+        from .testsupport import current_program
+        ready = current_program(admin)
         pending = create_program(policy_authorized_by=admin, ewaf_applicable=True)
         response = self.listing()
         self.assertEqual(self.counts(response)['available'], 1)

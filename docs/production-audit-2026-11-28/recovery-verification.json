@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "verified_utc": "2026-11-28T12:22:45.687368+00:00",
+  "source_read_only": true,
+  "tables": 142,
+  "rows": 2909,
+  "counts_and_hashes_match": true,
+  "runtime_role_visibility_matches": true,
+  "archive_bytes": 2280945,
+  "archive_sha256": "c5fe97f895d789cf3f619c9dc93f5c22d93308e59b6f3422c3b434c1ec13ac52",
+  "encrypted": true,
+  "restore_engine": "PostgreSQL 18 on isolated loopback cluster",
+  "production_writes": 0,
+  "plaintext_restore_removed": true
+}

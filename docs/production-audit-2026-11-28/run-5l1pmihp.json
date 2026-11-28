@@ -1,0 +1,190 @@
+[
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_acknowledgement_is_required_and_removed_upload_fields_cannot_be_submitted",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_already_current_record_can_be_reviewed_without_fake_member_edit",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_permissions_csrf_and_closed_states_are_enforced",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_resolves_report_without_documents_or_scoring_and_then_allows_eligible",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_editor_displays_report_and_current_values_without_evidence_picker",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_eligible_does_not_require_member_edit_or_resolution_of_reported_change",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_invalid_values_and_duplicate_or_stale_forms_do_not_overwrite",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_later_member_change_invalidates_report_review",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_member_edit_and_resolution_roll_back_if_application_audit_fails",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_updating_an_eligible_application_returns_it_for_another_human_decision",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_edit_uses_current_onsite_fields_groups_choices_and_prefills",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_exact_disability_mapping_preserves_other_edits_and_audits_changes",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_existing_suffix_and_recorded_choice_survive_a_family_edit",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_family_only_edit_is_saved_audited_and_leaves_original_untouched",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_household_and_common_fields_update_current_columns_and_history",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_invalid_numbers_dates_household_and_reason_do_not_write",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_legacy_values_are_prefilled_without_inventing_missing_details",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_noop_stale_archived_and_audit_failure_preserve_record",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationEditTests.test_permissions_and_duplicate_formatted_id_remain_enforced",
+    "status": "PASS"
+  },
+  {
+    "id": "scripts.quality_layout_shifts.LayoutShiftAudit.test_layout_shifts",
+    "status": "PASS"
+  },
+  {
+    "id": "scripts.quality_audit_browser.QualityBrowserAudit.test_rendered_pages",
+    "status": "PASS"
+  },
+  {
+    "id": "scripts.quality_crossbrowser.CrossBrowserAudit.test_firefox_routes_keyboard_and_reflow",
+    "status": "PASS"
+  },
+  {
+    "id": "scripts.quality_crossbrowser.CrossBrowserAudit.test_webkit_routes_keyboard_and_reflow",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationConcurrencyTests.test_simultaneous_profile_reviews_save_one_update_and_one_resolution",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationSourceTests.test_current_field_update_uses_existing_source_audit_and_invalidation",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupDatabaseTests.test_current_migrated_schema_starts_without_writes",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupDatabaseTests.test_required_pending_migration_blocks_startup_without_applying_it",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_changed_deferred_file_is_not_silently_allowed",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_changed_observance_migration_still_blocks",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_current_schema_needs_no_exception",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_earlier_other_or_future_migration_still_blocks",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_exact_observance_migration_may_be_deferred_alone_or_with_ewaf",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_missing_schema_fails_before_autoreloader_starts",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_only_exact_development_migration_may_be_deferred",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_registration_schema_is_required_and_deferred_features_are_not_reported_as_blockers",
+    "status": "PASS"
+  },
+  {
+    "id": "core.test_local_startup.LocalStartupPolicyTests.test_valid_schema_still_starts_autoreloader",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.DeploymentHTTPTests.test_collected_admin_assets_are_served_but_private_files_are_not",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.DeploymentHTTPTests.test_health_is_db_independent_minimal_and_not_cached",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.DeploymentHTTPTests.test_insecure_request_redirects_without_proxy_loop",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_ca_file_is_required_and_must_exist",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_debug_and_wildcard_hosts_are_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_http_or_unapproved_csrf_origins_are_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_missing_deployment_secrets_cannot_fall_back_to_local_dotenv",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_missing_storage_configuration_and_unsafe_endpoints_are_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_production_never_falls_back_to_local_media",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.ProductionSettingsTests.test_production_preserves_mysql_and_enforces_https_private_storage",
+    "status": "PASS"
+  },
+  {
+    "id": "core.tests.test_deployment.StaticImageBuildTests.test_secret_free_build_collects_every_production_asset_without_network",
+    "status": "PASS"
+  }
+]

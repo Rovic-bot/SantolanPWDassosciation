@@ -66,7 +66,7 @@ class SelectionReasonTests(TestCase):
         for url in (reverse('core:announcements') + '?category=results',
                     reverse('announcements:detail', args=[item.pk]) + '?popup=1'):
             page = Client().get(url)
-            self.assertContains(page, 'Why these members were selected')
+            self.assertContains(page, 'Selection criteria')
             self.assertContains(page, REASON)
             self.assertNotContains(page, self.application.member.full_name)
             self.assertNotContains(page, item.result_revision.reason)

@@ -73,79 +73,44 @@ class LocalStartupPolicyTests(SimpleTestCase):
 
 
 class LocalStartupDatabaseTests(TransactionTestCase):
-    def test_both_pending_migrations_allow_startup_and_observance_routes_fail_closed(self):
-        from django.contrib.auth import get_user_model
-        from django.urls import reverse
-        from events.tests import create_event
+    def assert_read_only_check(self):
+        def read_only(execute, sql, params, many, context):
+            self.assertTrue(sql.lstrip().upper().startswith(('SELECT', 'SHOW')), sql)
+            return execute(sql, params, many, context)
+        with connection.execute_wrapper(read_only):
+            return Command(stdout=StringIO()).pending_migrations()
 
-        actor = get_user_model().objects.create_superuser('fictional_pending_startup')
-        event = create_event(title='Fictional retained association event')
-        leaves = MigrationExecutor(connection).loader.graph.leaf_nodes()
-        try:
-            MigrationExecutor(connection).migrate([('ewaf', '0004_scoring_diagnostics')])
-            MigrationExecutor(connection).migrate([('events', '0005_revised_seventy_workflow')])
-            tables = set(connection.introspection.table_names())
-            history = set(MigrationExecutor(connection).loader.applied_migrations)
+    def test_current_migrated_schema_starts_without_writes(self):
+        tables = set(connection.introspection.table_names())
+        history = set(MigrationExecutor(connection).loader.applied_migrations)
+        self.assertEqual(self.assert_read_only_check(), set())
+        self.assertEqual(set(connection.introspection.table_names()), tables)
+        self.assertEqual(set(MigrationExecutor(connection).loader.applied_migrations), history)
+        for url in ('/', '/accounts/login/', '/events/', '/events/?period=past'):
+            self.assertEqual(self.client.get(url).status_code, 200)
+        with patch('django.core.management.commands.runserver.run') as serve:
+            call_command('runlocal', '127.0.0.1:8000', use_reloader=False, stdout=StringIO())
+            serve.assert_called_once()
 
-            def read_only(execute, sql, params, many, context):
-                self.assertTrue(sql.lstrip().upper().startswith(('SELECT', 'SHOW')), sql)
-                return execute(sql, params, many, context)
-
-            output = StringIO()
-            with connection.execute_wrapper(read_only):
-                Command(stdout=output).check_migrations()
-            self.assertIn('Annual observance setup is pending', output.getvalue())
-            self.assertIn('Live EWAF processing remains disabled', output.getvalue())
-            self.assertEqual(set(connection.introspection.table_names()), tables)
-            self.assertEqual(set(MigrationExecutor(connection).loader.applied_migrations), history)
-            self.assertNotIn('events_annualobservance', tables)
-            self.assertFalse(any(name.startswith('ewaf_durable') for name in tables))
-            for url in ('/', '/accounts/login/', '/events/', '/events/?period=past'):
-                self.assertEqual(self.client.get(url).status_code, 200)
-            calendar = self.client.get('/events/')
-            self.assertNotContains(calendar, event.title)
-            self.assertEqual(len(calendar.context['observance_months']), 12)
-            self.assertTrue(type(event).objects.filter(pk=event.pk, title=event.title).exists())
-            self.client.force_login(actor)
-            self.assertContains(self.client.get(reverse('events:observances')), 'Setup pending')
-            self.assertEqual(self.client.get(reverse('events:observance_create')).status_code, 503)
-            with patch('django.core.management.commands.runserver.run') as serve:
-                call_command('runlocal', '127.0.0.1:8000', use_reloader=False, stdout=StringIO())
-                serve.assert_called_once()
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
-
-    def test_real_pending_schema_is_deferred_without_writes_and_pages_still_load(self):
+    def test_required_pending_migration_blocks_startup_without_applying_it(self):
+        from django.db.migrations.recorder import MigrationRecorder
+        # Change only the disposable migration ledger, never reverse irreversible
+        # business migrations. The real loader must identify the missing leaf.
+        from scripts.durable_test_runner import require_disposable
+        require_disposable()
         executor = MigrationExecutor(connection)
-        leaves = executor.loader.graph.leaf_nodes()
+        required = next(node for node in executor.loader.graph.leaf_nodes() if node[0] == 'core')
+        recorder = MigrationRecorder(connection)
+        tables = set(connection.introspection.table_names())
+        recorder.record_unapplied(*required)
         try:
-            # Reproduce the normal checkpoint only in the fresh disposable database.
-            executor.migrate([('ewaf', '0004_scoring_diagnostics')])
-            before = set(connection.introspection.table_names())
-            history = set(MigrationExecutor(connection).loader.applied_migrations)
-            output = StringIO()
-            command = Command(stdout=output)
-
-            def read_only(execute, sql, params, many, context):
-                self.assertTrue(sql.lstrip().upper().startswith(('SELECT', 'SHOW')), sql)
-                return execute(sql, params, many, context)
-
-            with connection.execute_wrapper(read_only):
-                command.check_migrations()
-            self.assertIn('remain unapplied as intended', output.getvalue())
-            self.assertEqual(set(connection.introspection.table_names()), before)
-            self.assertEqual(set(MigrationExecutor(connection).loader.applied_migrations), history)
-            self.assertFalse(any(name.startswith('ewaf_durable') for name in before))
-            self.assertEqual(self.client.get('/').status_code, 200)
-            self.assertEqual(self.client.get('/accounts/login/').status_code, 200)
-            # Exercise the actual startup command through checks to server dispatch,
-            # without opening a listener during the test suite.
+            with self.assertRaisesMessage(CommandError, '.'.join(required)):
+                self.assert_read_only_check()
             with patch('django.core.management.commands.runserver.run') as serve:
-                call_command('runlocal', '127.0.0.1:8000', use_reloader=False, stdout=StringIO())
-                serve.assert_called_once()
-            from ewaf.durable_services import require_operational_result
-            from django.core.exceptions import ValidationError
-            with self.assertRaises(ValidationError):
-                require_operational_result()
+                with self.assertRaises(CommandError):
+                    call_command('runlocal', '127.0.0.1:8000', use_reloader=False, stdout=StringIO())
+                serve.assert_not_called()
+            self.assertEqual(set(connection.introspection.table_names()), tables)
+            self.assertNotIn(required, recorder.applied_migrations())
         finally:
-            MigrationExecutor(connection).migrate(leaves)
+            recorder.record_applied(*required)

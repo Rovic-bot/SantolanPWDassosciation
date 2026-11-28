@@ -113,10 +113,10 @@ def source_context(application):
     from assistance.services import case_snapshot
     from documents.models import MembershipApplicationDocument
     member, program = application.member, application.program
-    case = AssistanceCase.objects.filter(application=application).first()
+    case = AssistanceCase.objects.select_related('eligibility').filter(application=application).first()
     review_log = AssistanceLog.objects.filter(application=application, action='eligibility_reviewed').first()
     documents = []
-    for document in application.documents.select_related('source_document', 'source_verification', 'requirement').order_by('pk'):
+    for document in application.documents.select_related('source_document__requirement', 'source_verification', 'requirement').order_by('pk'):
         latest = document.source_document.verifications.first() if document.source_document_id else None
         documents.append({'id': str(document.pk), 'requirement': document.requirement_id,
             'program': str(document.requirement.program_id), 'digest': file_digest(document),
@@ -129,7 +129,7 @@ def source_context(application):
             'source_verification': document.source_verification_id,
             'latest_verification': review_manifest(latest) if latest else None})
     supporting = []
-    for document in MembershipApplicationDocument.objects.filter(application=member.application).order_by('pk'):
+    for document in MembershipApplicationDocument.objects.select_related('requirement').filter(application=member.application).order_by('pk'):
         latest = document.verifications.first()
         supporting.append({'id': str(document.pk), 'digest': file_digest(document),
                            'membership_requirement': document.requirement_id,
@@ -158,7 +158,10 @@ def source_context(application):
     confirmation = confirmation_context(application)
     from programs.schedule_services import eligibility_schedule_witness
     schedule_witness = eligibility_schedule_witness(application, case) if case and case.program_version != program.version else {}
-    return canonical({**({'current_information': confirmation} if confirmation else {}),
+    from .intake_integration import source_adapter
+    intake_adapter = source_adapter()
+    return canonical({**(intake_adapter.source_extension(application) if intake_adapter else {}),
+        **({'current_information': confirmation} if confirmation else {}),
         **({'eligibility_schedule_revision': schedule_witness} if schedule_witness else {}),
         'application': str(application.pk), 'application_version': application.version,
         'program': str(program.pk), 'program_version': program.version, 'member': member.pk,
@@ -215,7 +218,7 @@ def resolve_reviews(application, identifiers, *, at):
         raise ValidationError('Supporting reviews must be distinct review identifiers.')
     result = []
     for identifier in identifiers:
-        review = DocumentVerification.objects.select_related('document').filter(pk=identifier,
+        review = DocumentVerification.objects.select_related('document__requirement').filter(pk=identifier,
             document__application_id=application.member.application_id).first()
         if not review or review.document.verifications.first().pk != review.pk:
             raise ValidationError('Supporting review is unrelated or no longer current.')

@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from unittest.mock import patch
 
@@ -140,8 +141,8 @@ class AnnouncementComposerTests(TestCase):
         url = reverse('core:announcements') + '?category=results'
         response = Client().get(url)
         self.assertContains(response, 'Final results paragraph.')
-        self.assertContains(response, 'Members who applied')
-        self.assertContains(response, 'Selected members')
+        self.assertContains(response, 'Submitted applications')
+        self.assertContains(response, 'Selected recipients')
         self.assertContains(response, item.result_revision.public_payload['applicants'][0]['name'])
         for private in (member.full_name, member.control_number, member.contact_number, item.result_revision.reason,
                         item.result_revision.source_digest):
@@ -150,7 +151,8 @@ class AnnouncementComposerTests(TestCase):
         self.assertNotContains(response, 'Read more')
         self.assertNotContains(response, 'data-public-popup data-popup-label')
         self.assertContains(response, 'notice-full-card', count=1)
-        self.assertEqual(response.context['page_obj'][0]['results'], item.result_revision.public_payload)
+        from .public_claims import result_with_claim_status
+        self.assertEqual(response.context['page_obj'][0]['results'], result_with_claim_status(item))
         self.assertEqual(response.context['page_obj'][0]['image_url'], '')
         picture = ProgramPicture.objects.create(program=program, image=image_upload())
         image_url = reverse('programs:public_picture', args=[program.pk])
@@ -158,7 +160,7 @@ class AnnouncementComposerTests(TestCase):
                             reverse('announcements:detail', args=[item.pk]) + '?popup=1'):
             with self.subTest(destination=destination):
                 illustrated = Client().get(destination)
-                self.assertContains(illustrated, f'src="{image_url}"')
+                self.assertRegex(illustrated.content.decode(), 'src="' + re.escape(image_url) + r'(?:\?thumbnail=1)?"')
                 self.assertNotContains(illustrated, picture.image.name)
                 self.assertNotContains(illustrated, '/media/')
         change_publication(item.pk, user=self.admin, version=item.version, action='draft')

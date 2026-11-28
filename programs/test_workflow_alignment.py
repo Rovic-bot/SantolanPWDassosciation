@@ -49,12 +49,12 @@ class WorkflowAlignmentTests(TestCase):
     def eligible(self, app):
         return review_eligibility(app.pk, user=self.admin, data=review_data(app))
 
-    def test_public_membership_is_guidelines_only_even_when_legacy_flag_open(self):
+    def test_membership_guidance_uses_current_checklist_and_rejects_direct_submission(self):
         MembershipSettings.objects.update_or_create(pk=1, defaults={'registration_open': True, 'prpwd_url': 'https://example.test/'})
         active = MembershipDocumentRequirement.objects.create(document_type=DocumentType.objects.create(name='Configured active requirement'))
         MembershipDocumentRequirement.objects.create(document_type=DocumentType.objects.create(name='Inactive requirement'), is_active=False)
         page = self.client.get(reverse('core:membership'))
-        self.assertContains(page, 'How to become a member')
+        self.assertContains(page, 'Association membership')
         self.assertContains(page, 'Birth Certificate OR Marriage Certificate')
         self.assertNotContains(page, str(active))
         self.assertTrue(MembershipDocumentRequirement.objects.filter(pk=active.pk, is_active=True).exists())

@@ -156,7 +156,13 @@ def record_configuration(program_id, *, user, expected, proposed, judgments, sta
                 if gate['item'] not in indexed or gate['accepted_outcome'] not in indexed[gate['item']]['outcomes']:
                     raise ValidationError('PR.' + role + ': choose a documented rubric item and outcome')
                 used.append(gate['item'])
-            if len(set(used)) != 3:
+            from .intake_integration import source_adapter
+            intake = source_adapter(proposed)
+            if intake:
+                intake.validate_configuration(program, proposed, evidence)
+                if len(set(used)) != len(used):
+                    raise ValidationError('PR: additional eligibility requirements need distinct evidence items')
+            elif len(set(used)) != 3:
                 raise ValidationError('PR: functional need, consent and accessible alternatives require distinct evidence items')
             for code, rule in proposed['criteria'].items():
                 defined = evidence.snapshot['criteria'].get(code, {})
@@ -225,13 +231,18 @@ def inventory(program, applications, configuration=None):
             errors.append('APPLICATION_REVIEW_UNRESOLVED')
         elif configuration:
             try:
-                pr = CriterionAssessment.objects.filter(application=application, criterion='PR').first()
-                if not pr or pr.policy_id != configuration.evidence_policy_id:
-                    raise ValidationError('PR: current verified functional-need assessment required')
-                pr.clean()
-                gate = eligibility(pr, configuration.policy['eligibility'])
+                from .intake_integration import source_adapter
+                intake = source_adapter(configuration.policy)
+                if intake:
+                    gate = intake.program_gate(application, configuration)
+                else:
+                    pr = CriterionAssessment.objects.select_related('application', 'policy', 'previous').filter(application=application, criterion='PR').first()
+                    if not pr or pr.policy_id != configuration.evidence_policy_id:
+                        raise ValidationError('PR: current verified functional-need assessment required')
+                    pr.clean()
+                    gate = eligibility(pr, configuration.policy['eligibility'])
                 for code in policy.criteria_for(configuration.policy):
-                    assessment = CriterionAssessment.objects.filter(application=application, criterion=code).first()
+                    assessment = CriterionAssessment.objects.select_related('application', 'policy', 'previous').filter(application=application, criterion=code).first()
                     rule = configuration.policy['criteria'][code]
                     if not assessment or assessment.policy_id != configuration.evidence_policy_id:
                         raise ValidationError(code + ': current verified assessment required')

@@ -33,6 +33,17 @@ from .revised.live_models import SharedDatasetPolicy as Policy, DatasetInputRevi
 from .revised.engine import METHOD
 
 
+def assert_read_only_bookmark(test, url, destination):
+    models = (Policy, DatasetInputReview, OperationalConfiguration, OperationalRun, OperationalDecision)
+    before = [list(model.objects.order_by('pk').values()) for model in models]
+    response = test.client.get(url)
+    test.assertRedirects(response, destination, fetch_redirect_response=False)
+    test.assertIn('no-store', response['Cache-Control'])
+    test.assertEqual(test.client.head(url).status_code, 302)
+    test.assertEqual(test.client.post(url, {'action': 'APPLY_SHARED', 'state': 'ACCEPTED'}).status_code, 405)
+    test.assertEqual(before, [list(model.objects.order_by('pk').values()) for model in models])
+
+
 @override_settings(EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True,
     EWAF_VAULT_ENABLED=True, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True, PDAO_ENFORCEMENT_ENABLED=False)
 class DatasetPolicyTests(TransactionTestCase):
@@ -49,8 +60,8 @@ class DatasetPolicyTests(TransactionTestCase):
             self.program = save_program(user=self.user, data=program_data(ewaf_applicable=True,
                 benefit='Synthetic benefit', slots=1, selection_method='Synthetic EWAF and separate human selection',
                 registration_opens_at=self.base + timedelta(hours=1), registration_closes_at=self.base + timedelta(days=1)))
-            change_publication(self.program.pk, user=self.user, version=self.program.version,
-                action='authorize_policy', notes='ISOLATED SYNTHETIC program authorization')
+            from programs.testsupport import historical_policy_authorization
+            historical_policy_authorization(self.program, self.user)
         self.program.refresh_from_db()
         from programs.test_approved_terms import TermsHelpers
         terms = TermsHelpers()
@@ -105,9 +116,8 @@ class DatasetPolicyTests(TransactionTestCase):
                 old = create_program(registration_opens_at=self.base - timedelta(days=2),
                     registration_closes_at=self.base - timedelta(days=1))
                 old_app = application_fixture(old, member)
-                review_eligibility(old_app.pk, user=self.user, data=review_data(old_app))
-                decide_assistance(old_app.pk, user=self.user, data=decision_data(old_app))
-                record_release(old_app.pk, user=self.user, data=release_data(old_app))
+                from assistance.testsupport import historical_receipt
+                historical_receipt(old_app, self.user)
             application = application_fixture(self.program, member)
             application.source_snapshot = {'member_id': member.pk, 'member_version': member.version,
                 'program_version': self.program.version, 'membership_verified_at': timezone.now().isoformat(),
@@ -124,7 +134,7 @@ class DatasetPolicyTests(TransactionTestCase):
     def accept(self, application, document_review, *, low=False, **changes):
         findings = {**evidence.periods(self.configuration), 'income_monthly': ['5000' if low else '20000'] * 3,
             'si_domains': {'food': 'critical' if low else 'none', 'housing': 'none', 'care': 'none'},
-            'employment': 'Unemployed' if low else 'Full-Time Worker', 'household_members': 2 if low else 6,
+            'employment': 'Unemployed' if low else 'Employed', 'household_members': 2 if low else 6,
             'history_complete': True, 'assessment_finding': 'Synthetic accepted findings with verified evidence'}
         findings.update(changes)
         return evidence.record(application.pk, user=self.user, expected=evidence.review_token(application, self.configuration),
@@ -229,7 +239,7 @@ class DatasetPolicyTests(TransactionTestCase):
     def test_document_example_from_frozen_pool_without_substituting_live_vector(self):
         from .revised.fixtures import example_pool
         pool = example_pool().data
-        config = SimpleNamespace(digest='SYNTHETIC-DOCUMENT-CONFIG', assessment_cutoff=self.cutoff,
+        config = SimpleNamespace(digest='SYNTHETIC-DOCUMENT-CONFIG', assessment_cutoff=self.cutoff, policy={},
             dataset_policy=SimpleNamespace(digest='SYNTHETIC-POLICY'), program=SimpleNamespace(slots=2),
             source={'terms':{'program':{'slots':2}}},
             validation={'weights': dict(zip(('HI','SI','ES','PA','HM'), ('0.3421','0.2360','0.1774','0.1223','0.1222'))), 'weight_digest':'SYNTHETIC-DOCUMENT-VECTOR'})
@@ -297,7 +307,7 @@ class DatasetPolicyTests(TransactionTestCase):
         self.client.force_login(viewer)
         response = self.client.post(reverse('ewaf:dataset_policy_review',args=[draft.pk]),
             {'expected':draft.digest,'group_A':'on','group_B':'on','group_C':'on','reason':'Unauthorized'})
-        self.assertEqual(response.status_code,403)
+        self.assertEqual(response.status_code,405)  # Retired endpoint refuses all writes.
         csrf = Client(enforce_csrf_checks=True)
         csrf.force_login(self.user)
         self.assertEqual(csrf.post(reverse('ewaf:dataset_policy_review',args=[draft.pk]),{}).status_code,403)
@@ -312,12 +322,8 @@ class DatasetPolicyTests(TransactionTestCase):
                 self.approve()
 
     def test_review_interface_lists_exact_choices_provenance_and_blockers(self):
-        row=self.draft(contracts.initial_content())
-        response=self.client.get(reverse('ewaf:dataset_policy_review',args=[row.pk]))
-        self.assertEqual(response.status_code,200)
-        for value in ('Group A','Group B','Group C','SI_RUBRIC_AUTHORITY','CONSTANT_COLUMNS','Income inclusions',
-                      'Approval blocked','Still unspecified','4Ps','0.2','Full-Time Worker=1'):
-            self.assertContains(response,value)
+        row = self.draft(contracts.initial_content())
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_policy_review', args=[row.pk]), reverse('ewaf:vault'))
         self.assertFalse(Policy.objects.filter(status='APPROVED').exists())
 
     def test_selection_capacity_private_publication_projection_and_actual_release(self):
@@ -336,6 +342,8 @@ class DatasetPolicyTests(TransactionTestCase):
         self.assertEqual(len(payload['rows']), 1)
         self.assertFalse(any(key in payload['rows'][0] for key in ('score', 'rank', 'inputs', 'traces')))
         self.assertNotEqual(payload['rows'][0]['name'], a.member.full_name)
+        from announcements.testsupport import publish_selection
+        publish_selection(self.program, self.user)
         record_release(a.pk, user=self.user, data=release_data(a))
         self.assertEqual(AssistanceRelease.objects.successful().filter(application=a).count(), 1)
         run.refresh_from_db()
@@ -558,6 +566,6 @@ class DatasetPolicyTests(TransactionTestCase):
             self.assertEqual(presented['contribution'], stored['contribution']['exact'])
             self.assertEqual(presented['lower'], stored['minimum']['exact'])
             self.assertEqual(presented['upper'], stored['maximum']['exact'])
-        self.assertContains(response, 'How applicants compare')
+        self.assertEqual(response.context['pool_size'], 2)
         run.refresh_from_db()
         self.assertEqual(run.payload(), original)

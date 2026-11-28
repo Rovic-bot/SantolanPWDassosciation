@@ -1,5 +1,6 @@
 """Bounded linked-event writers in registered disposable sessions only."""
 from contextvars import ContextVar
+from copy import copy
 from functools import wraps
 from inspect import signature
 
@@ -79,7 +80,9 @@ def event_writer(*, publication=False):
                     if not publication:
                         require_workspace_permissions(actor, 'events.view_event',
                             'events.change_event' if pk else 'events.add_event')
-                        form = EventForm(instance=old, user=actor)
+                        # Form initialization supplies defaults on a new event.
+                        # Preserve the original values for native-audit checks.
+                        form = EventForm(instance=copy(old), user=actor)
                         if arguments['data'].get('application_program'):
                             require_workspace_permissions(actor, 'programs.view_program')
                         field = form.fields.get('application_program')

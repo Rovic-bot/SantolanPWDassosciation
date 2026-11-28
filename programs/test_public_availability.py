@@ -207,7 +207,7 @@ class PublicProgramAvailabilityTests(TestCase):
         self.program()
         for period in ('all', 'available', 'upcoming', 'past', 'unavailable', 'current'):
             response = self.listing(period)
-            self.assertContains(response, 'aria-label="Program period"')
+            self.assertContains(response, 'aria-label="Program filters"')
             self.assertContains(response, f'href="?period={period}" aria-current="page"')
         response = self.listing()
         self.assertContains(response, 'Application period starts <time datetime=')
@@ -220,7 +220,7 @@ class PublicProgramAvailabilityTests(TestCase):
         for period in ('all', 'available', 'current'):
             with CaptureQueriesContext(connection) as queries:
                 response = self.listing(period)
-            program_queries = [q['sql'] for q in queries if '`programs_program`' in q['sql']]
+            program_queries = [q['sql'] for q in queries if connection.ops.quote_name('programs_program') in q['sql']]
             # Categories, aggregate tab counts, paginator count, and six cards.
             self.assertEqual(len(program_queries), 4)
             self.assertIn('DISTINCT', program_queries[0])

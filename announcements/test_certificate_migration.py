@@ -17,24 +17,23 @@ class CertificateMigrationTests(TransactionTestCase):
         seed_statuses()
         application = create_application()
         before = ProgramApplication.objects.values().get(pk=application.pk)
-        state = ProjectState.from_apps(apps)
-        state.remove_model('announcements', 'selectioncertificateattempt')
-        state.remove_model('announcements', 'selectioncertificateemail')
-        migration = import_module('announcements.migrations.0006_selection_certificate_email').Migration(
-            '0006_selection_certificate_email', 'announcements')
-        self.assertEqual([type(operation).__name__ for operation in migration.operations],
-                         ['CreateModel', 'CreateModel', 'AddConstraint', 'AddConstraint'])
-        try:
-            with connection.schema_editor() as editor:
-                editor.delete_model(SelectionCertificateAttempt)
-                editor.delete_model(SelectionCertificateEmail)
-            with connection.schema_editor() as editor:
-                migration.apply(state, editor)
-            self.assertEqual(ProgramApplication.objects.values().get(pk=application.pk), before)
-            self.assertFalse(SelectionCertificateEmail.objects.exists())
-            self.assertFalse(SelectionCertificateAttempt.objects.exists())
-        finally:
-            for model in (SelectionCertificateEmail, SelectionCertificateAttempt):
-                if model._meta.db_table not in connection.introspection.table_names():
-                    with connection.schema_editor() as editor:
-                        editor.create_model(model)
+        from scripts.migration_test_support import migration_database, historical_apps, copy_historical_rows
+        from django.db.migrations.executor import MigrationExecutor
+        parent = [('announcements', '0005_announcement_categories'), ('programs', '0007_program_picture')]
+        target = [('announcements', '0006_selection_certificate_email')]
+        with migration_database(parent) as database:
+            old_apps = historical_apps(database, parent)
+            copy_historical_rows(database, old_apps, [application])
+            OldApplication = old_apps.get_model('programs', 'ProgramApplication')
+            old = OldApplication.objects.using(database.alias).values().get(pk=application.pk)
+            executor = MigrationExecutor(database)
+            migration = executor.loader.get_migration(*target[0])
+            self.assertEqual([type(operation).__name__ for operation in migration.operations],
+                             ['CreateModel', 'CreateModel', 'AddConstraint', 'AddConstraint'])
+            executor.migrate(target)
+            updated = historical_apps(database, target)
+            Application = updated.get_model('programs', 'ProgramApplication')
+            self.assertEqual(Application.objects.using(database.alias).values(*old).get(pk=application.pk), old)
+            for model in ('SelectionCertificateEmail', 'SelectionCertificateAttempt'):
+                self.assertFalse(updated.get_model('announcements', model).objects.using(database.alias).exists())
+        self.assertEqual(ProgramApplication.objects.values().get(pk=application.pk), before)

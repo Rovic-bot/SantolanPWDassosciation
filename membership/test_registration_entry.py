@@ -11,13 +11,13 @@ class RegistrationEntryTests(TestCase):
     def test_closed_form_is_blank_disabled_and_cannot_accept_submission(self):
         url = reverse('core:membership')
         response = self.client.get(url, {'first_name': 'DoNotReflect'})
-        self.assertContains(response, 'Association Membership Form fields')
-        self.assertContains(response, 'Onsite registration')
+        self.assertContains(response, 'Prepare your membership application')
+        self.assertContains(response, 'walk-in assistance')
         self.assertNotContains(response, 'DoNotReflect')
         fields = [field for title, group in response.context['registration_preview_sections'] for field in group]
         self.assertEqual([field.name for field in fields], [name for title, names in AssociationPDFForm.groups for name in names])
         self.assertTrue(all(field.field.disabled for field in fields))
-        self.assertNotContains(response, '<form')
+        self.assertNotContains(response, 'name="context_id"')
         for excluded in ('type="file"', 'name="preview-control_number"', 'name="preview-monthly_income"', 'name="preview-prpwd_verified"'):
             self.assertNotContains(response, excluded)
         self.assertNotIn('sessionid', response.cookies)

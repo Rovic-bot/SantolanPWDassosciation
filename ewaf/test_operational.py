@@ -199,7 +199,9 @@ class OperationalTests(OperationalHelpers, TransactionTestCase):
         with self.assertRaises(ValidationError):
             collect_results(self.program)
         self.choose(run)
-        item = prepare_results(self.program.pk, user=self.officer, version=0, reason='Fictional explicit publication preparation')
+        item = prepare_results(self.program.pk, user=self.officer, version=0,
+            reason='Fictional explicit publication preparation',
+            selection_reason='Synthetic member meets the program requirements and recorded selection criteria.')
         self.assertEqual(item.status, 'draft')
         payload = item.result_revision.public_payload
         self.assertNotIn(self.member.full_name, str(payload))

@@ -30,40 +30,23 @@ class RegistrationMigrationTests(TransactionTestCase):
             'registrationaction', 'registrationsubmissioncontext'})
         self.assertTrue(all(getattr(operation, 'model_name', '').lower() in created for operation in migration.operations
             if type(operation).__name__ != 'CreateModel'))
-        loader = MigrationLoader(None)
-        child = loader.disk_migrations[('membership', '0007_registration_membership_handoff')]
-        child_base = loader.project_state([('membership', name)])
-        with connection.schema_editor() as editor:
-            child.unapply(child_base.clone(), editor)
-        baseline = loader.project_state()
-        for model in created:
-            baseline.remove_model('membership', model)
-        # The temporary baseline already contains current model tables. Remove
-        # only the five empty extension tables, then execute their exact migration.
-        with connection.schema_editor() as editor:
-            migration.unapply(baseline.clone(), editor)
-        tables = set(connection.introspection.table_names())
-        self.assertFalse(any('membership_' + model in tables for model in created))
-        existing = MembershipApplication.objects.create(**profile(), submission_key=uuid4())
-        before = MembershipApplication.objects.filter(pk=existing.pk).values().get()
-        require_disposable()
-        with connection.schema_editor() as editor:
-            migration.apply(baseline.clone(), editor)
-        self.assertEqual(before, MembershipApplication.objects.filter(pk=existing.pk).values().get())
-        after_tables = set(connection.introspection.table_names())
-        self.assertTrue(all('membership_' + model in after_tables for model in created))
-        with override_settings(ASSOCIATION_REGISTRATION_POLICY=synthetic_policy()):
-            binding = services.binding_for('synthetic-upgrade-session')
-            context = services.issue_context(binding)
-            intake = services.submit_registration(context.pk, binding, submitted())
-        with self.assertRaises(IntegrityError), transaction.atomic(), registration_write():
-            intake.membership_application = existing
-            intake.save()
-        intake.refresh_from_db()
-        with self.assertRaises(IntegrityError), transaction.atomic(), registration_write():
-            intake.category = 'pdao'
-            intake.save()
-        print('Reviewed migration membership.0006_association_pending_intake: new tables reversed once and applied once; '
-              'synthetic legacy row unchanged; PDAO and handoff constraints enforced. No historical migrations executed.', flush=True)
-        with connection.schema_editor() as editor:
-            child.apply(child_base.clone(), editor)
+        from scripts.migration_test_support import migration_database, historical_apps, pending_intake
+        from django.db.migrations.executor import MigrationExecutor
+        parent = [('membership', '0005_onsite_profile_capture')]
+        target = [('membership', name)]
+        with migration_database(parent) as database:
+            before_apps = historical_apps(database, parent)
+            Legacy = before_apps.get_model('membership', 'MembershipApplication')
+            existing = Legacy.objects.using(database.alias).create(**profile(), submission_key=uuid4())
+            original = Legacy.objects.using(database.alias).values().get(pk=existing.pk)
+            MigrationExecutor(database).migrate(target)
+            state_apps = historical_apps(database, target)
+            intake = pending_intake(database, state_apps)
+            self.assertEqual(Legacy.objects.using(database.alias).values().get(pk=existing.pk), original)
+            self.assertTrue(all('membership_' + model in database.introspection.table_names() for model in created))
+            Intake = state_apps.get_model('membership', 'RegistrationIntake')
+            with self.assertRaises(IntegrityError), transaction.atomic(using=database.alias):
+                Intake.objects.using(database.alias).filter(pk=intake.pk).update(membership_application_id=existing.pk)
+            with self.assertRaises(IntegrityError), transaction.atomic(using=database.alias):
+                Intake.objects.using(database.alias).filter(pk=intake.pk).update(category='pdao')
+            self.assertEqual(Intake.objects.using(database.alias).get(pk=intake.pk).category, 'association')

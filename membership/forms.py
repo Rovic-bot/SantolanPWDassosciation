@@ -122,10 +122,10 @@ def validate_portrait(upload):
     if upload.content_type not in ('image/jpeg', 'image/png'):
         raise ValidationError('Use a JPG or PNG photograph.')
     try:
-        image = Image.open(upload)
-        if image.width * image.height > 25000000:
-            raise ValidationError('The photograph is too large. Use at most 25 million pixels.')
-        image.verify()
+        with Image.open(upload, formats=['JPEG', 'PNG']) as image:
+            if image.width * image.height > 25000000:
+                raise ValidationError('The photograph is too large. Use at most 25 million pixels.')
+            image.verify()
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError):
         raise ValidationError('Upload a readable JPG or PNG photograph.') from None
     finally:

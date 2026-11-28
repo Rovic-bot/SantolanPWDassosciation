@@ -1,0 +1,701 @@
+[
+  {
+    "id": "AUD-01",
+    "severity": "High",
+    "component": "PDAO membership transfer",
+    "problem_and_root_cause": "A saved +63 mobile number was rebound into a field requiring ten national digits, blocking consent-based transfer.",
+    "reproduction": "Create and claim a synthetic PDAO record with a canonical +63 phone; transfer it to membership.",
+    "fix": "Normalize the server-owned initial phone before binding; retain the canonical saved number and immutable source.",
+    "files": [
+      "membership/pdao_membership.py"
+    ],
+    "test_prefixes": [
+      "membership.test_pdao_membership",
+      "membership.test_pdao_claim_email"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "membership.test_pdao_claim_email.PDAOClaimConcurrencyTests.test_overlapping_batches_create_one_notice_per_application",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_audit_failure_rolls_back_whole_batch_and_callbacks",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_bulk_notice_is_private_commit_only_and_keeps_forwarded_records_unchanged",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_duplicate_clicks_do_not_create_or_deliver_another_notice",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_forwarded_inbox_and_record_offer_only_available_notices",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_http_permission_csrf_post_and_recipient_binding",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_known_delivery_failure_retries_saved_message_for_onsite_application",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_permission_revocation_before_commit_rolls_back",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_selection_limits_confirmation_and_immutable_snapshots",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_uncertain_delivery_never_automatically_resends",
+      "membership.test_pdao_claim_email.PDAOClaimNoticeTests.test_unforwarded_stale_or_missing_email_rejects_entire_batch",
+      "membership.test_pdao_membership.PDAOToMembershipConcurrencyTests.test_two_staff_submissions_create_one_linked_intake",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_all_disability_labels_map_without_changing_source",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_both_membership_entry_forms_require_disability_and_four_ps",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_and_transfer_roll_back_on_audit_failure_including_private_files",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_identity_is_immutable_and_link_must_be_complete",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_claim_requires_forwarded_actual_collection_valid_id_and_current_version",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_http_buttons_prefill_consent_submission_and_duplicate_click",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_multiple_disabilities_require_an_explicit_recorded_choice",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_new_postgres_table_keeps_server_only_row_security",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_private_permissions_csrf_and_session_binding",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_ready_notice_does_not_unlock_membership_and_claim_stops_new_notices",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_remaining_required_fields_and_explicit_membership_request",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_stored_international_phone_is_carried_as_national_input_and_remains_immutable",
+      "membership.test_pdao_membership.PDAOToMembershipTests.test_transfer_uses_server_record_and_creates_only_one_pending_application"
+    ]
+  },
+  {
+    "id": "AUD-02",
+    "severity": "Medium",
+    "component": "Reports",
+    "problem_and_root_cause": "An unscheduled draft raised an exception while formatting report dates.",
+    "reproduction": "Create a draft without a date; open the program report and export CSV, XLSX and PDF.",
+    "fix": "Display Not specified for absent dates while retaining Manila formatting for scheduled records.",
+    "files": [
+      "reports/services.py"
+    ],
+    "test_prefixes": [
+      "reports.test_quality_regressions"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "reports.test_quality_regressions.DraftReportFormattingTests.test_draft_without_schedule_has_a_readable_report_row",
+      "reports.test_quality_regressions.DraftReportFormattingTests.test_scheduled_program_keeps_manila_date_and_time",
+      "reports.test_quality_regressions.DraftReportRequestTests.test_program_report_screen_and_all_exports_accept_unscheduled_drafts"
+    ]
+  },
+  {
+    "id": "AUD-03",
+    "severity": "Medium",
+    "component": "PostgreSQL duplicate handling",
+    "problem_and_root_cause": "Duplicate-key recovery recognized MySQL only.",
+    "reproduction": "Inject a PostgreSQL unique-violation cause into the duplicate handling path.",
+    "fix": "Recognize SQLSTATE 23505 and MySQL 1062; propagate unrelated integrity errors.",
+    "files": [
+      "core/database_errors.py",
+      "membership/services.py",
+      "membership/registration_decisions.py"
+    ],
+    "test_prefixes": [
+      "core.tests.test_database_errors",
+      "membership.test_registration_handoff"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "core.tests.test_database_errors.DuplicateDatabaseErrorTests.test_foreign_key_and_other_integrity_failures_are_not_duplicates",
+      "core.tests.test_database_errors.DuplicateDatabaseErrorTests.test_mysql_duplicate_key_is_recognized",
+      "core.tests.test_database_errors.DuplicateDatabaseErrorTests.test_postgresql_duplicate_key_is_recognized_from_driver_code",
+      "membership.test_registration_handoff.RegistrationHandoffConcurrencyTests.test_concurrent_identical_handoffs_and_decisions_create_one_member",
+      "membership.test_registration_handoff.RegistrationHandoffEnlistedTests.test_existing_top_level_writer_keeps_zero_program_scope_and_native_audits",
+      "membership.test_registration_handoff.RegistrationHandoffEnlistedTests.test_outer_writer_failure_rolls_back_registration_link_and_files",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_amr_control_missing_acceptance_future_assessment_and_missing_upload_are_invalid",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_approval_requires_real_verification_and_rejection_creates_no_member",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_changed_file_retry_is_not_accepted_as_identical",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_current_policy_required_on_original_decision_endpoint_and_service",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_decision_audit_failure_rolls_back_member_and_both_histories",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_duplicate_member_and_duplicate_pending_number_are_blocked",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_handoff_audit_failure_rolls_back_link_application_uploads",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_handoff_token_cannot_be_replayed_into_unlinked_legacy_submission",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_identical_retry_reuses_link_without_duplicate_native_events_or_files",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_linked_correction_and_repeat_decision_do_not_create_second_member",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_onsite_channels_approve_but_online_cannot_bypass_office_review",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_pending_page_uses_existing_review_and_displays_official_member",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_permission_revocation_denies_even_previously_cached_decider",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_permissions_and_csrf_on_prepare_private_detail_and_both_download_routes",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_public_pause_does_not_strand_accepted_staff_review",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_stale_correction_and_missing_onsite_findings_block_handoff",
+      "membership.test_registration_handoff.RegistrationHandoffTests.test_tampered_applicant_fields_do_not_replace_submitted_profile"
+    ]
+  },
+  {
+    "id": "AUD-04",
+    "severity": "Medium",
+    "component": "Image validation",
+    "problem_and_root_cause": "Portrait validation accepted a disguised GIF; decoder selection was broader than the allowed formats.",
+    "reproduction": "Upload a GIF as a portrait and spy on the announcement decoder.",
+    "fix": "Limit portrait decoding to JPEG/PNG and announcement decoding to the declared allowed format; rewind streams.",
+    "files": [
+      "membership/forms.py",
+      "announcements/images.py"
+    ],
+    "test_prefixes": [
+      "membership.test_image_decoder_boundary"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_announcement_opens_only_the_declared_allowed_decoder",
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_accepts_png_and_jpeg_and_rewinds_stream",
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_rejects_disguised_gif_and_rewinds_stream"
+    ]
+  },
+  {
+    "id": "AUD-05",
+    "severity": "Medium",
+    "component": "Certificate conversion",
+    "problem_and_root_cause": "Concurrent requests could render and launch Office together; short cold-start budgets and suppressed error categories reduced reliability.",
+    "reproduction": "Hold one conversion open, request another, simulate timeout/malformed output/render failure.",
+    "fix": "Reserve one conversion slot per worker before DOCX rendering; release it in finally; bounded 90 to 180 second budget and sanitized diagnostics.",
+    "files": [
+      "announcements/certificate_pdf.py",
+      "announcements/certificate_delivery.py"
+    ],
+    "test_prefixes": [
+      "announcements.test_certificate_pdf",
+      "announcements.test_certificate_delivery"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "announcements.test_certificate_delivery.CertificateConcurrencyTests.test_simultaneous_workers_submit_certificate_once",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_after_commit_send_acceptance_and_repeat_delivery_guard",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_application_email_takes_precedence_without_invalid_fallback",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_busy_converter_rolls_back_publication_and_explicit_retry_succeeds",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_certificate_xml_escapes_names_and_programs",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_immutable_document_and_history",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_invalid_application_address_is_not_replaced_by_member_email",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_missing_email_can_be_corrected_before_any_delivery_attempt",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_only_selected_members_queued_with_personalized_template",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_pdf_failure_rolls_back_publication_and_all_emails",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_placeholder_like_member_text_is_not_reinterpreted",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_private_download_status_permissions_and_csrf",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_provider_failures_never_store_provider_response_or_secret",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_republication_never_duplicates_certificate",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_resend_payload_is_private_with_attachment_and_stable_idempotency",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_rollback_drops_publication_jobs_and_callbacks",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_setup_and_withdrawn_selection_prevent_network_delivery",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_test_domain_cannot_enable_member_delivery",
+      "announcements.test_certificate_delivery.CertificateDeliveryTests.test_timeout_safe_retry_uses_identical_content_and_stops_after_window",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_batch_uses_one_private_conversion_and_keeps_recipient_order",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_failed_or_missing_output_never_returns_docx_or_private_error_details",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_overlapping_conversion_rejects_promptly_and_allows_retry",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_pdf_and_historical_docx_have_correct_attachment_metadata",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_render_failure_releases_capacity_without_partial_conversion",
+      "announcements.test_certificate_pdf.CertificatePDFTests.test_unconfigured_converter_blocks_new_certificates_but_not_an_empty_batch"
+    ]
+  },
+  {
+    "id": "AUD-06",
+    "severity": "Low",
+    "component": "Registration validation",
+    "problem_and_root_cause": "The same validation message appeared multiple times.",
+    "reproduction": "Submit an invalid current registration field and inspect its error list.",
+    "fix": "Keep one copy of each identical message.",
+    "files": [
+      "membership/registration_forms.py"
+    ],
+    "test_prefixes": [
+      "membership.test_intake_validation"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "membership.test_intake_validation.IntakeValidationTests.test_all_four_paths_accept_complete_input_and_canonicalize_mobile_and_address",
+      "membership.test_intake_validation.IntakeValidationTests.test_all_four_paths_require_personal_address_contact_and_disability",
+      "membership.test_intake_validation.IntakeValidationTests.test_child_choices_survive_staff_review_without_rewriting_saved_information",
+      "membership.test_intake_validation.IntakeValidationTests.test_child_employment_details_rejected_and_required_family_names_have_optional_middle_names",
+      "membership.test_intake_validation.IntakeValidationTests.test_children_under_15_choose_elementary_or_lower_and_student_or_unemployed",
+      "membership.test_intake_validation.IntakeValidationTests.test_city_region_province_and_barangay_mismatches_rejected",
+      "membership.test_intake_validation.IntakeValidationTests.test_conditional_pdao_renewal_and_employment_fields",
+      "membership.test_intake_validation.IntakeValidationTests.test_fifth_birthday_boundary_and_guardian_for_minors",
+      "membership.test_intake_validation.IntakeValidationTests.test_filtered_bound_form_retains_full_choices_for_birthdate_correction",
+      "membership.test_intake_validation.IntakeValidationTests.test_historical_review_forms_do_not_reset_application_date_or_enforce_new_intake",
+      "membership.test_intake_validation.IntakeValidationTests.test_manila_and_repeated_city_names_resolve_to_correct_geography",
+      "membership.test_intake_validation.IntakeValidationTests.test_married_requires_spouse_name_and_mobile_but_single_does_not",
+      "membership.test_intake_validation.IntakeValidationTests.test_mobile_ten_digits_without_trunk_prefix_for_all_four_paths",
+      "membership.test_intake_validation.IntakeValidationTests.test_new_intake_field_errors_are_reported_once",
+      "membership.test_intake_validation.IntakeValidationTests.test_pdao_today_cannot_be_overridden_even_when_omitted_or_invalid",
+      "membership.test_intake_validation.IntakeValidationTests.test_widget_and_dataset_integrity"
+    ]
+  },
+  {
+    "id": "AUD-07",
+    "severity": "Medium",
+    "component": "Member information review",
+    "problem_and_root_cause": "Document controls appeared in an information-only review; acknowledgement was treated as a profile edit and unchanged information could not be resolved.",
+    "reproduction": "Review an existing reported change without altering profile values, then repeat with a genuine change.",
+    "fix": "Remove document-only controls, render optional sections safely and exclude acknowledgement from profile change detection.",
+    "files": [
+      "programs/information_forms.py",
+      "programs/information_confirmation.py",
+      "members/registration_form.py"
+    ],
+    "test_prefixes": [
+      "programs.test_information_update",
+      "members.test_registration_edit"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "members.test_registration_edit.MemberRegistrationEditTests.test_edit_uses_current_onsite_fields_groups_choices_and_prefills",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_exact_disability_mapping_preserves_other_edits_and_audits_changes",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_existing_suffix_and_recorded_choice_survive_a_family_edit",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_family_only_edit_is_saved_audited_and_leaves_original_untouched",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_household_and_common_fields_update_current_columns_and_history",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_invalid_numbers_dates_household_and_reason_do_not_write",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_legacy_values_are_prefilled_without_inventing_missing_details",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_noop_stale_archived_and_audit_failure_preserve_record",
+      "members.test_registration_edit.MemberRegistrationEditTests.test_permissions_and_duplicate_formatted_id_remain_enforced",
+      "members.test_registration_edit.MemberRegistrationSourceTests.test_current_field_update_uses_existing_source_audit_and_invalidation",
+      "programs.test_information_update.ReportedInformationConcurrencyTests.test_simultaneous_profile_reviews_save_one_update_and_one_resolution",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_acknowledgement_is_required_and_removed_upload_fields_cannot_be_submitted",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_already_current_record_can_be_reviewed_without_fake_member_edit",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_edit_permissions_csrf_and_closed_states_are_enforced",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_edit_resolves_report_without_documents_or_scoring_and_then_allows_eligible",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_editor_displays_report_and_current_values_without_evidence_picker",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_eligible_does_not_require_member_edit_or_resolution_of_reported_change",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_invalid_values_and_duplicate_or_stale_forms_do_not_overwrite",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_later_member_change_invalidates_report_review",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_member_edit_and_resolution_roll_back_if_application_audit_fails",
+      "programs.test_information_update.ReportedInformationUpdateTests.test_updating_an_eligible_application_returns_it_for_another_human_decision"
+    ]
+  },
+  {
+    "id": "AUD-08",
+    "severity": "Medium",
+    "component": "Assistance portfolio queries",
+    "problem_and_root_cause": "Retained selections performed two queries for each program.",
+    "reproduction": "Project retained selections for twelve synthetic programs and compare the original projection.",
+    "fix": "Batch first adoption witnesses and approval lookups without changing eligibility or audit scope.",
+    "files": [
+      "programs/mandatory_ewaf.py",
+      "assistance/release_portfolio.py"
+    ],
+    "test_prefixes": [
+      "programs.test_retained_selection_queries",
+      "assistance.test_release_portfolio"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "assistance.test_release_portfolio.EWAFReleasePortfolioTests.test_only_latest_ewaf_decisions_are_selected_and_no_runs_are_loaded",
+      "assistance.test_release_portfolio.ReleasePortfolioTests.test_all_programs_and_filters_use_bounded_summary_queries",
+      "assistance.test_release_portfolio.ReleasePortfolioTests.test_read_access_is_required_and_overview_excludes_member_details",
+      "assistance.test_release_portfolio.ReleasePortfolioTests.test_selection_receipt_and_void_have_separate_counts",
+      "programs.test_retained_selection_queries.RetainedSelectionQueryTests.test_batched_witnesses_match_original_projection_with_bounded_queries",
+      "programs.test_retained_selection_queries.RetainedSelectionQueryTests.test_empty_or_unsaved_programs_need_no_database_queries",
+      "programs.test_retained_selection_queries.RetainedSelectionQueryTests.test_foreign_application_ids_and_later_approvals_are_excluded",
+      "programs.test_retained_selection_queries.RetainedSelectionQueryTests.test_later_valid_event_cannot_replace_invalid_first_witness"
+    ]
+  },
+  {
+    "id": "AUD-09",
+    "severity": "Medium",
+    "component": "EWAF readiness queries",
+    "problem_and_root_cause": "Repeated relationship fetches inflated readiness query counts.",
+    "reproduction": "Evaluate a fully verified synthetic application while counting database queries.",
+    "fix": "Join required policy, application, previous review and document relationships; preserve all evidence checks.",
+    "files": [
+      "ewaf/readiness.py",
+      "ewaf/evidence.py"
+    ],
+    "test_prefixes": [
+      "ewaf.test_readiness_queries",
+      "ewaf.test_readiness",
+      "ewaf.test_evidence_concurrency"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_cross_program_void_serializes_pa_capture",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_document_revocation_race_without_member_version_change",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_eligibility_review_race",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_later_release_invalidates_previously_current_pa_capture",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_member_status_correction_race",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_new_cross_program_release_serializes_empty_pa_capture",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_terms_capture_race_without_program_version_change",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_two_reviews_same_displayed_revision_only_one_commits",
+      "ewaf.test_evidence_concurrency.EvidenceConcurrencyTests.test_unreleased_void_and_replacement_count_only_successful_receipts",
+      "ewaf.test_readiness.ReadinessTests.test_approval_context_changes_without_program_version_are_detected",
+      "ewaf.test_readiness.ReadinessTests.test_changed_document_bytes_or_review_invalidates_assessment",
+      "ewaf.test_readiness.ReadinessTests.test_checklist_must_contain_every_expected_key",
+      "ewaf.test_readiness.ReadinessTests.test_current_eligibility_uses_review_not_original_member_version",
+      "ewaf.test_readiness.ReadinessTests.test_deleted_private_bytes_are_not_verified_evidence",
+      "ewaf.test_readiness.ReadinessTests.test_eligibility_requires_matching_review_log",
+      "ewaf.test_readiness.ReadinessTests.test_expiry_without_any_database_update",
+      "ewaf.test_readiness.ReadinessTests.test_favorable_relevance_never_overrides_ineligibility",
+      "ewaf.test_readiness.ReadinessTests.test_final_application_is_diagnostic_only",
+      "ewaf.test_readiness.ReadinessTests.test_forged_cross_program_requirement_reference_detected",
+      "ewaf.test_readiness.ReadinessTests.test_historical_verification_session_age_is_not_a_current_gate",
+      "ewaf.test_readiness.ReadinessTests.test_inactive_disability_qualification_cannot_pass",
+      "ewaf.test_readiness.ReadinessTests.test_inactive_or_inconsistent_membership",
+      "ewaf.test_readiness.ReadinessTests.test_missing_answer_and_duplicate_checklist_keys",
+      "ewaf.test_readiness.ReadinessTests.test_missing_disability_classification_requires_review",
+      "ewaf.test_readiness.ReadinessTests.test_missing_future_processing_gate_is_independent",
+      "ewaf.test_readiness.ReadinessTests.test_missing_membership_audit_provenance_requires_review",
+      "ewaf.test_readiness.ReadinessTests.test_missing_or_forged_submission_provenance_requires_review",
+      "ewaf.test_readiness.ReadinessTests.test_new_photo_review_and_replaced_photo_block",
+      "ewaf.test_readiness.ReadinessTests.test_new_policy_obsoletes_old_findings",
+      "ewaf.test_readiness.ReadinessTests.test_profile_value_drift_detected_even_without_version_change",
+      "ewaf.test_readiness.ReadinessTests.test_required_document_expiry_is_independent_of_assessment_expiry",
+      "ewaf.test_readiness.ReadinessTests.test_required_document_row_absence_is_detected",
+      "ewaf.test_readiness.ReadinessTests.test_required_reused_document_current_and_revoked",
+      "ewaf.test_readiness.ReadinessTests.test_supporting_document_expiry_without_row_change",
+      "ewaf.test_readiness_queries.ReadinessQueryTests.test_verified_readiness_keeps_evidence_checks_within_query_budget"
+    ]
+  },
+  {
+    "id": "AUD-10",
+    "severity": "Medium",
+    "component": "Audit invalidation",
+    "problem_and_root_cause": "Linked-event form initialization mutated the previous-state object; unpublishing expected an archived audit action although the actual transition was draft.",
+    "reproduction": "Create/edit a linked event and unpublish a program through guarded writers; inject audit failures.",
+    "fix": "Copy the prior event instance and match the actual draft audit transition.",
+    "files": [
+      "ewaf/event_invalidation.py",
+      "ewaf/source_invalidation.py"
+    ],
+    "test_prefixes": [
+      "ewaf.test_event_writers",
+      "ewaf.test_source_writers"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "ewaf.test_event_writers.EventConcurrencyTests.test_failed_image_replacement_allows_waiter_without_orphan",
+      "ewaf.test_event_writers.EventConcurrencyTests.test_program_wait_does_not_lock_event_early",
+      "ewaf.test_event_writers.EventConcurrencyTests.test_registration_restoration_can_finish_while_event_writer_waits",
+      "ewaf.test_event_writers.EventConcurrencyTests.test_two_editors_one_generation_winner",
+      "ewaf.test_event_writers.EventConcurrencyTests.test_two_edits_with_removed_relink_field_keep_original_scope",
+      "ewaf.test_event_writers.EventConcurrencyTests.test_two_publishers_one_generation_winner",
+      "ewaf.test_event_writers.EventHistoryTests.test_publication_preserves_durable_history_and_disabled_access",
+      "ewaf.test_event_writers.EventWriterTests.test_actor_without_program_permission_preserves_existing_link",
+      "ewaf.test_event_writers.EventWriterTests.test_admin_local_datetime_strings_preserve_native_audit_spelling",
+      "ewaf.test_event_writers.EventWriterTests.test_all_token_fields_checked",
+      "ewaf.test_event_writers.EventWriterTests.test_applications_prevent_unlink_and_survive_edit",
+      "ewaf.test_event_writers.EventWriterTests.test_batch_cas_and_final_failure_roll_back_publication",
+      "ewaf.test_event_writers.EventWriterTests.test_changed_then_restored_cannot_reuse_token",
+      "ewaf.test_event_writers.EventWriterTests.test_creation_failure_cleans_new_image",
+      "ewaf.test_event_writers.EventWriterTests.test_duplicate_native_audit_rolls_back",
+      "ewaf.test_event_writers.EventWriterTests.test_final_permission_revocation_rolls_back_event_and_actor",
+      "ewaf.test_event_writers.EventWriterTests.test_final_scope_check_rejects_partial_invalidation",
+      "ewaf.test_event_writers.EventWriterTests.test_foreign_event_audit_rolls_back",
+      "ewaf.test_event_writers.EventWriterTests.test_forged_native_audit_fields_roll_back",
+      "ewaf.test_event_writers.EventWriterTests.test_fresh_actor_permission_recheck",
+      "ewaf.test_event_writers.EventWriterTests.test_historical_native_audit_cannot_be_rewritten",
+      "ewaf.test_event_writers.EventWriterTests.test_image_alt_and_missing_image_guards",
+      "ewaf.test_event_writers.EventWriterTests.test_image_collision_never_overwrites_retained_bytes",
+      "ewaf.test_event_writers.EventWriterTests.test_incomplete_extra_and_malformed_scope_rejected",
+      "ewaf.test_event_writers.EventWriterTests.test_invalid_link_and_stale_event_version_denied",
+      "ewaf.test_event_writers.EventWriterTests.test_invalid_status_and_unpublished_cancellation_rejected",
+      "ewaf.test_event_writers.EventWriterTests.test_late_failures_clean_new_upload_and_retain_old_image",
+      "ewaf.test_event_writers.EventWriterTests.test_link_to_protected_program_and_existing_one_to_one_denied",
+      "ewaf.test_event_writers.EventWriterTests.test_linked_edit_retains_exact_native_audit",
+      "ewaf.test_event_writers.EventWriterTests.test_missing_historical_link_source_state_denied",
+      "ewaf.test_event_writers.EventWriterTests.test_missing_native_audit_rolls_back",
+      "ewaf.test_event_writers.EventWriterTests.test_native_audit_failure_rolls_back_publication",
+      "ewaf.test_event_writers.EventWriterTests.test_native_ipv6_address_normalization_preserved",
+      "ewaf.test_event_writers.EventWriterTests.test_new_creation_ignores_retired_program_link_and_keeps_sources_unchanged",
+      "ewaf.test_event_writers.EventWriterTests.test_overwriting_storage_denied",
+      "ewaf.test_event_writers.EventWriterTests.test_protected_program_publication_does_not_approve_or_rewrite_program",
+      "ewaf.test_event_writers.EventWriterTests.test_protected_terms_prevent_edits_and_historical_link_remains",
+      "ewaf.test_event_writers.EventWriterTests.test_publication_cancellation_withdrawal_archive_preserved",
+      "ewaf.test_event_writers.EventWriterTests.test_registration_capacity_and_schedule_rules_preserved",
+      "ewaf.test_event_writers.EventWriterTests.test_removed_relink_field_preserves_original_link_and_invalidates_only_original_source",
+      "ewaf.test_event_writers.EventWriterTests.test_removed_unlink_field_preserves_historical_context",
+      "ewaf.test_event_writers.EventWriterTests.test_replacement_and_removal_retain_prior_image_bytes",
+      "ewaf.test_event_writers.EventWriterTests.test_same_visible_values_still_retain_native_version_dependency",
+      "ewaf.test_event_writers.EventWriterTests.test_second_program_cas_failure_rolls_back_whole_union",
+      "ewaf.test_event_writers.EventWriterTests.test_sql_all_programs_then_all_states_then_event",
+      "ewaf.test_event_writers.EventWriterTests.test_tokens_cannot_activate_and_unowned_transactions_denied",
+      "ewaf.test_event_writers.EventWriterTests.test_unlinked_creation_edit_and_publication_make_no_batch",
+      "ewaf.test_event_writers.EventWriterTests.test_unlinked_event_cannot_acquire_program_link_through_removed_field",
+      "ewaf.test_event_writers.EventWriterTests.test_unregistered_requests_have_no_generation_queries",
+      "ewaf.test_source_writers.EwafSourceTests.test_assessment_business_context_stale_rejected",
+      "ewaf.test_source_writers.EwafSourceTests.test_assessment_lock_prefix_precedes_existing_application_and_member_locks",
+      "ewaf.test_source_writers.EwafSourceTests.test_configuration_validation_review_authority_and_scoring_history",
+      "ewaf.test_source_writers.EwafSourceTests.test_evidence_policy_and_assessment_each_advance_once",
+      "ewaf.test_source_writers.EwafSourceTests.test_ewaf_artifact_and_native_audit_rollback",
+      "ewaf.test_source_writers.EwafSourceTests.test_old_durable_graph_and_bindings_remain_reproducible",
+      "ewaf.test_source_writers.EwafSourceTests.test_repeated_validation_is_conservative_audit_dependency",
+      "ewaf.test_source_writers.ProgramSourceTests.test_approval_capture_and_binding_each_invalidate_once",
+      "ewaf.test_source_writers.ProgramSourceTests.test_approval_control_lock_is_after_source_state",
+      "ewaf.test_source_writers.ProgramSourceTests.test_duplicate_native_audit_rolls_back",
+      "ewaf.test_source_writers.ProgramSourceTests.test_duplicate_terms_capture_fails_without_invalidation",
+      "ewaf.test_source_writers.ProgramSourceTests.test_failed_business_validation_preserves_generation",
+      "ewaf.test_source_writers.ProgramSourceTests.test_final_authority_failure_rolls_back_native_and_source_changes",
+      "ewaf.test_source_writers.ProgramSourceTests.test_fresh_permission_recheck_rejects_cached_superuser",
+      "ewaf.test_source_writers.ProgramSourceTests.test_invalidation_and_cas_and_final_validation_failure_roll_back",
+      "ewaf.test_source_writers.ProgramSourceTests.test_missing_and_extra_scope_denied",
+      "ewaf.test_source_writers.ProgramSourceTests.test_missing_native_audit_rolls_back",
+      "ewaf.test_source_writers.ProgramSourceTests.test_missing_state_denied",
+      "ewaf.test_source_writers.ProgramSourceTests.test_native_audit_exception_rolls_back",
+      "ewaf.test_source_writers.ProgramSourceTests.test_no_implicit_activation_outside_session",
+      "ewaf.test_source_writers.ProgramSourceTests.test_out_of_scope_native_audit_rejects_whole_mutation",
+      "ewaf.test_source_writers.ProgramSourceTests.test_outer_transaction_denied",
+      "ewaf.test_source_writers.ProgramSourceTests.test_program_creation_audit_failure_rolls_back_every_table",
+      "ewaf.test_source_writers.ProgramSourceTests.test_program_creation_initializes_once_with_native_audits",
+      "ewaf.test_source_writers.ProgramSourceTests.test_program_update_and_changed_then_restored",
+      "ewaf.test_source_writers.ProgramSourceTests.test_protected_unchanged_save_has_no_invalidation",
+      "ewaf.test_source_writers.ProgramSourceTests.test_publication_and_withdrawal",
+      "ewaf.test_source_writers.ProgramSourceTests.test_requirement_creation_and_update",
+      "ewaf.test_source_writers.ProgramSourceTests.test_stale_business_version_is_preserved",
+      "ewaf.test_source_writers.ProgramSourceTests.test_stale_creation_authority_denied",
+      "ewaf.test_source_writers.ProgramSourceTests.test_stale_generation_denies_even_when_business_version_is_current",
+      "ewaf.test_source_writers.ProgramSourceTests.test_token_cannot_activate_protocol",
+      "ewaf.test_source_writers.ProgramSourceTests.test_unprotected_same_values_retain_conservative_native_audit_dependency",
+      "ewaf.test_source_writers.SourceConcurrencyTests.test_authority_revocation_invalidates_source_submission",
+      "ewaf.test_source_writers.SourceConcurrencyTests.test_failed_first_writer_leaves_waiting_writer_token_valid",
+      "ewaf.test_source_writers.SourceConcurrencyTests.test_two_connections_same_expected_generation_have_one_winner"
+    ]
+  },
+  {
+    "id": "AUD-11",
+    "severity": "Low",
+    "component": "Capacity metric",
+    "problem_and_root_cause": "The numerator excluded retained finite-capacity non-EWAF programs while the denominator included them.",
+    "reproduction": "Include finite-capacity historical and current programs in portfolio metrics.",
+    "fix": "Count applicants consistently across programs with known capacity.",
+    "files": [
+      "programs/portfolio.py"
+    ],
+    "test_prefixes": [
+      "programs.test_portfolio"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "programs.test_portfolio.ProgramPortfolioTests.test_alias_and_existing_route_preserve_actions_and_navigation",
+      "programs.test_portfolio.ProgramPortfolioTests.test_filters_preserve_status_and_registration_semantics",
+      "programs.test_portfolio.ProgramPortfolioTests.test_missing_capacity_and_schedule_are_not_fabricated",
+      "programs.test_portfolio.ProgramPortfolioTests.test_pagination_retains_filters_and_sort",
+      "programs.test_portfolio.ProgramPortfolioTests.test_permissions_protect_route_allocations_and_actions",
+      "programs.test_portfolio.ProgramPortfolioTests.test_portfolio_assets_are_scoped_to_program_management",
+      "programs.test_portfolio.ProgramPortfolioTests.test_retained_program_uses_its_recorded_capacity",
+      "programs.test_portfolio.ProgramPortfolioTests.test_totals_are_not_inflated_by_application_joins_or_filters",
+      "programs.test_portfolio.ProgramPortfolioTests.test_unavailable_program_is_not_a_registration_deadline"
+    ]
+  },
+  {
+    "id": "AUD-12",
+    "severity": "Medium",
+    "component": "Reference lookup and partial evidence",
+    "problem_and_root_cause": "Case-sensitive reference matching could reject an otherwise exact identity; incomplete evidence presentation indexed a missing status.",
+    "reproduction": "Repeat identity-checked lookup with a lowercase reference and display a partial evidence record.",
+    "fix": "Case-insensitive reference comparison with identity checks retained; safe missing-status lookup.",
+    "files": [
+      "programs/tracking_services.py",
+      "ewaf/input_presentation.py"
+    ],
+    "test_prefixes": [
+      "programs.test_tracking",
+      "ewaf.test_applicant_panel"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_changed_applicant_has_review_marker_and_short_explanation_without_altering_ranking",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_filters_empty_state_and_excluded_applicant_do_not_show_another_selection",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_first_row_and_explicit_row_show_matching_inputs_without_popup_or_writes",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_new_applicant_outside_saved_ranking_is_selectable_from_left",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_new_ranking_shows_eligible_applicants_awaiting_selection_and_retains_prior_decisions",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_read_reuses_one_pool_inspection_but_post_and_next_read_check_changes",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_selection_post_keeps_applicant_errors_and_success_in_panel",
+      "ewaf.test_applicant_panel.ApplicantPanelTests.test_unranked_inputs_remain_available_and_selection_permission_is_enforced",
+      "programs.test_tracking.ApplicationTrackingTests.test_all_processing_states_have_safe_messages_and_refresh_without_reverification",
+      "programs.test_tracking.ApplicationTrackingTests.test_attempts_are_limited_across_browser_sessions_and_raw_identifiers_are_not_stored",
+      "programs.test_tracking.ApplicationTrackingTests.test_cancelled_program_has_notice_and_unknown_state_does_not_guess_a_decision",
+      "programs.test_tracking.ApplicationTrackingTests.test_database_accent_equivalence_does_not_match_a_different_reference",
+      "programs.test_tracking.ApplicationTrackingTests.test_expired_or_malformed_grants_are_cleared",
+      "programs.test_tracking.ApplicationTrackingTests.test_feature_switch_removes_entry_points_and_revokes_access",
+      "programs.test_tracking.ApplicationTrackingTests.test_grant_cannot_be_transferred_to_another_application",
+      "programs.test_tracking.ApplicationTrackingTests.test_malformed_attempts_and_forwarded_header_changes_cannot_bypass_address_limit",
+      "programs.test_tracking.ApplicationTrackingTests.test_portal_shortcuts_link_to_the_verification_step",
+      "programs.test_tracking.ApplicationTrackingTests.test_profile_edits_do_not_break_tracking_but_archiving_revokes_it",
+      "programs.test_tracking.ApplicationTrackingTests.test_qr_can_be_disabled_independently_while_tracking_remains_available",
+      "programs.test_tracking.ApplicationTrackingTests.test_qr_is_receipt_session_bound_and_cannot_be_requested_by_reference",
+      "programs.test_tracking.ApplicationTrackingTests.test_real_csrf_verification_finish_and_method_restrictions",
+      "programs.test_tracking.ApplicationTrackingTests.test_receipt_qr_and_tracking_link_have_reference_but_never_a_secret",
+      "programs.test_tracking.ApplicationTrackingTests.test_reference_case_and_surrounding_spaces_are_normalized",
+      "programs.test_tracking.ApplicationTrackingTests.test_reference_is_the_only_visible_tracking_input",
+      "programs.test_tracking.ApplicationTrackingTests.test_reference_qr_parameter_or_legacy_token_alone_does_not_grant_access",
+      "programs.test_tracking.ApplicationTrackingTests.test_reference_required_and_removed_personal_inputs_are_not_collected",
+      "programs.test_tracking.ApplicationTrackingTests.test_success_rotates_session_key_and_failed_retry_revokes_prior_access",
+      "programs.test_tracking.ApplicationTrackingTests.test_throttle_storage_failure_fails_closed",
+      "programs.test_tracking.ApplicationTrackingTests.test_tracking_survives_program_deadline_or_archival_and_member_inactivity",
+      "programs.test_tracking.ApplicationTrackingTests.test_unknown_reference_discloses_no_record_details",
+      "programs.test_tracking.ApplicationTrackingTests.test_verification_returns_only_allowlisted_progress_without_changing_records"
+    ]
+  },
+  {
+    "id": "AUD-13",
+    "severity": "Low",
+    "component": "Public guidance",
+    "problem_and_root_cause": "Published membership guidance was omitted; fallback EWAF copy incorrectly denied numerical ranks.",
+    "reproduction": "Publish synthetic guidance and open the membership guide; compare explanatory copy with retained ranking output.",
+    "fix": "Render published guidance and accurately describe advisory numerical ranks and immutable history.",
+    "files": [
+      "templates/membership/guidelines.html",
+      "core/content.py"
+    ],
+    "test_prefixes": [
+      "core.tests.test_resources",
+      "membership.test_confirmed_requirements"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "core.tests.test_resources.ResourceTests.test_draft_editor_cannot_publish_archive_or_retrieve_private_cms_anonymously",
+      "core.tests.test_resources.ResourceTests.test_external_verification_is_only_an_explicitly_published_link",
+      "core.tests.test_resources.ResourceTests.test_navigation_canonical_guides_results_and_method_do_not_duplicate_private_records",
+      "core.tests.test_resources.ResourceTests.test_public_topics_collect_no_data_and_do_not_leak_drafts",
+      "core.tests.test_resources.ResourceTests.test_publication_requires_reviewed_source_provider_date_and_confirmation",
+      "core.tests.test_resources.ResourceTests.test_publish_snapshot_remains_stable_during_draft_edit_and_archive_retains_history",
+      "core.tests.test_resources.ResourceTests.test_stale_writes_audit_failure_and_permission_revocation",
+      "core.tests.test_resources.ResourceTests.test_url_safety_plain_text_and_unknown_detail_keys",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_approved_members_and_historical_evidence_are_unchanged_by_guidance_views",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_cms_guidance_does_not_grant_publication_permissions_to_editors",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_intake_and_review_remain_private_for_anonymous_nonstaff_and_unprivileged_staff",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_membership_cms_published_snapshot_and_contact_are_preserved_while_drafts_stay_private",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_pdao_information_and_physical_envelope_add_no_upload_rules_or_approval",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_pdao_six_items_medical_details_and_renewal_stay_outside_association_list",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_public_exact_five_items_and_onsite_procedure_without_accounts_or_uploads",
+      "membership.test_confirmed_requirements.ConfirmedMembershipGuidanceTests.test_upload_configuration_is_retained_privately_and_does_not_override_confirmed_list"
+    ]
+  },
+  {
+    "id": "AUD-14",
+    "severity": "Medium",
+    "component": "Accessibility",
+    "problem_and_root_cause": "Login and registration text contrast failures, an empty technical-admin title and a keyboard-inaccessible scrollable onsite guide.",
+    "reproduction": "Run axe and keyboard checks on login, association registration, admin index and onsite PDAO.",
+    "fix": "Use palette-compatible contrast colors, add the admin title and make the scrollable guide focusable.",
+    "files": [
+      "static/css/staff-sign-in.css",
+      "static/css/public-membership-application.css",
+      "templates/admin/base_site.html",
+      "templates/membership/pdao/onsite.html"
+    ],
+    "test_prefixes": [
+      "scripts.quality_audit_browser",
+      "scripts.quality_crossbrowser"
+    ],
+    "retest_status": "PASS: 23-route Chromium, Firefox and WebKit accessibility scans",
+    "test_ids": []
+  },
+  {
+    "id": "AUD-15",
+    "severity": "Medium",
+    "component": "Initial layout stability",
+    "problem_and_root_cause": "Deferred scanner/filter initialization shifted visible content.",
+    "reproduction": "Measure fresh desktop/mobile loads of dashboard, EWAF and onsite PDAO with layout-shift sources recorded.",
+    "fix": "Reserve the scanner geometry and match initial filter layouts before deferred initialization; retain no-script behavior.",
+    "files": [
+      "static/css/admin-filters.css",
+      "static/css/document-ocr.css",
+      "static/css/ewaf-selection.css",
+      "static/js/ewaf-selection.js",
+      "static/js/workspace-page.js",
+      "templates/membership/onsite/base.html",
+      "templates/membership/pdao/apply.html",
+      "templates/membership/registration/apply.html"
+    ],
+    "test_prefixes": [
+      "scripts.quality_layout_shifts",
+      "scripts.quality_audit_browser",
+      "scripts.document_ocr_browser"
+    ],
+    "retest_status": "PASS: six focused desktop/mobile layout-shift measurements and full Chromium sweep",
+    "test_ids": []
+  },
+  {
+    "id": "AUD-16",
+    "severity": "Medium",
+    "component": "Optional intake laboratory",
+    "problem_and_root_cause": "The separately enabled intake adapter did not connect its distinct evidence contract and eligibility requirements to current services.",
+    "reproduction": "Enable the optional app only in disposable test settings and exercise its separate intake/evidence workflow.",
+    "fix": "Use an explicit installed-app/feature/contract gate; leave the production current workflow authoritative.",
+    "files": [
+      "ewaf/intake_integration.py",
+      "ewaf/operational_policy.py",
+      "ewaf/operational_services.py",
+      "programs/review_services.py",
+      "programs/services.py"
+    ],
+    "test_prefixes": [
+      "program_intake.tests",
+      "program_intake.test_disability_screening"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "program_intake.test_disability_screening.DisabilityScreeningTests.test_disability_mismatch_is_private_until_identity_matches",
+      "program_intake.test_disability_screening.DisabilityScreeningTests.test_program_without_recorded_eligibility_blocks_submission",
+      "program_intake.test_disability_screening.DisabilityScreeningTests.test_verified_mismatch_explains_block_and_clears_previous_grant",
+      "program_intake.tests.IntakeTests.test_case_whitespace_and_unicode_normalization_preserve_middle_and_suffix",
+      "program_intake.tests.IntakeTests.test_changed_member_or_qualification_invalidates_grant",
+      "program_intake.tests.IntakeTests.test_closed_program_cannot_verify",
+      "program_intake.tests.IntakeTests.test_confirmed_receipts_only_and_voids_change_pa_source",
+      "program_intake.tests.IntakeTests.test_corrected_si_appends_history_and_invalidates_old_run",
+      "program_intake.tests.IntakeTests.test_disabled_optional_adapter_cannot_accept_its_distinct_evidence_contract",
+      "program_intake.tests.IntakeTests.test_disputed_and_expired_si_block_recalculation",
+      "program_intake.tests.IntakeTests.test_duplicate_returns_existing_application_and_preserves_original_evidence",
+      "program_intake.tests.IntakeTests.test_form_has_ten_shared_multiselect_choices_and_no_private_profile",
+      "program_intake.tests.IntakeTests.test_guessing_is_rate_limited_and_does_not_issue_grants",
+      "program_intake.tests.IntakeTests.test_inactive_archived_and_unapproved_members_are_rejected",
+      "program_intake.tests.IntakeTests.test_incomplete_or_old_code_grant_cannot_submit",
+      "program_intake.tests.IntakeTests.test_incomplete_pool_rejects_generation",
+      "program_intake.tests.IntakeTests.test_ip_limit_cannot_be_evaded_by_rotating_control_numbers",
+      "program_intake.tests.IntakeTests.test_matching_restriction_accepts_any_registered_type",
+      "program_intake.tests.IntakeTests.test_member_source_correction_invalidates_verified_inputs",
+      "program_intake.tests.IntakeTests.test_missing_fields_and_invalid_choices_show_only_generic_failure",
+      "program_intake.tests.IntakeTests.test_missing_required_document_rejects_without_creating_application",
+      "program_intake.tests.IntakeTests.test_multiple_disabilities_match_by_identifier",
+      "program_intake.tests.IntakeTests.test_name_belonging_to_other_control_number_is_rejected",
+      "program_intake.tests.IntakeTests.test_new_public_ewaf_application_requires_authorized_program_si_source",
+      "program_intake.tests.IntakeTests.test_nonmatching_program_restriction_rejects_verified_member",
+      "program_intake.tests.IntakeTests.test_onsite_sources_are_collected_and_score_trace_has_four_criteria",
+      "program_intake.tests.IntakeTests.test_optional_configuration_cannot_discard_an_authorized_rubric_item",
+      "program_intake.tests.IntakeTests.test_out_of_bounds_si_is_not_clamped",
+      "program_intake.tests.IntakeTests.test_private_match_failures_share_one_message",
+      "program_intake.tests.IntakeTests.test_program_history_handles_retained_scalar_and_before_after_entries",
+      "program_intake.tests.IntakeTests.test_public_multiple_disabilities_require_the_complete_recorded_set",
+      "program_intake.tests.IntakeTests.test_recorded_no_middle_name_and_custom_suffix",
+      "program_intake.tests.IntakeTests.test_selection_capacity_receipt_and_history_remain_separate",
+      "program_intake.tests.IntakeTests.test_session_grant_is_program_bound_expiring_and_tamper_checked",
+      "program_intake.tests.IntakeTests.test_source_policy_changes_are_versioned_and_preserve_ahp",
+      "program_intake.tests.IntakeTests.test_source_preview_and_review_are_permission_checked",
+      "program_intake.tests.IntakeTests.test_stale_review_token_is_rejected",
+      "program_intake.tests.IntakeTests.test_successful_public_submission_has_documents_and_pending_status",
+      "program_intake.tests.IntakeTests.test_unmapped_employment_is_not_fabricated",
+      "program_intake.tests.IntakeTests.test_uploaded_si_is_not_verified_and_blocks_pool",
+      "program_intake.tests.IntakeTests.test_verified_match_does_not_update_membership_or_create_codes",
+      "program_intake.tests.IntakeTests.test_verified_nonmatching_qualification_explains_why_application_cannot_proceed",
+      "program_intake.tests.IntakeTests.test_weight_revision_uses_ahp_and_preserves_previous_calculation"
+    ]
+  },
+  {
+    "id": "QA-01",
+    "severity": "Medium",
+    "component": "Test infrastructure",
+    "problem_and_root_cause": "Many checked-in fixtures still used retired approval routes, missing current required data, old UI selectors or inconsistent synthetic timestamps.",
+    "reproduction": "Execute the original deployed source suite and compare failures with current documented behavior.",
+    "fix": "Update synthetic setup and UI selectors, preserve arithmetic oracles and security assertions, align frozen model clocks, and retain published-weight locks. Pin LF checkout for four checksum-verified ranking fixtures; align frozen synthetic model timestamps; exercise historical migrations in separate disposable databases.",
+    "files": [
+      "scripts/quality_audit_runner.py",
+      "scripts/release_test_partition.py",
+      "scripts/migration_test_support.py",
+      "programs/testsupport.py",
+      "assistance/testsupport.py"
+    ],
+    "test_prefixes": [],
+    "retest_status": "PASS",
+    "test_ids": []
+  },
+  {
+    "id": "AUD-17",
+    "severity": "High",
+    "component": "Image dependency",
+    "problem_and_root_cause": "Production requirements pinned Pillow 12.3.0; the advisory scan reported 42 known advisories. The local test environment was already on 13.0.0, masking the release-pin mismatch.",
+    "reproduction": "Run pip-audit against all 20 flattened production pins, including Windows-excluded Gunicorn.",
+    "fix": "Pin Pillow 13.0.0; explicitly constrain image decoders; retest uploads and document generation.",
+    "files": [
+      "requirements.txt"
+    ],
+    "test_prefixes": [
+      "membership.test_image_decoder_boundary",
+      "announcements.test_composer"
+    ],
+    "retest_status": "PASS",
+    "test_ids": [
+      "announcements.test_composer.AnnouncementComposerTests.test_composer_audit_failure_rolls_back_and_cleans_uploaded_file",
+      "announcements.test_composer.AnnouncementComposerTests.test_each_topic_withholds_drafts_withdrawals_and_archived_notices",
+      "announcements.test_composer.AnnouncementComposerTests.test_filtered_announcement_shows_complete_escaped_content_without_popup",
+      "announcements.test_composer.AnnouncementComposerTests.test_filtered_results_render_only_authorized_public_projection_and_withdraw_immediately",
+      "announcements.test_composer.AnnouncementComposerTests.test_image_is_sanitized_and_edit_preserves_the_existing_description",
+      "announcements.test_composer.AnnouncementComposerTests.test_popup_enforces_permissions_csrf_and_stale_edits",
+      "announcements.test_composer.AnnouncementComposerTests.test_popup_has_only_three_editor_fields_and_creates_a_private_draft",
+      "announcements.test_composer.AnnouncementComposerTests.test_required_fields_and_invalid_upload_are_returned_inside_popup",
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_announcement_opens_only_the_declared_allowed_decoder",
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_accepts_png_and_jpeg_and_rewinds_stream",
+      "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_rejects_disguised_gif_and_rewinds_stream"
+    ]
+  }
+]

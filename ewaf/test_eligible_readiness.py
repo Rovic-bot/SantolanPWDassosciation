@@ -58,6 +58,8 @@ class EligibleReadinessChecks:
             application_id=a.pk, expected_revision=0, outcome='SELECTED', reason='Synthetic explicit selection.')
         self.assertEqual(len(decision.review['eligibility_rechecks'][0]['reviews']), 2)
         decision.clean()
+        from announcements.testsupport import publish_selection
+        publish_selection(self.program, self.user)
         record_release(a.pk, user=self.user, data=release_data(a))
         self.assertEqual(self.current(run).pk, run.pk)
         self.assertEqual(DatasetInputReview.objects.filter(application=a).first().pk, original_review.pk)

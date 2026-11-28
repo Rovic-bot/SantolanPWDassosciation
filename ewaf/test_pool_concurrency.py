@@ -1,4 +1,4 @@
-"""Separate MySQL connections demonstrate read-only change detection, not promotion."""
+"""Separate database connections demonstrate read-only change detection, not promotion."""
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event
 from unittest.mock import patch
@@ -18,7 +18,7 @@ from .pool_services import inspect_program_pool, _observe
 class PoolConcurrencyTests(ScoringHelpers, ConfigurationHelpers, EvidenceHelpers, TransactionTestCase):
     def setUp(self):
         self.setup_scoring()
-        self.assertEqual(connection.vendor, 'mysql', 'These tests require real MySQL.')
+        self.assertIn(connection.vendor, ('mysql', 'postgresql'), 'A real transactional database is required.')
 
     def change_between_observations(self, mutation):
         observed, resume = Event(), Event()
@@ -38,14 +38,14 @@ class PoolConcurrencyTests(ScoringHelpers, ConfigurationHelpers, EvidenceHelpers
             close_old_connections()
             try:
                 with connection.cursor() as cursor:
-                    cursor.execute('SELECT CONNECTION_ID()')
+                    cursor.execute('SELECT pg_backend_pid()' if connection.vendor == 'postgresql' else 'SELECT CONNECTION_ID()')
                     identity = cursor.fetchone()[0]
                 return identity, inspect_program_pool(self.program.pk, user=self.officer)
             finally:
                 connections.close_all()
 
         with connection.cursor() as cursor:
-            cursor.execute('SELECT CONNECTION_ID()')
+            cursor.execute('SELECT pg_backend_pid()' if connection.vendor == 'postgresql' else 'SELECT CONNECTION_ID()')
             writer_id = cursor.fetchone()[0]
         with patch('ewaf.pool_services._observe', side_effect=held_observation), ThreadPoolExecutor(max_workers=1) as pool:
             future = pool.submit(reader)

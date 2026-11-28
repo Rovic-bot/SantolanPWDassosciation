@@ -182,8 +182,8 @@ class SesWorkflowTests(TransactionTestCase):
                 name='SYNTHETIC SES program', benefit='Synthetic benefit', slots=1,
                 selection_method='Synthetic SES ranking and separate human decisions',
                 registration_opens_at=self.base + timedelta(hours=1), registration_closes_at=self.base + timedelta(days=1)))
-            change_publication(self.program.pk, user=self.user, version=self.program.version,
-                action='authorize_policy', notes='SYNTHETIC program authority')
+            from programs.testsupport import historical_policy_authorization
+            historical_policy_authorization(self.program, self.user)
         self.program.refresh_from_db()
         helper = TermsHelpers()
         helper.program, helper.officer = self.program, self.user
@@ -205,7 +205,7 @@ class SesWorkflowTests(TransactionTestCase):
 
     def accept(self, app, proof, *, low=False, selections=None, **changes):
         findings = {**evidence.periods(self.configuration), 'income_monthly': ['5000' if low else '20000'] * 3,
-            'employment': 'Unemployed' if low else 'Full-Time Worker', 'household_members': 6 if low else 2,
+            'employment': 'Unemployed' if low else 'Employed', 'household_members': 6 if low else 2,
             'history_complete': True, 'assessment_finding': 'SYNTHETIC verified source findings',
             'income_consistency': 'consistent', 'income_resolution': ''}
         findings.update(changes)
@@ -240,9 +240,11 @@ class SesWorkflowTests(TransactionTestCase):
             self.assertNotIn('classification', row)
         self.choose(run, a)
         self.choose(run, b, outcome='NOT_SELECTED')
-        item = prepare_results(self.program.pk, user=self.user, version=0, reason='SYNTHETIC permitted result preparation')
+        item = prepare_results(self.program.pk, user=self.user, version=0, reason='SYNTHETIC permitted result preparation', recorded=True, selection_reason='Synthetic eligible members selected under the recorded ranking and human decision.')
         public = str(item.result_revision.public_payload)
-        for private in (a.member.full_name, a.public_reference, 'score_0_100', 'income_monthly', 'score_exact', 'supporting'):
+        self.assertEqual(item.result_revision.public_payload['rows'][0]['reference'], a.public_reference)
+        for private in (a.member.full_name, a.member.control_number, str(a.pk), a.status_token,
+                        'score_0_100', 'income_monthly', 'score_exact', 'supporting'):
             self.assertNotIn(private, public)
         item = publish_results(item.pk, user=self.user, version=item.version)
         self.assertTrue(results_current(item))
@@ -271,17 +273,26 @@ class SesWorkflowTests(TransactionTestCase):
                 old = create_program(registration_opens_at=self.base - timedelta(days=2),
                     registration_closes_at=self.base - timedelta(days=1))
                 app = application_fixture(old, c.member)
-                review_eligibility(app.pk, user=self.user, data=review_data(app))
-                decide_assistance(app.pk, user=self.user, data=decision_data(app))
-                record_release(app.pk, user=self.user, data=release_data(app))
-        self.accept(a, ar, income_monthly=['5000'] * 3, employment='Seasonal Worker', household_members=4)
+                from assistance.testsupport import historical_receipt
+                historical_receipt(app, self.user)
+        self.accept(a, ar, income_monthly=['5000'] * 3, employment='Student', household_members=4)
         self.accept(b, br, income_monthly=['12500'] * 3, employment='Unemployed', household_members=2)
-        self.accept(c, cr, income_monthly=['20000'] * 3, employment='Full-Time Worker', household_members=6)
+        self.accept(c, cr, income_monthly=['20000'] * 3, employment='Employed', household_members=6)
         run = self.generate()
         run.clean()
         self.assertEqual(run.configuration.validation['weights'], project(proposal())[1]['weights'])
         self.assertEqual([run.snapshot['eligible'][str(app.pk)]['inputs']['PA']['value'] for app in (a, b, c)], ['1', '0', '3'])
-        self.assertEqual([run.calculations[str(app.pk)]['score_display'] for app in (a, b, c)], ['79.47', '63.15', '14.11'])
+        # Independently normalize the fixture: income 5k/12.5k/20k,
+        # Student=3, Unemployed=5, Employed=1; PA 1/0/3; household 4/2/6.
+        from fractions import Fraction
+        from decimal import Decimal
+        weights = {key: Fraction(value) for key, value in run.configuration.validation['weights'].items()}
+        expected = []
+        for normalized in ((1, Fraction(1, 2), Fraction(2, 3), Fraction(1, 2)),
+                           (Fraction(1, 2), 1, 1, 0), (0, 0, 0, 1)):
+            score = sum(weights[code] * value for code, value in zip(CODES, normalized)) * 100
+            expected.append(f'{Decimal(score.numerator) / Decimal(score.denominator):.2f}')
+        self.assertEqual([run.calculations[str(app.pk)]['score_display'] for app in (a, b, c)], expected)
         self.assertEqual([run.calculations[str(app.pk)]['comparison']['business_rank'] for app in (a, b, c)], [1, 2, 3])
 
     def test_real_binding_and_input_forms_accept_exactly_four_findings(self):
@@ -300,11 +311,16 @@ class SesWorkflowTests(TransactionTestCase):
         response = self.client.post(reverse('ewaf:dataset_inputs', args=[app.pk]), {
             'expected': evidence.review_token(app, self.configuration), 'state': 'ACCEPTED',
             'income_0': '90000', 'income_1': '100000', 'income_2': '110000',
-            'employment': 'Part-Time Worker', 'household_members': 4, 'history_complete': 'on',
+            'employment': 'Self-Employed', 'household_members': 4, 'history_complete': 'on',
             'assessment_finding': 'SYNTHETIC complete income and history review',
             'income_consistency': 'consistent', 'income_resolution': '', 'confirmed': 'on',
             'reason': 'SYNTHETIC explicit new-method acceptance', **{'evidence_' + code: [proof.pk] for code in CODES}})
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 405)
+        self.assertFalse(DatasetInputReview.objects.filter(application=app).exists())
+        # Retained dataset bindings still validate their original evidence via
+        # the service; the retired input screen cannot create new reviews.
+        self.accept(app, proof, income_monthly=['90000', '100000', '110000'],
+                    employment='Self-Employed', household_members=4)
         saved = DatasetInputReview.objects.filter(application=app).first()
         self.assertEqual(set(saved.inputs), set(CODES))
         self.assertEqual(saved.inputs['SES']['value'], '100000')
@@ -423,7 +439,7 @@ class SesWorkflowTests(TransactionTestCase):
             label='SYNTHETIC optional indigency evidence', file=pdf(), content_type='application/pdf', size=50)
         extra_review = verify_document(extra.pk, user=self.user, member_version=a.member.version,
             verified=True, expires_on=None, reason='SYNTHETIC optional evidence review')
-        args = {'income_monthly': ['100000'] * 3, 'employment': 'Seasonal Worker', 'household_members': 4}
+        args = {'income_monthly': ['100000'] * 3, 'employment': 'Student', 'household_members': 4}
         accepted = self.accept(a, ar, selections={code: [ar.pk] for code in CODES} |
             {'SES': [ar.pk, extra_review.pk]}, **args)
         self.accept(b, br, **args)
@@ -435,10 +451,9 @@ class SesWorkflowTests(TransactionTestCase):
         self.assertEqual(left['score_exact'], right['score_exact'])
         self.assertEqual(left['comparison'], right['comparison'])
         self.assertEqual(len(left['traces']), 4)
-        page = self.client.get(reverse('ewaf:dataset_inputs', args=[a.pk]))
-        for name in ('si_four_ps', 'si_indigency', 'si_food', 'evidence_SI', 'evidence_HI'):
-            self.assertNotContains(page, 'name="' + name + '"')
-        self.assertContains(page, 'name="evidence_SES"')
+        from .test_dataset_policy import assert_read_only_bookmark
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_inputs', args=[a.pk]),
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#readiness')
 
     def test_material_income_conflict_requires_resolution_without_income_substitution(self):
         self.publish()
@@ -565,22 +580,12 @@ class SesWorkflowTests(TransactionTestCase):
         self.assertEqual(self.client.get(url).status_code, 302)
 
     def test_policy_http_draft_approval_and_ses_fields(self):
+        from .test_dataset_policy import assert_read_only_bookmark
         url = reverse('ewaf:dataset_policies') + '?method=' + methods.SES
-        data = {'calculation_method': methods.SES, 'expected': policies.token(),
-                'weight': self.weights.pk, 'reason': 'SYNTHETIC HTTP policy draft',
-                'shared_cutoff': 'application_close'}
-        for key, item in self.content['choices'].items():
-            data[key], data['specified_' + key] = item['value'], 'on'
-        page = self.client.get(url)
-        self.assertContains(page, 'income-based proxy')
-        self.assertNotContains(page, 'name="si_rubric"')
-        self.assertNotContains(page, 'name="evidence_HI"')
-        self.assertEqual(self.client.post(url, data).status_code, 302)
-        draft = SharedDatasetPolicy.objects.first()
-        review_url = reverse('ewaf:dataset_policy_review', args=[draft.pk])
-        self.assertEqual(self.client.post(review_url, {'expected': draft.digest, 'group_A': 'on', 'group_B': 'on',
-            'group_C': 'on', 'reason': 'SYNTHETIC HTTP policy approval'}).status_code, 302)
-        self.assertEqual(SharedDatasetPolicy.objects.first().method, methods.SES)
+        assert_read_only_bookmark(self, url, reverse('ewaf:vault'))
+        draft = self.draft()
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_policy_review', args=[draft.pk]), reverse('ewaf:vault'))
+        self.assertEqual(SharedDatasetPolicy.objects.get(pk=draft.pk).status, 'DRAFT')
 
     def test_unauthorized_audit_failure_and_stale_weight_approval_are_controlled(self):
         from membership.tests import grant

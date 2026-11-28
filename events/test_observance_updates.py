@@ -139,10 +139,10 @@ class ObservanceUpdateTests(TestCase):
                         'Manage scheduled General and Specific Events'):
             self.assertNotContains(response, removed)
         response = self.client.get(self.url)
-        self.assertContains(response, 'Save and publish')
+        self.assertContains(response, 'Save changes')
         self.assertNotContains(response, 'Save draft')
-        for field in ('target_audience', 'who_may_participate'):
-            self.assertTrue(response.context['form'].fields[field].required)
+        self.assertTrue(response.context['form'].fields['target_audience'].required)
+        self.assertNotIn('who_may_participate', response.context['form'].fields)
         self.item.refresh_from_db()
         self.assertEqual(self.item.version, 2)
         self.assertEqual(AnnualObservance.objects.count(), 1)

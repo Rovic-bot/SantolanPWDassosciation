@@ -1,0 +1,1086 @@
+[
+  {
+    "file": ".gitattributes",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": []
+  },
+  {
+    "file": "accounts/tests/test_accounts.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "accounts/tests/test_authority_generation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/certificate_delivery.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-05"
+    ]
+  },
+  {
+    "file": "announcements/certificate_pdf.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-05"
+    ]
+  },
+  {
+    "file": "announcements/images.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-04"
+    ]
+  },
+  {
+    "file": "announcements/test_catalog.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_categories.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_certificate_delivery.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_certificate_migration.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_certificate_pdf.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_composer.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_generation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_gmail_certificates.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_participation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_public_results.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_recorded_results.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_results.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/test_selection_reason.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "announcements/tests.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/release_portfolio.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-08"
+    ]
+  },
+  {
+    "file": "assistance/test_publication_gate.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/test_receipt_button.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/test_referral_membership_approval.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/test_referral_quick_actions.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/test_release_portfolio.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/test_retired_detail.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/tests.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "assistance/testsupport.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": [
+      "QA-01"
+    ]
+  },
+  {
+    "file": "core/content.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-13"
+    ]
+  },
+  {
+    "file": "core/database_errors.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-03"
+    ]
+  },
+  {
+    "file": "core/test_local_startup.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_content.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_database_errors.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_deployment.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_foundation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_home_featured_event.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_home_program_availability.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_portal_editor.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_public_browsing.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_public_portal.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_resources.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_review_notifications.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "core/tests/test_workspace_navigation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "events/test_observance_updates.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "events/test_observance_workflow.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "events/test_observances.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "events/test_participation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/event_invalidation.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-10"
+    ]
+  },
+  {
+    "file": "ewaf/evidence.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-09"
+    ]
+  },
+  {
+    "file": "ewaf/input_presentation.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-12"
+    ]
+  },
+  {
+    "file": "ewaf/intake_integration.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-16"
+    ]
+  },
+  {
+    "file": "ewaf/operational_policy.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-16"
+    ]
+  },
+  {
+    "file": "ewaf/operational_services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-16"
+    ]
+  },
+  {
+    "file": "ewaf/readiness.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-09"
+    ]
+  },
+  {
+    "file": "ewaf/source_invalidation.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-10"
+    ]
+  },
+  {
+    "file": "ewaf/test_application_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_assistance_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_automatic_member_inputs.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_composite_ses.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_configuration_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_current_weights.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_dataset_policy.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_decision_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_delivery.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_document_ranking.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_durable_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_eligible_readiness.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_event_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_evidence_concurrency.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_evidence_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_generation_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_generation_processing.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_intake_policy.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_member_record_evidence.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_member_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_operational.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_photo_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_pool_concurrency.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_pool_services.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_program_cards.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_ranking_freshness.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_ranking_preservation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_readiness.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_readiness_queries.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_recalculation_preservation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_reranking.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_rolling_delivery.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_rolling_pool.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_score_breakdown.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_ses_workflow.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_shared_application.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_shared_calculation_rules.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_source_writers.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_synthetic_twelve.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_unselect_assistance.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_vault.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "ewaf/test_workspace_ui.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "main_testing/seed.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "main_testing/test_reviews.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "members/registration_form.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-07"
+    ]
+  },
+  {
+    "file": "members/test_catalog_migration.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "members/test_disability_mapping.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "members/test_registration_edit.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/forms.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-04"
+    ]
+  },
+  {
+    "file": "membership/pdao_membership.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-01"
+    ]
+  },
+  {
+    "file": "membership/registration_decisions.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-03"
+    ]
+  },
+  {
+    "file": "membership/registration_forms.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-06"
+    ]
+  },
+  {
+    "file": "membership/services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-03"
+    ]
+  },
+  {
+    "file": "membership/test_confirmed_requirements.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_image_decoder_boundary.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_intake_validation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_onsite_profile.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_pdao_claim_email.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_pdao_membership.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_profile_migrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_prpwd_registration.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_quick_approval.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_registration_completion.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_registration_entry.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_registration_handoff_migration.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_registration_migration.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_registration_receipt_qr.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "membership/test_review_inbox_refresh.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "program_intake/fixtures.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": []
+  },
+  {
+    "file": "program_intake/test_disability_screening.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "program_intake/tests.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/information_confirmation.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-07"
+    ]
+  },
+  {
+    "file": "programs/information_forms.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-07"
+    ]
+  },
+  {
+    "file": "programs/mandatory_ewaf.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-08"
+    ]
+  },
+  {
+    "file": "programs/portfolio.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-11"
+    ]
+  },
+  {
+    "file": "programs/review_services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-16"
+    ]
+  },
+  {
+    "file": "programs/services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-16"
+    ]
+  },
+  {
+    "file": "programs/test_admin_workflow.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_application_retry.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_application_workflow.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_approved_terms.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_checklist_navigation.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_configured_application.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_creation_builder.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_detail_workspace.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_direct_review.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_information_update.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_inline_document_review.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_mandatory_ewaf.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_non_ewaf_selection.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_one_click_publication.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_pdao_approval.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_pictures.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_policy_authorization.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_portfolio.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_public_availability.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_public_catalog.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_reference_ui.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_retained_selection_queries.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_revised_workflow.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_schedule_updates.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_ui_cleanup.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/test_workflow_alignment.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/tests.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "programs/testsupport.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": [
+      "QA-01"
+    ]
+  },
+  {
+    "file": "programs/tracking_services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-12"
+    ]
+  },
+  {
+    "file": "reports/services.py",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-02"
+    ]
+  },
+  {
+    "file": "reports/test_quality_regressions.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "requirements.txt",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-17"
+    ]
+  },
+  {
+    "file": "scripts/applicant_vault_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/document_ocr_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/ewaf_current_weights_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/ewaf_reranking_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/ewaf_synthetic_twelve_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/ewaf_workspace_ui_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/migration_test_support.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": [
+      "QA-01"
+    ]
+  },
+  {
+    "file": "scripts/quality_audit_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_audit_browser.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_audit_runner.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": [
+      "QA-01"
+    ]
+  },
+  {
+    "file": "scripts/quality_crossbrowser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_crossbrowser.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_layout_shifts.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_layout_shifts.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_local_integrations.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_operational_profile.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_postgres_launch.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/quality_readiness_profile.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "scripts/release_test_partition.py",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": [
+      "QA-01"
+    ]
+  },
+  {
+    "file": "scripts/result_publication_browser.cjs",
+    "purpose": "Test/fixture or audit tooling",
+    "defects": []
+  },
+  {
+    "file": "static/css/admin-filters.css",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "static/css/document-ocr.css",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "static/css/ewaf-selection.css",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "static/css/public-membership-application.css",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-14"
+    ]
+  },
+  {
+    "file": "static/css/staff-sign-in.css",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-14"
+    ]
+  },
+  {
+    "file": "static/js/ewaf-selection.js",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "static/js/workspace-page.js",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "templates/admin/base_site.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-14"
+    ]
+  },
+  {
+    "file": "templates/membership/guidelines.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-13"
+    ]
+  },
+  {
+    "file": "templates/membership/onsite/base.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "templates/membership/pdao/apply.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  },
+  {
+    "file": "templates/membership/pdao/onsite.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-14"
+    ]
+  },
+  {
+    "file": "templates/membership/registration/apply.html",
+    "purpose": "Runtime, dependency or UI correction",
+    "defects": [
+      "AUD-15"
+    ]
+  }
+]

@@ -43,8 +43,8 @@ class SharedApplicationTests(TransactionTestCase):
             program = save_program(user=self.user, data=program_data(name=name, ewaf_applicable=True,
                 benefit='SYNTHETIC benefit', slots=1, selection_method='SYNTHETIC human decision after EWAF',
                 registration_opens_at=self.base + timedelta(hours=1), registration_closes_at=self.base + timedelta(days=1)))
-            change_publication(program.pk, user=self.user, version=program.version,
-                action='authorize_policy', notes='SYNTHETIC program authority')
+            from programs.testsupport import historical_policy_authorization
+            historical_policy_authorization(program, self.user)
         program.refresh_from_db()
         helper = TermsHelpers(); helper.program, helper.officer = program, self.user; helper.reconcile()
         return program
@@ -85,71 +85,61 @@ class SharedApplicationTests(TransactionTestCase):
         self.assertEqual(row.assessment_cutoff, program.registration_closes_at)
         self.assertEqual(program.status, 'published')
 
-    def test_new_composite_program_reuses_approved_rules_after_main_weights_change(self):
+    def test_new_composite_program_uses_fixed_rules_and_current_weights_without_rewriting_history(self):
+        from .fixed_scoring import definition
+        from .test_synthetic_twelve import proposal
         policy = self.approve()
         retained = deepcopy(policy.payload())
-        from .test_synthetic_twelve import proposal
+        historical = {row.pk: row.payload() for row in Configuration.objects.all()}
         for state in ('DRAFT', 'LOCKED'):
             new = vault.record_ses_weights(user=self.user, expected=vault.token(), proposal=proposal('hm'),
-                reason='SYNTHETIC current main weights; unchanged evidence rules', status=state, method=COMPOSITE)
-        count = Policy.objects.count()
-        self.program = self.another_program('SYNTHETIC new program after shared weight approval')
+                reason='SYNTHETIC current main weights', status=state, method=COMPOSITE)
+        self.program = self.another_program('SYNTHETIC new program after weight approval')
         self.publish_intake()
-        self.configuration = operational.latest_configuration(self.program)
-        self.assertEqual(self.configuration.dataset_policy_id, policy.pk)
-        self.assertEqual(Policy.objects.count(), count)
-        a, proof_a = self.applicant('SHARED-NEW-A')
-        b, proof_b = self.applicant('SHARED-NEW-B', prior=True)
-        self.accept(a, proof_a, low=True)
-        self.accept(b, proof_b)
-        run = self.generate()
-        self.assertEqual(run.snapshot['approved_weights']['id'], new.pk)
-        self.assertEqual({trace['criterion']: trace['weight'] for trace in run.calculations[str(a.pk)]['traces']},
-            new.validation['weights'])
+        row = operational.latest_configuration(self.program)
+        self.assertIsNone(row.dataset_policy_id)
+        self.assertEqual(row.policy, definition())
+        self.assertEqual(row.vault_revision_id, new.pk)
+        self.assertEqual(row.validation['weights'], new.validation['weights'])
+        row.clean()
         policy.refresh_from_db()
         self.assertEqual(policy.payload(), retained)
+        for key, payload in historical.items():
+            self.assertEqual(Configuration.objects.get(pk=key).payload(), payload)
 
-    def test_published_composite_intake_can_receive_shared_rules_with_new_approved_weights(self):
-        self.publish_intake()
-        a, proof_a = self.applicant('SHARED-OPEN-A')
-        b, proof_b = self.applicant('SHARED-OPEN-B', prior=True)
-        original = Configuration.objects.filter(program=self.program).first()
-        original_payload = deepcopy(original.payload())
+    def test_shared_approval_and_new_weights_do_not_replace_published_fixed_binding(self):
+        from .fixed_scoring import definition
         from .test_synthetic_twelve import proposal
+        self.publish_intake()
+        original = operational.latest_configuration(self.program)
+        retained = deepcopy(original.payload())
         for state in ('DRAFT', 'LOCKED'):
             self.weights = vault.record_ses_weights(user=self.user, expected=vault.token(), proposal=proposal('pa'),
-                reason='SYNTHETIC weights for an existing intake', status=state, method=COMPOSITE)
+                reason='SYNTHETIC new shared weights after intake opened', status=state, method=COMPOSITE)
         policy = self.approve()
-        self.configuration = operational.latest_configuration(self.program)
-        self.assertEqual(self.configuration.dataset_policy_id, policy.pk)
-        self.accept(a, proof_a, low=True)
-        self.accept(b, proof_b)
-        run = self.generate()
-        self.assertEqual({trace['criterion']: trace['weight'] for trace in run.calculations[str(a.pk)]['traces']},
-            self.weights.validation['weights'])
-        original.refresh_from_db()
-        self.assertEqual(original.payload(), original_payload)
-
-    def test_intake_then_shared_approval_accepted_inputs_rank_and_human_decision(self):
-        self.publish_intake()
-        a, proof_a = self.applicant('SHARED-A')
-        b, proof_b = self.applicant('SHARED-B', prior=True)
-        old = Configuration.objects.filter(program=self.program).first()
-        self.assertFalse(old.dataset_policy_id)
-        self.approve()
-        self.configuration = operational.latest_configuration(self.program)
-        self.accept(a, proof_a, low=True)
-        self.accept(b, proof_b)
-        run = self.generate()
-        trace = next(t for t in run.calculations[str(a.pk)]['traces'] if t['criterion'] == 'SES')
-        self.assertEqual(Fraction(trace['normalized']['exact']), Fraction(9, 10))
-        self.assertEqual(Fraction(trace['contribution']['exact']),
-            Fraction(self.configuration.validation['weights']['SES']) * Fraction(9, 10))
-        self.assertEqual(len(run.calculations[str(a.pk)]['traces']), 4)
+        self.assertIsNone(shared.apply(self.program, user=self.user))
+        row = operational.latest_configuration(self.program)
+        self.assertEqual(row.pk, original.pk)
+        self.assertEqual(row.payload(), retained)
+        self.assertEqual(row.policy, definition())
+        self.assertIsNone(row.dataset_policy_id)
+        self.assertNotEqual(row.vault_revision_id, self.weights.pk)
+        self.assertFalse(OperationalRun.objects.filter(program=self.program).exists())
         self.assertFalse(OperationalDecision.objects.exists())
-        self.choose(run, a)
-        self.assertEqual(OperationalDecision.objects.count(), 1)
-        self.assertEqual(Configuration.objects.get(pk=old.pk).vault_revision_id, self.weights.pk)
+
+    def test_shared_approval_cannot_enable_manual_inputs_for_fixed_intake(self):
+        self.publish_intake()
+        app, proof = self.applicant('SHARED-FIXED')
+        self.configuration = operational.latest_configuration(self.program)
+        retained = deepcopy(self.configuration.payload())
+        self.approve()
+        from .revised.live_models import DatasetInputReview
+        with self.assertRaises(ValidationError):
+            self.accept(app, proof, low=True)
+        self.assertFalse(DatasetInputReview.objects.filter(application=app).exists())
+        self.assertEqual(operational.latest_configuration(self.program).payload(), retained)
+        self.assertFalse(OperationalRun.objects.filter(program=self.program).exists())
+        self.assertFalse(OperationalDecision.objects.exists())
 
     def test_new_weight_approval_updates_unstarted_matching_drafts_only(self):
         old = Configuration.objects.filter(program=self.program).first()
@@ -257,16 +247,14 @@ class SharedApplicationTests(TransactionTestCase):
             self.approve(draft)
         page = self.client.post(reverse('ewaf:dataset_policy_review', args=[policy.pk]),
             {'action': 'APPLY_SHARED', 'expected': 'stale'})
-        self.assertContains(page, 'Reload the approved shared policy')
+        self.assertEqual(page.status_code, 405)
         self.assertEqual(before, (Configuration.objects.count(), LogEntry.objects.count()))
 
     def test_policy_editor_and_review_show_global_rule_and_preserve_old_policy_contract(self):
-        page = self.client.get(reverse('ewaf:dataset_policies'))
-        self.assertContains(page, 'Shared assessment cutoff rule')
+        from .test_dataset_policy import assert_read_only_bookmark
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_policies'), reverse('ewaf:vault'))
         policy = self.approve()
-        page = self.client.get(reverse('ewaf:dataset_policy_review', args=[policy.pk]))
-        self.assertContains(page, 'Shared application to programs')
-        self.assertContains(page, 'Apply shared configuration to ready programs')
+        assert_read_only_bookmark(self, reverse('ewaf:dataset_policy_review', args=[policy.pk]), reverse('ewaf:vault'))
         old = deepcopy(self.content); old.pop('program_application')
         draft = self.draft(old)
         retained = self.approve(draft)

@@ -33,7 +33,7 @@ from .tests import onsite_profile, profile, pdf, grant
 
 
 def seed_capture_slots():
-    import_module('documents.migrations.0004_onsite_profile_capture').capture_slots(apps, SimpleNamespace(connection=connection))
+    import_module('documents.migrations.0004_onsite_profile_capture').capture_slots(apps, connection.schema_editor(atomic=False))
 
 
 def portrait():
@@ -98,7 +98,7 @@ class OnsiteProfileTests(TestCase):
             ({'no_middle_name': '', 'middle_name': ''}, 'middle_name'),
             ({'suffix': 'other', 'suffix_other': ''}, 'suffix_other'),
             ({'sex': 'invented'}, 'sex'), ({'civil_status': 'invented'}, 'civil_status'),
-            ({'employment_status': 'unemployed'}, 'employment_status'),
+            ({'employment_status': 'unknown-category'}, 'employment_status'),
             ({'education': 'invented'}, 'education'), ({'income_category': '5000'}, 'income_category'),
             ({'disability_types': []}, 'disability_types'), ({'disability_types': [999999]}, 'disability_types'),
             *[({'dependents': value}, 'dependents') for value in ('-1', '1.5', '1.0', 'abc', '65536')],
@@ -195,7 +195,7 @@ class OnsiteProfileTests(TestCase):
         self.assertEqual(self.client.get(url).status_code, 403)
         detail = self.client.get(reverse('members:detail', args=[member.pk]))
         self.assertContains(detail, self.other.name)
-        self.assertContains(detail, 'Address Information')
+        self.assertContains(detail, 'Residential address')
         self.assertNotContains(detail, '?preview=1')
         self.client.force_login(self.admin)
         for verified in (True, False):

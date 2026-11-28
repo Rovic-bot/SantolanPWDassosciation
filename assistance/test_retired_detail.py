@@ -58,5 +58,6 @@ class RetiredAssistanceDetailTests(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertNotContains(response, f'href="{self.url}"')
         response = self.client.get(reverse('assistance:program_releases', args=[self.application.program_id]))
-        self.assertContains(response, self.review_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse('assistance:release_programs') + f'?selected={self.application.program_id}#release-program-overview')
         self.assertNotContains(response, f'href="{self.url}"')

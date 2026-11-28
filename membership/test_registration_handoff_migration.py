@@ -15,41 +15,37 @@ from .test_registration_handoff import HandoffHelpers
 from .models import MembershipApplication
 
 
-class RegistrationHandoffMigrationTests(HandoffHelpers, TransactionTestCase):
-    def setUp(self):
-        self.setup_handoff()
-
+class RegistrationHandoffMigrationTests(TransactionTestCase):
     def test_forward_reverse_forward_preserves_pending_and_old_rows_and_refuses_linked_reverse(self):
-        require_disposable()
-        call_command('makemigrations', check=True, dry_run=True, interactive=False, verbosity=1)
-        path = Path(__file__).parent / 'migrations' / (HANDOFF_MIGRATION[1] + '.py')
-        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), HANDOFF_SHA256)
-        intake = self.make()
-        original = dict(type(intake).objects.filter(pk=intake.pk).values().get())
-        loader = MigrationLoader(None)
-        recorder = MigrationRecorder(connection)
-        recorder.ensure_schema()
-        recorder.migration_qs.all().delete()
-        # Model sync and synthetic history only. No older migration executes.
-        for key in loader.disk_migrations:
-            recorder.record_applied(*key)
+        from scripts.migration_test_support import migration_database, historical_apps, pending_intake
+        from membership.tests import profile
+        from uuid import uuid4
         parent = ('membership', '0006_association_pending_intake')
-        plan = MigrationExecutor(connection).migration_plan([parent])
-        self.assertEqual([(m.app_label, m.name, backwards) for m, backwards in plan], [(*HANDOFF_MIGRATION, True)])
-        call_command('migrate', *parent, interactive=False, verbosity=1)
-        self.assertEqual(original, dict(type(intake).objects.filter(pk=intake.pk).values().get()))
-        call_command('migrate', *HANDOFF_MIGRATION, interactive=False, verbosity=1)
-        self.assertEqual(original, dict(type(intake).objects.filter(pk=intake.pk).values().get()))
-        application = self.prepare(intake)
-        before = MembershipApplication.objects.filter(pk=application.pk).values().get()
-        with connection.cursor() as cursor:
-            cursor.execute('SHOW CREATE TABLE membership_registrationintake')
-            table_before = cursor.fetchone()[1]
-        with self.assertRaisesMessage(RuntimeError, 'handoff links exist'):
-            call_command('migrate', *parent, interactive=False, verbosity=1)
-        with connection.cursor() as cursor:
-            cursor.execute('SHOW CREATE TABLE membership_registrationintake')
-            self.assertEqual(cursor.fetchone()[1], table_before)
-        self.assertEqual(before, MembershipApplication.objects.filter(pk=application.pk).values().get())
-        self.assertIn(HANDOFF_MIGRATION, recorder.applied_migrations())
-        print('0007 reversed/forward on synthetic pending data; reversal with a link refused BEFORE DDL. Working database untouched.', flush=True)
+        with migration_database([parent]) as database:
+            apps = historical_apps(database, [parent])
+            intake = pending_intake(database, apps)
+            Intake = apps.get_model('membership', 'RegistrationIntake')
+            original = Intake.objects.using(database.alias).values().get(pk=intake.pk)
+            MigrationExecutor(database).migrate([HANDOFF_MIGRATION])
+            self.assertEqual(Intake.objects.using(database.alias).values().get(pk=intake.pk), original)
+            MigrationExecutor(database).migrate([parent])
+            self.assertEqual(Intake.objects.using(database.alias).values().get(pk=intake.pk), original)
+            MigrationExecutor(database).migrate([HANDOFF_MIGRATION])
+            apps = historical_apps(database, [HANDOFF_MIGRATION])
+            Application = apps.get_model('membership', 'MembershipApplication')
+            application = Application.objects.using(database.alias).create(**profile(), submission_key=uuid4())
+            Intake.objects.using(database.alias).filter(pk=intake.pk).update(
+                membership_application_id=application.pk, state='membership_review')
+            def schema_snapshot():
+                with database.cursor() as cursor:
+                    if database.vendor == 'mysql':
+                        cursor.execute('SHOW CREATE TABLE membership_registrationintake')
+                        return cursor.fetchone()[1]
+                    return (database.introspection.get_table_description(cursor, 'membership_registrationintake'),
+                            database.introspection.get_constraints(cursor, 'membership_registrationintake'))
+            before = schema_snapshot()
+            with self.assertRaisesMessage(RuntimeError, 'handoff links exist'):
+                MigrationExecutor(database).migrate([parent])
+            self.assertEqual(schema_snapshot(), before)
+            self.assertIn(HANDOFF_MIGRATION, MigrationRecorder(database).applied_migrations())
+            self.assertEqual(Intake.objects.using(database.alias).get(pk=intake.pk).membership_application_id, application.pk)

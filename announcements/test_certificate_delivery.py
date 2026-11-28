@@ -3,7 +3,8 @@ from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 import json
-from threading import Barrier
+from pathlib import Path
+from threading import Barrier, Event
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 from xml.etree import ElementTree as ET
@@ -72,7 +73,7 @@ class CertificateDeliveryTests(OperationalHelpers, TestCase):
         self.assertEqual(list(ProgramApplication.objects.values()), before)
         self.assertTrue(bytes(job.document).startswith(b'%PDF-'))
         self.assertIn('PDF', job.body)
-        personalized = self.pdf_converter.call_args.args[0][0]
+        personalized = self.pdf_converter.call_args.kwargs['render'](self.pdf_converter.call_args.args[0][0])
         with ZipFile(BytesIO(personalized)) as document, ZipFile(TEMPLATE) as original:
             xml = document.read('word/document.xml')
             ET.fromstring(xml)
@@ -138,6 +139,39 @@ class CertificateDeliveryTests(OperationalHelpers, TestCase):
         self.assertFalse(Email.objects.exists())
         self.assertFalse(Announcement.objects.exists())
         self.assertEqual(callbacks, [])
+
+    @override_settings(CERTIFICATE_OFFICE_EXECUTABLE='synthetic-soffice')
+    def test_busy_converter_rolls_back_publication_and_explicit_retry_succeeds(self):
+        from .certificate_pdf import certificate_pdfs
+        entered, release = Event(), Event()
+
+        def convert(command, **kwargs):
+            if not entered.is_set():
+                entered.set()
+                if not release.wait(10):
+                    raise TimeoutError('Synthetic conversion was not released.')
+            for source in command[command.index('--outdir') + 2:]:
+                Path(source).with_suffix('.pdf').write_bytes(b'%PDF-1.4\nSYNTHETIC\n%%EOF\n')
+
+        with patch('announcements.certificate_pdf.subprocess.run', side_effect=convert), patch(
+                'announcements.certificate_delivery.certificate_pdfs', side_effect=certificate_pdfs):
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                active = pool.submit(certificate_pdfs, [b'other synthetic publication'])
+                try:
+                    self.assertTrue(entered.wait(5))
+                    with self.captureOnCommitCallbacks(execute=True) as callbacks:
+                        with self.assertRaisesMessage(ValidationError, 'already running'):
+                            self.publish()
+                    self.assertFalse(Announcement.objects.exists())
+                    self.assertFalse(Email.objects.exists())
+                    self.assertEqual(callbacks, [])
+                finally:
+                    release.set()
+                active.result(timeout=5)
+            item = self.publish()
+            self.assertEqual(item.status, 'published')
+            self.assertEqual(Email.objects.count(), 1)
+            self.assertTrue(bytes(Email.objects.get().document).startswith(b'%PDF-'))
 
     @patch('announcements.certificate_delivery.send_certificate', return_value='synthetic-provider-id')
     def test_after_commit_send_acceptance_and_repeat_delivery_guard(self, send):

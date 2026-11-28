@@ -1,0 +1,46 @@
+[
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_acknowledgement_is_required_and_removed_upload_fields_cannot_be_submitted",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_already_current_record_can_be_reviewed_without_fake_member_edit",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_permissions_csrf_and_closed_states_are_enforced",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_edit_resolves_report_without_documents_or_scoring_and_then_allows_eligible",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_editor_displays_report_and_current_values_without_evidence_picker",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_eligible_does_not_require_member_edit_or_resolution_of_reported_change",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_invalid_values_and_duplicate_or_stale_forms_do_not_overwrite",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_later_member_change_invalidates_report_review",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_member_edit_and_resolution_roll_back_if_application_audit_fails",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationUpdateTests.test_updating_an_eligible_application_returns_it_for_another_human_decision",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationConcurrencyTests.test_simultaneous_profile_reviews_save_one_update_and_one_resolution",
+    "status": "PASS"
+  }
+]

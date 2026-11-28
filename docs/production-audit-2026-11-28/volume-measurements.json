@@ -1,0 +1,12 @@
+[
+  {
+    "run": "mw75p3v0",
+    "fictional_verified_applicants": 100,
+    "scores": 100,
+    "traces": 400,
+    "capture_calculate_and_persist_seconds": 37.67082179999852,
+    "revalidate_and_render_first_page_seconds": 14.692292600000656,
+    "engineering_ceiling": 2000,
+    "ceiling_capacity_benchmarked": false
+  }
+]

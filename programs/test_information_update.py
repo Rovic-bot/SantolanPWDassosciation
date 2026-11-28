@@ -39,7 +39,11 @@ class ReportedInformationUpdateTests(TestCase):
         self.intake.decided_at = timezone.now()
         self.intake.save(update_fields=['decided_by', 'decided_at'])
         self.member.refresh_from_db()
-        self.program = create_program(policy_authorized_by=self.actor)
+        scoring = override_settings(EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
+        scoring.enable()
+        self.addCleanup(scoring.disable)
+        from .testsupport import current_program
+        self.program = current_program(self.actor)
         verified = workflow.verify(self.program.pk, version=self.program.version,
             control_number=self.member.control_number, full_name=self.member.full_name)[0]
         self.application = submit_application(self.program.pk, grant=verified, data={
@@ -62,7 +66,18 @@ class ReportedInformationUpdateTests(TestCase):
         self.application.refresh_from_db()
         form = information_update_form(application=self.application)
         values = {name: form[name].value() for name in form.fields}
-        return {name: '' if value is None else value for name, value in values.items()} | changes
+        return {name: '' if value is None else value for name, value in values.items()} | {'acknowledgement': True} | changes
+
+    def test_acknowledgement_is_required_and_removed_upload_fields_cannot_be_submitted(self):
+        before = Member.objects.values().get(pk=self.member.pk)
+        for changes in ({'acknowledgement': False}, {'civil_document': 'forged-upload'},
+                        {'photo_2x2': 'forged-upload'}, {'voter_certificate': 'forged-upload'}):
+            with self.subTest(changes=changes):
+                response = self.client.post(self.url, self.update_data(**changes))
+                self.assertEqual(response.status_code, 200)
+                self.assertTrue(response.context['form'].errors)
+                self.assertEqual(Member.objects.values().get(pk=self.member.pk), before)
+                self.assertFalse(self.application.history.filter(action=information.ACTION).exists())
 
     def eligible(self):
         self.application.refresh_from_db()
@@ -124,7 +139,9 @@ class ReportedInformationUpdateTests(TestCase):
         self.assertFalse(DocumentVerification.objects.exists())
 
     def test_already_current_record_can_be_reviewed_without_fake_member_edit(self):
-        self.assertRedirects(self.client.post(self.url, self.update_data()), self.detail_url)
+        response = self.client.post(self.url, self.update_data())
+        self.assertEqual(response.status_code, 302, response.context['form'].errors if response.status_code == 200 else '')
+        self.assertRedirects(response, self.detail_url)
         self.member.refresh_from_db()
         self.application.refresh_from_db()
         self.assertEqual(self.member.version, 0)

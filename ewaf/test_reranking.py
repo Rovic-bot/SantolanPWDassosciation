@@ -37,9 +37,12 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
 
     def deliver(self, run, label='T02'):
         app = self.apps[label]
-        service.record_decision(self.target.pk, user=self.user, run_id=run.pk,
-            application_id=app.pk, expected_revision=0, outcome='SELECTED',
-            reason='Synthetic reviewed selection before confirmed delivery.')
+        with patch.object(OperationalDecision._meta.get_field('recorded_at'), '_get_default', lambda: fixture.NOW):
+            service.record_decision(self.target.pk, user=self.user, run_id=run.pk,
+                application_id=app.pk, expected_revision=0, outcome='SELECTED',
+                reason='Synthetic reviewed selection before confirmed delivery.')
+        from announcements.testsupport import publish_selection
+        publish_selection(self.target, self.user)
         return record_release(app.pk, user=self.user, data=release_data(app))
 
     def second_program(self):
@@ -78,7 +81,8 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         receipt = self.deliver(frozen[0][0])
         before = {'receipts': list(AssistanceRelease.objects.order_by('pk').values()),
             'decisions': list(OperationalDecision.objects.order_by('pk').values()),
-            'reviews': list(DatasetInputReview.objects.order_by('pk').values())}
+            'reviews': list(DatasetInputReview.objects.order_by('pk').values()),
+            'announcements': list(Announcement.objects.order_by('pk').values())}
         for program in (first, second):
             page = self.client.get(reverse('ewaf:operational_workspace', args=[program.pk]))
             self.assertTrue(page.context['ready'], page.context['problems'])
@@ -92,7 +96,7 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         print(browser.stdout)
         for program, apps in ((first, first_apps), (second, second_apps)):
             run = OperationalRun.objects.filter(program=program).first()
-            self.assert_scores(run, 'hm', apps)
+            self.assert_scores(run, 'balanced' if program.pk == first.pk else 'hm', apps)
             self.assertEqual(run.snapshot['eligible'][str(apps['T02'].pk)]['inputs']['PA']['value'], '3')
             self.assertEqual(len(run.calculations), 12)
             manifest = next(row for row in run.snapshot['manifest'] if row['application'] == str(apps['T02'].pk))
@@ -102,7 +106,7 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         self.assertEqual(before['receipts'], list(AssistanceRelease.objects.order_by('pk').values()))
         self.assertEqual(before['decisions'], list(OperationalDecision.objects.order_by('pk').values()))
         self.assertEqual(before['reviews'], list(DatasetInputReview.objects.order_by('pk').values()))
-        self.assertEqual(Announcement.objects.count(), 0)
+        self.assertEqual(before['announcements'], list(Announcement.objects.order_by('pk').values()))
         for old, payload in frozen:
             old.refresh_from_db()
             self.assertEqual(old.payload(), payload)
@@ -121,7 +125,8 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         self.assertContains(page, 'Assistance received')
         plan = generation_preview(first.pk, user=self.user)
         self.assertEqual(len(plan['payload']['rows']), 2)
-        published = generate_results(first.pk, user=self.user, expected=plan['expected'], version=0)
+        published = generate_results(first.pk, user=self.user, expected=plan['expected'], version=plan['version'],
+            selection_reason='Synthetic recipients selected after independent eligibility and ranking review.')
         self.assertEqual(len(published.result_revision.public_payload['rows']), 2)
         self.assertEqual(AssistanceRelease.objects.count(), 29)
 
@@ -131,7 +136,7 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         receipt = self.deliver(original)
         self.approve('ses')
         rerun = self.generate()
-        self.assert_scores(rerun, 'ses', self.apps)
+        self.assert_scores(rerun, 'balanced', self.apps)
         app = self.apps['T02']
         # Raw updates below inject corruption only into the disposable test DB.
         changes = (
@@ -168,6 +173,9 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
         self.deliver(self.generate())
         old = service.context(self.target.pk, user=self.user)
         self.approve('ses')
+        # Another program's weight approval cannot change this published pool.
+        self.assertEqual(old, service.context(self.target.pk, user=self.user))
+        self.generate()
         count = OperationalRun.objects.count()
         with self.assertRaisesMessage(ValidationError, 'sources or predecessor changed'):
             service.generate(self.target.pk, user=self.user, expected=old,
@@ -179,4 +187,4 @@ class RerankingAfterDeliveryTests(StaticLiveServerTestCase):
             with self.assertRaises(ValidationError):
                 self.generate()
         self.assertEqual(OperationalRun.objects.count(), count)
-        self.assert_scores(self.generate(), 'ses', self.apps)
+        self.assert_scores(self.generate(), 'balanced', self.apps)

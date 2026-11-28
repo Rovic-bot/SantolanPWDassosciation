@@ -8,7 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, close_old_connections, connections, transaction
 from django.db.models.deletion import ProtectedError
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from programs.testsupport import close_non_ewaf_program, application_fixture, private_media, verified_photo
@@ -54,14 +54,59 @@ def release_data(application, **overrides):
             'reference': 'TEST-RECEIPT', 'notes': 'Confirmed actual receipt.', 'confirm': True, **overrides}
 
 
+def current_selection(application, user, *, publish=True):
+    review_eligibility(application.pk, user=user, data=review_data(application))
+    program = application.program
+    from uuid import uuid4
+    from ewaf import operational_services as operational
+    from ewaf.operational_models import OperationalDecision
+    run = operational.generate(program.pk, user=user,
+        expected=operational.context(program.pk, user=user), request_key=uuid4(),
+        reason='SYNTHETIC current EWAF ranking before selection.')
+    previous = OperationalDecision.objects.filter(application=application).order_by('-revision').first()
+    operational.record_decision(program.pk, user=user, run_id=run.pk,
+        application_id=application.pk, expected_revision=previous.revision if previous else 0,
+        outcome='SELECTED', reason='SYNTHETIC human selection under the approved ranking.')
+    case = AssistanceCase.objects.get(application=application)
+    if publish:
+        from announcements.testsupport import publish_selection
+        publish_selection(program, user)
+    return case
+
 class AssistanceTests(TestCase):
     def setUp(self):
         private_media(self)
+        scoring = override_settings(EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True,
+                                    EWAF_DATASET_SCORING_ENABLED=True, PDAO_ENFORCEMENT_ENABLED=False,
+                                    PROGRAM_APPLICATION_WORKFLOW_ENABLED=True)
+        scoring.enable()
+        self.addCleanup(scoring.disable)
         seed_statuses()
         self.admin = get_user_model().objects.create_superuser('assistance_admin')
         self.viewer = get_user_model().objects.create_user('assistance_viewer', is_staff=True)
         grant(self.viewer, 'accounts.access_dashboard', *VIEW_PERMISSIONS)
-        self.application = create_application()
+        from programs.testsupport import current_program
+        now = timezone.now()
+        program = current_program(self.admin, registration_opens_at=now - timedelta(days=3),
+                                  registration_closes_at=now - timedelta(days=1))
+        with patch('django.utils.timezone.now', return_value=now - timedelta(days=2)):
+            member = create_member('ASSIST-001')
+            member.household_monthly_income = '1000.00'
+            member.employment_status = 'unemployed'
+            member.household_members = 3
+            member.registration_profile = {'four_ps_member': 'No'}
+            member.save()
+            member.application.decided_by = self.admin
+            member.application.prpwd_verified_by = self.admin
+            member.application.save()
+            from membership.services import record_event
+            record_event(member.application, 'prpwd_verified', 'Synthetic manual verification.', user=self.admin)
+            record_event(member.application, 'approved', 'Synthetic membership approval.', user=self.admin)
+            self.application = create_application(program, member)
+            self.application.source_snapshot = {'member_id': member.pk, 'member_version': member.version,
+                'program_version': program.version, 'membership_verified_at': timezone.now().isoformat(),
+                'policy_authorized_at': program.policy_authorized_at.isoformat()}
+            self.application.save(update_fields=['source_snapshot'])
         self.member = self.application.member
         self.program = self.application.program
         self.client.force_login(self.admin)
@@ -71,13 +116,7 @@ class AssistanceTests(TestCase):
         return review_eligibility(self.application.pk, user=self.admin, data=review_data(self.application, **overrides))
 
     def approve(self, *, publish=True):
-        self.review()
-        close_non_ewaf_program(self.program, self.admin)
-        case = decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
-        if publish:
-            from announcements.testsupport import publish_selection
-            publish_selection(self.program, self.admin)
-        return case
+        return current_selection(self.application, self.admin, publish=publish)
 
     def release(self, **overrides):
         return record_release(self.application.pk, user=self.admin, data=release_data(self.application, **overrides))
@@ -97,14 +136,17 @@ class AssistanceTests(TestCase):
         self.assertEqual(release.approval_snapshot['approved_by_label'], self.admin.username)
         self.void(release)
         self.assertEqual(previous_assistance_count(self.member), 0)
-        self.assertEqual(reserved_slots(self.program), 0)
+        # Voiding delivery preserves the human selection and its occupied slot.
+        self.assertEqual(reserved_slots(self.program), 1)
         self.assertEqual(AssistanceRelease.objects.count(), 1)
         self.approve()
         replacement = self.release(amount='600')
         self.assertNotEqual(release.pk, replacement.pk)
         self.assertEqual(previous_assistance_count(self.member), 1)
         self.assertEqual(AssistanceRelease.objects.count(), 2)
-        self.assertEqual(AssistanceLog.objects.count(), 7)
+        self.assertEqual(AssistanceLog.objects.filter(action='eligibility_reviewed').count(), 2)
+        self.assertEqual(AssistanceLog.objects.filter(action='assistance_released').count(), 2)
+        self.assertEqual(AssistanceLog.objects.filter(action='release_voided').count(), 1)
 
     def test_events_pending_cancelled_and_rejected_never_count(self):
         self.review(eligibility='ineligible', other_requirements='fail')
@@ -150,13 +192,17 @@ class AssistanceTests(TestCase):
             self.review()
         self.assertFalse(AssistanceCase.objects.exists())
 
-    def test_no_release_without_approval_or_after_rejection(self):
-        with self.assertRaisesMessage(ValidationError, 'approve assistance'):
+    def test_no_release_without_selection_or_after_rejection(self):
+        with self.assertRaisesMessage(ValidationError, 'Selected'):
             self.release()
-        self.review()
-        close_non_ewaf_program(self.program)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application, decision='rejected'))
-        with self.assertRaisesMessage(ValidationError, 'approve assistance'):
+        self.approve(publish=False)
+        from ewaf.operational_models import OperationalDecision
+        from ewaf import operational_services as operational
+        selected = OperationalDecision.objects.get(application=self.application)
+        operational.record_decision(self.program.pk, user=self.admin, run_id=selected.run_id,
+            application_id=self.application.pk, expected_revision=selected.revision,
+            outcome='NOT_SELECTED', reason='Synthetic recorded review excludes this applicant.')
+        with self.assertRaisesMessage(ValidationError, 'Selected'):
             self.release()
 
     def test_ineligible_review_pending_do_not_approve(self):
@@ -165,16 +211,20 @@ class AssistanceTests(TestCase):
             with self.assertRaises(ValidationError):
                 decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
 
-    def test_reassessment_clears_approval_and_return_needs_new_assessment(self):
+    def test_reassessment_requires_a_current_ranking_and_new_human_decision(self):
         self.approve()
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application, decision='pending'))
-        self.assertEqual(self.review().decision, 'pending')
-        close_non_ewaf_program(self.program, self.admin)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
-        case = decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application, decision='pending'))
-        self.assertEqual(case.eligibility_id, 'review')
+        from ewaf.operational_models import OperationalDecision
+        original = OperationalDecision.objects.get(application=self.application)
+        before = original.payload()
+        self.assertEqual(self.review(eligibility='review', other_requirements='review').decision, 'pending')
         with self.assertRaises(ValidationError):
-            decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
+            self.release()
+        self.approve()
+        latest = OperationalDecision.objects.filter(application=self.application).order_by('-revision').first()
+        self.assertEqual(latest.previous_id, original.pk)
+        original.refresh_from_db()
+        self.assertEqual(original.payload(), before)
+        self.release()
 
     def test_member_or_program_changes_require_reassessment(self):
         self.review()
@@ -186,7 +236,7 @@ class AssistanceTests(TestCase):
         self.approve()
         self.program.version += 1
         self.program.save()
-        with self.assertRaisesMessage(ValidationError, 'changed after assessment'):
+        with self.assertRaisesMessage(ValidationError, 'ELIGIBILITY_STALE'):
             self.release()
 
     def test_review_form_rejects_member_or_program_changed_since_opening(self):
@@ -216,21 +266,29 @@ class AssistanceTests(TestCase):
         with self.assertRaisesMessage(ValidationError, 'Active membership'):
             self.release()
 
-    def test_slots_limit_approvals_and_cannot_be_lowered_below_reservations(self):
+    def test_slots_limit_human_selections_and_protect_recorded_capacity(self):
+        from programs.testsupport import scoring_application
+        from ewaf.fixed_scoring import bind
+        from ewaf import operational_services as operational
+        from ewaf.operational_models import OperationalRun
         self.program.slots = 2
-        self.program.save()
+        self.program.save(update_fields=['slots'])
+        bind(self.program, user=self.admin, rebind=True, reason='Synthetic capacity fixture.')
+        other = scoring_application(self.program, self.admin, 'ASSIST-002', income='2000.00')
+        third = scoring_application(self.program, self.admin, 'ASSIST-003', income='3000.00')
+        for app in (other, third):
+            review_eligibility(app.pk, user=self.admin, data=review_data(app))
         self.approve(publish=False)
-        other = create_application(self.program, create_member('ASSIST-002'))
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        close_non_ewaf_program(self.program, self.admin)
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other))
-        third = create_application(self.program, create_member('ASSIST-003'))
-        review_eligibility(third.pk, user=self.admin, data=review_data(third))
-        close_non_ewaf_program(self.program, self.admin)
-        with self.assertRaisesMessage(ValidationError, 'All beneficiary slots'):
-            decide_assistance(third.pk, user=self.admin, data=decision_data(third))
-        # Final outcomes protect approved capacity before an edit can be saved.
-        with self.assertRaisesMessage(ValidationError, 'approved details must be preserved'):
+        run = OperationalRun.objects.get(program=self.program)
+        operational.record_decision(self.program.pk, user=self.admin, run_id=run.pk,
+            application_id=other.pk, expected_revision=0, outcome='SELECTED',
+            reason='Synthetic second reviewed beneficiary within capacity.')
+        with self.assertRaisesMessage(ValidationError, 'all approved beneficiary slots are reserved'):
+            operational.record_decision(self.program.pk, user=self.admin, run_id=run.pk,
+                application_id=third.pk, expected_revision=0, outcome='SELECTED',
+                reason='Synthetic over-capacity request must fail.')
+        self.assertEqual(reserved_slots(self.program), 2)
+        with self.assertRaises(ValidationError):
             save_program(pk=self.program.pk, user=self.admin, data=program_data(slots=1))
 
     def test_released_case_prevents_review_decision_and_cancellation(self):
@@ -241,10 +299,18 @@ class AssistanceTests(TestCase):
             with self.assertRaisesMessage(ValidationError, 'has been released'):
                 action()
 
-    def test_approved_application_must_be_returned_before_cancellation(self):
+    def test_closing_selected_application_retains_decision_but_blocks_delivery(self):
         self.approve()
-        with self.assertRaisesMessage(ValidationError, 'Return the assistance approval'):
-            change_application(self.application.pk, user=self.admin, version=decision_data(self.application)['version'], status='CLOSED', notes='Cancel.')
+        from ewaf.operational_models import OperationalDecision
+        decision = OperationalDecision.objects.get(application=self.application)
+        before = decision.payload()
+        change_application(self.application.pk, user=self.admin,
+            version=decision_data(self.application)['version'], status='CLOSED', notes='Synthetic closure.')
+        with self.assertRaises(ValidationError):
+            self.release()
+        decision.refresh_from_db()
+        self.assertEqual(decision.payload(), before)
+        self.assertFalse(AssistanceRelease.objects.exists())
 
     def test_cancelled_application_cannot_be_assessed_or_approved(self):
         self.review()
@@ -307,15 +373,12 @@ class AssistanceTests(TestCase):
             with self.assertRaises(RuntimeError):
                 self.review()
         self.assertFalse(AssistanceCase.objects.exists())
-        self.review()
-        close_non_ewaf_program(self.program, self.admin)
-        with patch('assistance.services.record_log', side_effect=RuntimeError('Audit unavailable')):
+        from ewaf.operational_models import OperationalDecision
+        with patch('programs.models.ProgramLog.objects.create', side_effect=RuntimeError('Audit unavailable')):
             with self.assertRaises(RuntimeError):
-                decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
-        self.assertEqual(AssistanceCase.objects.get().decision, 'pending')
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
-        from announcements.testsupport import publish_selection
-        publish_selection(self.program, self.admin)
+                self.approve()
+        self.assertFalse(OperationalDecision.objects.exists())
+        self.approve()
         with patch('assistance.services.record_log', side_effect=RuntimeError('Audit unavailable')):
             with self.assertRaises(RuntimeError):
                 self.release()
@@ -375,27 +438,29 @@ class AssistanceTests(TestCase):
         self.assertEqual(self.client.post(self.detail, {}).status_code, 405)
         self.assertEqual(self.client.get('/admin/assistance/assistancecase/').status_code, 404)
 
-    def test_html_forms_work_with_messages_and_invalid_posts(self):
-        response = self.client.post(reverse('assistance:review', args=[self.application.pk]), review_data(self.application), follow=True)
-        self.assertContains(response, 'Eligible')
-        self.assertContains(response, 'Eligibility saved.')
-        close_non_ewaf_program(self.program, self.admin)
-        response = self.client.post(reverse('assistance:decision', args=[self.application.pk]), decision_data(self.application), follow=True)
-        self.assertContains(response, 'Selected')
-        from announcements.testsupport import publish_selection
-        publish_selection(self.program, self.admin)
+    def test_current_review_and_receipt_forms_with_invalid_posts(self):
+        from programs.review_forms import ApplicationDecisionForm
+        url = reverse('programs:application_detail', args=[self.program.pk, self.application.pk])
+        data = {**ApplicationDecisionForm(application=self.application).initial,
+            'action': 'review_decision', 'eligibility': 'eligible', 'notes': ''}
+        response = self.client.post(url, data, follow=True)
+        self.assertContains(response, 'Application marked Eligible')
+        self.approve()
         self.application.refresh_from_db()
         self.program.refresh_from_db()
         response = self.client.post(reverse('assistance:release', args=[self.application.pk]), {
-            'version': self.application.version, 'program_version': self.program.version}, follow=True)
+            'version': self.application.version, 'program_version': self.program.version,
+            'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True,
+            'receipt_confirmed': True}, follow=True)
         self.assertContains(response, 'Actual receipt recorded')
         self.assertIn('no-store', response['Cache-Control'])
         release = AssistanceRelease.objects.get()
         self.application.refresh_from_db()
-        response = self.client.post(reverse('assistance:void', args=[self.application.pk, release.pk]), {'version': self.application.version, 'notes': 'Correction', 'confirm': True}, follow=True)
+        response = self.client.post(reverse('assistance:void', args=[self.application.pk, release.pk]),
+            {'version': self.application.version, 'notes': 'Correction', 'confirm': True}, follow=True)
         self.assertContains(response, 'Voided')
-        response = self.client.post(reverse('assistance:review', args=[self.application.pk]), review_data(self.application, notes=''))
-        self.assertContains(response, 'This field is required.')
+        response = self.client.post(url, {'action': 'review_decision'})
+        self.assertTrue(response.context['decision_form'].errors)
 
     def test_member_history_permission_and_private_public_pages(self):
         self.approve()
@@ -460,11 +525,7 @@ class AssistanceTests(TestCase):
 
 class AssistanceConcurrencyTests(TransactionTestCase):
     def setUp(self):
-        private_media(self)
-        seed_statuses()
-        self.admin = get_user_model().objects.create_superuser('concurrent_assistance')
-        self.program = create_program(slots=1)
-        self.application = create_application(self.program, create_member('CONCURRENT-A'))
+        AssistanceTests.setUp(self)
         review_eligibility(self.application.pk, user=self.admin, data=review_data(self.application))
 
     def race(self, callbacks):
@@ -485,18 +546,24 @@ class AssistanceConcurrencyTests(TransactionTestCase):
             return [future.result(timeout=30) for future in futures]
 
     def test_last_slot_can_only_be_approved_once(self):
-        other = create_application(self.program, create_member('CONCURRENT-B'))
+        from programs.testsupport import scoring_application
+        from ewaf import operational_services as operational
+        from uuid import uuid4
+        other = scoring_application(self.program, self.admin, 'CONCURRENT-B', income='2000.00')
         review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        close_non_ewaf_program(self.program, self.admin)
-        first_data, second_data = decision_data(self.application), decision_data(other)
-        results = self.race([lambda: decide_assistance(self.application.pk, user=self.admin, data=first_data),
-                             lambda: decide_assistance(other.pk, user=self.admin, data=second_data)])
+        run = operational.generate(self.program.pk, user=self.admin,
+            expected=operational.context(self.program.pk, user=self.admin), request_key=uuid4(),
+            reason='Synthetic shared ranking before concurrent human decisions.')
+        def select(application):
+            return operational.record_decision(self.program.pk, user=self.admin, run_id=run.pk,
+                application_id=application.pk, expected_revision=0, outcome='SELECTED',
+                reason='Synthetic capacity race.', tie_reason='Synthetic reasoned choice within a boundary tie.')
+        results = self.race([lambda: select(self.application), lambda: select(other)])
         self.assertEqual(sorted(results), [False, True])
         self.assertEqual(reserved_slots(self.program), 1)
 
     def test_simultaneous_release_creates_one_record_and_log(self):
-        close_non_ewaf_program(self.program, self.admin)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
+        current_selection(self.application, self.admin, publish=False)
         from announcements.testsupport import publish_selection
         publish_selection(self.program, self.admin)
         data = release_data(self.application)
@@ -506,8 +573,7 @@ class AssistanceConcurrencyTests(TransactionTestCase):
         self.assertEqual(AssistanceLog.objects.filter(action='assistance_released').count(), 1)
 
     def test_member_deactivation_racing_release_is_serialized(self):
-        close_non_ewaf_program(self.program, self.admin)
-        decide_assistance(self.application.pk, user=self.admin, data=decision_data(self.application))
+        current_selection(self.application, self.admin, publish=False)
         from announcements.testsupport import publish_selection
         publish_selection(self.program, self.admin)
         data = release_data(self.application)

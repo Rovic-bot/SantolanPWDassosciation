@@ -29,7 +29,7 @@ class RevisedWorkflowTests(TestCase):
         self.media = private_media(self)
         self.admin = get_user_model().objects.create_superuser('revised_admin')
         self.member = create_member('REVISED-001')
-        self.program = create_program(eligible_disability_types=[])
+        self.program = create_program(ewaf_applicable=True)
 
     def submit(self, files=None):
         self.program.refresh_from_db()
@@ -63,12 +63,11 @@ class RevisedWorkflowTests(TestCase):
         review_eligibility(app.pk, user=self.admin, data=review_data(app))
         app.refresh_from_db()
         self.assertEqual(app.status, 'ELIGIBLE')
-        with self.assertRaisesMessage(ValidationError, 'period closes'):
+        with self.assertRaisesMessage(ValidationError, 'stage-eight'):
             decide_assistance(app.pk, user=self.admin, data=decision_data(app))
-        close_non_ewaf_program(self.program)
-        decide_assistance(app.pk, user=self.admin, data=decision_data(app))
         app.refresh_from_db()
-        self.assertEqual(app.status, 'SELECTED')
+        self.assertEqual(app.status, 'ELIGIBLE')
+        self.assertEqual(app.assistance_case.decision, 'pending')
 
     def test_calendar_photo_required_and_invalid_files_rejected(self):
         for files in (MultiValueDict(), MultiValueDict({'calendar_photo': [pdf()]}),
@@ -169,10 +168,12 @@ class RevisedWorkflowTests(TestCase):
         self.correct(app, **{f'requirement_{requirement.pk}': 'Corrected information'})
         self.assertTrue(app.assistance_history.filter(action='evidence_invalidated').exists())
 
-    def test_no_universal_disability_gate_and_program_policies_locked(self):
+    def test_unresolved_disability_is_blocked_and_program_policies_locked(self):
         self.member.disability_type = None
         self.member.save()
-        self.submit()
+        with self.assertRaisesMessage(ValidationError, 'classifications need clarification'):
+            self.submit()
+        self.assertFalse(ProgramApplication.objects.exists())
         with self.assertRaises(ValidationError):
             save_program(pk=self.program.pk, user=self.admin, data=program_data(
                 eligible_disability_types=[], selection_method='Changed after seeing applicants.'))
@@ -224,10 +225,10 @@ class RevisedWorkflowTests(TestCase):
         self.assertEqual(app.documents.get().source_document, document)
         self.photo(app)
         review_eligibility(app.pk, user=self.admin, data=review_data(app, **{f'check_{requirement.pk}': 'pass'}))
-        close_non_ewaf_program(self.program)
         verify_document(document.pk, verified=False, **values)
-        with self.assertRaisesMessage(ValidationError, 'renewed verification'):
-            decide_assistance(app.pk, user=self.admin, data=decision_data(app))
+        from assistance.services import require_current_review
+        with transaction.atomic(), self.assertRaisesMessage(ValidationError, 'renewed verification'):
+            require_current_review(app.assistance_case, self.program, self.member)
         self.client.force_login(self.admin)
         self.assertEqual(self.client.get(reverse('members:detail', args=[self.member.pk])).status_code, 200)
 

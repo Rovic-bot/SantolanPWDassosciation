@@ -309,6 +309,13 @@ def submit_application(pk, *, grant, data, files):
             program = Program.objects.select_for_update().get(pk=pk)
             require_open(program)
             from .application_workflow import CONTRACT, enabled, secure_grant
+            from ewaf.intake_integration import source_adapter
+            # The current confirmation contract governs when enabled. The
+            # historical intake signature applies only to its separate workflow.
+            if not enabled() and source_adapter():
+                from program_intake.access import secure_grant as secure_intake_grant
+                if not secure_intake_grant(grant, program):
+                    raise ValidationError('Verification expired or application requirements changed. Verify membership again.')
             if enabled() and not secure_grant(grant, program):
                 raise ValidationError('Verification expired or application requirements changed. Verify membership again.')
             if not grant_valid(grant, program):

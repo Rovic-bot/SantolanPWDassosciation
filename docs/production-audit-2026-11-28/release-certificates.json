@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "source": "release",
+  "documents": 3,
+  "seconds": 24.111,
+  "bytes": [
+    120025,
+    120025,
+    120025
+  ],
+  "engine": "Windows LibreOffice isolated installation",
+  "email_sent": false
+}

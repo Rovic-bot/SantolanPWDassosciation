@@ -51,7 +51,7 @@ def _audit_actions(action, arguments, before, after):
     if action == 'publication':
         requested = arguments['action']
         if requested == 'unpublish' or (requested == 'draft' and before['program'][0]['status'] == 'published'):
-            requested = 'archived'
+            requested = 'draft'
         return ['policy_authorized' if requested == 'authorize_policy' else requested]
     if action == 'requirement':
         return ['requirement_updated' if arguments.get('requirement_id') else 'requirement_added']

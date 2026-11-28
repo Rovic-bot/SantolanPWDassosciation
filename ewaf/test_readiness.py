@@ -65,7 +65,7 @@ class ReadinessTests(EvidenceHelpers, TestCase):
         # reference mutation services; read-side diagnostics must still fail.
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute('UPDATE members_disabilitytype SET is_active = 0 WHERE id = %s', [self.member.disability_type_id])
+            cursor.execute('UPDATE members_disabilitytype SET is_active = %s WHERE id = %s', [False, self.member.disability_type_id])
         self.assertIn('QUALIFICATION_FAILED', self.codes())
 
     def test_profile_value_drift_detected_even_without_version_change(self):

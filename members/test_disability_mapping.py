@@ -71,21 +71,23 @@ class AssociationClassificationTests(TestCase):
         self.assertEqual(event.actor, self.user)
         self.assertEqual(event.changes, {'disability_types': {'before': '[]', 'after': str(result.disability_ids)}})
 
-    def test_current_mobile_verifies_after_repair_while_wrong_identity_still_fails(self):
-        program = create_program(policy_authorized_by=self.user,
+    @override_settings(EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
+    def test_current_identity_verifies_after_repair_while_wrong_identity_still_fails(self):
+        from programs.testsupport import current_program
+        program = current_program(self.user,
             eligible_disability_types=[DisabilityType.objects.get(name='Physical Disability (Orthopedic)').pk])
         identity = {'version': program.version, 'control_number': self.member.control_number,
-            'full_name': self.member.full_name, 'birthdate': self.member.birthdate,
-            'contact_number': '+63 917 123 4567'}
+            'full_name': self.member.full_name}
         self.assertEqual(workflow.verify(program.pk, **identity)[1], 'unable')
         self.repair()
         grant, outcome, _ = workflow.verify(program.pk, **identity)
         self.assertEqual(outcome, 'passed')
         self.assertTrue(workflow.secure_grant(grant, program))
         url = reverse('programs:verify', args=[program.pk])
-        self.assertContains(self.client.get(url), 'Mobile number')
+        self.assertContains(self.client.get(url), 'name="control_number"')
+        self.assertNotContains(self.client.get(url), 'name="contact_number"')
         self.assertRedirects(self.client.post(url, identity), reverse('programs:apply', args=[program.pk]))
-        for change in ({'contact_number': '09179999999'}, {'full_name': 'Wrong person'}):
+        for change in ({'control_number': 'WRONG-MEMBER'}, {'full_name': 'Wrong person'}):
             with self.assertRaisesMessage(ValidationError, workflow.FAILED):
                 workflow.verify(program.pk, **(identity | change))
         self.assertFalse(program.applications.exists())

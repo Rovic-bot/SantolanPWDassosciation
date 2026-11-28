@@ -153,6 +153,8 @@ class AutomaticMemberInputsTests(TransactionTestCase):
         retained = deepcopy(first.payload())
         operational.record_decision(self.program.pk, user=self.user, run_id=first.pk, application_id=a.pk,
             expected_revision=0, outcome='SELECTED', reason='Fixture explicit human selection')
+        from announcements.testsupport import publish_selection
+        publish_selection(self.program, self.user)
         a.refresh_from_db()
         record_release(a.pk, user=self.user, data=release_data(a))
         again = self.generate()

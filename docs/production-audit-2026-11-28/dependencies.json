@@ -1,0 +1,749 @@
+{
+  "before": [
+    {
+      "name": "asgiref",
+      "version": "3.12.1",
+      "advisories": []
+    },
+    {
+      "name": "django",
+      "version": "5.2.17",
+      "advisories": []
+    },
+    {
+      "name": "mysqlclient",
+      "version": "2.3.0",
+      "advisories": []
+    },
+    {
+      "name": "pillow",
+      "version": "12.3.0",
+      "advisories": [
+        {
+          "id": "PYSEC-2026-4327",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4328",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4326",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4339",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4340",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4343",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4334",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4337",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4341",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4330",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4338",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4335",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4336",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4331",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4332",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4329",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4333",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4342",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "PYSEC-2026-4363",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112895",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112400",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112897",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112395",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112404",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112899",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112900",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112893",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112891",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112390",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112401",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112391",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112894",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112406",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112399",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112892",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-112393",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-96638",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-96640",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-96778",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "GHSA-78g4-xqwv-q3g8",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-128067",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        },
+        {
+          "id": "CVE-2026-128066",
+          "fix_versions": [
+            "13.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "qrcode",
+      "version": "8.2",
+      "advisories": []
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "advisories": []
+    },
+    {
+      "name": "sqlparse",
+      "version": "0.6.0",
+      "advisories": []
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.4",
+      "advisories": []
+    },
+    {
+      "name": "reportlab",
+      "version": "5.0.1",
+      "advisories": []
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.2",
+      "advisories": []
+    },
+    {
+      "name": "openpyxl",
+      "version": "3.1.5",
+      "advisories": []
+    },
+    {
+      "name": "et-xmlfile",
+      "version": "2.0.0",
+      "advisories": []
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "advisories": []
+    },
+    {
+      "name": "gunicorn",
+      "version": "26.2.0",
+      "advisories": []
+    },
+    {
+      "name": "whitenoise",
+      "version": "6.12.0",
+      "advisories": []
+    },
+    {
+      "name": "django-storages",
+      "version": "1.14.6",
+      "advisories": []
+    },
+    {
+      "name": "boto3",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "advisories": []
+    },
+    {
+      "name": "psycopg",
+      "version": "3.3.8",
+      "advisories": []
+    }
+  ],
+  "after": [
+    {
+      "name": "asgiref",
+      "version": "3.12.1",
+      "advisories": []
+    },
+    {
+      "name": "django",
+      "version": "5.2.17",
+      "advisories": []
+    },
+    {
+      "name": "mysqlclient",
+      "version": "2.3.0",
+      "advisories": []
+    },
+    {
+      "name": "pillow",
+      "version": "13.0.0",
+      "advisories": []
+    },
+    {
+      "name": "qrcode",
+      "version": "8.2",
+      "advisories": []
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "advisories": []
+    },
+    {
+      "name": "sqlparse",
+      "version": "0.6.0",
+      "advisories": []
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.4",
+      "advisories": []
+    },
+    {
+      "name": "reportlab",
+      "version": "5.0.1",
+      "advisories": []
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.2",
+      "advisories": []
+    },
+    {
+      "name": "openpyxl",
+      "version": "3.1.5",
+      "advisories": []
+    },
+    {
+      "name": "et-xmlfile",
+      "version": "2.0.0",
+      "advisories": []
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "advisories": []
+    },
+    {
+      "name": "gunicorn",
+      "version": "26.2.0",
+      "advisories": []
+    },
+    {
+      "name": "whitenoise",
+      "version": "6.12.0",
+      "advisories": []
+    },
+    {
+      "name": "django-storages",
+      "version": "1.14.6",
+      "advisories": []
+    },
+    {
+      "name": "boto3",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "advisories": []
+    },
+    {
+      "name": "psycopg",
+      "version": "3.3.8",
+      "advisories": []
+    }
+  ],
+  "local_environment": [
+    {
+      "name": "asgiref",
+      "version": "3.12.1",
+      "advisories": []
+    },
+    {
+      "name": "boolean-py",
+      "version": "5.0",
+      "advisories": []
+    },
+    {
+      "name": "boto3",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.111",
+      "advisories": []
+    },
+    {
+      "name": "cachecontrol",
+      "version": "0.15.0",
+      "advisories": []
+    },
+    {
+      "name": "certifi",
+      "version": "2026.11.20",
+      "advisories": []
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "advisories": []
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.3",
+      "advisories": []
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "advisories": []
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "advisories": []
+    },
+    {
+      "name": "cyclonedx-python-lib",
+      "version": "11.12.0",
+      "advisories": []
+    },
+    {
+      "name": "defusedxml",
+      "version": "0.7.1",
+      "advisories": []
+    },
+    {
+      "name": "django",
+      "version": "5.2.17",
+      "advisories": []
+    },
+    {
+      "name": "django-storages",
+      "version": "1.14.6",
+      "advisories": []
+    },
+    {
+      "name": "et-xmlfile",
+      "version": "2.0.0",
+      "advisories": []
+    },
+    {
+      "name": "filelock",
+      "version": "4.3.1",
+      "advisories": []
+    },
+    {
+      "name": "idna",
+      "version": "3.20",
+      "advisories": []
+    },
+    {
+      "name": "jmespath",
+      "version": "1.1.0",
+      "advisories": []
+    },
+    {
+      "name": "license-expression",
+      "version": "30.4.4",
+      "advisories": []
+    },
+    {
+      "name": "markdown-it-py",
+      "version": "4.3.0",
+      "advisories": []
+    },
+    {
+      "name": "mdurl",
+      "version": "0.1.2",
+      "advisories": []
+    },
+    {
+      "name": "msgpack",
+      "version": "1.2.4",
+      "advisories": []
+    },
+    {
+      "name": "mysqlclient",
+      "version": "2.3.0",
+      "advisories": []
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.3",
+      "advisories": []
+    },
+    {
+      "name": "openpyxl",
+      "version": "3.1.5",
+      "advisories": []
+    },
+    {
+      "name": "packageurl-python",
+      "version": "0.17.6",
+      "advisories": []
+    },
+    {
+      "name": "packaging",
+      "version": "26.4",
+      "advisories": []
+    },
+    {
+      "name": "pillow",
+      "version": "13.0.0",
+      "advisories": []
+    },
+    {
+      "name": "pip",
+      "version": "26.3",
+      "advisories": []
+    },
+    {
+      "name": "pip-api",
+      "version": "0.0.35",
+      "advisories": []
+    },
+    {
+      "name": "pip-audit",
+      "version": "2.10.1",
+      "advisories": []
+    },
+    {
+      "name": "pip-requirements-parser",
+      "version": "32.0.1",
+      "advisories": []
+    },
+    {
+      "name": "platformdirs",
+      "version": "4.14.8",
+      "advisories": []
+    },
+    {
+      "name": "psycopg",
+      "version": "3.3.8",
+      "advisories": []
+    },
+    {
+      "name": "psycopg-binary",
+      "version": "3.3.8",
+      "advisories": []
+    },
+    {
+      "name": "py-serializable",
+      "version": "2.2.0",
+      "advisories": []
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12",
+      "advisories": []
+    },
+    {
+      "name": "pygments",
+      "version": "2.21.0",
+      "advisories": []
+    },
+    {
+      "name": "pyparsing",
+      "version": "3.3.3",
+      "advisories": []
+    },
+    {
+      "name": "python-dateutil",
+      "version": "2.9.0.post0",
+      "advisories": []
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3",
+      "advisories": []
+    },
+    {
+      "name": "qrcode",
+      "version": "8.2",
+      "advisories": []
+    },
+    {
+      "name": "reportlab",
+      "version": "5.0.1",
+      "advisories": []
+    },
+    {
+      "name": "requests",
+      "version": "2.34.2",
+      "advisories": []
+    },
+    {
+      "name": "rich",
+      "version": "15.0.0",
+      "advisories": []
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "advisories": []
+    },
+    {
+      "name": "six",
+      "version": "1.17.0",
+      "advisories": []
+    },
+    {
+      "name": "sortedcontainers",
+      "version": "2.4.0",
+      "advisories": []
+    },
+    {
+      "name": "sqlparse",
+      "version": "0.6.0",
+      "advisories": []
+    },
+    {
+      "name": "tomli",
+      "version": "2.5.0",
+      "advisories": []
+    },
+    {
+      "name": "tomli-w",
+      "version": "1.2.0",
+      "advisories": []
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.4",
+      "advisories": []
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0",
+      "advisories": []
+    },
+    {
+      "name": "whitenoise",
+      "version": "6.12.0",
+      "advisories": []
+    }
+  ],
+  "npm": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 1,
+      "dev": 72,
+      "optional": 1,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 72
+    }
+  }
+}

@@ -223,6 +223,29 @@ async function imageFor(page, lines) {
     assert.equal(await page.evaluate(() => window.testActiveWorkers), 0);
     await page.unroute('**/eng.traineddata.gz', failLanguage);
     results.push({failedDownloadReleasesWorker: true});
+    // Emulate the mobile browser's capture contract. The physical operating
+    // system camera still needs a real-device acceptance check.
+    const mobile = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,
+      userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'});
+    await mobile.route('**/*', r => r.request().method() === 'GET' && r.request().url().startsWith(base) ? r.continue() : r.abort());
+    const phone = await mobile.newPage();
+    await phone.goto(base + routes[1]);
+    await phone.evaluate(() => {window.mobileStreamRequests=0;navigator.mediaDevices.getUserMedia=async()=>{window.mobileStreamRequests++;throw new Error('Mobile must use native capture');};});
+    for (const side of ['front','back']) {
+      const chooser = phone.waitForEvent('filechooser');
+      await phone.locator(`[data-ocr-camera=${side}]`).click();
+      const input = (await chooser).element();
+      assert.equal(await input.getAttribute('capture'),'environment');
+      assert.notEqual(await input.getAttribute('data-ocr-photo'),null);
+      assert.equal(await phone.locator('[data-ocr-camera-panel]').isVisible(),false);
+    }
+    const choose = phone.waitForEvent('filechooser');
+    await phone.locator('[data-ocr-upload=front]').click();
+    const fileInput=(await choose).element();
+    assert.equal(await fileInput.getAttribute('capture'),null);
+    assert.equal(await phone.evaluate(()=>window.mobileStreamRequests),0);
+    results.push({mobileNativeCaptureContract:true,separateFilePicker:true,embeddedStreamRequests:0,physicalCameraVerified:false});
+    await mobile.close();
     const noJS = await browser.newContext({javaScriptEnabled: false}); const fallback = await noJS.newPage();
     await fallback.goto(base + routes[0]); assert(await fallback.locator('[name=first_name]').isVisible());
     assert.equal(await fallback.locator('[data-document-ocr]').isVisible(), false); await noJS.close();

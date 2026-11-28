@@ -101,7 +101,10 @@ def review_submitted_application(reference, *, user, data, address=None):
 def complete_eligibility_review(reference, *, user, data, address=None):
     application = ProgramApplication.objects.select_related('program', 'member__application').get(pk=reference)
     retained = None
-    if data.get('eligibility') == 'eligible' and application.program.ewaf_applicable:
+    from ewaf.intake_integration import source_adapter
+    intake = source_adapter()
+    needs_additional = not intake or intake.has_additional_eligibility(application)
+    if data.get('eligibility') == 'eligible' and application.program.ewaf_applicable and needs_additional:
         from ewaf.models import EvidencePolicyRevision, CriterionAssessment
         from ewaf.evidence import VIEW, source_context
         from ewaf.evidence_rules import relevance_findings

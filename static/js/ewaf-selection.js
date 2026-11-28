@@ -9,6 +9,7 @@ WorkspacePage.run(({on, fetch}) => {
   const search = filters.elements.namedItem('q');
   let selected = null, timer, controller, revision = 0, composing = false, generating = false;
   filters.querySelector('[data-filter-submit]').hidden = true;
+  filters.dataset.selectionReady = 'true';
 
   function select(id, announce = true, reveal = false) {
     const panels = [...root.querySelectorAll('[data-program-panel]')];

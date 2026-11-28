@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "checked_utc": "2026-11-28T12:31:33.745582+00:00",
+  "objects": 50,
+  "bytes": 32806281,
+  "source_read_only": true,
+  "inventory_stable": true,
+  "encrypted_objects_and_inventory": true,
+  "local_restoration_hashes_match": true,
+  "plaintext_restores_removed": true,
+  "seconds": 20.16
+}

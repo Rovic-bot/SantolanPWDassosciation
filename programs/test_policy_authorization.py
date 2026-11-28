@@ -70,9 +70,11 @@ class PolicyAuthorizationTests(TestCase):
         self.assertIsNone(self.program.policy_authorized_at)
         self.assertEqual(self.program.version, 0)
 
-    def test_announcement_warning_provides_the_recovery_path(self):
+    def test_recorded_result_preview_cannot_implicitly_authorize_program(self):
         url = reverse('announcements:prepare_results', args=[self.program.pk])
         response = self.client.get(url)
-        self.assertContains(response, self.review_url)
-        self.assertContains(response, 'Authorize program policy')
-        self.assertContains(response, 'Editing program details alone does not authorize the policy')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.program.name)
+        self.program.refresh_from_db()
+        self.assertIsNone(self.program.policy_authorized_at)
+        self.assertFalse(self.program.history.filter(action='policy_authorized').exists())

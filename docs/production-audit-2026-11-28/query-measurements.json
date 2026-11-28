@@ -1,0 +1,14 @@
+{
+  "readiness": {
+    "before": 61,
+    "after": 42,
+    "conditions": "Same verified synthetic applicant and evidence checks; PostgreSQL loopback; no cross-request cache"
+  },
+  "retained_selections": {
+    "programs": 12,
+    "before_queries": 24,
+    "after_queries": 2,
+    "evidence": "programs.test_retained_selection_queries.RetainedSelectionQueryTests.test_batched_witnesses_match_original_projection_with_bounded_queries",
+    "conditions": "Old and new projections compared in one test against identical fixtures"
+  }
+}

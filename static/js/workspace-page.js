@@ -1,6 +1,7 @@
 /* Page-scoped resources for both normal loads and workspace tab navigation. */
 (() => {
   'use strict';
+  document.documentElement.classList.add('has-script');
   let current;
   function createPage() {
     const controller = new AbortController(), disposers = [], hides = [], shows = [], guards = [];

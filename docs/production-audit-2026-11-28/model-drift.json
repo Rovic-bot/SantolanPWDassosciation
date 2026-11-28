@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "database_access": false,
+  "commands": [
+    "check",
+    "makemigrations --check --dry-run"
+  ],
+  "output": "System check identified no issues (0 silenced).\nNo changes detected\n"
+}

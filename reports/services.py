@@ -60,6 +60,8 @@ def report_data(kind, values):
 
 
 def display_date(value):
+    if value is None:
+        return 'Not specified'
     return timezone.localtime(value).strftime('%Y-%m-%d %H:%M') if hasattr(value, 'hour') else value.isoformat()
 
 

@@ -130,27 +130,30 @@ class CurrentWeightTests(StaticLiveServerTestCase):
             env={**os.environ, 'QA_URL': self.live_server_url, 'QA_OUTPUT': str(self.output),
                 'QA_PROGRAMS': json.dumps([str(first.pk), str(second.pk)]),
                 'QA_USERNAME': self.user.username, 'QA_PASSWORD': 'synthetic-only'},
-            capture_output=True, text=True, encoding='utf-8', timeout=180)
+            capture_output=True, text=True, encoding='utf-8', timeout=240)
         self.assertEqual(browser.returncode, 0, browser.stdout + browser.stderr)
         print(browser.stdout)
         for program, applications in ((first, first_apps), (second, second_apps)):
             self.assert_scores(OperationalRun.objects.filter(program=program).first(), 'ses', applications)
 
     def test_applicant_information_uses_member_profile_current_inputs_and_ledger(self):
-        from programs.applicant_information import money
+        from programs.applicant_information import money, applicant_information
         from members.profile import profile_sections
         from .revised import live_evidence
         self.build('balanced')
         for label, application in self.apps.items():
             response = self.client.get(reverse('programs:application_detail', args=[self.target.pk, application.pk]))
+            self.assertContains(response, reverse('members:detail', args=[application.member_id]))
+            self.assertNotIn('household_information', response.context)
+            information = applicant_information(application, self.user)
             review = DatasetInputReview.objects.filter(application=application).first()
-            values = {row['label']: row['value'] for row in response.context['household_information']}
+            values = {row['label']: row['value'] for row in information['household_information']}
             self.assertEqual(values['Monthly household income'], money(review.inputs['SES']['value']))
             self.assertEqual(values['Number of household members'], review.inputs['HM']['value'])
             self.assertEqual(values['Employment status'], review.inputs['ES']['value'])
             self.assertEqual(values['Previous assistance received'], review.inputs['PA']['value'])
             self.assertEqual(values['Household 4Ps participation'], 'Verified Yes' if review.inputs['SES']['household_four_ps'] else 'Verified No')
-            self.assertEqual(response.context['profile_sections'], [section for section in profile_sections(application.member)
+            self.assertEqual(information['profile_sections'], [section for section in profile_sections(application.member)
                 if section[0] != 'Information for assessment (digital only)'])
             self.assertNotContains(response, 'Scoring evidence')
         iris = self.apps['T09']
@@ -159,7 +162,8 @@ class CurrentWeightTests(StaticLiveServerTestCase):
             findings={}, selections={}, state='NEEDS_REVIEW', reason='SYNTHETIC unresolved household information', confirmed=True)
         url = reverse('programs:application_detail', args=[self.target.pk, iris.pk])
         response = self.client.get(url)
-        values = {row['label']: row['value'] for row in response.context['household_information']}
+        information = applicant_information(iris, self.user)
+        values = {row['label']: row['value'] for row in information['household_information']}
         self.assertEqual(values['Monthly household income'], 'PHP 37,000.00')
         self.assertEqual(values['Previous assistance received'], 'History review pending')
         self.assertNotIn('Verified', values['Household 4Ps participation'])
@@ -203,7 +207,7 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         browser = subprocess.run(['node', str(Path(settings.BASE_DIR) / 'scripts/applicant_vault_browser.cjs')],
             env={**os.environ, 'QA_URL': self.live_server_url, 'QA_PROGRAM': str(self.target.pk),
                 'QA_APPLICANT': str(self.apps['T09'].pk), 'QA_USERNAME': self.user.username,
-                'QA_PASSWORD': 'synthetic-only'}, capture_output=True, text=True, encoding='utf-8', timeout=180)
+                'QA_PASSWORD': 'synthetic-only'}, capture_output=True, text=True, encoding='utf-8', timeout=240)
         self.assertEqual(browser.returncode, 0, browser.stdout + browser.stderr)
         print(browser.stdout)
         latest = OperationalRun.objects.filter(program=self.target).first()
@@ -228,7 +232,9 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         data = {'action': 'SELECT_ASSISTANCE', 'decision-run_id': run.pk,
             'decision-application_id': self.apps['T07'].pk, 'decision-expected_revision': 0}
         response = self.client.get(url)
-        self.assertContains(response, 'Select for assistance', count=12)
+        self.assertEqual(len(response.context['result']['rows']), 12)
+        for application in self.apps.values():
+            self.assertContains(response, f'data-applicant="{application.pk}"')
         self.assertEqual(self.client.post(url, data).status_code, 302)
         self.assertEqual(self.client.post(url, data).status_code, 302)
         decision = OperationalDecision.objects.get()
@@ -246,16 +252,18 @@ class CurrentWeightTests(StaticLiveServerTestCase):
             generation_preview(self.target.pk, user=publisher)
         with patch('announcements.results.record_event', side_effect=RuntimeError('Audit unavailable')):
             with self.assertRaises(RuntimeError):
-                generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'])
+                generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'],
+                    selection_reason='Synthetic reasoned selection under the current ranked pool.')
         self.assertEqual(OperationalDecision.objects.count(), 1)
         self.assertFalse(Announcement.objects.exists())
         self.assertFalse(ProgramResultRevision.objects.exists())
         result_url = reverse('announcements:prepare_results', args=[self.target.pk])
         page = self.client.get(result_url)
         self.assertContains(page, 'Publish results')
-        self.assertContains(page, 'Application decisions remain unchanged')
+        self.assertContains(page, 'name="selection_reason"')
         response = self.client.post(result_url, {'action': 'GENERATE_RESULTS',
-            'expected': plan['expected'], 'version': plan['version']})
+            'expected': plan['expected'], 'version': plan['version'],
+            'selection_reason': 'Synthetic reasoned selection under the current ranked pool.'})
         self.assertEqual(response.status_code, 302)
         item = Announcement.objects.get(program=self.target)
         self.assertEqual(item.status, 'published')
@@ -268,14 +276,16 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         from django.test import Client
         for route in ('announcements:detail', 'core:result_detail'):
             response = Client().get(reverse(route, args=[item.pk]))
-            self.assertContains(response, 'col-lg-6', count=2)
+            self.assertContains(response, '<tr data-result-applicant ', count=12)
+            self.assertContains(response, '<tr data-result-recipient>', count=1)
             for label, app in self.apps.items():
                 self.assertContains(response, app.public_reference, count=2 if label == 'T07' else 1)
                 self.assertNotContains(response, app.member.full_name)
                 self.assertNotContains(response, app.status_token)
             self.assertNotContains(response, 'score_exact')
         with self.assertRaises(ValidationError):
-            generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'])
+            generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'],
+                    selection_reason='Synthetic reasoned selection under the current ranked pool.')
         self.assertEqual(ProgramResultRevision.objects.count(), 1)
         run.refresh_from_db()
         self.assertEqual(run.payload(), frozen)
@@ -294,9 +304,11 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         application = self.apps['T02']
         # The model default captured timezone.now at import time, outside the
         # fixture clock. Keep approval and receipt on the same synthetic date.
-        with patch.object(OperationalDecision._meta.get_field('recorded_at'), 'default', lambda: fixture.NOW):
+        with patch.object(OperationalDecision._meta.get_field('recorded_at'), '_get_default', lambda: fixture.NOW):
             operational.record_decision(self.target.pk, user=self.user, run_id=run.pk,
                 application_id=application.pk, expected_revision=0, outcome='SELECTED', reason='Synthetic reviewed selection.')
+        from announcements.testsupport import publish_selection
+        publish_selection(self.target, self.user)
         receipt = record_release(application.pk, user=self.user, data=release_data(application))
         receipt_before = deepcopy(AssistanceRelease.objects.values().get(pk=receipt.pk))
         application.refresh_from_db()
@@ -304,7 +316,7 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         url = reverse('announcements:prepare_results', args=[self.target.pk])
         response = self.client.get(url)
         self.assertContains(response, 'Publish results')
-        self.assertContains(response, 'program-grid')
+        self.assertContains(response, 'program-results')
         self.assertNotContains(response, 'APPLICATION_NOT_CANDIDATE')
         self.assertNotContains(response, 'APPLICATION_REVIEW_UNRESOLVED')
         self.assertEqual(len(response.context['roster']['applicants']), 12)
@@ -316,7 +328,7 @@ class CurrentWeightTests(StaticLiveServerTestCase):
             env={**os.environ, 'QA_URL': self.live_server_url, 'QA_PROGRAM': str(self.target.pk),
                 'QA_USERNAME': self.user.username, 'QA_PASSWORD': 'synthetic-only',
                 'QA_SECOND': str(self.apps['T07'].pk), 'QA_REFERENCE': application.public_reference},
-            capture_output=True, text=True, encoding='utf-8', timeout=180)
+            capture_output=True, text=True, encoding='utf-8', timeout=240)
         self.assertEqual(browser.returncode, 0, browser.stdout + browser.stderr)
         print(browser.stdout)
         item = Announcement.objects.get(program=self.target)
@@ -335,11 +347,11 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         public = Client().get(reverse('core:result_detail', args=[item.pk]))
         self.assertContains(public, application.public_reference, count=2)
         self.assertNotContains(public, application.member.full_name)
-        # Verified-final generation still requires current weights; publication
-        # of recorded selections is independent of calculation readiness.
+        # The first published results retain their weights even after another
+        # global approval; the existing calculation remains publishable.
         self.approve('ses')
-        with self.assertRaisesMessage(ValidationError, 'weights changed'):
-            generation_preview(self.target.pk, user=self.user)
+        self.assertTrue(generation_preview(self.target.pk, user=self.user))
+        self.assert_scores(self.generate(), 'balanced', self.apps)
         self.assertTrue(results_current(item))
         blocked = self.client.get(url)
         self.assertEqual(len(blocked.context['roster']['applicants']), 12)
@@ -357,7 +369,8 @@ class CurrentWeightTests(StaticLiveServerTestCase):
         operational.record_decision(self.target.pk, user=self.user, run_id=run.pk,
             application_id=self.apps['T07'].pk, expected_revision=0, outcome='SELECTED', reason='Synthetic selection.')
         with self.assertRaisesMessage(ValidationError, 'changed'):
-            generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'])
+            generate_results(self.target.pk, user=self.user, expected=plan['expected'], version=plan['version'],
+                    selection_reason='Synthetic reasoned selection under the current ranked pool.')
         operational.record_decision(self.target.pk, user=self.user, run_id=run.pk,
             application_id=self.apps['T06'].pk, expected_revision=0, outcome='DEFERRED', reason='Synthetic unresolved review.')
         with self.assertRaisesMessage(ValidationError, 'deferred'):

@@ -109,3 +109,6 @@
   .selection-slots { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) { .selection-row { transition: none; } }
+
+/* Match the automatic filter layout before initialization; retain error fallback. */
+.has-script [data-selection-filters]:not([data-selection-ready]) [data-filter-submit] { display:none; }

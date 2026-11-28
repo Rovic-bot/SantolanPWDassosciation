@@ -102,11 +102,13 @@ class ProgramSourceTests(SourceHelpers, TermsHelpers, TransactionTestCase):
         self.assert_transition(3)
 
     def test_publication_and_withdrawal(self):
-        for action in ('published', 'draft'):
+        for action in ('published', 'draft', 'published', 'unpublish'):
             self.program.refresh_from_db()
             programs.change_publication(self.program.pk, user=self.officer, version=self.program.version,
                 action=action, notes='Fictional status review', source_expected=self.expected())
-        self.assert_transition(3)
+            self.program.refresh_from_db()
+            self.assertEqual(self.program.status, 'draft' if action == 'unpublish' else action)
+        self.assert_transition(5)
 
     def test_protected_unchanged_save_has_no_invalidation(self):
         programs.change_publication(self.program.pk, user=self.officer, version=self.program.version,
@@ -137,7 +139,7 @@ class ProgramSourceTests(SourceHelpers, TermsHelpers, TransactionTestCase):
 
     def test_failed_business_validation_preserves_generation(self):
         with self.assertRaises(ValidationError):
-            self.save(name='')
+            self.save(registration_closes_at=self.program.registration_opens_at - timedelta(hours=1))
         self.assert_transition(1)
 
     def test_stale_generation_denies_even_when_business_version_is_current(self):
@@ -218,8 +220,8 @@ class ProgramSourceTests(SourceHelpers, TermsHelpers, TransactionTestCase):
         with CaptureQueriesContext(connection) as queries:
             self.capture(source_expected=self.expected())
         locks = [q['sql'] for q in queries if 'FOR UPDATE' in q['sql']]
-        control = next(i for i,q in enumerate(locks) if '`programs_programapprovalcontrol`' in q)
-        state = max(i for i,q in enumerate(locks[:control]) if '`ewaf_programsourcestate`' in q)
+        control = next(i for i,q in enumerate(locks) if connection.ops.quote_name('programs_programapprovalcontrol') in q)
+        state = max(i for i,q in enumerate(locks[:control]) if connection.ops.quote_name('ewaf_programsourcestate') in q)
         self.assertGreater(control, state)
         self.assert_transition(2)
 
@@ -336,9 +338,9 @@ class EwafSourceTests(SourceHelpers, DurableHelpers, TransactionTestCase):
         locks = [q['sql'] for q in queries if 'FOR UPDATE' in q['sql']]
         for table, sql in zip(('programs_programtermslock', 'ewaf_authoritygeneration',
                               'programs_program', 'ewaf_programsourcestate'), locks):
-            self.assertIn('`' + table + '`', sql)
-        application = next(i for i,q in enumerate(locks) if '`programs_programapplication`' in q)
-        member = next(i for i,q in enumerate(locks) if '`members_member`' in q)
+            self.assertIn(connection.ops.quote_name(table), sql)
+        application = next(i for i,q in enumerate(locks) if connection.ops.quote_name('programs_programapplication') in q)
+        member = next(i for i,q in enumerate(locks) if connection.ops.quote_name('members_member') in q)
         self.assertGreater(application, 3)
         self.assertGreater(member, application)
 

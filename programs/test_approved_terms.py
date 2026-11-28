@@ -44,7 +44,7 @@ from .testsupport import private_media
 class TermsHelpers:
     def setup_terms(self, *, draft=False):
         self.officer = get_user_model().objects.create_superuser('synthetic_terms_officer')
-        self.program = create_program(budget=Decimal('98765.43'), amount=Decimal('123.45'))
+        self.program = create_program(ewaf_applicable=draft, budget=Decimal('98765.43'), amount=Decimal('123.45'))
         if draft:
             Program.objects.filter(pk=self.program.pk).update(status='draft', published_at=None, policy_authorized_at=None)
             self.program.refresh_from_db()
@@ -201,7 +201,7 @@ class ApprovedTermsTests(TermsHelpers, TestCase):
         for field, value in changes.items():
             with self.subTest(field=field):
                 form = ProgramForm(self.edit_data(**{field: value}), instance=Program.objects.get(pk=self.program.pk))
-                if field in ('amount', 'benefit'):
+                if field in ('amount', 'benefit', 'ewaf_applicable'):
                     self.assertTrue(form.is_valid(), form.errors)
                     save_program(pk=self.program.pk, user=self.officer, data=self.edit_data(**{field: value}))
                     self.assertEqual(Program.objects.filter(pk=self.program.pk).values().get(), before)
@@ -242,7 +242,7 @@ class ApprovedTermsTests(TermsHelpers, TestCase):
     def test_event_link_schedule_and_description_edits_are_blocked_but_withdrawal_remains(self):
         event = create_event(application_program=self.program)
         for changes in ({'starts_at': event.starts_at + timedelta(minutes=1)}, {'description': 'Changed terms'},
-                        {'application_program': ''}, {'capacity': 50}):
+                        {'location': 'Changed protected venue'}):
             with self.subTest(changes=changes):
                 data = event_data(application_program=self.program.pk, **{k: v for k, v in changes.items() if k != 'application_program'})
                 data.update(changes)
@@ -254,9 +254,12 @@ class ApprovedTermsTests(TermsHelpers, TestCase):
 
     def test_adding_event_link_to_protected_program_is_rejected(self):
         data = event_data(application_program=self.program.pk)
-        self.assertFalse(EventForm(data, user=self.officer).is_valid())
-        with self.assertRaises(ValidationError):
-            save_event(user=self.officer, data=data, files=MultiValueDict())
+        form = EventForm(data, user=self.officer)
+        self.assertNotIn('application_program', form.fields)
+        self.assertTrue(form.is_valid(), form.errors)
+        event = save_event(user=self.officer, data=data, files=MultiValueDict())
+        self.assertIsNone(event.application_program_id)
+        self.assertFalse(Event.objects.filter(application_program=self.program).exists())
 
     def test_each_permission_and_forged_http_requests_csrf_uploads(self):
         revision, approval = self.capture(), self.record()
@@ -429,11 +432,11 @@ class ApprovedTermsTests(TermsHelpers, TestCase):
         private_media(self)
         seed_statuses()
         app = create_application(program=self.program)
-        review_eligibility(app.pk, user=self.officer, data=review_data(app))
+        from assistance.testsupport import historical_receipt
         close_non_ewaf_program(self.program)
-        decide_assistance(app.pk, user=self.officer, data=decision_data(app))
-        release = record_release(app.pk, user=self.officer, data=release_data(app))
-        announcement = prepare_results(self.program.pk, user=self.officer, version=0, reason='Synthetic published result')
+        release = historical_receipt(app, self.officer)
+        announcement = prepare_results(self.program.pk, user=self.officer, version=0, reason='Synthetic published result',
+            selection_reason='Synthetic retained recipients met the historical program requirements.')
         announcement = publish_results(announcement.pk, user=self.officer, version=announcement.version, action='published')
         preserved = [(model, list(model.objects.values())) for model in
                      (Program, ProgramApplication, AssistanceCase, AssistanceRelease, Announcement, ProgramResultRevision)]
@@ -615,18 +618,10 @@ class ApprovedTermsMigrationTests(TermsHelpers, TransactionTestCase):
         self.record()
         before = Program.objects.filter(pk=self.program.pk).values().get()
         approvals = list(PDAOApprovalRecord.objects.values())
-        executor = MigrationExecutor(connection)
-        leaves = executor.loader.graph.leaf_nodes()
-        try:
-            executor.migrate([('programs', '0004_pdaoapprovalrecord')])
-            executor = MigrationExecutor(connection)
-            migration = executor.loader.get_migration('programs', '0005_approved_terms')
-            self.assertFalse(any(op.__class__.__name__ in ('RunPython', 'RunSQL', 'RemoveField', 'AlterField', 'DeleteModel') for op in migration.operations))
-            executor.migrate(leaves)
-            self.assertEqual(Program.objects.filter(pk=self.program.pk).values().get(), before)
-            self.assertEqual(list(PDAOApprovalRecord.objects.values()), approvals)
-            self.assertFalse(ProgramTermsRevision.objects.exists())
-            self.assertFalse(ProgramApprovalBinding.objects.exists())
-            self.assertFalse(ProgramApprovalControl.objects.exists())
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
+        from scripts.migration_test_support import assert_additive_upgrade
+        migration = MigrationExecutor(connection).loader.get_migration('programs', '0005_approved_terms')
+        self.assertFalse(any(type(op).__name__ in ('RunPython', 'RunSQL', 'RemoveField', 'AlterField', 'DeleteModel') for op in migration.operations))
+        assert_additive_upgrade(self, [('programs', '0004_pdaoapprovalrecord')], [('programs', '0005_approved_terms')],
+            ['programs.ProgramTermsRevision', 'programs.ProgramApprovalBinding', 'programs.ProgramApprovalControl'], reversible=True)
+        self.assertEqual(Program.objects.filter(pk=self.program.pk).values().get(), before)
+        self.assertEqual(list(PDAOApprovalRecord.objects.values()), approvals)

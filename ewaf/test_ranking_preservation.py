@@ -36,7 +36,7 @@ class RankingPreservationTests(ScoringHelpers, ConfigurationHelpers, EvidenceHel
 
     def test_no_schema_models_or_permissions_added(self):
         leaves = MigrationLoader(connection).graph.leaf_nodes('ewaf')
-        self.assertEqual(leaves, [('ewaf', '0008_operational_four')])
+        self.assertEqual(leaves, [('ewaf', '0012_dataset_policy_integration')])
         from django.contrib.auth.models import Permission
         self.assertFalse(Permission.objects.filter(codename__icontains='g16').exists())
         self.assertFalse(any(model.__name__.startswith('SyntheticRanking') for model in apps.get_models()))

@@ -1,0 +1,55 @@
+{
+  "baseline_commit": "d77159913f822487f916b332ab9d04c26da744ea",
+  "url": "https://santolan-pwd-system.onrender.com",
+  "framework": "Django 5.2.17",
+  "languages": [
+    "Python",
+    "JavaScript",
+    "HTML",
+    "CSS"
+  ],
+  "production_runtime": "Docker Python 3.14.5 Debian Bookworm",
+  "production_database": "Supabase PostgreSQL 17.11; private santolan schema",
+  "local_test_database": "Disposable loopback PostgreSQL 18; no production credentials",
+  "roles": [
+    "public applicant without an account",
+    "staff with granular permissions",
+    "technical superuser"
+  ],
+  "modules": [
+    "accounts",
+    "membership and PDAO",
+    "members",
+    "documents",
+    "programs",
+    "EWAF",
+    "assistance and referrals",
+    "announcements and certificates",
+    "events",
+    "analytics",
+    "reports",
+    "content and audit"
+  ],
+  "critical_workflows": [
+    "public information and private boundaries",
+    "online and onsite Association/PDAO applications with files",
+    "staff review, PRPWD checking and membership approval",
+    "PDAO forwarding, actual ID collection and consent-based membership transfer",
+    "member verification and program application with manual evidence review",
+    "eligibility, versioned EWAF calculation, human selection and publication",
+    "actual assistance records and reversals",
+    "certificate generation and controlled email retry",
+    "events, reports and content publication"
+  ],
+  "production_tests": "Read-only navigation and metadata; no submissions or emails",
+  "limits": [
+    "User chose to continue without local Docker after daemon startup approval rejection",
+    "Live browser sweep stopped at Cloudflare challenge; wide UI testing moved to isolated copy",
+    "Physical phone and screen-reader user acceptance unavailable"
+  ],
+  "standards": [
+    "ISO/IEC 25010:2023 engineering assessment",
+    "WCAG 2.2 A/AA criteria with axe and keyboard checks"
+  ],
+  "original_working_tree_preserved": true
+}

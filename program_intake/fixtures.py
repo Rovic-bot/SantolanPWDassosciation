@@ -21,9 +21,38 @@ def review_application(application, actor, outcome='eligible'):
     return complete_eligibility_review(application.pk, user=actor, data=data)
 
 
+def retained_program_with_requirements(*, user, data, requirements):
+    """Retained source-contract fixture; new operational programs use fixed EWAF.
+
+    This optional lab exercises its historical SI/ES/PA/ND source contract. It
+    must not create a current fixed-scoring program and replace its approval.
+    Every submission, source review, calculation and release still uses services.
+    """
+    from django.conf import settings
+    if getattr(settings, 'MAIN_TESTING', False):
+        from main_testing.seed import require_environment
+        require_environment()
+    else:
+        from scripts.durable_test_runner import require_disposable
+        require_disposable()
+    from programs.models import Program, ProgramRequirement
+    values = dict(data)
+    types = values.pop('eligible_disability_types')
+    values.pop('notes', None)
+    program = Program.objects.create(**values, created_by=user, updated_by=user,
+        status='published', published_at=timezone.now(),
+        policy_authorized_at=timezone.now(), policy_authorized_by=user)
+    program.eligible_disability_types.set(types)
+    for requirement in requirements:
+        ProgramRequirement.objects.create(program=program, **requirement)
+    return program
+
+
 def create_program(actor, name='Public Application Lab', *, closes=None, restrictions=(), slots=3, ewaf=True):
+    from members.models import DisabilityType
+    restrictions = restrictions or [DisabilityType.objects.get_or_create(name='Visual Disability')[0].pk]
     now = timezone.now()
-    program = save_program_with_requirements(user=actor, data={
+    program = retained_program_with_requirements(user=actor, data={
         'name': name, 'description': 'Fictional program for secure public applications and verified source collection. PDAO approval here is simulated.',
         'assistance_type': 'Food & Nutrition', 'registration_opens_at': now - timedelta(days=1),
         'registration_closes_at': closes or now + timedelta(days=30), 'starts_at': now + timedelta(days=35),
@@ -36,7 +65,6 @@ def create_program(actor, name='Public Application Lab', *, closes=None, restric
             {'label': 'Additional supporting evidence (optional)', 'kind': 'document', 'instructions': 'Supply only if relevant.', 'is_required': False}])
     approve_terms(program, actor)
     program.refresh_from_db()
-    change_publication(program.pk, user=actor, version=program.version, action='published', notes=TEST)
     program.refresh_from_db()
     return program
 

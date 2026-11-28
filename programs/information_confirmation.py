@@ -159,7 +159,7 @@ def update_reported_information(reference, *, user, data, address=None):
     if values['expected'] != form.initial['expected'] or values['version'] != member.version:
         raise ValidationError('The application or member information changed. Reload before saving.')
     notes = values['notes'].strip() or f'Reviewed reported changes and current member information for {application.public_reference}.'
-    changed = set(form.changed_data) - {'expected', 'notes', 'version', 'member_profile_format'}
+    changed = set(form.changed_data) - {'expected', 'notes', 'version', 'member_profile_format', 'acknowledgement'}
     member_event = None
     if changed:
         submitted = data.copy()

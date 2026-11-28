@@ -106,7 +106,8 @@ class MandatoryEWAFTests(TestCase):
             decided_at=timezone.now(), decided_by=self.admin)
         application.status = 'SELECTED'
         application.save(update_fields=['status'])
-        item = prepare_results(program.pk, user=self.admin, version=0, reason='Synthetic earlier publication.', recorded=True)
+        item = prepare_results(program.pk, user=self.admin, version=0, reason='Synthetic earlier publication.', recorded=True,
+            selection_reason='Synthetic retained selection meets the recorded criteria.')
         publish_results(item.pk, user=self.admin, version=item.version, action='published')
         receipt = record_release(application.pk, user=self.admin, data=release_data(application))
         return program, application, item, receipt
@@ -186,7 +187,8 @@ class MandatoryEWAFTests(TestCase):
                 program, application, item, receipt = self.legacy_outcome()
                 item.refresh_from_db()
                 revision = prepare_results(program.pk, user=self.admin, version=item.version,
-                    reason='Synthetic original final publication.', **{mode: True})
+                    reason='Synthetic original final publication.',
+                    selection_reason='Synthetic retained selection meets the recorded criteria.', **{mode: True})
                 publish_results(revision.pk, user=self.admin, version=revision.version, action='published')
                 revision.refresh_from_db()
                 before = revision.result_revision.public_payload

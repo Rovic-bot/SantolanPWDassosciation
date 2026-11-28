@@ -96,7 +96,7 @@ class DocumentRankingTests(TransactionTestCase):
     def accept(self, app, proof, *, low=False, **changes):
         findings = {**evidence.periods(self.configuration), 'income_monthly': ['5000' if low else '20000'] * 3,
             'si_documents': {'four_ps': low, 'indigency': low},
-            'employment': 'Unemployed' if low else 'Full-Time Worker', 'household_members': 6 if low else 2,
+            'employment': 'Unemployed' if low else 'Employed', 'household_members': 6 if low else 2,
             'history_complete': True, 'assessment_finding': 'Synthetic reviewed sources for every criterion'}
         findings.update(changes)
         return evidence.record(app.pk, user=self.user, expected=evidence.review_token(app, self.configuration),
@@ -239,27 +239,24 @@ class DocumentRankingTests(TransactionTestCase):
         self.assertEqual(page.context['ready_count'], 2)
         self.assertEqual(page.context['pending_count'], 1)
         accepted = self.accept(c, cr, income_monthly=['12500'] * 3, household_members=4,
-            employment='Part-Time Worker', si_documents={'four_ps': False, 'indigency': True})
+            employment='Self-Employed', si_documents={'four_ps': False, 'indigency': True})
         self.assertEqual(accepted.inputs['SI']['value'], '2.5')
         page = self.client.get(reverse('ewaf:operational_workspace', args=[self.program.pk]))
-        self.assertTrue(page.context['ready'])
         self.assertEqual(page.context['ready_count'], 3)
-        data = page.context['form'].initial | {'action': 'GENERATE', 'reason': 'Synthetic HTTP full-pool generation'}
-        import json
-        data['expected'] = json.dumps(data['expected'])
-        self.assertEqual(self.client.post(reverse('ewaf:operational_workspace', args=[self.program.pk]), data).status_code, 302)
-        run = OperationalRun.objects.get()
+        # Retained document policies replay through their explicit service;
+        # today's ranking page uses the current automatic-input workflow.
+        run = self.generate()
         run.clean()
         self.assertNotIn('accepted_values', run.snapshot['manifest'][0])
         self.assertEqual([Fraction(run.calculations[str(app.pk)]['score_exact']) * 100 for app in (a, b, c)],
-                         [Fraction(100), Fraction(0), Fraction(6379, 120)])
+                         [Fraction(100), Fraction(0), Fraction(1292, 25)])
         self.assertEqual([run.calculations[str(app.pk)]['comparison']['business_rank'] for app in (a, b, c)], [1, 3, 2])
         self.assertFalse(OperationalDecision.objects.exists())
         response = self.client.get(reverse('ewaf:operational_breakdown', args=[self.program.pk]))
         self.assertContains(response, '100.00')
         self.assertNotContains(response, 'calculation preview')
 
-    def test_si_unanswered_is_blocked_and_accepted_findings_are_prefilled(self):
+    def test_si_unanswered_is_blocked_and_accepted_findings_survive_retired_page(self):
         self.publish()
         app, review = self.applicant('DOC-SI-REVIEW')
         with self.assertRaisesMessage(ValidationError, 'Review both'):
@@ -267,11 +264,14 @@ class DocumentRankingTests(TransactionTestCase):
         accepted = self.accept(app, review, si_documents={'four_ps': True, 'indigency': False})
         accepted.clean()
         self.assertEqual(accepted.inputs['SI']['value'], '2.5')
-        response = self.client.get(reverse('ewaf:dataset_inputs', args=[app.pk]))
-        self.assertEqual(response.context['form']['si_four_ps'].value(), 'yes')
-        self.assertEqual(response.context['form']['si_indigency'].value(), 'no')
-        self.assertNotContains(response, 'name="si_food"')
-        self.assertContains(response, 'Certificate of Indigency')
+        retained = deepcopy(accepted.payload())
+        self.assertEqual(accepted.findings['si_documents'], {'four_ps': True, 'indigency': False})
+        url = reverse('ewaf:dataset_inputs', args=[app.pk])
+        self.assertRedirects(self.client.get(url),
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#readiness')
+        self.assertEqual(self.client.post(url, {}).status_code, 405)
+        accepted.refresh_from_db()
+        self.assertEqual(accepted.payload(), retained)
 
     def test_zero_hm_weight_is_retained_exactly_without_reweighting(self):
         weight = vault.approve_percentages(user=self.user, expected=vault.token(),
@@ -289,15 +289,19 @@ class DocumentRankingTests(TransactionTestCase):
             if contracts.applicable(self.content, key):
                 data[key] = entry['value']
                 data['specified_' + key] = 'on'
-        url = reverse('ewaf:dataset_policies')
-        response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        draft = SharedDatasetPolicy.objects.get()
+        from .revised.live_forms import PolicyDraftForm
+        data['calculation_method'] = self.content['method']
+        form = PolicyDraftForm(data, content=self.content)
+        self.assertTrue(form.is_valid(), form.errors)
+        draft = self.draft(form.policy_content())
         self.assertEqual(draft.content['choices']['si_rubric']['value'], si.METHOD)
         self.assertEqual(contracts.findings(draft.content, draft.weight_snapshot), [])
-        rejected = self.client.post(url, data | {'expected': live_services.token(), 'si_rubric': 'barriers_v1'})
-        self.assertEqual(rejected.status_code, 200)
-        self.assertTrue(rejected.context['form'].errors['si_rubric'])
+        rejected = PolicyDraftForm(data | {'expected': live_services.token(), 'si_rubric': 'barriers_v1'}, content=self.content)
+        self.assertFalse(rejected.is_valid())
+        self.assertIn('si_rubric', rejected.errors)
+        url = reverse('ewaf:dataset_policies')
+        self.assertEqual(self.client.post(url, data).status_code, 405)
+        self.assertRedirects(self.client.get(url), reverse('ewaf:vault'))
         self.assertEqual(SharedDatasetPolicy.objects.count(), 1)
 
     def test_input_form_requires_both_findings_and_accepts_either_document(self):
@@ -310,12 +314,17 @@ class DocumentRankingTests(TransactionTestCase):
             'confirmed': 'on', 'income_0': '5000', 'income_1': '5000', 'income_2': '5000',
             'si_four_ps': '', 'si_indigency': 'yes', **{'evidence_' + code: [proof.pk] for code in CRITERIA}}
         url = reverse('ewaf:dataset_inputs', args=[app.pk])
-        response = self.client.post(url, data)
-        self.assertContains(response, 'Review both 4Ps')
+        self.assertEqual(self.client.post(url, data).status_code, 405)
+        form = InputReviewForm(data, application=app, configuration=self.configuration)
+        self.assertTrue(form.is_valid(), form.errors)
+        with self.assertRaisesMessage(ValidationError, 'Review both'):
+            evidence.record(app.pk, user=self.user, expected=data['expected'], findings=form.findings(),
+                selections=form.selections(), state='ACCEPTED', reason=data['reason'], confirmed=True)
         self.assertFalse(DatasetInputReview.objects.filter(application=app).exists())
-        response = self.client.post(url, data | {'si_four_ps': 'no'})
-        self.assertEqual(response.status_code, 302)
-        saved = DatasetInputReview.objects.get(application=app)
+        form = InputReviewForm(data | {'si_four_ps': 'no'}, application=app, configuration=self.configuration)
+        self.assertTrue(form.is_valid(), form.errors)
+        saved = evidence.record(app.pk, user=self.user, expected=data['expected'], findings=form.findings(),
+            selections=form.selections(), state='ACCEPTED', reason=data['reason'], confirmed=True)
         self.assertEqual(saved.inputs['SI']['value'], '2.5')
         self.assertEqual(saved.findings['si_documents'], {'four_ps': False, 'indigency': True})
 

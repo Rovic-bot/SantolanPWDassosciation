@@ -102,7 +102,7 @@ def verify_application(data):
     from core.reference_services import original_reference
     reference = original_reference('program', data['reference'])
     record = ProgramApplication.objects.filter(
-        public_reference=reference).values(*RECORD_FIELDS).first()
+        public_reference__iexact=reference).values(*RECORD_FIELDS).first()
     if not record or record['member__archived_at']:
         return None
     if record['public_reference'].strip().casefold() != reference.casefold():

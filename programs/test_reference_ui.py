@@ -62,8 +62,9 @@ class ReferenceUITests(OperationalHelpers, TestCase):
         configuration = self.lock_policy()
         ewaf = self.client.get(reverse('ewaf:operational_programs'))
         self.assertEqual([p.pk for p in ewaf.context['page_obj']], [self.program.pk])
-        self.assertContains(ewaf, 'ewaf-state-ready')
-        self.assertContains(ewaf, 'Open EWAF')
+        from ewaf.operational_services import latest_configuration
+        self.assertEqual(latest_configuration(self.program).pk, configuration.pk)
+        self.assertContains(ewaf, reverse('ewaf:operational_workspace', args=[self.program.pk]))
         releases = self.client.get(reverse('assistance:release_programs'))
         self.assertEqual({p.pk for p in releases.context['page_obj']}, {self.program.pk, other.pk})
         self.assertNotContains(releases, 'program-configuration-status')
@@ -81,9 +82,10 @@ class ReferenceUITests(OperationalHelpers, TestCase):
         self.assertEqual(len(self.client.get(url, {'membership': 'archived'}).context['page_obj']), 0)
         detail = self.client.get(reverse('programs:application_detail', args=[self.program.pk, self.application.pk]))
         for label in ('Application review', 'Copy application reference', 'Submitted application',
-                      'Application History', 'Download', self.application.public_reference):
+                      'Member record', self.application.public_reference):
             self.assertContains(detail, label)
-        self.assertContains(detail, 'data-copy-value="' + self.member.control_number + '"')
+        self.assertContains(detail, reverse('members:detail', args=[self.member.pk]))
+        self.assertNotIn('membership_intake', detail.context)
         from .review_context import applicant_context
         self.application.member.version += 1
         stale = applicant_context(self.application, self.officer)

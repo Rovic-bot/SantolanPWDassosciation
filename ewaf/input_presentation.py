@@ -89,7 +89,7 @@ def input_details(application, configuration, accepted, *, can_review, source=No
             result['accepted_values'].append(row)
     else:
         result['registered_scoring_values'] = registered_scoring_values(application, configuration, source)
-    if application.status in ('INELIGIBLE', 'CLOSED') or (source and source['status'] == 'INELIGIBLE'):
+    if application.status in ('INELIGIBLE', 'CLOSED') or (source and source.get('status') == 'INELIGIBLE'):
         result['input_status'] = 'This application is not in the eligible pool.'
         result.update(input_state='excluded', input_badge='Pool excluded', input_icon='close')
     elif configuration_pending(configuration):

@@ -69,7 +69,8 @@ class PublicBrowsingTests(TestCase):
         response = self.client.get(url, {'popup': '1'})
         self.assertTemplateUsed(response, 'events/observance_public_popup.html')
         self.assertContains(response, reference.title)
-        self.assertContains(response, reference.source_url)
+        # The owner-approved poster omits source links; stored provenance remains.
+        self.assertEqual(response.context['observance']['source_url'], reference.source_url)
         self.assertNotContains(response, '<html')
         self.assertTemplateUsed(self.client.get(url), 'events/observance_public_detail.html')
         AnnualObservance.objects.filter(pk=item.pk).update(published_at=timezone.now() + timezone.timedelta(days=1))

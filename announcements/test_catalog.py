@@ -36,19 +36,19 @@ class AnnouncementApplicantCatalogTests(TestCase):
 
     def test_filter_reset_and_query_parameters_cannot_include_empty_programs(self):
         empty = create_program(name='Empty searchable program')
-        url = reverse('announcements:manage_list')
+        url = (reverse('announcements:manage_list') + '?section=results')
         for filters in ({}, {'with_applications': '0'}, {'with_applications': '1'},
                         {'page': '999', 'sort': 'oldest'}):
             with self.subTest(filters=filters):
                 response = self.client.get(url, filters)
                 self.assertEqual(response.context['page_obj'].paginator.count, 1)
                 self.assertNotContains(response, empty.name)
-        response = self.client.get(url, {'q': empty.name, 'with_applications': '0'})
+        response = self.client.get(url, {'section': 'results', 'q': empty.name, 'with_applications': '0'})
         self.assertEqual(response.context['page_obj'].paginator.count, 0)
         self.assertContains(response, 'No programs match your filters.')
 
     def test_applicants_count_regardless_of_review_or_program_status(self):
-        url = reverse('announcements:manage_list')
+        url = (reverse('announcements:manage_list') + '?section=results')
         for program_status in ('draft', 'published', 'cancelled'):
             self.program.status = program_status
             self.program.save(update_fields=['status'])

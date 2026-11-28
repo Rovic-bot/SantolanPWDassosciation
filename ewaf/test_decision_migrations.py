@@ -64,32 +64,27 @@ class DecisionMigrationTests(SourceHelpers, FourHelpers, TransactionTestCase):
         self.assertNotIn('INSERT INTO', output.getvalue())
         if os.environ.get('G12_ARTIFACT_DIR'):
             Path(os.environ['G12_ARTIFACT_DIR'], 'decision-schema.sql').write_text(output.getvalue(), encoding='utf-8')
-        tables = {m._meta.db_table for m in (Decision, Audit)}
-        try:
-            for cycle in range(2):
-                MigrationExecutor(connection).migrate([('ewaf', '0006_source_invalidation_foundation')])
-                self.assertFalse(tables & set(connection.introspection.table_names()))
-                self.assertEqual(rows(), before)
-                durable_services._assert_history(five)
-                durable_services._assert_history(four)
-                MigrationExecutor(connection).migrate(leaves)
-                self.assertEqual(rows(), before)
-                self.assertEqual(tables & set(connection.introspection.table_names()), tables)
-                self.assertFalse(Decision.objects.exists())
-                self.assertFalse(Audit.objects.exists())
-            with connection.cursor() as cursor:
-                for model in (Decision, Audit):
-                    constraints = connection.introspection.get_constraints(cursor, model._meta.db_table)
-                    for item in model._meta.constraints:
-                        self.assertIn(item.name, constraints)
-                    for item in model._meta.indexes:
-                        self.assertIn(item.name, constraints)
-                    for field in model._meta.fields:
-                        if field.is_relation:
-                            self.assertTrue(any(c.get('foreign_key') and c['columns'] == [field.column]
-                                                for c in constraints.values()), field.name)
+        from scripts.migration_test_support import assert_additive_upgrade
+        assert_additive_upgrade(self, [('ewaf', '0006_source_invalidation_foundation')],
+            [('ewaf', '0007_development_human_decisions')],
+            ['ewaf.DevelopmentHumanDecision', 'ewaf.DevelopmentHumanDecisionAudit'], reversible=True)
+        self.assertEqual(rows(), before)
+        durable_services._assert_history(five)
+        durable_services._assert_history(four)
+        with connection.cursor() as cursor:
+            for model in (Decision, Audit):
+                constraints = connection.introspection.get_constraints(cursor, model._meta.db_table)
+                for item in [*model._meta.constraints, *model._meta.indexes]:
+                    self.assertIn(item.name, constraints)
+                for field in model._meta.fields:
+                    if field.is_relation:
+                        self.assertTrue(any(c.get('foreign_key') and c['columns'] == [field.column]
+                                            for c in constraints.values()), field.name)
+            if connection.vendor == 'postgresql':
+                cursor.execute("SELECT relname,relpersistence FROM pg_class WHERE relnamespace=current_schema()::regnamespace AND relkind='r'")
+                expected_engine = 'p'  # Permanent, WAL-logged transactional tables.
+            else:
                 cursor.execute('SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()')
-                engines = dict(cursor.fetchall())
-                self.assertTrue(all(engines[name] == 'InnoDB' for name in tables))
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
+                expected_engine = 'InnoDB'
+            engines = dict(cursor.fetchall())
+            self.assertTrue(all(engines[m._meta.db_table] == expected_engine for m in (Decision, Audit)))

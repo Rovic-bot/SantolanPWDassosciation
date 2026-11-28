@@ -14,8 +14,9 @@ def information_update_form(data=None, *, application):
     form.fields['notes'].label = 'Remarks'
     # This screen edits information. Existing protected document workflows stay
     # available on the application page; no extra upload is required here.
+    from membership.registration_policy import SLOTS
     for name in list(form.fields):
-        if name.startswith('document_'):
+        if name.startswith('document_') or name in SLOTS or name == 'civil_alternative':
             del form.fields[name]
     form.capture_requirements = []
     form.style_fields()

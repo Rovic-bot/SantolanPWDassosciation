@@ -74,7 +74,7 @@ class PortalEditorTests(TestCase):
 
     def test_current_home_and_resource_cards_are_editable_and_drafts_stay_private(self):
         fields = {'guidance_heading': 'Reviewed guidance heading',
-                  'guidance_application-information': 'Reviewed application card body',
+                  'guidance_privacy': 'Reviewed privacy card body',
                   'guidance_title_faq': 'Reviewed FAQ title'}
         self.save(user=self.editor, changes=fields, files={'picture_1': artwork()})
         preview = self.client.get(reverse('core:portal_preview', args=['home']))

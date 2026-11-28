@@ -33,8 +33,9 @@ class ReleasePortfolioTests(TestCase):
         summary = self.summary()
         self.assertEqual((summary['selected_count'], summary['received_count'], summary['pending_count']), (1, 1, 0))
         self.void(receipt)
+        # Voiding a receipt does not withdraw the separately recorded selection.
         summary = self.summary()
-        self.assertEqual((summary['selected_count'], summary['received_count'], summary['pending_count']), (0, 0, 0))
+        self.assertEqual((summary['selected_count'], summary['received_count'], summary['pending_count']), (1, 0, 1))
         self.assertEqual(AssistanceRelease.objects.count(), 1)
 
     def test_read_access_is_required_and_overview_excludes_member_details(self):
@@ -53,7 +54,9 @@ class ReleasePortfolioTests(TestCase):
         for index in range(22):
             create_program(name=f'Empty program {index:02d}')
         request = RequestFactory().get('/assistance/releases/', {'selected': str(self.program.pk)})
-        with self.assertNumQueries(2):
+        # Programs, batched adoption history, EWAF availability and counts.
+        # The mandatory-EWAF adoption witness must not add a query per program.
+        with self.assertNumQueries(4):
             result = workspace(request)
         self.assertEqual(len(result['page_obj']), 23)
         self.assertEqual(result['selected_id'], str(self.program.pk))
@@ -89,4 +92,4 @@ class EWAFReleasePortfolioTests(OperationalHelpers, TestCase):
         from django.test.utils import CaptureQueriesContext
         with CaptureQueriesContext(connection) as queries:
             receipt_counts(list(Program.objects.all()))
-        self.assertFalse(any('FROM `ewaf_operationalrun`' in item['sql'] for item in queries))
+        self.assertFalse(any(('FROM ' + connection.ops.quote_name('ewaf_operationalrun')) in item['sql'] for item in queries))

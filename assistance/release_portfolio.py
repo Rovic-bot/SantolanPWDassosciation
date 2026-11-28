@@ -15,8 +15,8 @@ def receipt_counts(programs):
     applications = ProgramApplication.objects.filter(program_id__in=[program.pk for program in programs]).order_by().annotate(
         has_receipt=Exists(AssistanceRelease.objects.successful().filter(application_id=OuterRef('pk'))))
     selected = Q(program__ewaf_applicable=False, assistance_case__decision='approved')
-    from programs.mandatory_ewaf import retained_selected_ids
-    retained = set().union(*(retained_selected_ids(program) for program in programs))
+    from programs.mandatory_ewaf import retained_selections
+    retained = set().union(*retained_selections(programs).values())
     selected |= Q(pk__in=retained)
     reserved = Q(assistance_case__decision='approved')
     if any(program.ewaf_applicable for program in programs):

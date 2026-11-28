@@ -53,18 +53,16 @@ class MemberRegistrationEditTests(TestCase):
         self.assertTemplateUsed(response, 'membership/onsite/section.html')
         current = response.context['form']
         onsite = OnsiteRegistrationForm(policy=pdf_policy())
-        self.assertEqual([(title, [f.name for f in fields]) for title, fields in current.profile_sections],
-                         [(title, [f.name for f in fields]) for title, fields in onsite.profile_sections])
+        self.assertEqual([(title, sorted(f.name for f in fields)) for title, fields in current.profile_sections],
+                         [(title, sorted(f.name for f in fields)) for title, fields in onsite.profile_sections])
         for name in AssociationPDFForm.base_fields:
             self.assertEqual(current.fields[name].label, onsite.fields[name].label, name)
-            if name == 'email':
-                # New onsite intake requires email; existing member corrections
-                # retain the optional email contract for earlier records.
-                self.assertFalse(current.fields[name].required)
-                self.assertTrue(onsite.fields[name].required)
-            else:
-                self.assertEqual(current.fields[name].required, onsite.fields[name].required, name)
-            self.assertEqual(getattr(current.fields[name], 'choices', None), getattr(onsite.fields[name], 'choices', None), name)
+            # Existing corrections preserve optional historical fields; new
+            # intake additionally requires the complete current address/profile.
+            self.assertEqual(current.fields[name].required,
+                True if name == 'pwd_number' else AssociationPDFForm.base_fields[name].required, name)
+            self.assertEqual([choice for choice in getattr(current.fields[name], 'choices', []) if choice[0]],
+                             [choice for choice in getattr(onsite.fields[name], 'choices', []) if choice[0]], name)
         self.assertEqual(current.initial['guardian_contact'], '09170000002')
         self.assertEqual(current.initial['zip_code'], '01610')
         self.assertEqual(current.initial['pwd_number'], self.member.control_number)

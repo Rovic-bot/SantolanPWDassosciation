@@ -32,15 +32,12 @@ class EvidencePreservationTests(EvidenceHelpers, TermsHelpers, TransactionTestCa
             classification='Historical class', rank=1, context={'historical': True})
         other_program = create_program(registration_closes_at=timezone.now() - timezone.timedelta(minutes=1))
         other = application_fixture(other_program, self.member)
-        review_eligibility(other.pk, user=self.officer, data=review_data(other))
-        decide_assistance(other.pk, user=self.officer, data=decision_data(other))
-        release = record_release(other.pk, user=self.officer, data=release_data(other))
+        from assistance.testsupport import historical_receipt
+        release = historical_receipt(other, self.officer)
         other.refresh_from_db()
         void_release(other.pk, release.pk, user=self.officer,
                      data={'version': other.version, 'confirm': True, 'notes': 'Synthetic historical void'})
-        review_eligibility(other.pk, user=self.officer, data=review_data(other))
-        decide_assistance(other.pk, user=self.officer, data=decision_data(other))
-        record_release(other.pk, user=self.officer, data=release_data(other))
+        historical_receipt(other, self.officer)
         announcement = Announcement.objects.create(title='Synthetic retained result', content='Synthetic result text',
             status='published', published_at=timezone.now(), program=other_program)
         revision = ProgramResultRevision.objects.create(announcement=announcement, number=1,
@@ -75,21 +72,14 @@ class EvidencePreservationTests(EvidenceHelpers, TermsHelpers, TransactionTestCa
         self.assertEqual(self.business_rows(), before)
 
     def test_additive_migration_preserves_all_business_rows_without_verification_backfill(self):
-        executor = MigrationExecutor(connection)
-        leaves = executor.loader.graph.leaf_nodes()
-        before = self.business_rows()
-        try:
-            executor.migrate([('ewaf', '0001_initial')])
-            executor = MigrationExecutor(connection)
-            migration = executor.loader.get_migration('ewaf', '0002_verified_evidence')
-            self.assertTrue(all(operation.__class__.__name__ in ('CreateModel', 'AddConstraint', 'AddIndex') for operation in migration.operations))
-            executor.migrate(leaves)
-            self.assertEqual(self.business_rows(), before)
-            for model in (EvidencePolicyRevision, CriterionAssessment, EligibilityReadinessSnapshot):
-                self.assertEqual(model.objects.count(), 0)
-            self.assertEqual(list(Configuration.objects.get().pairwise), [[1] * 5 for _ in range(5)])
-            from .calculation import CRITERIA
-            self.assertEqual(CRITERIA, ('SI', 'ES', 'PA', 'ND', 'PR'))
-            self.assertFalse(self.officer.groups.exists())
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
+        from scripts.migration_test_support import assert_additive_upgrade
+        migration = MigrationExecutor(connection).loader.get_migration('ewaf', '0002_verified_evidence')
+        self.assertTrue(all(type(op).__name__ in ('CreateModel', 'AddConstraint', 'AddIndex') for op in migration.operations))
+        assert_additive_upgrade(self, [('ewaf', '0001_initial'), ('programs', '0005_approved_terms'),
+            ('announcements', '0004_preserve_result_source_content')],
+            [('ewaf', '0002_verified_evidence'), ('announcements', '0004_preserve_result_source_content')],
+            ['ewaf.EvidencePolicyRevision', 'ewaf.CriterionAssessment', 'ewaf.EligibilityReadinessSnapshot'])
+        self.assertEqual(list(Configuration.objects.get().pairwise), [[1] * 5 for _ in range(5)])
+        from .calculation import CRITERIA
+        self.assertEqual(CRITERIA, ('SI', 'ES', 'PA', 'ND', 'PR'))
+        self.assertFalse(self.officer.groups.exists())

@@ -152,7 +152,8 @@ class ObservanceAccessTests(TestCase):
     def test_public_requests_cannot_enable_preview_or_publication(self):
         for query in ('', '?preview=1', '?status=published', '?period=past&reference_preview=true'):
             response = self.client.get(reverse('core:events') + query)
-            self.assertContains(response, 'aria-label="Yearly awareness calendar"')
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, 'aria-label="Annual observance cards"')
             self.assertNotContains(response, 'DATES FOR AWARENESS')
             for item in REFERENCE_CATALOGUE:
                 self.assertNotContains(response, item.title)

@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import textwrap
 import secrets
 import subprocess
 import sys
@@ -28,6 +29,8 @@ class ProductionSettingsTests(SimpleTestCase):
             'ALLOWED_HOSTS': 'deployment.example.invalid',
             'CSRF_TRUSTED_ORIGINS': 'https://deployment.example.invalid',
             'DB_NAME': 'deployment_check_only',
+            # These assertions and patched diagnostic connections target MySQL,
+            # independently of the database used by the surrounding test run.
             'DB_ENGINE': 'mysql',
             'DB_TEST_NAME': 'test_deployment_check_only',
             'DB_USER': 'synthetic_deployment_user',
@@ -169,3 +172,50 @@ class DeploymentHTTPTests(SimpleTestCase):
                 response = self.client.get('/media/synthetic-private-evidence.txt', secure=True)
                 self.assertEqual(response.status_code, 404)
                 self.assertNotContains(response, 'Never publish this fixture.', status_code=404)
+
+
+@override_settings(
+    INSTALLED_APPS=[app for app in settings.INSTALLED_APPS if app not in ('program_intake', 'main_testing')],
+    STATICFILES_DIRS=[settings.BASE_DIR / 'static'],
+)
+class StaticImageBuildTests(SimpleTestCase):
+    def test_secret_free_build_collects_every_production_asset_without_network(self):
+        from django.contrib.staticfiles import finders
+
+        with TemporaryDirectory() as temporary:
+            script = textwrap.dedent("""
+                import os
+                import socket
+                import sys
+                os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings_static_build'
+                def reject_network(*args, **kwargs):
+                    raise AssertionError('Static image build attempted network access')
+                socket.socket.connect = reject_network
+                socket.create_connection = reject_network
+                import django
+                django.setup()
+                from django.conf import settings
+                settings.STATIC_ROOT = sys.argv[1]
+                from django.core.management import call_command
+                call_command('collectstatic', interactive=False, verbosity=0)
+                assert 'config.settings' not in sys.modules
+                assert 'config.settings_production' not in sys.modules
+                assert 'dotenv' not in sys.modules
+            """)
+            environment = {key: value for key, value in os.environ.items()
+                           if not key.startswith(('DB_', 'SUPABASE_', 'DJANGO_'))
+                           and key not in ('SECRET_KEY', 'DATABASE_URL')}
+            result = subprocess.run([sys.executable, '-c', script, temporary],
+                cwd=settings.BASE_DIR, env=environment, capture_output=True, text=True, timeout=90)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            expected = {}
+            for finder in finders.get_finders():
+                # Mirror collectstatic's first matching source and ignore patterns.
+                for name, storage in finder.list(['CVS', '.*', '*~']):
+                    expected.setdefault(name, Path(storage.path(name)))
+            output = Path(temporary)
+            for name, source in expected.items():
+                with self.subTest(asset=name):
+                    self.assertEqual((output / name).read_bytes(), source.read_bytes())
+            self.assertTrue((output / 'css/site.css.gz').is_file())
+            self.assertTrue((output / 'admin/css/base.css').is_file())

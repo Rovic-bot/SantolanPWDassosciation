@@ -56,7 +56,8 @@ class OperationalDeliveryTests(OperationalHelpers, TransactionTestCase):
         before = self.run.calculations
         self.client.force_login(self.officer)
         response = self.client.post(reverse('assistance:release', args=[self.application.pk]), {
-            'version': self.application.version, 'program_version': self.program.version})
+            'version': self.application.version, 'program_version': self.program.version,
+            'claimant_type': 'beneficiary', 'beneficiary_identity_verified': True, 'receipt_confirmed': True})
         self.assertEqual(response.status_code, 302)
         receipt = AssistanceRelease.objects.get()
         self.assertEqual(receipt.approval_snapshot['operational_decision_id'], decision.pk)
@@ -88,7 +89,8 @@ class OperationalDeliveryTests(OperationalHelpers, TransactionTestCase):
         self.choose(self.run)
         self.choose(self.run, application_id=self.helpers[1].application.pk)
         plan = generation_preview(self.program.pk, user=self.officer)
-        item = generate_results(self.program.pk, user=self.officer, expected=plan['expected'], version=plan['version'])
+        item = generate_results(self.program.pk, user=self.officer, expected=plan['expected'], version=plan['version'],
+            selection_reason='Synthetic selected members meet the recorded criteria and capacity.')
         original_payload = item.result_revision.public_payload.copy()
         receipt = record_release(self.application.pk, user=self.officer, data=release_data(self.application))
         self.assertTrue(results_current(item))

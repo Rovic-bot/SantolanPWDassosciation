@@ -208,12 +208,14 @@ class ScheduleUpdateTests(TestCase):
         with self.assertRaisesMessage(ValidationError, 'separately approved assessment cutoff'):
             self.save(registration_closes_at=cutoff + timedelta(hours=1))
 
-    def test_published_non_scored_program_dates_can_be_updated(self):
+    def test_retained_non_scored_program_requires_ewaf_before_new_edits(self):
         self.program = create_program(ewaf_applicable=False, policy_authorized_by=self.user,
             benefit='Synthetic non-scored support.')
-        result = self.save(starts_at=timezone.now())
-        self.assertEqual(result.version, self.program.version + 1)
-        self.assertFalse(OperationalConfiguration.objects.filter(program=result).exists())
+        before = Program.objects.values().get(pk=self.program.pk)
+        with self.assertRaisesMessage(ValidationError, 'Every program must use EWAF'):
+            self.save(starts_at=timezone.now())
+        self.assertEqual(Program.objects.values().get(pk=self.program.pk), before)
+        self.assertFalse(OperationalConfiguration.objects.filter(program=self.program).exists())
 
     def test_published_weights_only_program_retains_exact_weight_version(self):
         from ewaf.intake_policy import require_configuration

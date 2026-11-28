@@ -3,6 +3,7 @@ from copy import deepcopy
 import os
 from pathlib import Path
 import subprocess
+from unittest.mock import patch
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -32,8 +33,12 @@ class WorkspaceUITests(StaticLiveServerTestCase):
         run = self.generate()
         original = deepcopy(run.payload())
         app = self.apps['T02']
-        operational.record_decision(self.target.pk, user=self.user, run_id=run.pk,
-            application_id=app.pk, expected_revision=0, outcome='SELECTED', reason='Synthetic confirmed recipient.')
+        from .test_synthetic_twelve import NOW
+        with patch.object(OperationalDecision._meta.get_field('recorded_at'), '_get_default', lambda: NOW):
+            operational.record_decision(self.target.pk, user=self.user, run_id=run.pk,
+                application_id=app.pk, expected_revision=0, outcome='SELECTED', reason='Synthetic confirmed recipient.')
+        from announcements.testsupport import publish_selection
+        publish_selection(self.target, self.user)
         record_release(app.pk, user=self.user, data=release_data(app))
         ledger = list(AssistanceRelease.objects.order_by('pk').values())
         browser = subprocess.run(['node', str(Path(settings.BASE_DIR) / 'scripts/ewaf_workspace_ui_browser.cjs')],
@@ -64,13 +69,13 @@ class WorkspaceUITests(StaticLiveServerTestCase):
         self.assertEqual(row['rank'], 7)
         self.assertEqual(row['accepted_information'][0]['value'], '\u20b137,000 / month')
         self.assertContains(page, 'Verified No')
-        self.assertContains(self.client.get(url, {'review': iris}), 'open data-auto-open')
+        self.assertContains(self.client.get(url, {'review': iris}), 'id="readiness"')
         self.assertEqual(self.client.get(url, {'review': 'not-in-this-run'}).status_code, 404)
         self.assertEqual(self.client.get(url, {'decision': 'selected'}).context['result']['rows'].paginator.count, 0)
         # Form POST remains the service boundary even when JavaScript is disabled.
         bad = self.client.post(url, {'action': 'SELECT_ASSISTANCE', 'decision-run_id': run.pk,
             'decision-application_id': iris, 'decision-expected_revision': 999})
-        self.assertContains(bad, 'open data-auto-open')
+        self.assertContains(bad, 'id="readiness"')
         self.assertContains(bad, 'Decision changed')
         self.assertFalse(OperationalDecision.objects.exists())
         viewer = get_user_model().objects.create_user('synthetic-ui-readonly', is_staff=True)
@@ -85,7 +90,11 @@ class WorkspaceUITests(StaticLiveServerTestCase):
         self.approve('hm')
         stale = self.client.get(url, {'run': run.pk, 'review': iris})
         self.assertFalse(stale.context['result']['active'])
-        self.assertContains(stale, 'Generate a current ranking before making a selection.')
+        self.assertTrue(stale.context['result']['problems'])
+        blocked = self.client.post(url, {'action': 'SELECT_ASSISTANCE', 'decision-run_id': run.pk,
+            'decision-application_id': iris, 'decision-expected_revision': 0})
+        self.assertEqual(blocked.status_code, 200)
+        self.assertFalse(OperationalDecision.objects.exists())
         run.refresh_from_db()
         self.assertEqual(run.payload(), original)
         self.assertFalse(OperationalDecision.objects.exists())

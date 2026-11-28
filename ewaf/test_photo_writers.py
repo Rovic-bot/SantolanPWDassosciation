@@ -9,7 +9,7 @@ from unittest.mock import patch
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import connection, transaction
+from django.db import NotSupportedError, connection, transaction
 from django.test import TransactionTestCase
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
@@ -469,18 +469,26 @@ class PhotoWriterTests(PhotoHelpers, TransactionTestCase):
             'assistance_eligibilitystatus', 'programs_programrequirement', 'documents_membershipapplicationdocument',
             'documents_documentverification', 'programs_programdocument', 'programs_applicationphoto',
             'programs_photoverification', 'assistance_assistancecase')
-        positions = [next(i for i, sql in enumerate(locks) if f'FROM `{table}`' in sql) for table in tables]
+        positions = [next(i for i, sql in enumerate(locks) if ('FROM ' + connection.ops.quote_name(table)) in sql) for table in tables]
         self.assertEqual(positions, sorted(set(positions)))
-        self.assertTrue(all('JOIN' not in sql for sql in locks if 'FROM `programs_programapplication`' in sql))
+        self.assertTrue(all('JOIN' not in sql for sql in locks if ('FROM ' + connection.ops.quote_name('programs_programapplication')) in sql))
         print('Gate 2D-2B actual first SQL lock order:', ' -> '.join(tables))
 
     def test_original_joined_query_sql_confirms_photo_is_in_locking_select(self):
         # Execute the exact prior helper query on fictional rows as baseline SQL
         # evidence. This is not a supported writer or a deadlock-free claim.
-        with transaction.atomic(), CaptureQueriesContext(connection) as queries:
-            ProgramApplication.objects.select_for_update().select_related('current_photo').get(pk=self.application.pk)
+        with CaptureQueriesContext(connection) as queries:
+            query = ProgramApplication.objects.select_for_update().select_related('current_photo')
+            if connection.vendor == 'postgresql':
+                # PostgreSQL rejects this historical outer-join lock outright.
+                # The supported writer above locks each table separately.
+                with self.assertRaisesMessage(NotSupportedError, 'nullable side'), transaction.atomic():
+                    query.get(pk=self.application.pk)
+            else:
+                with transaction.atomic():
+                    query.get(pk=self.application.pk)
         sql = next(q['sql'] for q in queries if 'FOR UPDATE' in q['sql'])
-        self.assertIn('JOIN `programs_applicationphoto`', sql)
+        self.assertIn(('JOIN ' + connection.ops.quote_name('programs_applicationphoto')), sql)
         self.assertIn('FOR UPDATE', sql)
         print('Gate 2D-2B baseline SQL: Application LEFT OUTER JOIN ApplicationPhoto FOR UPDATE confirmed')
 

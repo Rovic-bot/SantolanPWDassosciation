@@ -5,3 +5,4 @@
 *.js text eol=lf
 *.sh text eol=lf
 *.yml text eol=lf
+ewaf/tests_data/g16/*.json text eol=lf

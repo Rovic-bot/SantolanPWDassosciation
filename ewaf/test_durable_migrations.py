@@ -28,8 +28,13 @@ class DurableMigrationTests(DurableHelpers, TransactionTestCase):
             self.assertFalse(self.officer.user_permissions.exists())
             self.assertFalse(self.officer.groups.exists())
             with connection.cursor() as cursor:
-                cursor.execute("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME LIKE 'ewaf_durable%%'")
+                if connection.vendor == 'postgresql':
+                    cursor.execute("SELECT relpersistence FROM pg_class WHERE relnamespace=current_schema()::regnamespace AND relkind='r' AND relname LIKE 'ewaf_durable%%'")
+                    expected_engine = 'p'
+                else:
+                    cursor.execute("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME LIKE 'ewaf_durable%%'")
+                    expected_engine = 'InnoDB'
                 engines = [row[0] for row in cursor.fetchall()]
-            self.assertEqual(engines, ['InnoDB'] * 6)
+            self.assertEqual(engines, [expected_engine] * 6)
         finally:
             MigrationExecutor(connection).migrate(leaves)

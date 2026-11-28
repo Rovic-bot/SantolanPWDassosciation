@@ -1,0 +1,87 @@
+{
+  "results": [
+    {
+      "route": "/association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-association.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/onsite-pdao.html",
+      "actualOCR": true,
+      "reviewedAutofill": true,
+      "existingValues": true,
+      "noSubmissionFields": true,
+      "mobileReflow": true
+    },
+    {
+      "route": "/association.html",
+      "twoSidedPWD": true,
+      "emergencyContactSeparated": true,
+      "independentRemoval": true
+    },
+    {
+      "route": "/pdao.html",
+      "twoSidedPWD": true,
+      "emergencyContactSeparated": true,
+      "independentRemoval": true
+    },
+    {
+      "receiptCustomerOnly": true
+    },
+    {
+      "rotatedNationalID": 90,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "rotatedNationalID": 180,
+      "reviewedAutofill": true,
+      "identityNumberBoundary": true
+    },
+    {
+      "syntheticCameraCaptureAndRelease": true
+    },
+    {
+      "corruptImageFallback": true
+    },
+    {
+      "cameraDeniedManualFallback": true
+    },
+    {
+      "cancelReleasesWorker": true
+    },
+    {
+      "failedDownloadReleasesWorker": true
+    },
+    {
+      "mobileNativeCaptureContract": true,
+      "separateFilePicker": true,
+      "embeddedStreamRequests": 0,
+      "physicalCameraVerified": false
+    },
+    {
+      "manualFormWithoutJavaScript": true
+    }
+  ],
+  "errors": [],
+  "blocked": []
+}

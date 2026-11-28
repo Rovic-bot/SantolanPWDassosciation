@@ -89,6 +89,8 @@ class HomeFeaturedEventTests(TestCase):
     def test_all_six_guidance_cards_preserve_bookmarks_and_published_text(self):
         response = self.client.get(reverse('core:home'))
         for anchor in ['application-information', 'contact', 'faq', 'ewaf', 'privacy', 'accessibility']:
-            self.assertContains(response, f'id="{anchor}" tabindex="-1"')
-        self.assertContains(response, 'class="public-swipe-card" data-swipe-card id=', count=6)
+            self.assertContains(response, f'id="{anchor}"', count=1)
+        self.assertContains(response, '<article data-guidance-card ', count=6)
+        import re
+        self.assertEqual(len(re.findall(r'<details[^>]*aria-labelledby="guidance-title-', response.content.decode())), 6)
         self.assertContains(response, 'Member records, application documents and calendar photos are private.')

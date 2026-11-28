@@ -40,9 +40,10 @@ class ConfigurationTests(SimpleTestCase):
 class PublicFoundationTests(TestCase):
     def test_home_is_public_and_honest_about_unavailable_features(self):
         response = self.client.get(reverse('core:home'))
-        self.assertContains(response, 'Access.')
-        self.assertContains(response, 'Membership Guidelines')
-        self.assertContains(response, 'No announcements')
+        self.assertContains(response, 'A community where everyone belongs.')
+        self.assertContains(response, f'href="{reverse("core:membership")}"')
+        self.assertContains(response, 'No event happening now')
+        self.assertContains(response, '0 published programs')
         self.assertNotContains(response, 'type="password"')
 
     def test_home_rejects_mutating_requests(self):
@@ -85,6 +86,14 @@ class AdminAccessTests(TestCase):
         cls.superuser = user.objects.create_superuser(username='test_superuser', password='Test-only-pass-579!')
 
     def test_database_is_mysql_with_strict_utf8_and_innodb(self):
+        if connection.vendor == 'postgresql':
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT current_setting('server_version_num')::integer, current_setting('server_encoding')")
+                version, encoding = cursor.fetchone()
+            self.assertGreaterEqual(version, 140000)
+            self.assertEqual(encoding, 'UTF8')
+            self.assertTrue(connection.features.supports_transactions)
+            return
         self.assertEqual(connection.vendor, 'mysql')
         with connection.cursor() as cursor:
             cursor.execute('SELECT VERSION(), @@sql_mode, @@character_set_connection, @@default_storage_engine')

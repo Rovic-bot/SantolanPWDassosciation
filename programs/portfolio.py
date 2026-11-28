@@ -53,7 +53,7 @@ def portfolio_context(request) -> dict:
         places=Sum('slots'),
         unspecified=Count('pk', filter=Q(slots__isnull=True)))
     applicants = ProgramApplication.objects.count()
-    capacity_applicants = ProgramApplication.objects.filter(program__ewaf_applicable=True, program__slots__isnull=False).count()
+    capacity_applicants = ProgramApplication.objects.filter(program__slots__isnull=False).count()
     accepting = programs.accepting_applications(at=now)
     metrics = [
         {'value': totals['total'], 'label': 'Total programs', 'accent': 'cyan', 'detail': f'Across {totals["categories"]} categories'},

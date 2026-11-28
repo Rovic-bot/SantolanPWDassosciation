@@ -114,7 +114,7 @@ class RecalculationPreservationTests(ScoringHelpers, ConfigurationHelpers, Evide
         self.assertEqual(set(connection.introspection.table_names()), before_tables)
         self.assertEqual(set(apps.get_models()), before_models)
         self.assertEqual(repr(get_resolver().url_patterns), before_routes)
-        self.assertEqual(MigrationLoader(connection).graph.leaf_nodes('ewaf'), [('ewaf', '0008_operational_four')])
+        self.assertEqual(MigrationLoader(connection).graph.leaf_nodes('ewaf'), [('ewaf', '0012_dataset_policy_integration')])
         self.assertFalse(Permission.objects.filter(codename__icontains='recalculation').exists())
         self.assertFalse(any('recalculation' in table for table in before_tables))
 

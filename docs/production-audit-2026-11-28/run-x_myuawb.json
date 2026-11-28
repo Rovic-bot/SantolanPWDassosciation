@@ -1,0 +1,154 @@
+[
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_composer_audit_failure_rolls_back_and_cleans_uploaded_file",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_each_topic_withholds_drafts_withdrawals_and_archived_notices",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_filtered_announcement_shows_complete_escaped_content_without_popup",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_filtered_results_render_only_authorized_public_projection_and_withdraw_immediately",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_image_is_sanitized_and_edit_preserves_the_existing_description",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_popup_enforces_permissions_csrf_and_stale_edits",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_popup_has_only_three_editor_fields_and_creates_a_private_draft",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_composer.AnnouncementComposerTests.test_required_fields_and_invalid_upload_are_returned_inside_popup",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_admin_categories_search_and_explicit_review_confirmation",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_audit_failure_rolls_back_link_source_and_publication",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_general_source_date_category_and_home_projection",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_linking_and_editing_program_notices_requires_program_permission",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_nonpublic_cancelled_or_future_published_program_is_withheld_everywhere",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_private_programs_do_not_leak_through_filter_options_and_invalid_filters_are_safe",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_program_must_still_be_public_at_publication_time",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_program_preview_reads_live_canonical_content_and_links_to_membership_checks",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_published_edit_is_private_until_reviewed_again_with_audit_and_stale_protection",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_result_category_cannot_be_forged_or_combined_with_a_program_preview",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_source_required_for_new_draft_and_publication_without_inventing_legacy_metadata",
+    "status": "PASS"
+  },
+  {
+    "id": "announcements.test_categories.AnnouncementCategoryTests.test_upcoming_program_and_combined_filters_include_unrestricted_programs",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_approval_and_partial_application_roll_back_on_binding_audit_failure",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_disabled_workflows_and_unavailable_schema_do_not_apply_or_write",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_explicit_fixed_cutoff_is_used_without_changing_program_dates",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_future_policy_waits_then_applies_centrally_without_get_writes",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_global_approval_requires_authority_and_stale_requests_do_not_write",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_invalid_cutoff_preserves_intake_and_reports_blocker",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_missing_global_cutoff_and_unapproved_policy_cannot_bind",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_composite_program_uses_fixed_rules_and_current_weights_without_rewriting_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_program_uses_shared_approval_without_ewaf_permission_or_manual_binding",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_weight_approval_updates_unstarted_matching_drafts_only",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_one_shared_approval_binds_all_ready_matching_programs_and_is_idempotent",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_policy_editor_and_review_show_global_rule_and_preserve_old_policy_contract",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_shared_approval_and_new_weights_do_not_replace_published_fixed_binding",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_shared_approval_cannot_enable_manual_inputs_for_fixed_intake",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_shared_approval_does_not_replace_bound_policy_or_prior_run",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_announcement_opens_only_the_declared_allowed_decoder",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_accepts_png_and_jpeg_and_rewinds_stream",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_image_decoder_boundary.ImageDecoderBoundaryTests.test_portrait_rejects_disguised_gif_and_rewinds_stream",
+    "status": "PASS"
+  }
+]

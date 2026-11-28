@@ -256,6 +256,7 @@ def decide_registration(reference, *, user, data, action, address=None, source_e
                 queue_approval_email(intake, revision, user=actor)
             return intake
     except IntegrityError as error:
-        if error.args[0] != 1062:
+        from core.database_errors import is_unique_violation
+        if not is_unique_violation(error):
             raise
         raise ValidationError('This registration or member number is already in use. Reload before continuing.') from error

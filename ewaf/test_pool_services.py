@@ -318,7 +318,7 @@ class PoolServiceTests(ScoringHelpers, ConfigurationHelpers, EvidenceHelpers, Tr
         self.assertEqual(before, ProgramLog.objects.count())
 
     def test_schema_unchanged(self):
-        self.assertEqual(MigrationLoader(connection).graph.leaf_nodes('ewaf'), [('ewaf', '0008_operational_four')])
+        self.assertEqual(MigrationLoader(connection).graph.leaf_nodes('ewaf'), [('ewaf', '0012_dataset_policy_integration')])
 
     def test_empty_program_is_not_a_complete_calculation(self):
         program = create_program(ewaf_applicable=True)

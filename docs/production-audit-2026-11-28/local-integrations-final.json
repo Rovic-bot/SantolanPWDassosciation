@@ -1,0 +1,65 @@
+{
+  "conditions": "Loopback HTTPS Moto S3 emulator, synthetic bucket metadata and TLS SMTP capture; pinned application SDK; external sockets blocked; no hosted provider or actual recipient contacted.",
+  "tests": [
+    {
+      "id": "LOCAL-S3-01",
+      "objective": "Verified HTTPS upload, spooled download and size through the real adapter",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-02",
+      "objective": "Duplicate upload keeps original bytes and generates a distinct name",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-03",
+      "objective": "Anonymous wire request cannot read the private object",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-04",
+      "objective": "Public/signed storage URLs remain disabled",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-05",
+      "objective": "public metadata fails closed before writing an object",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-06",
+      "objective": "unavailable metadata fails closed before writing an object",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-07",
+      "objective": "Rejected bucket-metadata credential denies access",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-08",
+      "objective": "Synthetic object backup/delete/restore preserves names, hashes and private cache policy",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-S3-09",
+      "objective": "Cleanup leaves no synthetic objects",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-MAIL-01",
+      "objective": "Actual TLS SMTP submission preserves the generated PDF attachment",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-MAIL-02",
+      "objective": "SMTP rejection does not manufacture acceptance or retry",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCAL-MAIL-03",
+      "objective": "Interrupted acceptance is uncertain and does not automatically resend",
+      "status": "PASS"
+    }
+  ]
+}

@@ -27,6 +27,9 @@ class OneClickPublicationTests(TransactionTestCase):
     def setUp(self):
         require_disposable()
         self.user = get_user_model().objects.create_superuser('SYNTHETIC-PUBLISH', password='synthetic-only')
+        from .testsupport import approved_test_weights
+        if self._testMethodName != 'test_missing_vault_approval_rolls_back_authorization_and_audit':
+            approved_test_weights(self.user)
         self.program = save_program(user=self.user, data=program_data(benefit='SYNTHETIC purpose'))
         self.url = reverse('programs:manage_detail', args=[self.program.pk])
         self.client.force_login(self.user)
@@ -203,7 +206,8 @@ class OneClickPublicationTests(TransactionTestCase):
         Program.objects.filter(pk=self.program.pk).update(ewaf_applicable=True, slots=1, selection_method='', photo_instructions='')
         before = ProgramLog.objects.count()
         page = self.client.post(self.url, {'action': 'published', 'version': self.program.version})
-        self.assertContains(page, 'EWAF Configuration Vault')
+        self.assertEqual(page.status_code, 200)
+        self.assertTrue(page.context['publish_form'].errors)
         self.program.refresh_from_db()
         self.assertEqual(self.program.status, 'draft')
         self.assertIsNone(self.program.policy_authorized_at)
@@ -225,7 +229,7 @@ class OneClickPublicationTests(TransactionTestCase):
         self.assertEqual(program.status, 'published')
         config = OperationalConfiguration.objects.filter(program=program).first()
         self.assertEqual(config.vault_revision_id, weights.pk)
-        self.assertEqual(config.source['contract'], 'approved_weights_intake_v1')
+        self.assertEqual(config.source['contract'], 'dataset_program_terms_v1')
         self.assertIsNone(config.dataset_policy_id)
         self.assertTrue(program.registration_available)
         require_open(program)
@@ -330,6 +334,8 @@ class OneClickSharedPolicyTests(TransactionTestCase):
         configuration = latest_configuration(program)
         self.assertEqual(program.status, 'published')
         self.assertEqual(program.policy_authorized_by, self.user)
-        self.assertEqual(configuration.dataset_policy_id, policy.pk)
+        self.assertIsNone(configuration.dataset_policy_id)
+        self.assertEqual(configuration.source['contract'], 'dataset_program_terms_v1')
+        self.assertEqual(configuration.vault_revision_id, policy.weight_configuration_id)
         self.assertEqual(configuration.assessment_cutoff, program.registration_closes_at)
         self.assertEqual(configuration.validation['weights'], policy.weight_snapshot['weights'])

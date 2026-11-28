@@ -1,0 +1,10 @@
+{
+  "status": "LOCAL VERIFICATION PASSED; production deployment pending",
+  "baseline_commit": "d77159913f822487f916b332ab9d04c26da744ea",
+  "authorized_workspace": "My workspace",
+  "default_cases_passed": 3121,
+  "migrations_changed": false,
+  "original_development_status_entries_preserved": 1370,
+  "container_os_scan": "BLOCKED: operator chose to continue without local Docker",
+  "baseline_suite": "Frozen baseline still running; completion will be recorded in final report"
+}

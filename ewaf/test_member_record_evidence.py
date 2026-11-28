@@ -50,9 +50,8 @@ class MemberRecordEvidenceTests(TransactionTestCase):
                 other = create_program(registration_opens_at=self.base - timedelta(days=2),
                     registration_closes_at=self.base - timedelta(days=1))
                 old = application_fixture(other, member)
-                review_eligibility(old.pk, user=self.user, data=review_data(old))
-                decide_assistance(old.pk, user=self.user, data=decision_data(old))
-                record_release(old.pk, user=self.user, data=release_data(old))
+                from assistance.testsupport import historical_receipt
+                historical_receipt(old, self.user)
             app = application_fixture(self.program, member)
             app.source_snapshot = {'member_id': member.pk, 'member_version': member.version,
                 'program_version': self.program.version, 'membership_verified_at': timezone.now().isoformat(),
@@ -65,7 +64,7 @@ class MemberRecordEvidenceTests(TransactionTestCase):
 
     def findings(self, low=False, **changes):
         return {**evidence.periods(self.configuration), 'income_monthly': ['0' if low else '100000'] * 3,
-            'employment': 'Unemployed' if low else 'Full-Time Worker', 'household_members': 6 if low else 2,
+            'employment': 'Unemployed' if low else 'Employed', 'household_members': 6 if low else 2,
             'history_complete': True, 'assessment_finding': 'Fixture member record reviewed',
             'income_consistency': 'consistent', 'income_resolution': '', 'household_four_ps': False,
             'four_ps_household_confirmed': True, 'four_ps_household_review': 'Fixture household relationship reviewed',
@@ -122,23 +121,11 @@ class MemberRecordEvidenceTests(TransactionTestCase):
         app = self.applicant('RECORD-HTTP')
         url = reverse('ewaf:dataset_inputs', args=[app.pk])
         before = DatasetInputReview.objects.count(), ProgramLog.objects.count()
-        page = self.client.get(url)
-        self.assertContains(page, 'Accept ranking inputs')
-        self.assertContains(page, 'Member registration information')
-        self.assertNotContains(page, 'name="evidence_SES"')
-        self.assertNotContains(page, 'SYNTHETIC documented assessment')
+        from .test_dataset_policy import assert_read_only_bookmark
+        assert_read_only_bookmark(self, url,
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#readiness')
         self.assertEqual(before, (DatasetInputReview.objects.count(), ProgramLog.objects.count()))
-        data = self.findings()
-        data.update(expected=evidence.review_token(app, self.configuration), state='ACCEPTED',
-            reason='Fixture explicit review', confirmed='on', household_four_ps='no',
-            income_0='100000', income_1='100000', income_2='100000')
-        data.pop('income_monthly')
-        for key in evidence.periods(self.configuration):
-            data.pop(key)
-        self.assertEqual(self.client.post(url, data).status_code, 302)
-        page = self.client.get(url)
-        self.assertEqual(page.context['form'].initial['household_four_ps'], 'no')
-        self.assertFalse(any(key.startswith('evidence_') for key in page.context['form'].fields))
+        self.assertFalse(DatasetInputReview.objects.filter(application=app).exists())
 
     def test_member_source_changes_and_review_age_require_renewed_review(self):
         self.publish()

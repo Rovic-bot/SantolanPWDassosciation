@@ -110,15 +110,20 @@ def evaluate(application, *, context=None):
         add('eligibility', 'CHECKLIST_INCOMPLETE', case['id'] if case else None)
     if any(item.get('required') and item.get('result') != 'pass' for item in entries.values()):
         add('eligibility', 'CHECKLIST_FAILED', case['id'] if case else None)
-    policy = EvidencePolicyRevision.objects.filter(program=application.program).first()
+    policy = EvidencePolicyRevision.objects.select_related('terms_revision').filter(program=application.program).first()
     if policy:
         try:
             policy.clean()
         except ValidationError:
             add('governance', 'ARTIFACT_INTEGRITY_FAILED', policy.pk)
     assessments = []
-    for criterion in criterion_codes(policy.snapshot) if policy else CRITERIA:
-        row = CriterionAssessment.objects.filter(application=application, criterion=criterion).first()
+    criteria = criterion_codes(policy.snapshot) if policy else CRITERIA
+    from .intake_integration import source_adapter
+    intake = source_adapter()
+    if intake and intake.uses_sources(intake.configured(application.program)):
+        criteria = intake.required_criteria(application)
+    for criterion in criteria:
+        row = CriterionAssessment.objects.select_related('application', 'policy', 'previous').filter(application=application, criterion=criterion).first()
         detail = {'criterion': criterion, 'assessment': row.pk if row else None, 'state': row.state if row else 'MISSING', 'current': False}
         start = len(groups['criteria'])
         if not row:
@@ -129,7 +134,12 @@ def evaluate(application, *, context=None):
             if row.disputed:
                 add('criteria', 'EVIDENCE_DISPUTED', row.pk)
             if row.state == 'VERIFIED':
-                if row.source_manifest.get('evidence_contract_version') != 2:
+                if row.source_manifest.get('evidence_contract_version') == 3 and intake:
+                    try:
+                        intake.validate_assessment(row, application, context)
+                    except ValidationError as error:
+                        add('criteria', getattr(error, 'code', None) or 'CRITERION_EVIDENCE_UNSUPPORTED', row.pk)
+                elif row.source_manifest.get('evidence_contract_version') != 2:
                     add('criteria', 'EVIDENCE_CONTRACT_REVIEW_REQUIRED', row.pk)
                 else:
                     try:

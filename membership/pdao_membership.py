@@ -1,4 +1,6 @@
 """Explicit claimed-ID to pending Association intake; no automatic approval."""
+import re
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -77,6 +79,11 @@ def initial_data(claim):
     values = {name: source[name] for name in names if source.get(name)}
     # An explicitly blank middle name or suffix is part of the recorded name.
     values.update({name: source.get(name, '') for name in ('middle_name', 'suffix')})
+    # Stored PDAO mobile numbers include +63; the new-intake control expects
+    # the national digits. Normalize only this server-owned carried value.
+    phone = values.get('contact_number', '')
+    if re.fullmatch(r'\+639[0-9]{9}', phone):
+        values['contact_number'] = phone[3:]
     values.update(pwd_number=claim.pwd_number)
     if source.get('sex') in ('Male', 'Female'):
         values['gender'] = source['sex']

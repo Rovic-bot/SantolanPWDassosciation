@@ -15,11 +15,14 @@ from .tests import program_data, create_program
 from .test_ui_cleanup import seed_catalog
 
 
-@override_settings(PDAO_ENFORCEMENT_ENABLED=False, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True)
+@override_settings(PDAO_ENFORCEMENT_ENABLED=False, PROGRAM_APPLICATION_WORKFLOW_ENABLED=True,
+    EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True, EWAF_DATASET_SCORING_ENABLED=True)
 class ProgramBuilderTests(TestCase):
     def setUp(self):
         seed_catalog()
         self.admin = get_user_model().objects.create_superuser('synthetic_builder_admin')
+        from .testsupport import approved_test_weights
+        approved_test_weights(self.admin)
         self.client.force_login(self.admin)
         self.url = reverse('program_builder')
         self.headers = {'HTTP_X_PROGRAM_BUILDER': '1'}
@@ -41,35 +44,13 @@ class ProgramBuilderTests(TestCase):
                          f'requirements-{index}-is_required': 'on'})
         return data
 
-    def test_blank_disability_selection_includes_all_types_without_rewriting_terms(self):
-        from members.disability_catalog import current_types
-        from members.tests import create_member
-        from .services import require_disability, change_publication
+    def test_blank_disability_selection_requires_an_explicit_eligibility_profile(self):
         response = self.client.post(self.url, self.data(eligible_disability_types=[]), **self.headers)
         self.assertEqual(response.status_code, 200)
-        program = Program.objects.get()
-        self.assertTrue(program.allows_all_disability_types)
-        self.assertFalse(program.eligible_disability_types.exists())
-        types = list(current_types().filter(is_active=True))
-        self.assertEqual(list(program.eligibility_profile_types), types)
-        for item in types:
-            member = create_member(f'ALL-TYPES-{item.pk}')
-            member.disability_type = item
-            member.save(update_fields=['disability_type'])
-            member.disability_types.set([item])
-            require_disability(program, member)
-        change_publication(program.pk, user=self.admin, version=program.version, action='published')
-        program.refresh_from_db()
-        before = (program.version, program.history.count())
-        private = self.client.get(reverse('programs:manage_detail', args=[program.pk]))
-        self.assertContains(private, 'All disability types are automatically included')
-        self.assertContains(private, '<small>Included</small>', count=len(types), html=True)
-        public = Client().get(reverse('programs:detail', args=[program.pk]))
-        for item in types:
-            self.assertContains(public, item.name)
-        program.refresh_from_db()
-        self.assertEqual((program.version, program.history.count()), before)
-        self.assertFalse(program.eligible_disability_types.exists())
+        self.assertIn('eligible_disability_types', response.context['form'].errors)
+        self.assertNotContains(response, 'data-saved="true"')
+        self.assertFalse(Program.objects.exists())
+        self.assertFalse(ProgramLog.objects.exists())
 
     def test_selected_disability_types_remain_restricted_in_profile_and_screening(self):
         from members.disability_catalog import current_types
@@ -101,7 +82,7 @@ class ProgramBuilderTests(TestCase):
             self.assertContains(response, 'Add Requirements')
             self.assertNotContains(response, 'Additional documents or questions')
             self.assertContains(response, 'Draft program setup')
-            self.assertContains(response, 'aria-current="page">Program Management')
+            self.assertContains(response, 'aria-current="page"><span class="workspace-concern-label">Program Management</span>')
             self.assertNotContains(response, 'name="budget"')
             self.assertContains(response, 'data-range="registration"')
             self.assertContains(response, 'data-range="delivery"')
@@ -238,7 +219,7 @@ class ProgramBuilderTests(TestCase):
         self.assertEqual(secure.post(self.url, self.data(), **self.headers).status_code, 403)
 
     def test_published_builder_preserves_locked_terms_and_publish_permission(self):
-        item = create_program(benefit='Synthetic public support.')
+        item = create_program(ewaf_applicable=True, policy_authorized_by=self.admin, benefit='Synthetic public support.')
         url = reverse('programs:edit', args=[item.pk])
         published_at, authorized_at = item.published_at, item.policy_authorized_at
         response = self.client.get(url)

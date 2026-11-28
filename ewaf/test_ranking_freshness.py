@@ -88,6 +88,8 @@ class RankingFreshnessTests(TransactionTestCase):
         retained = deepcopy(run.payload())
         self.recheck(a)
         self.select(run, a)
+        from announcements.testsupport import publish_selection
+        publish_selection(self.program, self.user)
         record_release(a.pk, user=self.user, data=release_data(a))
         self.assertEqual(self.current(run).pk, run.pk)
         self.assertEqual(OperationalRun.objects.filter(program=self.program).count(), 1)

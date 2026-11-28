@@ -124,15 +124,18 @@ class QuickApprovalTests(ApprovalFixtures, TestCase):
 
 
 class LinkedQuickApprovalTests(HandoffHelpers, TestCase):
-    def test_linked_intake_retains_both_review_audits(self):
+    def test_linked_intake_cannot_bypass_registration_review(self):
         self.setup_handoff()
         intake = self.make()
         application = self.prepare(intake)
-        approved = services.approve_checked_application(application.reference, user=self.actor,
-            version=application.version, verified=True)
-        self.assertEqual(approved.status, 'approved')
-        self.assertEqual(intake.actions.filter(action='membership_verification').count(), 1)
-        self.assertEqual(intake.actions.filter(action='membership_approved').count(), 1)
+        before = list(intake.actions.order_by('pk').values())
+        with self.assertRaisesMessage(ValidationError, 'Use the Association membership review'):
+            services.approve_checked_application(application.reference, user=self.actor,
+                version=application.version, verified=True)
+        application.refresh_from_db()
+        self.assertEqual(application.status, 'pending')
+        self.assertFalse(Member.objects.exists())
+        self.assertEqual(list(intake.actions.order_by('pk').values()), before)
 
 
 class QuickApprovalConcurrencyTests(ApprovalFixtures, TransactionTestCase):

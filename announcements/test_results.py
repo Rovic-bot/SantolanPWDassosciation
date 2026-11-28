@@ -12,6 +12,7 @@ from programs.models import PhotoVerification
 from programs.tests import create_program
 from programs.testsupport import private_media, application_fixture, close_non_ewaf_program
 from .models import Announcement, ProgramResultRevision
+from assistance.testsupport import historical_selection
 from .results import prepare_results, mask_identity, RESULT_PERMISSIONS
 from .services import change_publication
 
@@ -21,7 +22,7 @@ def mock_pdf_conversion(test):
     # Real conversion and visual verification are exercised separately.
     import hashlib
     converter = patch('announcements.certificate_delivery.certificate_pdfs',
-        side_effect=lambda documents: [b'%PDF-1.4\n% synthetic ' + hashlib.sha256(doc).hexdigest().encode()
+        side_effect=lambda documents, render=None: [b'%PDF-1.4\n% synthetic ' + hashlib.sha256(render(doc) if render else doc).hexdigest().encode()
                                       + b'\n%%EOF\n' for doc in documents])
     test.pdf_converter = converter.start()
     test.addCleanup(converter.stop)
@@ -33,17 +34,18 @@ class ProgramResultTests(TestCase):
         private_media(self)
         seed_statuses()
         self.admin = get_user_model().objects.create_superuser('result_admin')
-        self.program = create_program(eligible_disability_types=[], slots=2)
+        self.program = create_program(slots=2)
         self.member = create_member('RESULT-001')
         self.member.full_name = 'Juan Dela Cruz'
         self.member.save()
         self.application = application_fixture(self.program, self.member)
-        review_eligibility(self.application.pk, user=self.admin, data=review_data(self.application))
+        historical_selection(self.application, self.admin)
         close_non_ewaf_program(self.program)
         self.client.force_login(self.admin)
 
     def draft(self, version=0):
-        return prepare_results(self.program.pk, user=self.admin, version=version, reason='Reviewed official decisions and approved public information.')
+        return prepare_results(self.program.pk, user=self.admin, version=version, reason='Reviewed official decisions and approved public information.',
+            selection_reason='Synthetic retained decisions meet the recorded program criteria.')
 
     def publish(self, item):
         return change_publication(item.pk, user=self.admin, version=item.version, action='published')
@@ -55,8 +57,8 @@ class ProgramResultTests(TestCase):
         self.assertEqual(public.get(url).status_code, 404)
         item = self.publish(item)
         notice = public.get(url)
-        self.assertContains(notice, reverse('core:result_detail', args=[item.pk]))
-        self.assertNotContains(notice, 'J*** D*** C***')
+        self.assertContains(notice, 'J*** D*** C***')
+        self.assertNotContains(notice, self.member.full_name)
         response = public.get(reverse('core:result_detail', args=[item.pk]))
         self.assertContains(response, 'J*** D*** C***')
         self.assertContains(response, '****' + self.application.public_reference[-4:])
@@ -87,8 +89,7 @@ class ProgramResultTests(TestCase):
         other_member.full_name = 'Private Other Person'
         other_member.save()
         other = application_fixture(self.program, other_member)
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other, decision='rejected'))
+        historical_selection(other, self.admin, selected=False)
         item = self.publish(self.draft())
         payload = item.result_revision.public_payload
         self.assertEqual(payload['eligible_count'], 2)
@@ -116,7 +117,7 @@ class ProgramResultTests(TestCase):
 
     def test_receipt_keeps_selection_public_but_void_requires_review(self):
         item = prepare_results(self.program.pk, user=self.admin, version=0,
-            reason='Reviewed selected members for delivery.', roster=True)
+            reason='Reviewed selected members for delivery.', recorded=True, selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         item = self.publish(item)
         release = record_release(self.application.pk, user=self.admin, data=release_data(self.application))
         url = reverse('announcements:detail', args=[item.pk])
@@ -190,10 +191,10 @@ class ProgramResultTests(TestCase):
     def test_permission_separation_and_forged_public_rows_ignored(self):
         editor = get_user_model().objects.create_user('result_editor', is_staff=True)
         grant(editor, 'accounts.access_dashboard', *RESULT_PERMISSIONS, 'announcements.add_announcement', 'announcements.change_announcement')
-        item = prepare_results(self.program.pk, user=editor, version=0, reason='Reviewed official record.')
+        item = prepare_results(self.program.pk, user=editor, version=0, reason='Reviewed official record.', selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         with self.assertRaises(PermissionDenied):
             change_publication(item.pk, user=editor, version=item.version, action='published')
-        self.client.post(reverse('announcements:manage_detail', args=[item.pk]),
+        self.client.post((reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1'),
             {'version':item.version, 'action':'published','confirm':'on', 'applicant_rows':'private injected name'})
         item.refresh_from_db()
         self.assertEqual(item.status, 'published')
@@ -201,7 +202,7 @@ class ProgramResultTests(TestCase):
 
     def test_csrf_and_confirmation_required(self):
         item = self.draft()
-        url = reverse('announcements:manage_detail', args=[item.pk])
+        url = (reverse('announcements:manage_detail', args=[item.pk]) + '?popup=1')
         csrf = Client(enforce_csrf_checks=True); csrf.force_login(self.admin)
         self.assertEqual(csrf.post(url, {'version':item.version,'action':'published','confirm':'on'}).status_code, 403)
         self.client.post(url, {'version':item.version,'action':'published'})
@@ -239,8 +240,7 @@ class ProgramResultTests(TestCase):
         other = ProgramApplication.objects.create(program=self.program, member=member,
             public_reference='OLD-' + self.application.public_reference[-4:])
         verified_photo(other)
-        review_eligibility(other.pk, user=self.admin, data=review_data(other))
-        decide_assistance(other.pk, user=self.admin, data=decision_data(other))
+        historical_selection(other, self.admin)
         item = self.publish(self.draft())
         self.assertTrue(all(row['ambiguous'] for row in item.result_revision.public_payload['rows']))
         self.assertContains(Client().get(reverse('core:result_detail', args=[item.pk])), 'Similar entry')
@@ -273,9 +273,8 @@ class ResultPublicationConcurrencyTests(TransactionTestCase):
         admin = get_user_model().objects.create_superuser('concurrent_result_admin')
         program = create_program(eligible_disability_types=[])
         application = application_fixture(program, create_member('CONCURRENT-RESULT'))
-        review_eligibility(application.pk, user=admin, data=review_data(application))
+        historical_selection(application, admin)
         close_non_ewaf_program(program)
-        decide_assistance(application.pk, user=admin, data=decision_data(application))
         for action in ('prepare', 'publish'):
             barrier = Barrier(2)
             item = Announcement.objects.filter(program=program).first()
@@ -286,7 +285,7 @@ class ResultPublicationConcurrencyTests(TransactionTestCase):
                     barrier.wait(timeout=10)
                     try:
                         if action == 'prepare':
-                            prepare_results(program.pk, user=user, version=0, reason='Concurrent reviewed preparation.')
+                            prepare_results(program.pk, user=user, version=0, reason='Concurrent reviewed preparation.', selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
                         else:
                             change_publication(item.pk, user=user, version=item.version, action='published')
                     except ValidationError:

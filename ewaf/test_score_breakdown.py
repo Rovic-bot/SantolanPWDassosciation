@@ -177,7 +177,10 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         self.guide_url = reverse('ewaf:operational_calculation_guide', args=[self.program.pk])
 
     def test_empty_tab_never_generates_a_calculation(self):
-        for url in (self.url, self.guide_url):
+        self.assertRedirects(self.client.get(self.guide_url),
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + '#results')
+        self.assertEqual(self.client.post(self.guide_url, {}).status_code, 405)
+        for url in (self.url,):
             response = self.client.get(url)
             self.assertContains(response, 'No calculation yet')
             self.assertContains(response, 'Go to Generate EWAF')
@@ -207,11 +210,8 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         self.assertTrue(response.context['active'])
         self.assertIn('no-store', response['Cache-Control'])
         guide = self.client.get(self.guide_url, {'run': run.pk})
-        self.assertContains(guide, 'How Calculation Works')
-        self.assertContains(guide, 'approved historical configuration')
-        self.assertContains(guide, 'data-rule-criterion="ND"')
-        self.assertNotContains(guide, 'data-rule-criterion="HM"')
-        self.assertNotContains(guide, 'verified 4Ps adjustment')
+        self.assertRedirects(guide, reverse('ewaf:operational_workspace', args=[self.program.pk]) +
+            f'?run={run.pk}#results')
         self.assertIn('no-store', guide['Cache-Control'])
         self.assertEqual(LogEntry.objects.count(), audit_count)
         self.assertFalse(OperationalDecision.objects.exists())
@@ -220,7 +220,7 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         self.assertEqual(run.payload(), retained)
         workspace = self.client.get(reverse('ewaf:operational_workspace', args=[self.program.pk]))
         self.assertContains(workspace, self.url)
-        self.assertContains(workspace, self.guide_url + '?run=' + str(run.pk))
+        self.assertNotContains(workspace, self.guide_url)
 
     def test_historical_and_stale_results_keep_saved_values(self):
         self.lock_policy()
@@ -229,16 +229,15 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         url_data = {'run': run.pk, 'applicant': str(self.application.pk)}
         response = self.client.get(self.url, url_data)
         self.assertFalse(response.context['active'])
-        self.assertContains(response, 'Saved calculation — renewed review needed.')
+        self.assertContains(response, response.context['ranking_notice'])
+        self.assertTrue(response.context['ranking_notice'])
         saved = deepcopy(response.context['selected']['traces'])
         models.QuerySet.update(Member.objects.filter(pk=self.member.pk), monthly_income='999999', dependents=77)
         response = self.client.get(self.url, url_data)
         self.assertEqual(response.context['selected']['traces'], saved)
         self.assertNotContains(response, '999999')
-        guide = self.client.get(self.guide_url, url_data)
-        self.assertFalse(guide.context['active'])
-        self.assertContains(guide, 'Saved calculation — renewed review needed.')
-        self.assertNotContains(guide, '999999')
+        self.assertRedirects(self.client.get(self.guide_url, url_data),
+            reverse('ewaf:operational_workspace', args=[self.program.pk]) + f'?run={run.pk}#results')
         self.assertEqual(self.client.get(self.url).context['run'].pk, current.pk)
 
     def test_permissions_invalid_identifiers_and_cross_program_requests_fail_closed(self):
@@ -255,7 +254,8 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         other = create_program(ewaf_applicable=True)
         for route in ('ewaf:operational_breakdown', 'ewaf:operational_calculation_guide'):
             self.assertEqual(self.client.get(reverse(route, args=[other.pk]), {'run': run.pk}).status_code, 404)
-        for url in (self.url, self.guide_url):
+        self.assertEqual(self.client.get(self.guide_url, {'run': 'invalid'}).status_code, 404)
+        for url in (self.url,):
             for data in ({'run': 'invalid'}, {'applicant': 'not-in-this-run'}):
                 self.assertEqual(self.client.get(url, data).status_code, 404)
 
@@ -268,14 +268,14 @@ class ScoreBreakdownViewTests(OperationalHelpers, TransactionTestCase):
         before = OperationalDecision.objects.count(), LogEntry.objects.count()
         workspace = reverse('ewaf:operational_workspace', args=[self.program.pk])
         for response in (self.client.get(workspace), self.client.post(workspace, {'action': 'DECISION'})):
-            self.assertContains(response, 'Saved calculation needs review')
+            self.assertContains(response, 'This saved ranking could not be verified.')
             self.assertNotContains(response, '99.123456')
             self.assertNotContains(response, 'Record beneficiary decision')
         export = self.client.get(reverse('ewaf:operational_export', args=[self.program.pk, run.pk]))
         self.assertEqual(export.status_code, 409)
         self.assertNotIn(b'99.123456', export.content)
         self.assertEqual(before, (OperationalDecision.objects.count(), LogEntry.objects.count()))
-        for url in (self.url, self.guide_url):
+        for url in (self.url,):
             response = self.client.get(url)
             self.assertContains(response, 'This saved calculation could not be verified.', status_code=409)
             self.assertNotContains(response, '99.123456', status_code=409)

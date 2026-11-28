@@ -61,11 +61,11 @@ class PrpwdRegistrationTests(DecisionHelpers, TestCase):
         url = reverse('membership:registration_encode', args=['walk_in'])
         response = self.client.get(url)
         data = self.data(self.make())
-        for name in ('version', 'action'):
-            data.pop(name)
+        for name in ('version', 'action', 'office_verification_confirmed'):
+            data.pop(name, None)
         data['context_id'] = response.context['context_id']
         response = self.client.post(url, data, follow=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.context['form'].errors if response.status_code == 400 else '')
         intake = RegistrationIntake.objects.get(channel='walk_in')
         self.assertEqual(response.context['editor_form'].initial['prpwd_lookup_number'], data['pwd_number'])
         self.assertContains(response, 'data-prpwd-review')

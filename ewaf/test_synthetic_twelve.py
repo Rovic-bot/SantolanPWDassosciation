@@ -176,30 +176,37 @@ class ExistingRegressionDiagnosisTests(TransactionTestCase):
 
     def test_historical_policy_needs_explicit_shared_cutoff_to_be_ready(self):
         from .test_document_ranking import DocumentRankingTests
-        from .revised.live_models import SharedDatasetPolicy
+        from .test_dataset_policy import DatasetPolicyTests
+        from .revised import shared_application as shared
         DocumentRankingTests.setUp(self)
-        data = {'expected': policies.token(), 'weight': self.weights.pk,
-                'reason': 'SYNTHETIC investigation of existing regression expectation'}
-        for key, entry in self.content['choices'].items():
-            if contracts.applicable(self.content, key):
-                data[key], data['specified_' + key] = entry['value'], 'on'
-        url = reverse('ewaf:dataset_policies')
-        self.assertEqual(self.client.post(url, data).status_code, 302)
-        draft = SharedDatasetPolicy.objects.first()
-        self.assertEqual(contracts.findings(draft.content, draft.weight_snapshot),
+        historical_content = deepcopy(self.content)
+        historical_content.pop('program_application', None)
+        draft = DatasetPolicyTests.draft(self, historical_content)
+        # Retained explicit program bindings stay valid; opting into the shared
+        # application contract requires its own cutoff choice.
+        self.assertEqual(contracts.findings(draft.content, draft.weight_snapshot), [])
+        shared_content = deepcopy(historical_content)
+        shared_content['program_application'] = {'version': shared.VERSION, 'scope': shared.SCOPE,
+            'cutoff_rule': '', 'cutoff_at': ''}
+        shared_draft = DatasetPolicyTests.draft(self, shared_content)
+        self.assertEqual(contracts.findings(shared_draft.content, shared_draft.weight_snapshot),
             ['C: choose the shared assessment cutoff rule once in the Configuration Vault.'])
-        self.assertEqual(self.client.post(url, data | {'expected': policies.token(),
-            'shared_cutoff': 'application_close'}).status_code, 302)
-        revised = SharedDatasetPolicy.objects.first()
+        content = deepcopy(self.content)
+        content['program_application'] = {'version': shared.VERSION, 'scope': shared.SCOPE,
+            'cutoff_rule': 'application_close', 'cutoff_at': ''}
+        revised = DatasetPolicyTests.draft(self, content)
         self.assertEqual(contracts.findings(revised.content, revised.weight_snapshot), [])
         self.assertNotEqual(revised.pk, draft.pk)
+        url = reverse('ewaf:dataset_policies')
+        self.assertRedirects(self.client.get(url), reverse('ewaf:vault'))
+        self.assertEqual(self.client.post(url, {}).status_code, 405)
 
     def test_approved_handoff_is_visible_in_detail_and_absent_from_pending_inbox(self):
         require_disposable()
         helper = HandoffHelpers()
         helper.addCleanup, helper.assertTrue = self.addCleanup, self.assertTrue
         helper.setup_handoff()
-        intake = helper.make()
+        intake = helper.make(channel='walk_in')
         helper.approve(helper.verify(helper.prepare(intake)))
         self.client.force_login(helper.actor)
         self.assertNotContains(self.client.get(reverse('membership:registration_inbox')), 'Membership: Approved')
@@ -221,13 +228,28 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
         self.clock = patch('django.utils.timezone.now', return_value=NOW)
         self.clock.start()
         self.addCleanup(self.clock.stop)
+        # Model defaults capture the original callable at import time. Keep
+        # their audit timestamps on the same synthetic clock as publication,
+        # including nested historical dates used below.
+        from django.apps import apps
+        from django.db.models import DateTimeField
+        for model in apps.get_models():
+            for field in model._meta.local_fields:
+                default = field.default
+                if (isinstance(field, DateTimeField)
+                        and getattr(default, '__module__', '') == 'django.utils.timezone'
+                        and getattr(default, '__name__', '') == 'now'):
+                    clock_default = patch.object(field, '_get_default', lambda: timezone.now())
+                    clock_default.start()
+                    self.addCleanup(clock_default.stop)
         seed_statuses()
         self.actor = self.user = get_user_model().objects.create_superuser('SYNTHETIC-TWELVE-ADMIN', password='synthetic-only')
         self.client.force_login(self.user)
         self.doc_type = DocumentType.objects.create(name='SYNTHETIC reviewed income, household, employment and ledger coverage')
         self.requirement = MembershipDocumentRequirement.objects.create(document_type=self.doc_type)
         DisabilityType.objects.get_or_create(name='Visual Disability')
-        MembershipSettings.objects.create(pk=1, prpwd_url='https://registry.example.test/manual')
+        MembershipSettings.objects.update_or_create(pk=1, defaults={
+            'prpwd_url': 'https://registry.example.test/manual'})
         self.policy = acceptance_policy() | pdf_policy() | {'onsite_enabled': True, 'handoff_enabled': True}
         self.policy['applicant_profile'] = pdf_policy()['applicant_profile']
         self.options = override_settings(ASSOCIATION_REGISTRATION_POLICY=self.policy)
@@ -253,7 +275,7 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
             label, first, last, income, p, employment, count, household = row
             data = association_data() | {'first_name': first, 'last_name': last,
                 'pwd_number': f'00-0000-000-{i:07d}', 'house_street': f'{i} Fictional Fixture Lane',
-                'contact_number': f'0900000{i:04d}', 'email': f'{label.lower()}@example.test',
+                'contact_number': f'900000{i:04d}', 'email': f'{label.lower()}@example.test',
                 'household_monthly_income': str(income), 'four_ps_member': 'Yes' if p else 'No',
                 'employment_status': employment, 'household_members': str(household),
                 'family_members': str(household)}
@@ -297,8 +319,8 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
         program = save_program(user=self.user, data=program_data(name=name, benefit='SYNTHETIC delivered support',
             slots=12, ewaf_applicable=ewaf, registration_opens_at=opens, registration_closes_at=closes,
             selection_method='SYNTHETIC reviewed ' + ('EWAF with separate human selection' if ewaf else 'committee selection')))
-        change_publication(program.pk, user=self.user, version=program.version,
-            action='authorize_policy', notes='SYNTHETIC program authorization only')
+        from programs.testsupport import historical_policy_authorization
+        historical_policy_authorization(program, self.user)
         program.refresh_from_db()
         terms = TermsHelpers()
         terms.program, terms.officer = program, self.user
@@ -312,39 +334,36 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
 
     def apply(self, program, member):
         grant, outcome, _ = verify(program.pk, version=program.version, control_number=member.control_number,
-            full_name=member.full_name, birthdate=member.birthdate, contact_number=member.contact_number)
+            full_name=member.full_name)
         self.assertEqual(outcome, 'passed')
         app = submit_application(program.pk, grant=grant,
             data={'version': program.version, 'applicant_name': member.full_name,
                 'applicant_contact': member.contact_number, 'applicant_email': member.email,
                 'pwd_id_number': member.registration_profile['pwd_number'], 'current_information': 'unchanged',
                 'change_details': '', 'confirm_information': True},
-            files=MultiValueDict({'calendar_photo': [image_upload()]}))
-        review_photo(app.pk, user=self.user, data={'version': app.version, 'photo_id': app.current_photo_id,
-            'outcome': 'VERIFIED', 'reason': 'SYNTHETIC accepted identity evidence', 'confirm': True})
+            files=MultiValueDict())
+        self.assertIsNone(app.current_photo_id)
         review_eligibility(app.pk, user=self.user, data=review_data(app))
         app.refresh_from_db()
         self.assertEqual(app.status, 'ELIGIBLE')
         return app
 
     def history(self):
+        # Prior delivered assistance predates mandatory EWAF. Seed retained
+        # fictional receipts instead of replaying the retired approval route.
+        from programs.tests import create_program
+        from programs.testsupport import application_fixture
+        from assistance.testsupport import historical_receipt
         for batch in range(4):
             day = BASE - timedelta(days=12 - batch * 2)
             with patch('django.utils.timezone.now', return_value=day):
-                program = self.program(f'SYNTHETIC prior delivery batch {batch + 1}', ewaf=False,
-                    opens=day + timedelta(hours=1), closes=day + timedelta(hours=3))
-                self.publish(program)
-            apps = []
-            with patch('django.utils.timezone.now', return_value=day + timedelta(hours=2)):
+                program = create_program(name=f'SYNTHETIC retained delivery batch {batch + 1}',
+                    ewaf_applicable=False, registration_opens_at=day - timedelta(days=2),
+                    registration_closes_at=day - timedelta(days=1))
                 for row in ROWS:
                     if row[6] > batch:
-                        apps.append(self.apply(program, self.members[row[0]]))
-            with patch('django.utils.timezone.now', return_value=day + timedelta(hours=4)):
-                for app in apps:
-                    decide_assistance(app.pk, user=self.user, data=decision_data(app))
-                    self.releases.append(record_release(app.pk, user=self.user, data=release_data(app,
-                        reference=f'SYNTHETIC-RELEASE-{batch + 1}-{app.member_id}',
-                        notes='SYNTHETIC confirmed delivery, not an application or selection count')))
+                        app = application_fixture(program, self.members[row[0]])
+                        self.releases.append(historical_receipt(app, self.user))
         self.assertEqual(AssistanceRelease.objects.filter(voided_at__isnull=True).count(), 27)
         for release in self.releases:
             self.assertIsNone(release.voided_at)
@@ -389,10 +408,10 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
         member = self.members[label]
         return {**evidence.periods(self.configuration),
             'income_monthly': [str(member.household_monthly_income)] * 3,
-            'employment': TEST_EMPLOYMENT[member.employment_status][0],
+            'employment': 'Employed' if member.employment_status == 'employed' else 'Unemployed',
             'household_members': member.household_members, 'history_complete': True,
             'assessment_finding': 'SYNTHETIC reviewed registered inputs; complete 12-month ledger coverage. '
-                'Test-only accepted ES: Employed=1, Unemployed=4. No production mapping.',
+                'Current employment categories: Employed=1, Unemployed=5.',
             'income_consistency': 'consistent', 'income_resolution': '',
             'household_four_ps': member.registration_profile['four_ps_member'] == 'Yes',
             'four_ps_household_confirmed': True,
@@ -502,8 +521,11 @@ class SyntheticTwelveIntegrationTests(StaticLiveServerTestCase):
         app = self.apps['T03']
         before = DatasetInputReview.objects.count()
         invalid = [dict(income_monthly=[]), dict(household_four_ps=None), dict(household_four_ps='unverified'),
-            dict(four_ps_household_confirmed=False), dict(employment='Employed'),
-            dict(employment='Self-employed'), dict(employment='Student'), dict(employment='Retired'),
+            # Current employment categories include Employed, Student and
+            # Retired. Exercise unresolved/unlisted values without treating
+            # those approved categories as invalid historical aliases.
+            dict(four_ps_household_confirmed=False), dict(employment=None),
+            dict(employment=''), dict(employment='Unknown'), dict(employment='Unverified'),
             dict(history_complete=False), dict(household_members=None), dict(household_members=0),
             dict(household_members=-1), dict(household_members=1.5)]
         for change in invalid:

@@ -199,10 +199,10 @@ class MemberWriterTests(SourceHelpers, TransactionTestCase):
         start = max(i for i, q in enumerate(locks) if 'programs_programtermslock' in q)
         locks = locks[start:]
         self.assertIn('ewaf_authoritygeneration', locks[1])
-        self.assertTrue(all('FROM `programs_program`' in q for q in locks[2:4]))
+        self.assertTrue(all(('FROM ' + connection.ops.quote_name('programs_program')) in q for q in locks[2:4]))
         self.assertTrue(all('ewaf_programsourcestate' in q for q in locks[4:6]))
         self.assertIn('programs_programapplication', locks[6])
-        self.assertIn('FROM `members_member`', locks[7])
+        self.assertIn(('FROM ' + connection.ops.quote_name('members_member')), locks[7])
         self.assertNotIn('JOIN', locks[7])
 
     def test_separate_connections_conflict_across_complete_scope(self):

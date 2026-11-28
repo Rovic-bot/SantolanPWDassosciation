@@ -110,6 +110,8 @@ class UnselectAssistanceTests(TransactionTestCase):
 
     def test_actual_release_cannot_be_undone_by_selection_button(self):
         a, _, run, selected = self.selected()
+        from announcements.testsupport import publish_selection
+        publish_selection(a.program, self.user)
         record_release(a.pk, user=self.user, data=release_data(a))
         before = OperationalDecision.objects.count()
         page = self.client.get(self.url(run), {'review': str(a.pk)})

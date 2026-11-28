@@ -120,16 +120,18 @@ class Builder:
 
     def make_program(self, title, category='Food & Nutrition', slots=20, *, ewaf=True, offset=-20, close=-2,
                      draft=False, disability_ids=()):
-        from programs.services import save_program_with_requirements, change_publication
+        from program_intake.fixtures import retained_program_with_requirements
+        from members.models import DisabilityType
+        from programs.models import Program
         with patch('django.utils.timezone.now', return_value=self.now + timedelta(days=offset)):
-            program = save_program_with_requirements(user=self.actor, data={
+            program = retained_program_with_requirements(user=self.actor, data={
                 'name': title, 'description': 'Fictional ' + title + '. Review evidence, compare applicants and record a reasoned decision. '
                     'Any PDAO review recorded here is simulated and has no external authority.',
                 'assistance_type': category, 'registration_opens_at': self.now + timedelta(days=offset - 1),
                 'registration_closes_at': self.now + timedelta(days=close), 'starts_at': self.now + timedelta(days=max(close + 2, 2)),
                 'ends_at': self.now + timedelta(days=max(close + 5, 5)), 'slots': slots,
                 'requirements': 'Verified membership and current required evidence; functional need reviewed for this program.',
-                'eligible_disability_types': list(disability_ids), 'ewaf_applicable': ewaf,
+                'eligible_disability_types': list(disability_ids) or list(DisabilityType.objects.filter(is_active=True).values_list('pk', flat=True)), 'ewaf_applicable': ewaf,
                 'selection_method': TEST + ' Reasoned human selection within slots; scores do not automatically select.',
                 'photo_instructions': 'Review the artificial portrait as fictional evidence only.',
                 'resubmission_closes_at': self.now + timedelta(days=90), 'version': 0, 'notes': TEST},
@@ -138,7 +140,9 @@ class Builder:
             if not draft:
                 approve_terms(program, self.actor)
                 program.refresh_from_db()
-                change_publication(program.pk, user=self.actor, version=program.version, action='published', notes=TEST)
+                program.refresh_from_db()
+            else:
+                Program.objects.filter(pk=program.pk).update(status='draft', published_at=None)
                 program.refresh_from_db()
         self.programs.append(program)
         self.applications[str(program.pk)] = []
@@ -225,12 +229,12 @@ class Builder:
         self.evidence[str(program.pk)] = evidence
         sources = {'SI': 'income_category', 'ES': 'employment_status', 'PA': 'successful_releases', 'ND': 'dependent_count'}
         encodings = {'SI': {key: str(5 - i) for i, (key, _) in enumerate(INCOME)},
-                     'ES': {'employed': '0', 'self_employed': '1', 'student': '2', 'retired': '3'}}
+                     'ES': {'employed': '0', 'self_employed': '1', 'student': '2', 'retired': '3', 'unemployed': '4'}}
         rules = {code: {'measure': TEST, 'source_type': sources[code],
             'value_type': 'category' if code in encodings else 'integer', 'unit': unit,
             'direction': 'inverse' if code == 'PA' else 'benefit', 'encoding': encodings.get(code),
             'bounds': {'method': 'fixed', 'lower': '0', 'upper': upper}, 'observation_period': 'Current verified fictional profile',
-            'edge_cases': 'block'} for code, upper, unit in [('SI', '5', 'category'), ('ES', '3', 'category'), ('PA', '4', 'records'), ('ND', '8', 'persons')]}
+            'edge_cases': 'block'} for code, upper, unit in [('SI', '5', 'category'), ('ES', '4', 'category'), ('PA', '4', 'records'), ('ND', '8', 'persons')]}
         rules['PA']['observation_period'] = 'All retained successful releases'
         policy = {'authority_reference': TEST, 'authorized_scope': 'Only this isolated fictional testing program',
             'approval_date': str(self.now.date() - timedelta(days=30)), 'effective_from': (self.now - timedelta(days=30)).isoformat(),
@@ -390,7 +394,7 @@ class Builder:
                     change_publication(item.pk, user=self.actor, version=item.version, action='archived')
         for program in self.programs[:2]:
             assert AssistanceRelease.objects.successful().filter(application__program=program).exists()
-            revision = prepare_results(program.pk, user=self.actor, version=0, reason=TEST, recipients=True)
+            revision = prepare_results(program.pk, user=self.actor, version=0, reason=TEST, recipients=True, selection_reason=TEST + ' Fictional reviewed recipient records.')
             publish_results(revision.pk, user=self.actor, version=revision.version)
 
     def observances(self):
@@ -399,7 +403,8 @@ class Builder:
         from events.services import save_observance, change_observance_publication
         for reference in REFERENCE_CATALOGUE:
             item = save_observance(user=self.actor, data={**asdict(reference), 'version': 0,
-                'image_alt': '', 'notes': TEST + ' Reference calendar copied as fictional published content.'})
+                'image_alt': '', 'target_audience': 'Fictional members and their caregivers',
+                'notes': TEST + ' Reference calendar copied as fictional published content.'})
             change_observance_publication(item.pk, user=self.actor, version=item.version, action='published', notes=TEST)
 
     def finish(self):

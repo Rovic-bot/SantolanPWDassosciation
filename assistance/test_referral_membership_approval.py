@@ -6,7 +6,7 @@ from django.urls import reverse
 from members.models import Member
 from membership.test_registration_decisions import DecisionHelpers
 from . import referral_services as service
-from .referral_models import ReferralGrant
+from .referral_models import ReferralGrant, ReferralTicket
 from .test_referrals import Fixtures
 
 
@@ -16,11 +16,20 @@ class AssociationApprovalReferralTests(DecisionHelpers, Fixtures, TestCase):
     def setUp(self):
         Fixtures.setUp(self)
         self.setup_decisions()
-        intake = self.make(data={'contact_number': '09170000001'})
+        intake = self.make(data={'contact_number': '9170000001'})
         self.intake = self.decide(intake, data=DecisionHelpers.data(
-            self, intake, contact_number='09170000001'))
+            self, intake, contact_number='+639170000001'))
         self.member = Member.objects.select_related('application').get(
             application=self.intake.membership_application)
+        # Exercise retained Association approvals without independent PRPWD
+        # proof. Current new approvals now record that proof, so leaving it in
+        # this fixture would bypass the audit-backed fallback under test.
+        application = self.member.application
+        application.prpwd_verified = None
+        application.prpwd_verified_at = None
+        application.prpwd_verified_by = None
+        application.save(update_fields=['prpwd_verified', 'prpwd_verified_at',
+                                       'prpwd_verified_by'])
         self.verification = dict(control_number=self.member.control_number,
                                  full_name=self.member.full_name)
 
@@ -28,12 +37,17 @@ class AssociationApprovalReferralTests(DecisionHelpers, Fixtures, TestCase):
         application = self.member.application
         self.assertIsNone(application.prpwd_verified)
         self.assertIsNone(application.prpwd_verified_at)
-        response = self.client.post(reverse('assistance:referral_verify'), {
+        url = reverse('assistance:referral_verify')
+        page = self.client.get(url)
+        response = self.client.post(url, {
+            **{key: value for key, value in self.data.items() if key != 'acknowledgement'},
+            'request_key': page.context['form']['request_key'].value(),
             'control_number': ' ' + self.member.control_number + ' ',
             'full_name': '  ' + self.member.full_name.upper() + '  ',
         })
-        self.assertRedirects(response, reverse('assistance:referral_apply'))
-        ticket = self.submit()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.client.get(response.url).status_code, 200)
+        ticket = ReferralTicket.objects.get(member=self.member)
         self.assertEqual(ticket.member_id, self.member.pk)
         application.refresh_from_db()
         self.assertIsNone(application.prpwd_verified)

@@ -105,6 +105,14 @@ class IntakeValidationTests(SimpleTestCase):
                     self.assertFalse(form.is_valid())
                     self.assertIn('contact_number', form.errors)
 
+    def test_new_intake_field_errors_are_reported_once(self):
+        for cls, data, kwargs in self.cases():
+            for name, value in (('contact_number', '09171234567'), ('email', 'invalid'), ('first_name', '')):
+                with self.subTest(form=cls.__name__, field=name):
+                    form = cls(data | {name: value}, **kwargs)
+                    self.assertFalse(form.is_valid())
+                    self.assertEqual(len(form.errors[name]), 1, form.errors[name])
+
     @patch('membership.intake_validation.timezone.localdate', return_value=date(2026, 11, 14))
     def test_fifth_birthday_boundary_and_guardian_for_minors(self, _today):
         for cls, data, kwargs in self.cases():

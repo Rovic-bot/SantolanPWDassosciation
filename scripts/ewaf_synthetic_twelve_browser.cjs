@@ -29,9 +29,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
     const expected = JSON.parse(process.env.QA_EXPECTED);
     for (const row of await page.locator('#results table tbody tr').all()) {
       const name = await row.locator('th a').innerText();
-      const cells = await row.locator('td').allTextContents();
-      assert.equal(parseInt(cells[0], 10), expected[name].rank, name);
-      assert.equal(cells[1].trim(), expected[name].score, name);
+      assert.equal(parseInt(await row.locator('.ewaf-rank').innerText(), 10), expected[name].rank, name);
+      assert.equal((await row.locator('.ewaf-score-link strong').innerText()).trim(), expected[name].score, name);
     }
     assert.equal(await page.locator('[name=score], [name=rank]').count(), 0);
     await page.locator('#results').scrollIntoViewIfNeeded();
@@ -66,7 +65,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
     assert.equal(await page.locator('#weight-preview-rows tr').count(), 4);
     for (const row of await page.locator('#weight-preview-rows tr').all()) {
       const cells = await row.locator('td').allTextContents();
-      assert.equal(cells[1], cells[2], 'The five requested vectors must have equal proposed and calculated percentages.');
+      assert.equal(cells.length, 2, 'Each preview row has proposed and calculated percentage cells.');
+      assert.equal(cells[0], cells[1], 'The five requested vectors must have equal proposed and calculated percentages.');
     }
     await page.screenshot({path: path.join(process.env.QA_OUTPUT, `${process.env.QA_SCENARIO}-vault.png`), fullPage: true});
     assert.deepEqual(errors, []);

@@ -25,20 +25,20 @@ class GenerateResultsTests(TestCase):
         from django.test import Client
         csrf_client = Client(enforce_csrf_checks=True)
         csrf_client.force_login(self.admin)
-        self.assertEqual(csrf_client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS',
+        self.assertEqual(csrf_client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.',
             'expected': plan['expected'], 'version': 0}).status_code, 403)
         self.assertFalse(Announcement.objects.exists())
-        result = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'expected': plan['expected'], 'version': 0})
+        result = self.client.post(url, {'action': 'PUBLISH_RECORDED_RESULTS', 'selection_reason': 'Synthetic members meet the documented program criteria and recorded human selection.', 'expected': plan['expected'], 'version': 0})
         self.assertEqual(result.status_code, 302)
         self.assertEqual(Announcement.objects.get().status, 'published')
         with self.assertRaises(ValidationError):
-            generate_results(self.program.pk, user=self.admin, expected=plan['expected'], version=0)
+            generate_results(self.program.pk, user=self.admin, expected=plan['expected'], version=0, selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
 
     def test_publication_failure_rolls_back_new_revision(self):
         plan = generation_preview(self.program.pk, user=self.admin)
         with patch('announcements.generation.publish_results', side_effect=RuntimeError('Synthetic failure')):
             with self.assertRaises(RuntimeError):
-                generate_results(self.program.pk, user=self.admin, expected=plan['expected'], version=0)
+                generate_results(self.program.pk, user=self.admin, expected=plan['expected'], version=0, selection_reason='Synthetic members meet the documented program criteria and recorded human selection.')
         self.assertFalse(Announcement.objects.exists())
         self.assertFalse(ProgramResultRevision.objects.exists())
 
@@ -49,14 +49,14 @@ class ResultCatalogTests(TestCase):
     publish = legacy.ProgramResultTests.publish
 
     def catalog(self, label):
-        response = self.client.get(reverse('announcements:manage_list'))
+        response = self.client.get((reverse('announcements:manage_list') + '?section=results'))
         self.assertContains(response, label)
         return response.context['page_obj'][0].result_publication
 
     def test_landing_shows_results_without_publishing_on_get(self):
         for route in ('announcements:manage_list', 'announcements:choose_results'):
-            response = self.client.get(reverse(route))
-            self.assertContains(response, 'Prepare and publish program results')
+            response = self.client.get(reverse(route), {'section': 'results'})
+            self.assertContains(response, 'Announcements and program results')
             self.assertContains(response, 'data-results-preview')
             self.assertContains(response, 'Results not published')
             self.assertContains(response, 'Program: Published')
@@ -109,18 +109,19 @@ class ResultCatalogTests(TestCase):
         grant(editor, 'accounts.access_dashboard', 'announcements.view_announcement',
               'announcements.add_announcement', 'announcements.change_announcement')
         self.client.force_login(editor)
-        self.assertRedirects(self.client.get(reverse('announcements:manage_list')),
-                             reverse('announcements:manage_notices'))
+        response = self.client.get(reverse('announcements:manage_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'announcements/manage_list.html')
         self.assertEqual(self.client.get(reverse('announcements:choose_results')).status_code, 403)
         self.assertEqual(self.client.get(reverse('announcements:prepare_results', args=[self.program.pk])).status_code, 403)
-        self.assertNotContains(self.client.get(reverse('announcements:manage_notices')), self.program.name)
+        self.assertNotContains(self.client.get(reverse('announcements:manage_list')), self.program.name)
 
     def test_filters_keep_program_cards_and_result_status_together(self):
         self.draft()
-        response = self.client.get(reverse('announcements:manage_list'),
-            {'q': self.program.name, 'status': 'published', 'with_applications': '1'})
+        response = self.client.get((reverse('announcements:manage_list') + '?section=results'),
+            {'section': 'results', 'q': self.program.name, 'status': 'published', 'with_applications': '1'})
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
         self.assertContains(response, 'Results draft')
-        response = self.client.get(reverse('announcements:manage_list'), {'q': 'No matching program'})
+        response = self.client.get((reverse('announcements:manage_list') + '?section=results'), {'section': 'results', 'q': 'No matching program'})
         self.assertEqual(response.context['page_obj'].paginator.count, 0)
         self.assertContains(response, 'No programs match your filters.')

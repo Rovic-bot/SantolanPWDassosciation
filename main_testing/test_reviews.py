@@ -32,8 +32,8 @@ class TestingReviewTests(OperationalHelpers, TestCase):
 
     def test_verified_document_has_working_review_link_and_return(self):
         response = self.client.get(self.app_url)
-        self.assertContains(response, self.url)
-        self.assertContains(response, f'id="review-document-{self.document.pk}"')
+        self.assertContains(response, reverse('members:detail', args=[self.member.pk]))
+        self.assertNotContains(response, f'id="review-document-{self.document.pk}"')
         self.assertNotContains(response, 'data-document-review-form')
         detail = self.client.get(self.url)
         self.assertContains(detail, 'Save document review')

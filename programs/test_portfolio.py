@@ -59,26 +59,26 @@ class ProgramPortfolioTests(TestCase):
         response = self.client.get(reverse('program_portfolio'), {'q': 'Medical'})
         self.assertEqual([item['value'] for item in response.context['portfolio_metrics']], [6, 3, 5, 1])
         self.assertEqual(response.context['portfolio_capacity'],
-            {'applications': 0, 'places': 0, 'percent': None, 'progress': 0, 'unspecified': 0, 'unlimited': 6})
+            {'applications': 4, 'places': 11, 'percent': 36, 'progress': 36, 'unspecified': 1})
         self.assertEqual(response.context['page_obj'].paginator.count, 1)
         self.assertEqual(response.context['portfolio_deadline'].pk, self.devices.pk)
         self.assertEqual(response.context['portfolio_attention'].pk, self.draft.pk)
 
-    def test_non_ewaf_capacity_is_unlimited_despite_retained_counts(self):
+    def test_retained_program_uses_its_recorded_capacity(self):
         response = self.client.get(reverse('program_portfolio'), {'q': self.medical.public_code})
         program = response.context['page_obj'][0]
-        self.assertIsNone(program.portfolio['demand'])
-        self.assertEqual(program.portfolio['progress'], 0)
-        self.assertIsNone(program.available_slots)
-        self.assertNotContains(response, '150% demand')
-        self.assertContains(response, 'Unlimited')
-        self.assertNotContains(response, '1 application above capacity')
+        self.assertEqual(program.portfolio['demand'], 150)
+        self.assertEqual(program.portfolio['progress'], 100)
+        self.assertEqual(program.available_slots, 1)
+        self.assertContains(response, '150% demand')
+        self.assertNotContains(response, 'Unlimited')
+        self.assertContains(response, '1 application above capacity')
         self.assertContains(response, '1 allocated')
         self.assertNotContains(response, '100% filled')
 
     def test_missing_capacity_and_schedule_are_not_fabricated(self):
         response = self.client.get(reverse('program_portfolio'), {'q': self.devices.public_code})
-        self.assertContains(response, 'Unlimited')
+        self.assertContains(response, 'Not set')
         self.assertContains(response, 'Not scheduled')
         self.assertIsNone(response.context['page_obj'][0].portfolio['demand'])
 

@@ -1,0 +1,28 @@
+{
+  "checked_utc": "2026-11-28 13:10:23 UTC",
+  "scope": "Read-only provider metadata; no operational rows or credentials included.",
+  "security": [],
+  "performance": [
+    {
+      "name": "unindexed_foreign_keys",
+      "level": "INFO",
+      "count": 1,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys"
+    },
+    {
+      "name": "unused_index",
+      "level": "INFO",
+      "count": 217,
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index"
+    }
+  ],
+  "health": [],
+  "database": {
+    "application_tables": 142,
+    "rls_tables": 142,
+    "runtime_superuser": false,
+    "runtime_bypass_rls": false,
+    "document_bucket_public": false,
+    "postgres_version": "17.11"
+  }
+}

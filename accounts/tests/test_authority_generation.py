@@ -448,7 +448,7 @@ def worker(action):
     close_old_connections()
     try:
         with connection.cursor() as cursor:
-            cursor.execute('SELECT CONNECTION_ID()')
+            cursor.execute('SELECT pg_backend_pid()' if connection.vendor == 'postgresql' else 'SELECT CONNECTION_ID()')
             identity = cursor.fetchone()[0]
         return identity, action()
     finally:
@@ -549,14 +549,19 @@ class AuthorityConcurrencyTests(AuthorityHelpers, TransactionTestCase):
             try:
                 self.assertTrue(held.wait(10))
                 with connection.cursor() as cursor:
-                    cursor.execute('SET SESSION innodb_lock_wait_timeout=1')
+                    cursor.execute("SET SESSION lock_timeout='1s'" if connection.vendor == 'postgresql'
+                                   else 'SET SESSION innodb_lock_wait_timeout=1')
                 with self.assertRaises(OperationalError) as error:
                     self.edit_user(first_name='Forbidden')
-                self.assertEqual(error.exception.args[0], 1205)
+                if connection.vendor == 'postgresql':
+                    self.assertEqual(error.exception.__cause__.sqlstate, '55P03')
+                else:
+                    self.assertEqual(error.exception.args[0], 1205)
             finally:
                 release.set()
                 with connection.cursor() as cursor:
-                    cursor.execute('SET SESSION innodb_lock_wait_timeout=50')
+                    cursor.execute('SET SESSION lock_timeout=DEFAULT' if connection.vendor == 'postgresql'
+                                   else 'SET SESSION innodb_lock_wait_timeout=50')
             blocking.result(20)
         self.target.refresh_from_db()
         self.assertEqual(self.target.first_name, '')
@@ -569,5 +574,5 @@ class AuthorityConcurrencyTests(AuthorityHelpers, TransactionTestCase):
         expected = ('programs_programtermslock', 'ewaf_authoritygeneration', 'auth_user', 'auth_group',
                     'auth_permission', 'auth_user_groups', 'auth_user_user_permissions', 'auth_group_permissions')
         for sql, table in zip(locks, expected):
-            self.assertIn('`' + table + '`', sql)
+            self.assertIn(connection.ops.quote_name(table), sql)
         self.assertGreaterEqual(len(locks), len(expected))

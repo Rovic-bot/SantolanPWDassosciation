@@ -35,7 +35,7 @@ def approval_data(**overrides):
 
 class PDAOApprovalTests(TestCase):
     def setUp(self):
-        self.program = create_program(budget=Decimal('12345.67'))
+        self.program = create_program(ewaf_applicable=True, budget=Decimal('12345.67'))
         self.officer = get_user_model().objects.create_user('synthetic_secretary', is_staff=True)
         grant(self.officer, *RECORD_PERMISSIONS)
         self.url = reverse('programs:pdao_history', args=[self.program.pk])
@@ -94,7 +94,7 @@ class PDAOApprovalTests(TestCase):
         self.assertContains(response, 'Synthetic PDAO signatory')
         self.assertNotContains(response, 'name="manual_confirmation"')
         self.assertIn('no-store', response['Cache-Control'])
-        self.assertContains(self.client.get(detail_url), self.url)
+        self.assertNotContains(self.client.get(detail_url), self.url)  # Reconciliation has its own guarded route.
         self.assertEqual(self.client.post(self.url, approval_data()).status_code, 403)
         public = self.client.get(reverse('programs:detail', args=[self.program.pk]))
         self.assertNotContains(public, 'Synthetic PDAO signatory')
@@ -186,12 +186,15 @@ class PDAOApprovalTests(TestCase):
         admin = get_user_model().objects.create_superuser('synthetic_publication_admin')
         for status in ('published', 'draft', 'cancelled', 'archived'):
             with self.subTest(status=status):
-                program = create_program()
+                program = create_program(ewaf_applicable=True)
                 program.status = 'draft'
                 program.published_at = None
                 program.save(update_fields=['status', 'published_at'])
                 program = change_publication(program.pk, user=admin, version=program.version,
                                              action='published', notes='Synthetic publication.')
+                if status == 'archived':
+                    program = change_publication(program.pk, user=admin, version=program.version,
+                        action='draft', notes='Synthetic withdrawal before archive.')
                 if status != 'published':
                     program = change_publication(program.pk, user=admin, version=program.version,
                                                  action=status, notes='Synthetic lifecycle change.')
@@ -351,13 +354,16 @@ class PDAOApprovalTests(TestCase):
         private_media(self)
         seed_statuses()
         admin = get_user_model().objects.create_superuser('synthetic_release_admin')
+        # Retained pre-EWAF records must survive later approval reconciliation.
+        Program.objects.filter(pk=self.program.pk).update(ewaf_applicable=False)
+        self.program.refresh_from_db()
         application = create_application(program=self.program)
-        review_eligibility(application.pk, user=admin, data=review_data(application))
+        from assistance.testsupport import historical_receipt
         close_non_ewaf_program(self.program)
-        decide_assistance(application.pk, user=admin, data=decision_data(application))
-        release = record_release(application.pk, user=admin, data=release_data(application))
+        release = historical_receipt(application, admin)
         announcement = prepare_results(self.program.pk, user=admin, version=0,
-                                       reason='Synthetic approved result publication.')
+                                       reason='Synthetic approved result publication.',
+                                       selection_reason='Synthetic retained recipients met the historical program requirements.')
         announcement = change_publication(announcement.pk, user=admin, version=announcement.version, action='published')
         before_announcement = Announcement.objects.filter(pk=announcement.pk).values().get()
         before_results = list(ProgramResultRevision.objects.filter(announcement=announcement).values())
@@ -461,17 +467,8 @@ class PDAOApprovalMigrationTests(TransactionTestCase):
     def test_additive_migration_preserves_legacy_programs_without_inferred_approval(self):
         old = [('programs', '0003_revised_seventy_workflow')]
         new = [('programs', '0004_pdaoapprovalrecord')]
-        executor = MigrationExecutor(connection)
-        latest = executor.loader.graph.leaf_nodes()
+        from scripts.migration_test_support import assert_additive_upgrade
         program = create_program(budget=Decimal('98765.43'))
-        before = Program.objects.filter(pk=program.pk).values().get()
-        executor.migrate(old)
-        try:
-            executor = MigrationExecutor(connection)
-            migration = executor.loader.get_migration(*new[0])
-            self.assertEqual([operation.__class__.__name__ for operation in migration.operations], ['CreateModel'])
-            executor.migrate(new)
-            self.assertEqual(Program.objects.filter(pk=program.pk).values().get(), before)
-            self.assertFalse(PDAOApprovalRecord.objects.exists())
-        finally:
-            MigrationExecutor(connection).migrate(latest)
+        migration = MigrationExecutor(connection).loader.get_migration(*new[0])
+        self.assertEqual([type(operation).__name__ for operation in migration.operations], ['CreateModel'])
+        assert_additive_upgrade(self, old, new, ['programs.PDAOApprovalRecord'], rows=[program], reversible=True)

@@ -21,13 +21,13 @@ def prepare_image(upload, *, max_bytes=None, max_pixels=None):
     try:
         with warnings.catch_warnings():
             warnings.simplefilter('error', Image.DecompressionBombWarning)
-            with Image.open(BytesIO(data)) as probe:
+            with Image.open(BytesIO(data), formats=[kind[0]]) as probe:
                 if probe.format != kind[0] or probe.width * probe.height > max_pixels:
                     raise ValidationError('The image format or dimensions are not supported.')
                 if getattr(probe, 'n_frames', 1) != 1:
                     raise ValidationError('Choose a still image, not an animation.')
                 probe.verify()
-            with Image.open(BytesIO(data)) as original:
+            with Image.open(BytesIO(data), formats=[kind[0]]) as original:
                 oriented = ImageOps.exif_transpose(original)
                 oriented.thumbnail((1920, 1920))
                 # Copy pixels into a fresh image, excluding source metadata and appended bytes.

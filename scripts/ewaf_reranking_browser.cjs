@@ -35,7 +35,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
       await page.locator('[name=reason]').fill('Synthetic reranking browser approval after delivered assistance.');
       await page.locator('button[value=LOCKED]').click();
       await page.waitForLoadState('networkidle');
-      assert((await page.locator('main').innerText()).includes('Configuration approved.'));
+      assert((await page.locator('main').innerText()).includes('Configuration approved for programs without published results.'));
       for (const [index, program] of JSON.parse(process.env.QA_PROGRAMS).entries()) {
         await page.goto(`${origin}/ewaf/programs/${program}/`, {waitUntil: 'networkidle'});
         const generate = page.getByRole('button', {name: 'Generate EWAF Ranking', exact: true});
@@ -45,15 +45,15 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || path.join(process.en
         const rows = page.locator('#results table tbody tr');
         assert.equal(await rows.count(), 12);
         assert.equal((await rows.first().locator('th a').innerText()).trim(),
-          code === 'SES' ? 'Ana Testalpha' : 'Dan Testdelta');
-        assert((await page.locator('.ewaf-summary').innerText()).includes('Verified'));
+          index === 0 ? 'Gia Testgolf' : code === 'SES' ? 'Ana Testalpha' : 'Dan Testdelta');
+        assert.equal(await page.locator('#ranking-body').getAttribute('data-total'), '12');
+        assert.equal(await page.locator('#ranking-state .alert-danger').count(), 0);
         if (index === 0) {
           const completed = rows.filter({hasText: 'Ben Testbravo'});
           assert((await completed.innerText()).includes('Assistance received'));
-          await completed.locator('.ewaf-review-link').click();
-          assert.equal(await page.locator('dialog:modal').getByRole('button', {name: 'Select for assistance', exact: true}).count(), 0);
-          await page.keyboard.press('Escape');
-          await page.waitForFunction(() => !document.querySelector('dialog:modal'));
+          await completed.locator('[data-applicant-open]').click();
+          assert.equal(await page.locator('#readiness').getByRole('button', {name: 'Select for assistance', exact: true}).count(), 0);
+          assert((await page.locator('#readiness').innerText()).includes('Assistance received'));
         }
         const iris = (await rows.filter({hasText: 'Iris Testindia'}).locator('td').allTextContents()).slice(0, 2);
         const jiro = (await rows.filter({hasText: 'Jiro Testjuliet'}).locator('td').allTextContents()).slice(0, 2);

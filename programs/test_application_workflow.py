@@ -23,12 +23,17 @@ from .services import submit_application, change_publication, save_program
 class ConfirmedApplicationTests(TestCase):
     def setUp(self):
         private_media(self)
+        scoring = override_settings(EWAF_VAULT_ENABLED=True, EWAF_DATASET_POLICY_ENABLED=True,
+                                    EWAF_DATASET_SCORING_ENABLED=True)
+        scoring.enable()
+        self.addCleanup(scoring.disable)
         self.admin = get_user_model().objects.create_superuser('workflow-admin', password='synthetic-only')
         self.member = create_member('SYNTHETIC-WORKFLOW')
         self.member.application.decided_by = self.admin
         self.member.application.save(update_fields=['decided_by'])
         self.member.refresh_from_db()
-        self.program = create_program(policy_authorized_by=self.admin, benefit='Synthetic program purpose.')
+        from .testsupport import current_program
+        self.program = current_program(self.admin, benefit='Synthetic program purpose.')
         self.verify_url = reverse('programs:verify', args=[self.program.pk])
         self.apply_url = reverse('programs:apply', args=[self.program.pk])
 
@@ -85,6 +90,8 @@ class ConfirmedApplicationTests(TestCase):
         self.client.post(self.verify_url, self.identity())
         other = DisabilityType.objects.create(name='Synthetic unmatched classification')
         self.program.eligible_disability_types.set([other])
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC intended eligibility before admission.')
         response = self.client.post(self.verify_url, self.identity())
         self.assertContains(response, 'Application cannot proceed')
         self.assertContains(response, 'You cannot proceed with this application because')
@@ -100,6 +107,8 @@ class ConfirmedApplicationTests(TestCase):
     def test_mismatch_is_not_disclosed_before_identity_is_verified(self):
         other = DisabilityType.objects.create(name='Synthetic unmatched classification')
         self.program.eligible_disability_types.set([other])
+        from ewaf.fixed_scoring import bind
+        bind(self.program, user=self.admin, rebind=True, reason='SYNTHETIC intended eligibility before admission.')
         response = self.client.post(self.verify_url, self.identity(full_name='Wrong name'))
         self.assertContains(response, workflow.FAILED)
         self.assertNotContains(response, 'target disability types')
@@ -113,12 +122,12 @@ class ConfirmedApplicationTests(TestCase):
             submit_application(self.program.pk, grant=grant, data=self.data(), files=MultiValueDict())
         self.assertFalse(ProgramApplication.objects.exists())
 
-    def test_unrestricted_program_does_not_require_a_disability_match(self):
+    def test_missing_program_disability_profile_cannot_be_treated_as_unrestricted(self):
         self.program.eligible_disability_types.clear()
-        Member.objects.filter(pk=self.member.pk).update(disability_type=None)
-        self.member.refresh_from_db()
-        self.assertIsNotNone(self.grant())
-        self.assertRedirects(self.client.post(self.verify_url, self.identity()), self.apply_url)
+        with self.assertRaisesMessage(ValidationError, 'eligibility profile'):
+            self.grant()
+        self.assertFalse(ProgramApplication.objects.exists())
+        self.assertNotIn('program_verification', self.client.session)
 
     def test_missing_or_inactive_classification_requires_correction_not_rejection(self):
         Member.objects.filter(pk=self.member.pk).update(disability_type=None)
@@ -197,6 +206,15 @@ class ConfirmedApplicationTests(TestCase):
         application = self.submit()
         self.assertEqual(information.declaration(application)['contract'], workflow.CONTRACT)
 
+    @override_settings(PROGRAM_INTAKE_ENABLED=True)
+    def test_legacy_intake_flag_cannot_relax_current_confirmation_signature(self):
+        valid = self.grant()
+        for invalid in ({**valid, 'signature': 'forged'},
+                {key: value for key, value in valid.items() if key != 'application_workflow'}):
+            with self.subTest(invalid=sorted(invalid)), self.assertRaises(ValidationError):
+                submit_application(self.program.pk, grant=invalid, data=self.data(), files=MultiValueDict())
+        self.assertFalse(ProgramApplication.objects.exists())
+
     def test_confirmation_fields_are_validated_inside_submission(self):
         for changes in ({'confirm_information': False},
                 {'applicant_email': 'invalid'}, {'applicant_email': ''}, {'applicant_email': '   '}):
@@ -214,8 +232,8 @@ class ConfirmedApplicationTests(TestCase):
         self.assertFalse(workflow.secure_grant(grant, self.program))
 
     def test_unlocked_ewaf_program_cannot_accept_applications(self):
-        Program.objects.filter(pk=self.program.pk).update(ewaf_applicable=True)
-        self.program.refresh_from_db()
+        self.program = create_program(ewaf_applicable=True, policy_authorized_by=self.admin)
+        self.verify_url = reverse('programs:verify', args=[self.program.pk])
         self.assertFalse(workflow.availability(self.program))
         self.assertContains(self.client.get(self.verify_url), 'Applications are currently unavailable')
         self.assertNotContains(self.client.get(reverse('programs:detail', args=[self.program.pk])), 'Apply for this program')
@@ -233,16 +251,22 @@ class ConfirmedApplicationTests(TestCase):
         program.refresh_from_db()
         self.assertEqual(program.policy_authorized_by, self.admin)
         self.assertEqual(program.status, 'published')
-        self.assertEqual(list(program.history.order_by('pk').values_list('action', flat=True))[-2:], ['policy_authorized', 'published'])
+        self.assertEqual(list(program.history.filter(action__in=('policy_authorized', 'published')).order_by('pk').values_list('action', flat=True)), ['policy_authorized', 'published'])
 
-    def test_published_policy_does_not_authorize_ewaf_configuration_implicitly(self):
+    def test_publication_binds_fixed_rules_and_approved_weights_without_ranking_or_selection(self):
+        from ewaf.fixed_scoring import definition
+        from ewaf.operational_models import OperationalConfiguration, OperationalRun, OperationalDecision
         program = save_program(user=self.admin, data=program_data(benefit='Synthetic purpose', ewaf_applicable=True))
-        change_publication(program.pk, user=self.admin, version=program.version, action='authorize_policy', notes='Synthetic policy authorization')
+        change_publication(program.pk, user=self.admin, version=program.version, action='published')
         program.refresh_from_db()
-        with self.assertRaises(ValidationError):
-            change_publication(program.pk, user=self.admin, version=program.version, action='published', notes='Attempt without scoring authorization')
-        program.refresh_from_db()
-        self.assertEqual(program.status, 'draft')
+        self.assertEqual(program.status, 'published')
+        bound = OperationalConfiguration.objects.filter(program=program).first()
+        self.assertEqual(bound.policy, definition())
+        self.assertEqual(bound.status, 'LOCKED')
+        self.assertTrue(bound.vault_revision_id)
+        bound.clean()
+        self.assertFalse(OperationalRun.objects.filter(program=program).exists())
+        self.assertFalse(OperationalDecision.objects.filter(program=program).exists())
 
     def test_admin_can_create_ewaf_draft_and_open_settings_before_publication(self):
         from ewaf.operational_models import OperationalConfiguration
@@ -258,33 +282,32 @@ class ConfirmedApplicationTests(TestCase):
         self.assertRedirects(response, review_url)
         self.assertEqual(program.status, 'draft')
         self.assertIsNone(program.policy_authorized_at)
-        self.assertFalse(OperationalConfiguration.objects.filter(program=program).exists())
+        self.assertFalse(OperationalConfiguration.objects.filter(program=program, status='LOCKED').exists())
         response = self.client.get(review_url)
-        self.assertContains(response, 'Complete program setup')
-        self.assertFalse(response.context['detail_ready'])
+        self.assertContains(response, 'Ready for final approval')
+        self.assertTrue(response.context['detail_ready'])
         settings_url = reverse('ewaf:operational_workspace', args=[program.pk]) + '?settings=1'
         response = self.client.get(settings_url)
-        self.assertContains(response, 'Save configuration')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['can_configure'])
+        self.assertNotContains(response, 'name="slider_proposal"')
         evidence_url = reverse('ewaf:evidence_policy', args=[program.pk])
         self.assertContains(self.client.get(evidence_url), 'Record evidence definitions')
         program.refresh_from_db()
         self.assertEqual(program.status, 'draft')
         self.assertIsNone(program.policy_authorized_at)
-        self.assertFalse(OperationalConfiguration.objects.filter(program=program).exists())
+        self.assertFalse(OperationalConfiguration.objects.filter(program=program, status='LOCKED').exists())
 
     def test_missing_ewaf_publication_explains_recovery_and_preserves_draft(self):
         self.client.force_login(self.admin)
         program = save_program(user=self.admin, data=program_data(benefit='Synthetic purpose', ewaf_applicable=True))
-        change_publication(program.pk, user=self.admin, version=program.version,
-            action='authorize_policy', notes='Synthetic explicit policy authorization')
-        program.refresh_from_db()
         original = Program.objects.values().get(pk=program.pk)
         history = list(program.history.values())
-        response = self.client.post(reverse('programs:manage_detail', args=[program.pk]), {
-            'version': program.version, 'action': 'published', 'confirm': True,
-            'notes': 'Synthetic attempt before EWAF setup'})
-        self.assertContains(response, 'Open EWAF settings for this program')
-        self.assertContains(response, 'Complete program setup')
+        with patch('ewaf.vault_services.active', return_value=None):
+            response = self.client.post(reverse('programs:manage_detail', args=[program.pk]), {
+                'version': program.version, 'action': 'published', 'confirm': True,
+                'notes': 'Synthetic attempt without approved EWAF weights'})
+        self.assertContains(response, 'Approve the four-criterion weights')
         self.assertNotContains(response, 'configuration: no program-specific scoring configuration')
         self.assertNotContains(response, 'Correctable missing information can be completed.')
         self.assertEqual(Program.objects.values().get(pk=program.pk), original)
@@ -420,10 +443,9 @@ class PrepublicationConfigurationTests(OperationalHelpers, TransactionTestCase):
     @override_settings(PROGRAM_APPLICATION_WORKFLOW_ENABLED=True)
     def test_locked_terms_configuration_survives_publication_without_rewriting_it(self):
         from ewaf.operational_services import latest_configuration, configuration_source
-        Program.objects.filter(pk=self.program.pk).update(status='draft', policy_authorized_at=None, policy_authorized_by=None)
-        self.program.refresh_from_db()
-        change_publication(self.program.pk, user=self.officer, version=self.program.version,
-            action='authorize_policy', notes='Explicit synthetic prepublication program authorization.')
+        # Retained fixed-range programs keep their original authority. The
+        # current authorization action creates code-owned scoring for new work.
+        Program.objects.filter(pk=self.program.pk).update(status='draft', policy_authorized_by=self.officer)
         self.program.refresh_from_db()
         locked = self.lock_policy()
         original = type(locked).objects.values().get(pk=locked.pk)

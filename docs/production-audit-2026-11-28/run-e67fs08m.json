@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ewaf.test_synthetic_twelve.ExistingRegressionDiagnosisTests.test_approved_handoff_is_visible_in_detail_and_absent_from_pending_inbox",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.ExistingRegressionDiagnosisTests.test_historical_policy_needs_explicit_shared_cutoff_to_be_ready",
+    "status": "PASS"
+  }
+]

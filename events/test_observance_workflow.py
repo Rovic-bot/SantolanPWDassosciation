@@ -277,6 +277,7 @@ class ObservanceWorkflowTests(TestCase):
         csrf = Client(enforce_csrf_checks=True)
         csrf.force_login(self.editor)
         payload = {key: value for key, value in draft_data().items() if value is not None}
+        payload.update(start_date='2026-01-16', end_date='2026-01-22')
         self.assertEqual(csrf.post(reverse('events:observance_create'), payload).status_code, 403)
         response = self.client.post(reverse('events:observance_create'), payload)
         self.assertEqual(response.status_code, 302)
@@ -301,7 +302,8 @@ class ObservanceWorkflowTests(TestCase):
     def test_unapplied_storage_fails_closed_for_public_and_private_routes(self):
         item = self.create()
         self.client.force_login(self.admin)
-        with patch('events.services.observance_storage_ready', return_value=False):
+        with patch('events.workspace.observance_storage_ready', return_value=False), \
+                patch('events.services.observance_storage_ready', return_value=False):
             self.assertContains(self.client.get(reverse('events:observances')), 'Setup pending')
             self.assertEqual(self.client.get(reverse('events:observance_create')).status_code, 503)
             self.assertEqual(self.client.get(reverse('events:observance_detail', args=[item.pk])).status_code, 404)
@@ -342,25 +344,10 @@ class ObservanceMigrationTests(TransactionTestCase):
     def test_additive_migration_preserves_existing_event_and_creates_no_observances(self):
         event = create_event(title='Fictional migration preservation')
         old = {field.attname: getattr(event, field.attname) for field in Event._meta.fields}
-        leaves = MigrationExecutor(connection).loader.graph.leaf_nodes()
-        try:
-            MigrationExecutor(connection).migrate([('ewaf', '0004_scoring_diagnostics')])
-            MigrationExecutor(connection).migrate([('events', '0005_revised_seventy_workflow')])
-            self.assertNotIn('events_annualobservance', connection.introspection.table_names())
-            response = self.client.get(reverse('core:events'))
-            self.assertNotContains(response, event.title)
-            self.assertContains(response, 'No published observances for this month.')
-            executor = MigrationExecutor(connection)
-            self.assertEqual([(m.app_label, m.name, backwards) for m, backwards in
-                executor.migration_plan([('events', '0006_annual_observances')])],
-                [('events', '0006_annual_observances', False)])
-            executor.migrate([('events', '0006_annual_observances')])
-            self.assertNotIn(('ewaf', '0005_durable_development'),
-                             MigrationExecutor(connection).loader.applied_migrations)
-            event.refresh_from_db()
-            self.assertEqual({field.attname: getattr(event, field.attname) for field in Event._meta.fields}, old)
-            self.assertEqual(AnnualObservance.objects.count(), 0)
-            self.assertEqual(AnnualObservanceRevision.objects.count(), 0)
-            self.assertEqual(AnnualObservanceLog.objects.count(), 0)
-        finally:
-            MigrationExecutor(connection).migrate(leaves)
+        from scripts.migration_test_support import assert_additive_upgrade
+        assert_additive_upgrade(self, [('events', '0005_revised_seventy_workflow')],
+            [('events', '0006_annual_observances')],
+            ['events.AnnualObservance', 'events.AnnualObservanceRevision', 'events.AnnualObservanceLog'],
+            rows=[event], reversible=True)
+        event.refresh_from_db()
+        self.assertEqual({field.attname: getattr(event, field.attname) for field in Event._meta.fields}, old)

@@ -1,0 +1,569 @@
+[
+  {
+    "route": "/dashboard/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0.022093956127582862,
+    "shifts": [
+      {
+        "t": 1496.199999999255,
+        "value": 0.022093956127582862,
+        "sources": [
+          {
+            "node": "SECTION.overview-section",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 246.578125,
+              "y": 831.3125,
+              "width": 584.421875,
+              "height": 68.6875,
+              "top": 831.3125,
+              "right": 831,
+              "bottom": 900,
+              "left": 246.578125
+            }
+          },
+          {
+            "node": "SECTION.overview-section",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 787,
+              "y": 831.3125,
+              "width": 579,
+              "height": 68.6875,
+              "top": 831.3125,
+              "right": 1366,
+              "bottom": 900,
+              "left": 787
+            }
+          },
+          {
+            "node": "DIV.overview-member-footer",
+            "old": {
+              "x": 932.0625,
+              "y": 589.34375,
+              "width": 384.359375,
+              "height": 25.796875,
+              "top": 589.34375,
+              "right": 1316.421875,
+              "bottom": 615.140625,
+              "left": 932.0625
+            },
+            "next": {
+              "x": 932.0625,
+              "y": 763.3125,
+              "width": 384.421875,
+              "height": 53,
+              "top": 763.3125,
+              "right": 1316.484375,
+              "bottom": 816.3125,
+              "left": 932.0625
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/ewaf/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0.24090927650379573,
+    "shifts": [
+      {
+        "t": 495.30000000074506,
+        "value": 0.24090927650379573,
+        "sources": [
+          {
+            "node": "DIV.selection-queue selection-glass",
+            "old": {
+              "x": 239.78125,
+              "y": 319.234375,
+              "width": 822.4375,
+              "height": 298.15625,
+              "top": 319.234375,
+              "right": 1062.21875,
+              "bottom": 617.390625,
+              "left": 239.78125
+            },
+            "next": {
+              "x": 239.78125,
+              "y": 260.234375,
+              "width": 822.4375,
+              "height": 298.15625,
+              "top": 260.234375,
+              "right": 1062.21875,
+              "bottom": 558.390625,
+              "left": 239.78125
+            }
+          },
+          {
+            "node": "DIV.selection-layout",
+            "old": {
+              "x": 284.78125,
+              "y": 354.421875,
+              "width": 1048.4375,
+              "height": 208.15625,
+              "top": 354.421875,
+              "right": 1333.21875,
+              "bottom": 562.578125,
+              "left": 284.78125
+            },
+            "next": {
+              "x": 284.78125,
+              "y": 295.234375,
+              "width": 1048.4375,
+              "height": 208.15625,
+              "top": 295.234375,
+              "right": 1333.21875,
+              "bottom": 503.390625,
+              "left": 284.78125
+            }
+          },
+          {
+            "node": "DIV.selection-toolbar selection-vault-toolbar",
+            "old": {
+              "x": 284.78125,
+              "y": 296.421875,
+              "width": 1048.4375,
+              "height": 46,
+              "top": 296.421875,
+              "right": 1333.21875,
+              "bottom": 342.421875,
+              "left": 284.78125
+            },
+            "next": {
+              "x": 284.78125,
+              "y": 237.234375,
+              "width": 1048.4375,
+              "height": 46,
+              "top": 237.234375,
+              "right": 1333.21875,
+              "bottom": 283.234375,
+              "left": 284.78125
+            }
+          },
+          {
+            "node": "DIV.",
+            "old": {
+              "x": 832.328125,
+              "y": 136.1875,
+              "width": 250,
+              "height": 68.859375,
+              "top": 136.1875,
+              "right": 1082.328125,
+              "bottom": 205.046875,
+              "left": 832.328125
+            },
+            "next": {
+              "x": 895.671875,
+              "y": 136.1875,
+              "width": 250,
+              "height": 68.859375,
+              "top": 136.1875,
+              "right": 1145.671875,
+              "bottom": 205.046875,
+              "left": 895.671875
+            }
+          },
+          {
+            "node": "P.selection-count",
+            "old": {
+              "x": 1101.515625,
+              "y": 157.046875,
+              "width": 69.625,
+              "height": 48,
+              "top": 157.046875,
+              "right": 1171.140625,
+              "bottom": 205.046875,
+              "left": 1101.515625
+            },
+            "next": {
+              "x": 1164.859375,
+              "y": 157.046875,
+              "width": 69.625,
+              "height": 48,
+              "top": 157.046875,
+              "right": 1234.484375,
+              "bottom": 205.046875,
+              "left": 1164.859375
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/membership/registration/pdao/onsite/",
+    "width": 1366,
+    "status": 200,
+    "cls": 0.2698950484362975,
+    "shifts": [
+      {
+        "t": 665,
+        "value": 0.2698950484362975,
+        "sources": [
+          {
+            "node": "SECTION.onsite-section",
+            "old": {
+              "x": 239.78125,
+              "y": 310.0625,
+              "width": 894.4375,
+              "height": 589.9375,
+              "top": 310.0625,
+              "right": 1134.21875,
+              "bottom": 900,
+              "left": 239.78125
+            },
+            "next": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "node": "P.onsite-privacy",
+            "old": {
+              "x": 284.78125,
+              "y": 286.921875,
+              "width": 804.4375,
+              "height": 40.34375,
+              "top": 286.921875,
+              "right": 1089.21875,
+              "bottom": 327.265625,
+              "left": 284.78125
+            },
+            "next": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/dashboard/",
+    "width": 390,
+    "status": 200,
+    "cls": 0.09192584995251661,
+    "shifts": [
+      {
+        "t": 718.7999999998137,
+        "value": 0.09192584995251661,
+        "sources": [
+          {
+            "node": "DIV.",
+            "old": {
+              "x": 16,
+              "y": 679.53125,
+              "width": 358,
+              "height": 220.46875,
+              "top": 679.53125,
+              "right": 374,
+              "bottom": 900,
+              "left": 16
+            },
+            "next": {
+              "x": 16,
+              "y": 514.25,
+              "width": 358,
+              "height": 385.75,
+              "top": 514.25,
+              "right": 374,
+              "bottom": 900,
+              "left": 16
+            }
+          },
+          {
+            "node": "DIV.overview-metric",
+            "old": {
+              "x": 0,
+              "y": 654.25,
+              "width": 390,
+              "height": 185.5625,
+              "top": 654.25,
+              "right": 390,
+              "bottom": 839.8125,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 488.25,
+              "width": 390,
+              "height": 185.5625,
+              "top": 488.25,
+              "right": 390,
+              "bottom": 673.8125,
+              "left": 0
+            }
+          },
+          {
+            "node": "DIV.overview-metric",
+            "old": {
+              "x": 0,
+              "y": 790.8125,
+              "width": 390,
+              "height": 109.1875,
+              "top": 790.8125,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 625.8125,
+              "width": 390,
+              "height": 185.5625,
+              "top": 625.8125,
+              "right": 390,
+              "bottom": 811.375,
+              "left": 0
+            }
+          },
+          {
+            "node": "DIV.overview-metric",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 763.375,
+              "width": 390,
+              "height": 136.625,
+              "top": 763.375,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            }
+          },
+          {
+            "node": "DIV.overview-filter-actions",
+            "old": {
+              "x": 33,
+              "y": 606.53125,
+              "width": 324,
+              "height": 44,
+              "top": 606.53125,
+              "right": 357,
+              "bottom": 650.53125,
+              "left": 33
+            },
+            "next": {
+              "x": 33,
+              "y": 441.25,
+              "width": 324,
+              "height": 44,
+              "top": 441.25,
+              "right": 357,
+              "bottom": 485.25,
+              "left": 33
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/ewaf/",
+    "width": 390,
+    "status": 200,
+    "cls": 0.021606701092117757,
+    "shifts": [
+      {
+        "t": 496.29999999981374,
+        "value": 0.021606701092117757,
+        "sources": [
+          {
+            "node": "DIV.selection-queue selection-glass",
+            "old": {
+              "x": 0,
+              "y": 682.625,
+              "width": 390,
+              "height": 217.375,
+              "top": 682.625,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 625.625,
+              "width": 390,
+              "height": 274.375,
+              "top": 625.625,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            }
+          },
+          {
+            "node": "DIV.selection-toolbar selection-vault-toolbar",
+            "old": {
+              "x": 16,
+              "y": 659.8125,
+              "width": 358,
+              "height": 46,
+              "top": 659.8125,
+              "right": 374,
+              "bottom": 705.8125,
+              "left": 16
+            },
+            "next": {
+              "x": 16,
+              "y": 602.625,
+              "width": 358,
+              "height": 46,
+              "top": 602.625,
+              "right": 374,
+              "bottom": 648.625,
+              "left": 16
+            }
+          },
+          {
+            "node": "DIV.selection-glass selection-empty",
+            "old": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 849.78125,
+              "width": 390,
+              "height": 50.21875,
+              "top": 849.78125,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            }
+          },
+          {
+            "node": "A.",
+            "old": {
+              "x": 36.1875,
+              "y": 579.625,
+              "width": 60,
+              "height": 48,
+              "top": 579.625,
+              "right": 96.1875,
+              "bottom": 627.625,
+              "left": 36.1875
+            },
+            "next": {
+              "x": 36.1875,
+              "y": 522.4375,
+              "width": 60,
+              "height": 48,
+              "top": 522.4375,
+              "right": 96.1875,
+              "bottom": 570.4375,
+              "left": 36.1875
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "route": "/membership/registration/pdao/onsite/",
+    "width": 390,
+    "status": 200,
+    "cls": 0.4907065527065527,
+    "shifts": [
+      {
+        "t": 571.2000000001863,
+        "value": 0.4907065527065527,
+        "sources": [
+          {
+            "node": "SECTION.onsite-section",
+            "old": {
+              "x": 0,
+              "y": 495.578125,
+              "width": 390,
+              "height": 404.421875,
+              "top": 495.578125,
+              "right": 390,
+              "bottom": 900,
+              "left": 0
+            },
+            "next": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "node": "P.onsite-privacy",
+            "old": {
+              "x": 16,
+              "y": 455.171875,
+              "width": 358,
+              "height": 58.515625,
+              "top": 455.171875,
+              "right": 374,
+              "bottom": 513.6875,
+              "left": 16
+            },
+            "next": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

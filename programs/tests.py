@@ -33,12 +33,14 @@ def program_data(**overrides):
     return {'name': 'Synthetic assistance program', 'description': 'Test program details.', 'assistance_type': 'Food & Nutrition',
             'registration_opens_at': now - timedelta(days=1), 'registration_closes_at': now + timedelta(days=1),
             'starts_at': None, 'ends_at': None, 'slots': 1, 'budget': None, 'amount': None,
-            'ewaf_applicable': False, 'selection_method': 'Synthetic authorized external committee decision.', 'photo_instructions': 'Synthetic policy: photo holding this month’s calendar.', 'resubmission_closes_at': None,
+            'ewaf_applicable': True, 'selection_method': 'Synthetic authorized external committee decision.', 'photo_instructions': 'Synthetic policy: photo holding this month’s calendar.', 'resubmission_closes_at': None,
             'benefit': '', 'requirements': 'Read all instructions.', 'eligible_disability_types': [DisabilityType.objects.get_or_create(name='Visual Disability')[0].pk], 'version': 0, 'notes': 'Reviewed correction.', **overrides}
 
 
 def create_program(**overrides):
-    data = program_data(**overrides)
+    # A direct ORM fixture for historical/configuration tests. New current
+    # workflow tests use testsupport.current_program and real publication.
+    data = program_data(**({'ewaf_applicable': False} | overrides))
     data.pop('notes')
     types = data.pop('eligible_disability_types')
     item = Program.objects.create(**data, status='published', published_at=timezone.now(), policy_authorized_at=timezone.now())
@@ -64,7 +66,7 @@ class ProgramTests(TestCase):
         grant_permissions(self.viewer, 'accounts.access_dashboard', 'programs.view_program')
         self.member = create_member('PROGRAM-001')
         self.member.refresh_from_db()
-        self.program = create_program()
+        self.program = create_program(ewaf_applicable=True)
         self.verify_url = reverse('programs:verify', args=[self.program.pk])
         self.apply_url = reverse('programs:apply', args=[self.program.pk])
         self.detail = reverse('programs:detail', args=[self.program.pk])
@@ -194,7 +196,7 @@ class ProgramTests(TestCase):
 
     def test_publication_lifecycle_retains_applications(self):
         application = self.submit()
-        for action, code in [('cancelled', 200), ('draft', 404), ('published', 200), ('archived', 404)]:
+        for action, code in [('cancelled', 200), ('draft', 404), ('published', 200), ('draft', 404), ('archived', 404)]:
             self.program = change_publication(self.program.pk, user=self.admin, version=self.program.version,
                                               action=action, notes='Reviewed publication.')
             self.assertEqual(self.client.get(self.detail).status_code, code)
@@ -202,7 +204,7 @@ class ProgramTests(TestCase):
             if action != 'published':
                 with self.assertRaises(ValidationError):
                     self.verified()
-        self.assertEqual(ProgramLog.objects.filter(application__isnull=True).count(), 4)
+        self.assertEqual(ProgramLog.objects.filter(application__isnull=True).count(), 5)
 
     def test_schedule_and_numeric_validation(self):
         for changes in [{'registration_closes_at': self.program.registration_opens_at}, {'slots': 0},
@@ -454,7 +456,8 @@ class ProgramTests(TestCase):
         self.assertEqual(self.client.get(detail).status_code, 403)
         grant_permissions(self.viewer, 'programs.view_programapplication')
         response = self.client.get(detail)
-        self.assertContains(response, 'Document access requires a separate permission.')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, f'href="{download}"')
         self.assertNotContains(response, 'Verified member submitted a program application.')
         self.assertEqual(self.client.get(download).status_code, 403)
         grant_permissions(self.viewer, 'programs.view_programdocument')

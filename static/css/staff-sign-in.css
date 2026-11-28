@@ -69,7 +69,7 @@ body.staff-sign-in {
     border-radius: 36px; box-shadow: 0 5px 16px #302b2208; overflow-wrap: anywhere;
 }
 .signin-panel-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
-.signin-panel-heading .signin-overline { margin: 0; }
+.signin-panel-heading .signin-overline { margin: 0; color: var(--ink); }
 .signin-lock { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border: 1px solid #fff; border-radius: 50%; background: #fff; color: var(--ink); }
 .signin-panel h1 { font: 700 clamp(2rem, 3vw, 2.6rem)/1.15 var(--font-sans); letter-spacing: -.035em; margin: 0 0 12px; }
 .signin-description { font-size: .95rem; color: var(--muted); line-height: 1.65; margin-bottom: 28px; }

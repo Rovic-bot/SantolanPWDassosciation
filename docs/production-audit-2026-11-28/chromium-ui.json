@@ -1,0 +1,1616 @@
+{
+  "results": [
+    {
+      "kind": "public",
+      "route": "/",
+      "status": 200,
+      "finalPath": "/",
+      "metrics": {
+        "lcp": null,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 141.29999999981374,
+        "load": 501.09999999962747,
+        "requests": 55,
+        "bytes": 1312141
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/about/",
+      "status": 200,
+      "finalPath": "/about/",
+      "metrics": {
+        "lcp": 420,
+        "cls": 0.004030538157190678,
+        "shifts": [
+          {
+            "time": 380.20000000018626,
+            "value": 0.004030538157190678,
+            "sources": [
+              "DIV.public-swipe-viewport"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 154.59999999962747,
+        "load": 359.70000000018626,
+        "requests": 55,
+        "bytes": 1347461
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/announcements/",
+      "status": 200,
+      "finalPath": "/announcements/",
+      "metrics": {
+        "lcp": 280,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 82.70000000018626,
+        "load": 292.29999999981374,
+        "requests": 57,
+        "bytes": 1276250
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/events/",
+      "status": 200,
+      "finalPath": "/events/",
+      "metrics": {
+        "lcp": 312,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 106.70000000018626,
+        "load": 331.6000000005588,
+        "requests": 58,
+        "bytes": 1250681
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/programs/",
+      "status": 200,
+      "finalPath": "/programs/",
+      "metrics": {
+        "lcp": 352,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 116.09999999962747,
+        "load": 368,
+        "requests": 59,
+        "bytes": 1258282
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/membership/register/",
+      "status": 200,
+      "finalPath": "/membership/register/",
+      "metrics": {
+        "lcp": 308,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 86.79999999981374,
+        "load": 316.29999999981374,
+        "requests": 55,
+        "bytes": 1245212
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/resources/",
+      "status": 200,
+      "finalPath": "/resources/",
+      "metrics": {
+        "lcp": 292,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 71.09999999962747,
+        "load": 330,
+        "requests": 57,
+        "bytes": 1251701
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/information/privacy/",
+      "status": 200,
+      "finalPath": "/",
+      "metrics": {
+        "lcp": 396,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 136.59999999962747,
+        "load": 365.79999999981374,
+        "requests": 55,
+        "bytes": 1312141
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "SUMMARY",
+        "text": "System information\n  Know how your information is used, prot"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/information/accessibility/",
+      "status": 200,
+      "finalPath": "/",
+      "metrics": {
+        "lcp": 428,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 220.40000000037253,
+        "load": 407.6000000005588,
+        "requests": 55,
+        "bytes": 1312141
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "SUMMARY",
+        "text": "Reading help\n  Make the page easier to read, in a way that w"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/accounts/login/",
+      "status": 200,
+      "finalPath": "/accounts/login/",
+      "metrics": {
+        "lcp": 188,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 23.700000000186265,
+        "load": 180.79999999981374,
+        "requests": 21,
+        "bytes": 531889
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "INPUT",
+        "text": ""
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/membership/registration/apply/",
+      "status": 200,
+      "finalPath": "/membership/registration/apply/",
+      "metrics": {
+        "lcp": 632,
+        "cls": 0,
+        "shifts": [],
+        "ocrBefore": {
+          "display": "block",
+          "visibility": "hidden",
+          "height": 827.703125,
+          "htmlClass": "has-script",
+          "rules": [
+            [
+              "http://127.0.0.1:60929/static/css/document-ocr.css?v=20261128-palette",
+              ".has-script .document-ocr[hidden] { display: block !important; visibility: hidden; }"
+            ]
+          ]
+        },
+        "scriptLayout": true,
+        "ttfb": 234.5,
+        "load": 579.5999999996275,
+        "requests": 68,
+        "bytes": 1378102
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "public",
+      "route": "/membership/registration/pdao/apply/",
+      "status": 200,
+      "finalPath": "/membership/registration/pdao/apply/",
+      "metrics": {
+        "lcp": 380,
+        "cls": 0.015149730469930693,
+        "shifts": [
+          {
+            "time": 461.40000000037253,
+            "value": 0.015149730469930693,
+            "sources": [
+              "NAV.resident-index"
+            ]
+          }
+        ],
+        "ocrBefore": {
+          "display": "block",
+          "visibility": "hidden",
+          "height": 827.703125,
+          "htmlClass": "has-script",
+          "rules": [
+            [
+              "http://127.0.0.1:60929/static/css/document-ocr.css?v=20261128-palette",
+              ".has-script .document-ocr[hidden] { display: block !important; visibility: hidden; }"
+            ]
+          ]
+        },
+        "scriptLayout": true,
+        "ttfb": 94,
+        "load": 457.90000000037253,
+        "requests": 67,
+        "bytes": 1389629
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 305
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 360
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 415
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 753
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1009
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1351
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1425
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/dashboard/",
+      "status": 200,
+      "finalPath": "/dashboard/",
+      "metrics": {
+        "lcp": 1076,
+        "cls": 0.022093956127582862,
+        "shifts": [
+          {
+            "time": 890.5,
+            "value": 0.022093956127582862,
+            "sources": [
+              "SECTION.overview-section",
+              "SECTION.overview-section",
+              "DIV.overview-member-footer"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 411.20000000018626,
+        "load": 887.5,
+        "requests": 41,
+        "bytes": 709922
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/members/",
+      "status": 200,
+      "finalPath": "/members/",
+      "metrics": {
+        "lcp": 452,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 206.59999999962747,
+        "load": 475,
+        "requests": 46,
+        "bytes": 676100
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/programs/manage/",
+      "status": 200,
+      "finalPath": "/programs/manage/",
+      "metrics": {
+        "lcp": 560,
+        "cls": 0.00944432892427379,
+        "shifts": [
+          {
+            "time": 556.4000000003725,
+            "value": 0.00944432892427379,
+            "sources": [
+              "DIV.portfolio-layout"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 287.40000000037253,
+        "load": 586.9000000003725,
+        "requests": 45,
+        "bytes": 676909
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/events/manage/",
+      "status": 200,
+      "finalPath": "/events/manage/",
+      "metrics": {
+        "lcp": 588,
+        "cls": 0.01766952227764809,
+        "shifts": [
+          {
+            "time": 636.5,
+            "value": 0.01766952227764809,
+            "sources": [
+              "DIV.event-workspace-layout event-workspace-with-actions",
+              "SECTION.event-observances"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 279,
+        "load": 633.5,
+        "requests": 46,
+        "bytes": 684600
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/workspace/applications/",
+      "status": 200,
+      "finalPath": "/workspace/applications/",
+      "metrics": {
+        "lcp": 428,
+        "cls": 0.010133680469957492,
+        "shifts": [
+          {
+            "time": 485.20000000018626,
+            "value": 0.010133680469957492,
+            "sources": [
+              "DIV.chooser-empty chooser-glass"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 209.79999999981374,
+        "load": 483.29999999981374,
+        "requests": 45,
+        "bytes": 677224
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/ewaf/",
+      "status": 200,
+      "finalPath": "/ewaf/",
+      "metrics": {
+        "lcp": 572,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 327,
+        "load": 632.5,
+        "requests": 41,
+        "bytes": 637822
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/assistance/",
+      "status": 200,
+      "finalPath": "/workspace/applications/",
+      "metrics": {
+        "lcp": 656,
+        "cls": 0.010133680469957492,
+        "shifts": [
+          {
+            "time": 773,
+            "value": 0.010133680469957492,
+            "sources": [
+              "DIV.chooser-empty chooser-glass"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 402.90000000037253,
+        "load": 767.5,
+        "requests": 45,
+        "bytes": 677224
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/reports/members/",
+      "status": 200,
+      "finalPath": "/reports/members/",
+      "metrics": {
+        "lcp": 472,
+        "cls": 0.011216770384725041,
+        "shifts": [
+          {
+            "time": 467.59999999962747,
+            "value": 0.011216770384725041,
+            "sources": [
+              "SECTION.member-report-card",
+              "DIV.member-report-exports"
+            ]
+          }
+        ],
+        "scriptLayout": true,
+        "ttfb": 224,
+        "load": 518.5999999996275,
+        "requests": 40,
+        "bytes": 623643
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/content/",
+      "status": 200,
+      "finalPath": "/content/",
+      "metrics": {
+        "lcp": 308,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 123.90000000037253,
+        "load": 393.5,
+        "requests": 43,
+        "bytes": 671726
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/admin/",
+      "status": 200,
+      "finalPath": "/admin/",
+      "metrics": {
+        "lcp": 508,
+        "cls": 0,
+        "shifts": [],
+        "scriptLayout": true,
+        "ttfb": 239.79999999981374,
+        "load": 560.2000000001863,
+        "requests": 41,
+        "bytes": 408423
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    },
+    {
+      "kind": "staff",
+      "route": "/membership/registration/pdao/onsite/",
+      "status": 200,
+      "finalPath": "/membership/registration/pdao/onsite/",
+      "metrics": {
+        "lcp": 828,
+        "cls": 0,
+        "shifts": [],
+        "ocrBefore": {
+          "display": "block",
+          "visibility": "hidden",
+          "height": 806.203125,
+          "htmlClass": "has-script",
+          "rules": [
+            [
+              "http://127.0.0.1:60929/static/css/document-ocr.css?v=20261128-palette",
+              ".has-script .document-ocr[hidden] { display: block !important; visibility: hidden; }"
+            ]
+          ]
+        },
+        "scriptLayout": true,
+        "ttfb": 333.8999999994412,
+        "load": 762.3999999994412,
+        "requests": 52,
+        "bytes": 1054806
+      },
+      "accessibility": [],
+      "widths": [
+        {
+          "width": 320,
+          "overflow": false,
+          "scrollWidth": 320
+        },
+        {
+          "width": 375,
+          "overflow": false,
+          "scrollWidth": 375
+        },
+        {
+          "width": 390,
+          "overflow": false,
+          "scrollWidth": 390
+        },
+        {
+          "width": 430,
+          "overflow": false,
+          "scrollWidth": 430
+        },
+        {
+          "width": 768,
+          "overflow": false,
+          "scrollWidth": 768
+        },
+        {
+          "width": 1024,
+          "overflow": false,
+          "scrollWidth": 1024
+        },
+        {
+          "width": 1366,
+          "overflow": false,
+          "scrollWidth": 1366
+        },
+        {
+          "width": 1440,
+          "overflow": false,
+          "scrollWidth": 1440
+        }
+      ],
+      "firstFocus": {
+        "tag": "A",
+        "text": "Skip to main content"
+      }
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "mobileLab": [
+    {
+      "run": 1,
+      "lcp": 4616,
+      "cls": 0,
+      "shifts": [],
+      "load": 5251.700000000186
+    },
+    {
+      "run": 2,
+      "lcp": 3112,
+      "cls": 0,
+      "shifts": [],
+      "load": 3652
+    },
+    {
+      "run": 3,
+      "lcp": 2604,
+      "cls": 0,
+      "shifts": [],
+      "load": 3049.7000000001863
+    }
+  ],
+  "preferenceChecks": [
+    {
+      "route": "/",
+      "keyboardOpens": true,
+      "keyboardReturns": true,
+      "largeTextOverflow": false,
+      "themes": [
+        {
+          "mode": "dark",
+          "violations": []
+        },
+        {
+          "mode": "contrast",
+          "violations": []
+        }
+      ]
+    },
+    {
+      "route": "/dashboard/",
+      "keyboardOpens": true,
+      "keyboardReturns": true,
+      "largeTextOverflow": false,
+      "themes": [
+        {
+          "mode": "dark",
+          "violations": []
+        },
+        {
+          "mode": "contrast",
+          "violations": []
+        }
+      ]
+    }
+  ]
+}

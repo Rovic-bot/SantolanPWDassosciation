@@ -52,6 +52,9 @@ class DisabilityScreeningTests(TestCase):
         self.assertNotIn('program_verification', self.client.session)
         self.assertFalse(ProgramApplication.objects.exists())
 
-    def test_program_without_restriction_accepts_verified_member(self):
+    def test_program_without_recorded_eligibility_blocks_submission(self):
         self.program.eligible_disability_types.clear()
-        self.assertRedirects(self.client.post(self.verify_url, self.data), self.apply_url)
+        response = self.client.post(self.verify_url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('program_verification', self.client.session)
+        self.assertFalse(ProgramApplication.objects.exists())

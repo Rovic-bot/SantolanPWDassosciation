@@ -18,6 +18,8 @@
 <section class="portal-checklist" aria-labelledby="pdao-requirements-heading"><h3 id="pdao-requirements-heading" tabindex="-1">{% portal_text "text_028" %}PDAO PWD ID requirements{% endportal_text %}</h3>{% include 'membership/guidance_checklist.html' with items=pdao_requirements list_id='pdao-requirements' %}<p><strong>{% portal_text "text_029" %}Renewal only:{% endportal_text %}</strong> surrender the original old or expired PWD ID.</p><p class="portal-small">{% portal_text "text_030" %}The supplied form includes residency alternatives and documents for minors or dependents. Review its full checklist and confirm the applicable requirements with PDAO.{% endportal_text %}</p></section></div>
 </section>
 </section>
+{% if membership_content.version %}<section class="portal-service-panel" aria-labelledby="published-membership-guidance"><h2 id="published-membership-guidance">{{ membership_content.title }}</h2>{{ membership_content.body|linebreaks }}</section>{% endif %}
+{% if contact_content.version %}<section class="portal-service-panel" aria-labelledby="published-contact-guidance"><h2 id="published-contact-guidance">{{ contact_content.title }}</h2>{{ contact_content.body|linebreaks }}</section>{% endif %}
 <section class="portal-help-banner"><div><h2>{% portal_text "text_031" %}Need help with a form?{% endportal_text %}</h2><p>{% portal_text "text_032" %}Visit the Association Help Desk for assistance with your chosen service.{% endportal_text %}</p></div><a class="btn btn-outline-primary" href="{% url 'core:contact' %}">Contact Help Desk</a></section>
 
 

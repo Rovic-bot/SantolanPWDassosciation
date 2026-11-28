@@ -126,10 +126,10 @@ class QuickReferralTests(Fixtures, TestCase):
         self.assertNotContains(inbox, 'data-record-full-page')
         self.assertContains(inbox, 'View ticket')
         response = browser.get(url)
-        for field in ('name="notes"', 'name="member_message"',
+        for field in ('name="member_message"',
                     'name="channel"', 'name="sender_version"'):
             self.assertContains(response, field)
-        self.assertContains(response, 'Reply to this concern')
+        self.assertContains(response, 'Reply or instructions for the member')
         self.assertContains(response, 'data-referral-open')
         self.assertContains(response, 'data-referral-reply')
         self.assertEqual(browser.post(url, {'action': 'begin_review', 'version': 0}).status_code, 403)
@@ -158,7 +158,7 @@ class QuickReferralTests(Fixtures, TestCase):
         self.assertNotContains(self.client.get(inbox), 'value="begin_review"')
         self.assertNotContains(self.client.get(detail), 'data-referral-open')
         self.client.force_login(self.admin)
-        self.assertContains(self.client.get(inbox), 'data-record-dialog=')
+        self.assertContains(self.client.get(inbox), detail)
         self.assertContains(self.client.get(detail), 'data-referral-open')
         ticket.refresh_from_db()
         self.assertEqual((ticket.status, ticket.version), ('received', 0))
@@ -171,8 +171,14 @@ class QuickReferralTests(Fixtures, TestCase):
 
     def test_opening_retains_historical_processing_status_and_invalid_manual_buttons_fail(self):
         ticket = self.submit()
-        self.review(ticket, channel='onsite')
-        self.review(ticket, version=1, status='needs_information', channel='onsite')
+        self.review(ticket, channel='online')
+        self.review(ticket, version=1, status='needs_information', channel='online')
+        # Retained status from before conversation-only replies; current reply
+        # actions cannot create this former manual processing transition.
+        from .referral_models import referral_write
+        with referral_write():
+            ticket.status = 'needs_information'
+            ticket.save(update_fields=['status'])
         count = ticket.actions.count()
         self.act(ticket, 'begin_review')
         ticket.refresh_from_db()
@@ -190,7 +196,7 @@ class QuickReferralTests(Fixtures, TestCase):
         url = reverse('assistance:referral_inbox')
         response = self.client.get(url)
         self.assertEqual(response.context['totals'], {'total': 2, 'received': 1, 'closed': 1})
-        for parameters, expected in (({'q': 'school'}, [school]),
+        for parameters, expected in (({'q': 'school', 'status': 'all'}, [school]),
                 ({'q': medical.reference.lower()}, [medical]),
                 ({'q': medical.full_name, 'type': 'medical'}, [medical]),
                 ({'status': 'closed', 'type': 'educational'}, [school]),
