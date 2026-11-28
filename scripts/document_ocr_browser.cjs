@@ -114,7 +114,7 @@ async function imageFor(page, lines) {
       await page.locator('[data-ocr-side=back]').click();
       await page.locator('[data-ocr-file]').setInputFiles(await pwdFixture(page, 'back'));
       await page.locator('[data-ocr-thumbnail=back]:visible').waitFor();
-      assert.equal(await page.locator('[data-ocr-read]').textContent(), 'Read both sides');
+      assert.equal(await page.locator('[data-ocr-read-label]').textContent(), 'Read both sides');
       await page.locator('[data-ocr-read]').click();
       await page.locator('[data-ocr-results]:visible').waitFor({timeout:190000});
       fs.writeFileSync(path.join(output,`pwd-fictional-${route.includes('pdao')?'pdao':'association'}.json`), JSON.stringify(await page.evaluate(() => window.pwdTestResults)));
@@ -185,7 +185,7 @@ async function imageFor(page, lines) {
       results.push({rotatedNationalID:angle,reviewedAutofill:true,identityNumberBoundary:true});
     }
     await page.locator('[data-ocr-clear]').click();
-    await page.locator('[data-ocr-camera]').click();
+    await page.locator('[data-ocr-camera=front]').click();
     await page.waitForFunction(() => document.querySelector('[data-ocr-video]').videoWidth > 0);
     await page.evaluate(() => {window.testCameraTracks = document.querySelector('[data-ocr-video]').srcObject.getTracks();});
     await page.locator('[data-ocr-capture]').click();
@@ -198,9 +198,9 @@ async function imageFor(page, lines) {
     assert.equal(await page.locator('[data-ocr-preview]').isVisible(), false);
     results.push({corruptImageFallback: true});
     await page.evaluate(() => {navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('Test denial', 'NotAllowedError'));});
-    await page.locator('[data-ocr-camera]').click();
+    await page.locator('[data-ocr-camera=front]').click();
     await page.waitForFunction(() => document.querySelector('[data-ocr-status]').textContent.includes('permission denied'));
-    assert(await page.locator('[data-ocr-phone]').isVisible());
+    assert(await page.locator('[data-ocr-upload=front]').isEnabled());
     results.push({cameraDeniedManualFallback: true});
     // Track native workers to verify cancellation during initialization really
     // releases the engine, including a failed language download.

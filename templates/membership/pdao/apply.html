@@ -16,7 +16,7 @@
 </div>
 <div class="resident-form-body">
 {% include 'membership/registration/ocr_scan.html' %}
-<form method="post" autocomplete="off" class="record-editor registration-editor" data-registration-privacy-form>{% csrf_token %}{{ form.submission_token }}
+<form method="post" enctype="multipart/form-data" autocomplete="off" class="record-editor registration-editor" data-registration-privacy-form>{% csrf_token %}{{ form.submission_token }}
 <p class="form-text application-required-note">Please complete all required fields (*)</p>
 {% include 'membership/registration/fields.html' with public_profile_layout=True resident_anchors=True %}
 <button class="btn btn-primary" type="submit">Confirm details and submit application</button></form>

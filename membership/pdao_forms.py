@@ -1,14 +1,18 @@
 from django import forms
+from django.conf import settings
 from uuid import UUID
 
+from documents.validators import validate_upload_total
 from .forms import StyledForm
 from .pdf_registration_forms import PDAOForm
 from .intake_validation import NewIntakeValidationMixin
+from .registration_forms import add_registration_document_fields
+from .registration_policy import SLOTS
 
 PRIVACY_VERSION = 'pdao-online-20261109-v3'
 ONSITE_PRIVACY_VERSION = 'pdao-onsite-20261109-v2'
 PRIVACY_NOTICE = (
-    'Your details are saved privately for authorized Association staff to review, print and prepare for forwarding to PDAO. '
+    'Your details and optional uploaded documents are saved privately for authorized Association staff to review, print and prepare for forwarding to PDAO. '
     'This does not create an Association member record or issue a PWD ID. '
     'Staff arrange forwarding separately; this website does not send your form automatically. '
     'For online applications, staff email the address you provide with an office-verification invitation or a request for corrected information. '
@@ -20,6 +24,7 @@ PRIVACY_NOTICE = (
 
 
 class PDAOOnlineForm(NewIntakeValidationMixin, PDAOForm):
+    upload_slots = tuple(SLOTS)
     placeholder_examples = {
         'pwd_number': 'e.g. 00-0000-000-0000000',
         'last_name': 'e.g. Dela Cruz', 'first_name': 'e.g. Juan',
@@ -52,11 +57,36 @@ class PDAOOnlineForm(NewIntakeValidationMixin, PDAOForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        add_registration_document_fields(self, self.upload_slots)
+        for slot in self.upload_slots:
+            self.fields[slot].help_text += (
+                f' Maximum {settings.MEMBERSHIP_FILE_MAX_BYTES // 1048576} MB per file.'
+                + (' JPG or PNG.' if slot == 'photo_2x2' else ' PDF, JPG or PNG.'))
+        self.style_fields()
         for name, example in self.placeholder_examples.items():
             self.fields[name].widget.attrs['placeholder'] = example
 
+    @property
+    def profile_sections(self):
+        sections = [(title, [field for field in fields if field.name != 'acknowledgement'])
+                    for title, fields in super().profile_sections]
+        sections.append(('Supporting documents and acknowledgement',
+                         [self[name] for name in (*self.upload_slots, 'civil_alternative', 'acknowledgement')]))
+        return sections
+
+    def clean(self):
+        values = super().clean()
+        if any(len(self.files.getlist(slot)) != 1 for slot in self.files):
+            raise forms.ValidationError('Upload only one file for each permitted document.')
+        validate_upload_total(self.files)
+        if bool(values.get('civil_document')) != bool(values.get('civil_alternative')):
+            self.add_error('civil_alternative', 'Select Birth or Marriage for the civil document you upload.')
+        return values
+
     def submitted_data(self):
         data = super().submitted_data()
+        for name in (*self.upload_slots, 'civil_alternative'):
+            data.pop(name, None)
         data.pop('submission_token', None)
         data['intake_channel'] = 'online'
         return data

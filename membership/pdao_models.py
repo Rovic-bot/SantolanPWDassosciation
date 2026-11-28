@@ -1,5 +1,6 @@
 """Private PDAO intake, claimed IDs and optional Association registration links."""
 import uuid
+from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -8,6 +9,7 @@ from django.utils import timezone
 from core.reference_services import ShortReferenceMixin
 
 from .registration_models import RegistrationRecord
+from .registration_policy import SLOTS
 
 
 class PDAORegistration(ShortReferenceMixin, RegistrationRecord):
@@ -57,6 +59,28 @@ class PDAORegistration(ShortReferenceMixin, RegistrationRecord):
         return super().save(*args, **kwargs)
 
 
+def pdao_file_path(instance, filename):
+    return f'pdao/{instance.registration_id}/{uuid.uuid4().hex}{Path(filename).suffix.lower()}'
+
+
+class PDAORegistrationAttachment(RegistrationRecord):
+    append_only = True
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    registration = models.ForeignKey(PDAORegistration, on_delete=models.PROTECT, related_name='attachments')
+    slot = models.CharField(max_length=32, choices=list(SLOTS.items()))
+    alternative = models.CharField(max_length=32, blank=True, choices=[('birth', 'Birth Certificate'), ('marriage', 'Marriage Certificate')])
+    file = models.FileField(upload_to=pdao_file_path, max_length=250)
+    original_name = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=50)
+    size = models.PositiveIntegerField()
+    digest = models.CharField(max_length=64)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        default_permissions = ()
+        constraints = [models.UniqueConstraint(fields=['registration', 'slot'], name='pdao_unique_upload_slot')]
+
+
 class PDAORegistrationEvent(RegistrationRecord):
     append_only = True
     registration = models.ForeignKey(PDAORegistration, on_delete=models.PROTECT, related_name='events')
@@ -70,6 +94,7 @@ class PDAORegistrationEvent(RegistrationRecord):
         ('needs_info', 'More information requested'),
         ('email_retry', 'Review email retried'),
         ('claim_notice_queued', 'PWD ID claim notice requested'),
+        ('document_downloaded', 'Supporting document opened'),
         ('id_claimed', 'PWD ID claimed'),
         ('membership_started', 'Association membership application started'),
     ])

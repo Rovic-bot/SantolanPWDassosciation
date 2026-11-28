@@ -1,5 +1,8 @@
 """Independent PDAO intake, private receipts, printing and manual forwarding."""
 from datetime import datetime, timedelta, timezone as datetime_timezone
+import hashlib
+import logging
+from pathlib import Path
 from uuid import UUID, uuid4
 
 from django.conf import settings
@@ -18,7 +21,7 @@ from accounts.backends import reserve_windows
 from .models import SubmissionWindow
 from .pdao_forms import (PDAOOnlineForm, PDAOOnsiteForm, PDAOForwardForm, PDAOReviewForm,
                          PRIVACY_VERSION, ONSITE_PRIVACY_VERSION)
-from .pdao_models import PDAORegistration, PDAORegistrationEvent, PDAORegistrationRevision
+from .pdao_models import PDAORegistration, PDAORegistrationEvent, PDAORegistrationRevision, PDAORegistrationAttachment
 from .registration_models import registration_write
 from .registration_policy import RegistrationUnavailable, digest
 
@@ -31,6 +34,32 @@ CONTEXT_KEY = 'pdao_registration_context'
 RECEIPT_KEY = 'pdao_registration_receipt'
 LIFETIME = 3600
 SALT = 'membership.pdao.submit.v1'
+logger = logging.getLogger(__name__)
+
+
+def upload_fingerprints(form):
+    fingerprints = {}
+    for slot in form.upload_slots:
+        upload = form.cleaned_data.get(slot)
+        if upload:
+            checksum = hashlib.sha256()
+            for chunk in upload.chunks():
+                checksum.update(chunk)
+            upload.seek(0)
+            fingerprints[slot] = {'digest': checksum.hexdigest(),
+                'alternative': form.cleaned_data.get('civil_alternative', '') if slot == 'civil_document' else ''}
+    return fingerprints
+
+
+def save_documents(registration, form, fingerprints, saved):
+    for slot, fingerprint in fingerprints.items():
+        upload = form.cleaned_data[slot]
+        attachment = PDAORegistrationAttachment(registration=registration, slot=slot,
+            original_name=Path(upload.name).name[:255], content_type=upload.content_type,
+            size=upload.size, **fingerprint)
+        attachment.file.save(upload.name, upload, save=False)
+        saved.append((attachment.file.storage, attachment.file.name))
+        attachment.save()
 
 
 def require_enabled():
@@ -109,6 +138,7 @@ def submit(request, *, onsite=False):
         raise ValidationError('Correct the form before submitting.')
     key, expires = token_context(request, form.cleaned_data['submission_token'], onsite=onsite)
     data = form.submitted_data()
+    fingerprints = upload_fingerprints(form)
     payload_digest = digest(data)
     binding = binding_for(request)
 
@@ -117,27 +147,43 @@ def submit(request, *, onsite=False):
         if existing is not None and ((existing.payload_digest != payload_digest and not _same_intake_on_retry(existing.data, data)) or existing.binding_digest != binding
                                      or (not onsite and (existing.receipt_revoked_at or existing.receipt_expires_at <= timezone.now()))):
             raise ValidationError('This form was already submitted. Use your receipt or contact the Help Desk.')
+        if existing is not None:
+            retained = {item.slot: {'digest': item.digest, 'alternative': item.alternative}
+                        for item in existing.attachments.all()}
+            if retained != fingerprints:
+                raise ValidationError('This form was already submitted with different documents. Use your receipt or contact the Help Desk.')
         return existing
 
     existing = existing_submission()
     if existing:
         return existing
+    saved = []
+    committed = False
     try:
         with transaction.atomic(), registration_write():
             registration = PDAORegistration.objects.create(submission_key=key, data=data,
                 payload_digest=payload_digest, privacy_version=ONSITE_PRIVACY_VERSION if onsite else PRIVACY_VERSION,
                 binding_digest=binding, receipt_expires_at=expires,
                 receipt_revoked_at=timezone.now() if onsite else None)
+            save_documents(registration, form, fingerprints, saved)
             record_event(registration, 'onsite_submitted' if onsite else 'submitted', actor)
             if onsite:
                 require_staff(actor, ADD)
-            return registration
+        committed = True
+        return registration
     except IntegrityError:
         # Concurrent retries of the same nonce must never create two records.
         existing = existing_submission()
         if existing:
             return existing
         raise
+    finally:
+        if not committed:
+            for storage, name in saved:
+                try:
+                    storage.delete(name)
+                except Exception:
+                    logger.error('Could not clean up an uncommitted PDAO document.')
 
 
 def receipt_for(request):

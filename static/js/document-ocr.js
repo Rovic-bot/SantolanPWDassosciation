@@ -5,6 +5,12 @@ WorkspacePage.run(({on, cleanup}) => {
     const form = panel.parentElement.querySelector('form.registration-editor');
     if (!form || !window.DocumentOCRParser) return;
     const get = key => panel.querySelector(`[data-ocr-${key}]`);
+    const all = key => [...panel.querySelectorAll(`[data-ocr-${key}]`)];
+    // Native capture must be opened directly by the tap. Requesting a browser
+    // media stream first embeds the camera and loses the native capture flow.
+    const mobileCamera = navigator.userAgentData?.mobile ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const say = message => { get('status').textContent = message; };
     let stream, worker, canvas, imageURL, sequence = 0, cameraSequence = 0, busy = false, disposed = false;
     const images = {front: null, back: null};
@@ -13,21 +19,35 @@ WorkspacePage.run(({on, cleanup}) => {
     panel.hidden = false;
     function syncSides() {
       const receipt = get('kind').value === 'receipt';
-      get('sides').hidden = receipt;
+      panel.querySelector('[data-ocr-card="back"]').hidden = receipt;
+      get('sides').style.gridTemplateColumns = receipt ? 'minmax(0, 1fr)' : '';
+      get('front-title').textContent = receipt ? 'Receipt' : 'Front of ID';
+      get('front-description').textContent = receipt ? 'Receipt with applicant details' : 'Name, ID number, birth date & disability';
+      get('intro').textContent = receipt ?
+        'Scan a receipt with your details. Review extracted fields before applying them to the form.' :
+        `Scan both sides of your ${get('kind').value === 'pwd' ? 'PWD ID' : 'ID'} to auto-fill your details. Review extracted fields before applying them to the form.`;
+      get('single-hint').hidden = receipt;
       panel.querySelectorAll('[data-ocr-side]').forEach(button => {
         const key = button.dataset.ocrSide, selected = key === side;
         button.setAttribute('aria-pressed', String(selected)); button.disabled = busy;
+        button.setAttribute('aria-label', receipt ? 'Select receipt' : `Select ${key} of ID`);
+        panel.querySelector(`[data-ocr-card="${key}"]`).dataset.selected = String(selected);
+        panel.querySelector(`[data-ocr-badge="${key}"]`).textContent = selected ? 'Selected' : `${key === 'front' ? 'Front' : 'Back'} side`;
+        panel.querySelector(`[data-ocr-placeholder="${key}"]`).hidden = Boolean(images[key]);
         const thumb = panel.querySelector(`[data-ocr-thumbnail="${key}"]`);
+        thumb.alt = receipt ? 'Selected receipt' : `${key === 'front' ? 'Front' : 'Back'} of selected ID`;
         thumb.hidden = !images[key];
         if (images[key]) thumb.src = images[key].url; else thumb.removeAttribute('src');
         panel.querySelector(`[data-ocr-side-status="${key}"]`).textContent =
-          `${selected ? 'Selected · ' : ''}${images[key] ? 'Image ready' : `Add ${key} image`}`;
+          images[key] ? 'Image ready' : key === 'front' ? 'No file yet' : 'Optional';
       });
-      get('upload').textContent = receipt ? 'Choose receipt image' : `Choose ${side} image`;
-      get('camera').textContent = receipt ? 'Take receipt photo' : `Take ${side} photo`;
+      all('upload').forEach(button => button.setAttribute('aria-label', receipt ? 'Choose receipt image' : `Choose ${button.dataset.ocrUpload} image`));
+      all('camera').forEach(button => button.setAttribute('aria-label', receipt ? 'Take receipt photo' : `Take ${button.dataset.ocrCamera} photo`));
       get('file').setAttribute('aria-label', receipt ? 'Choose receipt image' : `Choose ${side} of ID`);
       get('photo').setAttribute('aria-label', receipt ? 'Photograph receipt' : `Photograph ${side} of ID`);
-      get('read').textContent = !receipt && images.front && images.back ? 'Read both sides' : 'Read information';
+      get('read-label').textContent = !receipt && images.front && images.back ? 'Read both sides' : 'Read information';
+      get('count').textContent = receipt ? `${images.front ? 1 : 0} of 1 image attached` :
+        `${Object.values(images).filter(Boolean).length} of 2 sides attached`;
       get('read').disabled = busy || !Object.values(images).some(Boolean);
       get('preview').hidden = !images[side];
       if (images[side]) get('image').src = images[side].url; else get('image').removeAttribute('src');
@@ -39,7 +59,7 @@ WorkspacePage.run(({on, cleanup}) => {
     }
     function setBusy(value) {
       busy = value;
-      for (const key of ['camera', 'upload', 'phone', 'read', 'rotate', 'remove', 'capture', 'kind', 'apply']) get(key).disabled = value;
+      for (const key of ['camera', 'upload', 'read', 'rotate', 'remove', 'capture', 'kind', 'apply']) all(key).forEach(button => { button.disabled = value; });
       get('progress').hidden = !value;
       panel.setAttribute('aria-busy', String(value));
       syncSides();
@@ -86,10 +106,10 @@ WorkspacePage.run(({on, cleanup}) => {
     }
     async function choose(file) {
       if (!file || busy) return;
-      stopCamera(); stopReading(); clearResults(); clearImage();
       if (!/^image\/(jpeg|png|webp)$/.test(file.type) || !file.size || file.size > 12 * 1024 * 1024) {
         say('Choose a JPG, PNG or WebP image up to 12 MB. Convert HEIC or PDF to an image first, or enter details manually.'); return;
       }
+      stopCamera(); stopReading(); clearResults(); clearImage();
       const run = sequence;
       const url = URL.createObjectURL(file); imageURL = url;
       try {
@@ -101,36 +121,51 @@ WorkspacePage.run(({on, cleanup}) => {
         if (run === sequence && !disposed) { clearImage(); say('This image could not be read. Try a smaller, clear photo or enter details manually.'); }
       } finally { URL.revokeObjectURL(url); }
     }
-    on(get('upload'), 'click', () => get('file').click());
-    on(get('phone'), 'click', () => get('photo').click());
+    function selectSide(key) {
+      if (busy) return;
+      stopCamera(); sequence++;
+      if (imageURL) { URL.revokeObjectURL(imageURL); imageURL = null; }
+      side = key; canvas = images[side]?.canvas || null;
+      get('file').value = ''; get('photo').value = ''; syncSides();
+    }
+    all('upload').forEach(button => on(button, 'click', () => {
+      if (busy) return;
+      selectSide(button.dataset.ocrUpload); get('file').click();
+    }));
     on(get('file'), 'change', () => choose(get('file').files[0]));
     on(get('photo'), 'change', () => choose(get('photo').files[0]));
     panel.querySelectorAll('[data-ocr-side]').forEach(button => on(button, 'click', () => {
       if (busy) return;
-      stopCamera(); sequence++;
-      if (imageURL) { URL.revokeObjectURL(imageURL); imageURL = null; }
-      side = button.dataset.ocrSide; canvas = images[side]?.canvas || null;
-      get('file').value = ''; get('photo').value = ''; syncSides();
+      selectSide(button.dataset.ocrSide);
       say(`${side === 'front' ? 'Front' : 'Back'} selected. Choose an image or use the camera.`);
     }));
     on(get('kind'), 'change', () => {
       stopCamera(); stopReading(); clearResults(); clearAllImages(); side = 'front'; syncSides();
       say('Document type changed. Add the image for this document.');
     });
-    on(get('camera'), 'click', async () => {
-      stopCamera();
-      if (!navigator.mediaDevices?.getUserMedia) { get('phone').hidden = false; get('photo').click(); return; }
+    all('camera').forEach(button => on(button, 'click', async () => {
+      if (busy) return;
+      selectSide(button.dataset.ocrCamera);
+      if (mobileCamera) {
+        get('photo').click();
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        say('Camera unavailable in this browser. Choose a photo from your files or enter the form manually.');
+        return;
+      }
       const run = cameraSequence;
-      get('camera').disabled = true; say('Allow camera access to photograph the document.');
+      all('camera').forEach(button => { button.disabled = true; });
+      say('Allow camera access to photograph the document.');
       try {
         const next = await navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: 'environment'}, width: {ideal: 1920}, height: {ideal: 1080}}, audio: false});
         if (disposed || run !== cameraSequence) { next.getTracks().forEach(track => track.stop()); return; }
         stream = next; get('video').srcObject = stream; get('camera-panel').hidden = false;
         await get('video').play(); say('Place the document inside the camera view, then capture the photo.');
       } catch {
-        if (run === cameraSequence && !disposed) { stopCamera(); get('phone').hidden = false; say('Camera unavailable or permission denied. Choose an image, use your phone camera, or enter the form manually.'); }
-      } finally { if (!disposed) get('camera').disabled = busy; }
-    });
+        if (run === cameraSequence && !disposed) { stopCamera(); say('Camera unavailable or permission denied. Choose an image or enter the form manually.'); }
+      } finally { if (!disposed) all('camera').forEach(button => { button.disabled = busy; }); }
+    }));
     on(get('stop'), 'click', () => { stopCamera(); say('Camera closed.'); });
     on(get('capture'), 'click', () => {
       const video = get('video');

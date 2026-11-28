@@ -11,7 +11,7 @@
         color-scheme: dark !important; color: #f4f2ec !important; background: #191817 !important;
     }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, .bento-footer) { background: transparent !important; color: #f4f2ec !important; }
-    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, .bento-footer, .portal-navigation, dialog, .display-panel) :where(h1,h2,h3,h4,p,li,dt,dd,label,legend,summary,strong,em,small,span,a,figcaption,time) { color: #f4f2ec !important; text-shadow: none !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, .bento-footer, .portal-navigation, dialog, .display-panel) :where(h1,h2,h3,h4,p,li,dt,dd,label,legend,summary,strong,em,small,span,a,figcaption,time):not(.document-ocr *) { color: #f4f2ec !important; text-shadow: none !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-landing { background-color: #191817 !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .notice-action { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content, dialog) :is(
@@ -49,7 +49,7 @@
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .section-photo-banner { --section-banner-rgb: 36 34 32; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-landing::after { background: linear-gradient(90deg,#191817 0%,#191817f5 24%,#191817bd 43%,#19181766 62%,#19181722 82%,transparent) !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal #main-content .home-featured-event::after { background: linear-gradient(90deg,transparent 15%,#24222085 38%,#242220f0 54%,#242220 67%) !important; }
-    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.display-panel) :is(input:not([type=checkbox]):not([type=radio]),textarea,select) { background: #191817 !important; color: #f4f2ec !important; border-color: #8d867b !important; color-scheme: dark !important; }
+    html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog,.display-panel) :is(input:not([type=checkbox]):not([type=radio]),textarea,select):not(.document-ocr *) { background: #191817 !important; color: #f4f2ec !important; border-color: #8d867b !important; color-scheme: dark !important; }
     /* Fetched forms also appear inside popups without the resident-page styles. */
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.form-text,.helptext) { color: #c5c0b8 !important; }
     html[data-public-theme="dark"]:not([data-contrast="true"]) body.public-portal :is(#main-content,dialog) :is(.alert,.concern-dialog-notice) { background: #35322e !important; color: #f4f2ec !important; border-color: #8d867b !important; }

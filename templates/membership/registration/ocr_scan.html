@@ -3,45 +3,62 @@
   data-worker="{% static 'vendor/tesseract/6.0.1/worker.min.js' %}"
   data-core="{% get_static_prefix %}vendor/tesseract/6.0.1/core"
   data-language="{% get_static_prefix %}vendor/tesseract/6.0.1/lang">
-  <header class="document-ocr-heading"><span class="document-ocr-icon" aria-hidden="true">ID</span><div><p class="document-ocr-eyebrow">Optional · Save time typing</p><h2 id="ocr-heading">Fill from an ID or receipt</h2></div></header>
-  <p>Add the front and back of your PWD ID. Review the details from both sides together before adding them to your application.</p>
-  <p class="document-ocr-hint">Each image is read on this device and is not uploaded or attached to your application. Only details you choose are copied into the form. This does not verify your identity or approve an application.</p>
-  <label class="document-ocr-kind">Document <select class="form-select" data-ocr-kind><option value="pwd">PWD ID (front and back)</option><option value="id">Other ID card</option><option value="receipt">Receipt with applicant details</option></select></label>
-  <div class="document-ocr-sides" data-ocr-sides role="group" aria-label="Choose the side to photograph or replace">
-    <button type="button" class="document-ocr-side" data-ocr-side="front" aria-pressed="true">
-      <strong>Front of ID</strong><span>Name, ID number, birth date and disability</span>
-      <img data-ocr-thumbnail="front" alt="Front of selected ID" hidden><span data-ocr-side-status="front">Selected · Add front image</span>
-    </button>
-    <button type="button" class="document-ocr-side" data-ocr-side="back" aria-pressed="false">
-      <strong>Back of ID</strong><span>Address, sex and emergency contact</span>
-      <img data-ocr-thumbnail="back" alt="Back of selected ID" hidden><span data-ocr-side-status="back">Add back image</span>
-    </button>
-  </div>
-  <div class="document-ocr-actions">
-    <button type="button" class="btn btn-primary" data-ocr-camera>Take front photo</button>
-    <button type="button" class="btn btn-outline-primary" data-ocr-upload>Choose front image</button>
+  <header class="document-ocr-header">
+    <div class="document-ocr-heading"><span class="document-ocr-icon" aria-hidden="true">{% include 'membership/registration/ocr_icon.html' with icon='id' %}</span><div><p class="document-ocr-eyebrow">Optional · Save time typing</p><h2 id="ocr-heading">Fill from an ID or receipt</h2></div></div>
+    <span class="document-ocr-privacy">{% include 'membership/registration/ocr_icon.html' with icon='shield' %} Local on-device scan · Not uploaded</span>
+    <p class="document-ocr-intro" data-ocr-intro>Scan both sides of your PWD ID to auto-fill your details. Review extracted fields before applying them to the form.</p>
+    <span class="visually-hidden">Scan images are not uploaded or attached to your application. Only details you choose are copied into the form. Scanning does not verify identity or approve an application.</span>
+  </header>
+  <div class="document-ocr-body">
+    <div class="document-ocr-kind-heading"><label for="ocr-kind">Document type</label><span>JPG, PNG, WebP · Max 12 MB</span></div>
+    <select id="ocr-kind" class="form-select document-ocr-kind" data-ocr-kind><option value="pwd">PWD ID (front and back)</option><option value="id">Other ID card</option><option value="receipt">Receipt with applicant details</option></select>
+    <div class="document-ocr-sides" data-ocr-sides role="group" aria-label="Document images">
+      <article class="document-ocr-card" data-ocr-card="front" data-selected="true">
+        <div class="document-ocr-card-meta"><span class="document-ocr-side-badge" data-ocr-badge="front">Selected</span><span data-ocr-side-status="front">No file yet</span></div>
+        <button type="button" class="document-ocr-side" data-ocr-side="front" aria-pressed="true" aria-label="Select front of ID">
+          <span class="document-ocr-side-icon" data-ocr-placeholder="front">{% include 'membership/registration/ocr_icon.html' with icon='card' %}</span>
+          <img data-ocr-thumbnail="front" alt="Front of selected ID" hidden>
+          <strong data-ocr-front-title>Front of ID</strong><span data-ocr-front-description>Name, ID number, birth date &amp; disability</span>
+        </button>
+        <div class="document-ocr-card-actions">
+          <button type="button" class="ocr-button document-ocr-take" data-ocr-camera="front" aria-label="Take front photo">{% include 'membership/registration/ocr_icon.html' with icon='camera' %} Take photo</button>
+          <button type="button" class="ocr-button document-ocr-choose" data-ocr-upload="front" aria-label="Choose front image">{% include 'membership/registration/ocr_icon.html' with icon='image' %} Choose file</button>
+        </div>
+      </article>
+      <article class="document-ocr-card" data-ocr-card="back" data-selected="false">
+        <div class="document-ocr-card-meta"><span class="document-ocr-side-badge" data-ocr-badge="back">Back side</span><span data-ocr-side-status="back">Optional</span></div>
+        <button type="button" class="document-ocr-side" data-ocr-side="back" aria-pressed="false" aria-label="Select back of ID">
+          <span class="document-ocr-side-icon" data-ocr-placeholder="back">{% include 'membership/registration/ocr_icon.html' with icon='barcode' %}</span>
+          <img data-ocr-thumbnail="back" alt="Back of selected ID" hidden>
+          <strong>Back of ID</strong><span>Address, sex &amp; emergency contact</span>
+        </button>
+        <div class="document-ocr-card-actions">
+          <button type="button" class="ocr-button document-ocr-take" data-ocr-camera="back" aria-label="Take back photo">{% include 'membership/registration/ocr_icon.html' with icon='camera' %} Take photo</button>
+          <button type="button" class="ocr-button document-ocr-choose" data-ocr-upload="back" aria-label="Choose back image">{% include 'membership/registration/ocr_icon.html' with icon='image' %} Choose file</button>
+        </div>
+      </article>
+    </div>
     <input type="file" accept="image/jpeg,image/png,image/webp" data-ocr-file hidden aria-label="Choose ID or receipt image">
     <input type="file" accept="image/*" capture="environment" data-ocr-photo hidden aria-label="Take a photo of ID or receipt">
-    <button type="button" class="btn btn-outline-secondary" data-ocr-phone hidden>Take photo with phone</button>
-  </div>
-  <p class="document-ocr-hint">JPG, PNG or WebP · Up to 12 MB per image. Fill the photo with the card and avoid glare. Add both sides for more complete details, or read one side and enter the rest manually. Sideways images are rotated automatically.</p>
-  <div class="document-ocr-camera" data-ocr-camera-panel hidden>
-    <video data-ocr-video autoplay muted playsinline aria-label="Live camera preview"></video>
-    <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-capture>Capture photo</button><button type="button" class="btn btn-outline-secondary" data-ocr-stop>Close camera</button></div>
-  </div>
-  <div class="document-ocr-preview" data-ocr-preview hidden>
-    <img data-ocr-image alt="Selected document. Check that the text is clear before reading it.">
-    <div class="document-ocr-actions"><button type="button" class="btn btn-outline-secondary" data-ocr-rotate>Rotate selected image</button><button type="button" class="btn btn-outline-secondary" data-ocr-remove>Remove selected image</button></div>
-  </div>
-  <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-read disabled>Read information</button><button type="button" class="btn btn-outline-secondary" data-ocr-clear>Clear all scans</button></div>
-  <p class="document-ocr-status" data-ocr-status role="status" aria-live="polite" aria-atomic="true"></p>
-  <div class="document-ocr-actions" data-ocr-progress hidden><progress max="100" value="0" data-ocr-meter aria-label="Reading document"></progress><button type="button" class="btn btn-outline-secondary" data-ocr-cancel>Cancel reading</button></div>
-  <div class="document-ocr-results" data-ocr-results hidden>
-    <h3 tabindex="-1" data-ocr-review-heading>Review extracted details</h3>
-    <p>Check spelling, dates and ID numbers. Select only details that belong to the applicant. Existing entries are unchecked; select one explicitly to replace it.</p>
-    <p data-ocr-notes class="document-ocr-hint"></p>
-    <div data-ocr-fields class="document-ocr-fields"></div>
-    <details class="document-ocr-text"><summary>View text read from the document</summary><p>Use this text to complete any remaining fields. Names without separate labels and uncertain dates may need manual entry.</p><pre data-ocr-text></pre></details>
-    <div class="document-ocr-actions"><button type="button" class="btn btn-primary" data-ocr-apply>Add selected details to form</button><button type="button" class="btn btn-outline-secondary" data-ocr-continue>Go to application form</button><button type="button" class="btn btn-outline-secondary" data-ocr-undo hidden>Undo last autofill</button></div>
+    <div class="document-ocr-tips"><span>{% include 'membership/registration/ocr_icon.html' with icon='wand' %} Auto-rotates sideways photos · Fill frame &amp; avoid glare</span><span data-ocr-single-hint>Single-side scan supported</span></div>
+    <div class="document-ocr-camera" data-ocr-camera-panel hidden>
+      <video data-ocr-video autoplay muted playsinline aria-label="Live camera preview"></video>
+      <div class="document-ocr-actions"><button type="button" class="ocr-button ocr-primary" data-ocr-capture>Capture photo</button><button type="button" class="ocr-button ocr-secondary" data-ocr-stop>Close camera</button></div>
+    </div>
+    <div class="document-ocr-preview" data-ocr-preview hidden>
+      <img data-ocr-image alt="Selected document. Check that the text is clear before reading it.">
+      <div class="document-ocr-actions"><button type="button" class="ocr-button ocr-secondary" data-ocr-rotate>Rotate selected image</button><button type="button" class="ocr-button ocr-secondary" data-ocr-remove>Remove selected image</button></div>
+    </div>
+    <div class="document-ocr-footer"><div class="document-ocr-actions"><button type="button" class="ocr-button ocr-primary" data-ocr-read disabled>{% include 'membership/registration/ocr_icon.html' with icon='read' %} <span data-ocr-read-label>Read information</span></button><button type="button" class="ocr-button ocr-secondary" data-ocr-clear>{% include 'membership/registration/ocr_icon.html' with icon='reset' %} Clear all scans</button></div><span class="document-ocr-count" data-ocr-count>0 of 2 sides attached</span></div>
+    <p class="document-ocr-status" data-ocr-status role="status" aria-live="polite" aria-atomic="true"></p>
+    <div class="document-ocr-actions" data-ocr-progress hidden><progress max="100" value="0" data-ocr-meter aria-label="Reading document"></progress><button type="button" class="ocr-button ocr-secondary" data-ocr-cancel>Cancel reading</button></div>
+    <div class="document-ocr-results" data-ocr-results hidden>
+      <h3 tabindex="-1" data-ocr-review-heading>Review extracted details</h3>
+      <p>Check spelling, dates and ID numbers. Select only details that belong to the applicant. Existing entries are unchecked; select one explicitly to replace it.</p>
+      <p data-ocr-notes class="document-ocr-hint"></p>
+      <div data-ocr-fields class="document-ocr-fields"></div>
+      <details class="document-ocr-text"><summary>View text read from the document</summary><p>Use this text to complete any remaining fields. Names without separate labels and uncertain dates may need manual entry.</p><pre data-ocr-text></pre></details>
+      <div class="document-ocr-actions"><button type="button" class="ocr-button ocr-primary" data-ocr-apply>Add selected details to form</button><button type="button" class="ocr-button ocr-secondary" data-ocr-continue>Go to application form</button><button type="button" class="ocr-button ocr-secondary" data-ocr-undo hidden>Undo last autofill</button></div>
+    </div>
   </div>
 </section>

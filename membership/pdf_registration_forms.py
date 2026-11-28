@@ -181,6 +181,7 @@ class AssociationPDFForm(SourceForm):
 
 
 class PDAOForm(SourceForm):
+    upload_slots = ()
     application_type = choice_field('Application type', ['New applicant', 'Renewal'], required=True)
     date_applied = date_field('Date applied', required=True)
     pwd_number = number_field('PWD number (RR-PPMM-BBB-NNNNNNN), if already issued', hyphenated=True)
@@ -251,7 +252,7 @@ class PDAOForm(SourceForm):
 
     def clean(self):
         values = super().clean()
-        if self.files or set(self.data) - set(self.fields) - {'csrfmiddlewaretoken'}:
+        if set(self.files) - set(self.upload_slots) or set(self.data) - set(self.fields) - {'csrfmiddlewaretoken'}:
             raise ValidationError('Submit only the listed form fields. No document upload is needed for printing.')
         if hasattr(self.data, 'getlist'):
             for name in self.data:

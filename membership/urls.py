@@ -16,6 +16,7 @@ urlpatterns = [
     path('reviews/pdao/', pdao_registration_views.inbox, name='pdao_inbox'),
     path('reviews/pdao/claim-notices/', pdao_registration_views.send_claim_notices, name='pdao_claim_notices'),
     path('registration/pdao/onsite/', pdao_registration_views.onsite, name='pdao_onsite'),
+    path('reviews/pdao/documents/<uuid:document_id>/', pdao_registration_views.document, name='pdao_document'),
     path('reviews/pdao/<uuid:key>/', pdao_registration_views.detail, name='pdao_detail'),
     path('reviews/pdao/<uuid:key>/claim/', pdao_membership_views.claim_id, name='pdao_claim_id'),
     path('reviews/pdao/<uuid:key>/membership/', pdao_membership_views.membership, name='pdao_membership'),

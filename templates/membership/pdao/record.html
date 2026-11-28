@@ -35,6 +35,15 @@
           <p class="pdao-boundary-note">PDAO makes the final PWD ID decision. This record does not create an Association member.</p>
         </section>
         {% include 'membership/pdao/record_tabs.html' %}
+        <section class="member-record-card" id="pdao-documents">
+          <h2>Supporting documents</h2>
+          <p>Optional pre-uploads. Original requirements still need onsite presentation.</p>
+          <ul class="list-unstyled">
+            {% for document in registration.attachments.all %}
+            <li class="mb-3"><a href="{% url 'membership:pdao_document' document.pk %}">{{ document.get_slot_display }}{% if document.alternative %} · {{ document.get_alternative_display }}{% endif %}</a><br><small>{{ document.size|filesizeformat }} · Download document</small></li>
+            {% empty %}<li>No supporting documents uploaded.</li>{% endfor %}
+          </ul>
+        </section>
       </div>
       </div>
       <aside class="member-record-support-column" aria-label="Processing and history">

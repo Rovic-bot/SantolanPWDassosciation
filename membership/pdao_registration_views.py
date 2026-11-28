@@ -1,14 +1,17 @@
 """Saved PDAO submissions and the permission-scoped Admin queue."""
 from functools import wraps
+from pathlib import Path
 from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.http import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.http import FileResponse, Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.db import transaction
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
@@ -21,7 +24,9 @@ from accounts.decorators import dashboard_required
 from . import pdao_services as services
 from .guidance import membership_guidance
 from .pdao_forms import PDAOOnlineForm, PDAOOnsiteForm, PDAOForwardForm, PDAOReviewForm, PDAOClaimNoticeForm, PRIVACY_NOTICE
-from .pdao_models import PDAORegistration
+from .pdao_models import PDAORegistration, PDAORegistrationAttachment
+from .registration_models import registration_write
+from .registration_views import RegistrationUploadHandler
 from .pdao_presentation import record_summary
 from . import pdao_email
 from . import pdao_claim_email
@@ -46,17 +51,29 @@ def private_page(view):
     return wrapped
 
 
+def prepare_uploads(request):
+    try:
+        length = int(request.META.get('CONTENT_LENGTH') or 0)
+    except ValueError:
+        return HttpResponse(status=400)
+    # Retain the original bound for non-upload requests, and allow three
+    # optional documents plus bounded form/multipart overhead.
+    limit = settings.MEMBERSHIP_TOTAL_MAX_BYTES + 64 * 1024 if request.content_type == 'multipart/form-data' else 64 * 1024
+    if length < 0 or length > limit:
+        return HttpResponse('The form is too large. Choose smaller documents.', status=413)
+    request.upload_handlers.insert(0, RegistrationUploadHandler(request,
+        {'total_max_bytes': settings.MEMBERSHIP_TOTAL_MAX_BYTES}))
+    return None
+
+
 @private_page
 @csrf_exempt
 @require_http_methods(['GET', 'HEAD', 'POST'])
 def apply(request):
     services.require_enabled()
-    try:
-        length = int(request.META.get('CONTENT_LENGTH') or 0)
-    except ValueError:
-        return HttpResponse(status=400)
-    if length < 0 or length > 64 * 1024:
-        return HttpResponse('The form is too large. No uploads are needed.', status=413)
+    rejected = prepare_uploads(request)
+    if rejected is not None:
+        return rejected
     services.reserve_attempt(request)
     return _apply(request)
 
@@ -77,6 +94,8 @@ def _apply(request):
                                       'submission_token': token})
     else:
         form = PDAOOnlineForm(request.POST, request.FILES)
+        if getattr(request, 'upload_limit_exceeded', False):
+            form.add_error(None, 'The combined uploads exceed the limit. Choose smaller files and attach them again.')
         if form.is_valid():
             try:
                 registration = services.submit(request)
@@ -170,15 +189,25 @@ def inbox(request):
 @private_page
 @dashboard_required
 @require_http_methods(['GET', 'HEAD', 'POST'])
-@csrf_protect
-@sensitive_post_parameters()
+@csrf_exempt
 def onsite(request):
     services.require_staff(request.user, services.ADD)
+    rejected = prepare_uploads(request)
+    if rejected is not None:
+        return rejected
+    return _onsite(request)
+
+
+@csrf_protect
+@sensitive_post_parameters()
+def _onsite(request):
     if request.method in ('GET', 'HEAD'):
         form = PDAOOnsiteForm(initial={'date_applied': timezone.localdate(), 'accomplished_by': 'Applicant',
             'submission_token': services.issue_token(request, onsite=True)})
     else:
         form = PDAOOnsiteForm(request.POST, request.FILES)
+        if getattr(request, 'upload_limit_exceeded', False):
+            form.add_error(None, 'The combined uploads exceed the limit. Choose smaller files and attach them again.')
         if form.is_valid():
             try:
                 registration = services.submit(request, onsite=True)
@@ -189,6 +218,31 @@ def onsite(request):
                 return redirect('membership:pdao_detail', key=registration.pk)
     return render(request, 'membership/pdao/onsite.html', {'form': form, 'privacy_notice': PRIVACY_NOTICE,
         'pdao_onsite': True}, status=400 if form.errors else 200)
+
+
+@private_page
+@dashboard_required
+@require_safe
+def document(request, document_id):
+    actor = services.require_staff(request.user)
+    attachment = get_object_or_404(PDAORegistrationAttachment.objects.select_related('registration'), pk=document_id)
+    try:
+        handle = attachment.file.open('rb')
+    except FileNotFoundError:
+        raise Http404 from None
+    try:
+        with transaction.atomic(), registration_write():
+            services.require_staff(actor)
+            services.record_event(attachment.registration, 'document_downloaded', actor,
+                                  details={'attachment_id': str(attachment.pk)})
+    except Exception:
+        handle.close()
+        raise
+    response = FileResponse(handle, as_attachment=True, content_type=attachment.content_type,
+        filename=f'pdao-{attachment.slot}{Path(attachment.file.name).suffix}')
+    response['Content-Security-Policy'] = "sandbox; default-src 'none'"
+    response['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 
 @private_page
