@@ -94,7 +94,7 @@ async function picture(page, color) {
           await page.evaluate(theme => {document.documentElement.dataset.publicTheme=theme; document.documentElement.dataset.dashboardTheme=theme;}, theme);
           await page.waitForFunction(theme => {
             const style = getComputedStyle(document.querySelector('[data-ocr-kind]'));
-            return style.borderRadius === '16px' && style.backgroundColor === (theme === 'dark' ? 'rgb(9, 17, 32)' : 'rgb(255, 255, 255)');
+            return style.borderRadius === '16px' && style.backgroundColor === (theme === 'dark' ? 'rgb(25, 24, 23)' : 'rgb(255, 255, 255)');
           }, theme);
           assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'overflow ' + route + width);
           await page.locator('[data-document-ocr]').screenshot({path:path.join(output, `${route}-${width}-${theme}.png`)});
