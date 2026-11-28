@@ -71,3 +71,4 @@ section.document-ocr #ocr-kind{min-height:56px;padding:12px 42px 12px 20px;font-
 @media print{.document-ocr{display:none!important}}
 @container(max-width:280px){.document-ocr-card-actions{grid-template-columns:1fr}}
 @media screen{html[data-contrast=true] .document-ocr{--ocr-ink:#111;--ocr-muted:#222;--ocr-line:#555;--ocr-bg:#fff;--ocr-card:#fff;--ocr-input:#fff;--ocr-accent:#111;--ocr-on-accent:#fff;--ocr-tint:#eee;--ocr-button:#eee}}
+@media screen{html[data-contrast=true] .document-ocr .ocr-primary,html[data-contrast=true] .document-ocr-card[data-selected=true] :is(.document-ocr-take,.document-ocr-side-badge){background:#fff;color:#111;border-color:#111}}
