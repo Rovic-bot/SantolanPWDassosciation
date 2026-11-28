@@ -1,0 +1,143 @@
+{
+  "status": "PASS: Render image build and startup; two documented HSTS warnings",
+  "milestones": [
+    {
+      "timestamp": "2026-11-28T13:31:23.595332622Z",
+      "message": "#17 1.811 Linux certificate PDF conversion verified using fictional text; no email sent."
+    },
+    {
+      "timestamp": "2026-11-28T13:31:23.934008575Z",
+      "message": "#18 [runtime 8/8] RUN DJANGO_SETTINGS_MODULE=config.settings_static_build python manage.py collectstatic --noinput --verbosity 0"
+    },
+    {
+      "timestamp": "2026-11-28T13:31:27.136773701Z",
+      "message": "#18 DONE 3.4s"
+    },
+    {
+      "timestamp": "2026-11-28T13:32:12.498528044Z",
+      "message": "?: (security.W005) You have not set the SECURE_HSTS_INCLUDE_SUBDOMAINS setting to True. Without this, your site is potentially vulnerable to attack via an insecure connection to a subdomain. Only set this to True if you are certain that all subdomains of your domain should be served exclusively via SSL."
+    },
+    {
+      "timestamp": "2026-11-28T13:32:12.498531184Z",
+      "message": "?: (security.W021) You have not set the SECURE_HSTS_PRELOAD setting to True. Without this, your site cannot be submitted to the browser preload list."
+    },
+    {
+      "timestamp": "2026-11-28T13:32:19.196570805Z",
+      "message": "[2026-11-28 13:32:19 +0000] [1] [INFO] Starting gunicorn 26.2.0"
+    },
+    {
+      "timestamp": "2026-11-28T13:32:19.273474729Z",
+      "message": "[2026-11-28 13:32:19 +0000] [1] [INFO] Listening at: http://0.0.0.0:10000 (1)"
+    }
+  ],
+  "installed_python_packages": [
+    {
+      "name": "Django",
+      "version": "5.2.17"
+    },
+    {
+      "name": "Pillow",
+      "version": "13.0.0"
+    },
+    {
+      "name": "asgiref",
+      "version": "3.12.1"
+    },
+    {
+      "name": "boto3",
+      "version": "1.43.111"
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.111"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1"
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.2"
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2"
+    },
+    {
+      "name": "django-storages",
+      "version": "1.14.6"
+    },
+    {
+      "name": "et-xmlfile",
+      "version": "2.0.0"
+    },
+    {
+      "name": "gunicorn",
+      "version": "26.2.0"
+    },
+    {
+      "name": "jmespath",
+      "version": "1.1.0"
+    },
+    {
+      "name": "mysqlclient",
+      "version": "2.3.0"
+    },
+    {
+      "name": "openpyxl",
+      "version": "3.1.5"
+    },
+    {
+      "name": "psycopg",
+      "version": "3.3.8"
+    },
+    {
+      "name": "psycopg-binary",
+      "version": "3.3.8"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "2.9.0.post0"
+    },
+    {
+      "name": "python-dotenv",
+      "version": "1.2.3"
+    },
+    {
+      "name": "qrcode",
+      "version": "8.2"
+    },
+    {
+      "name": "reportlab",
+      "version": "5.0.1"
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2"
+    },
+    {
+      "name": "six",
+      "version": "1.17.0"
+    },
+    {
+      "name": "sqlparse",
+      "version": "0.6.0"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.4"
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0"
+    },
+    {
+      "name": "whitenoise",
+      "version": "6.12.0"
+    }
+  ]
+}

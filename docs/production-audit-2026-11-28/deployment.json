@@ -1,10 +1,30 @@
 {
-  "status": "LOCAL VERIFICATION PASSED; production deployment pending",
+  "status": "PRODUCTION DEPLOYMENT VERIFIED",
   "baseline_commit": "d77159913f822487f916b332ab9d04c26da744ea",
   "authorized_workspace": "My workspace",
   "default_cases_passed": 3121,
   "migrations_changed": false,
   "original_development_status_entries_preserved": 1370,
   "container_os_scan": "BLOCKED: operator chose to continue without local Docker",
-  "baseline_suite": "Frozen baseline still running; completion will be recorded in final report"
+  "baseline_suite": "COMPLETE: all 3077 selected nonbrowser cases executed; 20 original browser cases not run on untouched source",
+  "commit": "97b4d0dc638ae0667e4e9b7d396857617636dd84",
+  "deploy_id": "dep-dc5det6c6qcc738m3eug",
+  "service_id": "srv-dbq0gdd6e07s73bol0l0",
+  "provider_status": "live",
+  "finished_at_utc": "2026-11-28T13:32:40.219261Z",
+  "public_url": "https://santolan-pwd-system.onrender.com",
+  "http_smoke": "11 checks PASS",
+  "browser_smoke": "PDAO form: 5 checks PASS; 320/390/1366 px; zero selected axe violations, console or HTTP errors",
+  "python_image_dependency_scan": "27 installed package versions; no known advisories",
+  "startup_warnings": [
+    "security.W005: HSTS subdomains not opted in",
+    "security.W021: HSTS preload not opted in"
+  ],
+  "error_level_logs_checked_after_startup": 0,
+  "error_log_window_start_utc": "2026-11-28T13:32:00Z",
+  "baseline_result": {
+    "PASS": 2374,
+    "FAIL": 703
+  },
+  "audit_evidence_status": "Final verification records; application commit remains 97b4d0dc638ae0667e4e9b7d396857617636dd84"
 }

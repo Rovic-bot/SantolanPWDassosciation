@@ -1,0 +1,98 @@
+{
+  "checked_utc": "2026-11-28T13:34:18.279496+00:00",
+  "url": "https://santolan-pwd-system.onrender.com",
+  "conditions": "Sequential read-only GETs, one-second spacing, no login/submission/email; elapsed times include client network.",
+  "status": "PASS",
+  "checks": [
+    {
+      "route": "/healthz/",
+      "http_status": 200,
+      "elapsed_ms": 544.2,
+      "nosniff": true,
+      "https_hsts": true,
+      "status": "PASS"
+    },
+    {
+      "route": "/",
+      "http_status": 200,
+      "elapsed_ms": 781.6,
+      "nosniff": true,
+      "https_hsts": true,
+      "status": "PASS"
+    },
+    {
+      "route": "/accounts/login/",
+      "http_status": 200,
+      "elapsed_ms": 117.6,
+      "nosniff": true,
+      "https_hsts": true,
+      "status": "PASS"
+    },
+    {
+      "route": "/membership/registration/apply/",
+      "http_status": 200,
+      "elapsed_ms": 797.1,
+      "nosniff": true,
+      "https_hsts": true,
+      "status": "PASS"
+    },
+    {
+      "route": "/membership/registration/pdao/apply/",
+      "http_status": 200,
+      "elapsed_ms": 390.2,
+      "nosniff": true,
+      "https_hsts": true,
+      "scanner_styles_in_head": true,
+      "upload_controls_present": true,
+      "status": "PASS"
+    },
+    {
+      "route": "/dashboard/",
+      "http_status": 302,
+      "elapsed_ms": 226.2,
+      "status": "PASS",
+      "anonymous_access": "redirected to sign-in"
+    },
+    {
+      "route": "/membership/reviews/",
+      "http_status": 302,
+      "elapsed_ms": 126.4,
+      "status": "PASS",
+      "anonymous_access": "redirected to sign-in"
+    },
+    {
+      "route": "/membership/registration/pdao/onsite/",
+      "http_status": 302,
+      "elapsed_ms": 174.7,
+      "status": "PASS",
+      "anonymous_access": "redirected to sign-in"
+    },
+    {
+      "route": "/static/css/document-ocr.903df5fcca67.css?v=20261128-palette",
+      "http_status": 200,
+      "elapsed_ms": 130.5,
+      "status": "PASS",
+      "matches_candidate": true,
+      "sha256": "8c0c17de9d3f8b48833dbf7965f6d2c5cea18fc24d2cbd28c349a6d062698bed",
+      "cache_control": "max-age=315360000, public, immutable"
+    },
+    {
+      "route": "/static/js/document-ocr.7141cab65ae3.js?v=20261128-camera",
+      "http_status": 200,
+      "elapsed_ms": 88.7,
+      "status": "PASS",
+      "matches_candidate": true,
+      "sha256": "88cfd6e261cf74f4a4b922da2f059c43226853c836b23f0cf5bf804b3a885622",
+      "cache_control": "max-age=315360000, public, immutable"
+    },
+    {
+      "route": "/static/js/workspace-page.fe2f9e82a34b.js?v=20261104",
+      "http_status": 200,
+      "elapsed_ms": 91.1,
+      "status": "PASS",
+      "matches_candidate": true,
+      "sha256": "2c21e7e6ce45cc872df30e7a78bb1e487be89bbf2cd4e1f7592bfbcc03986141",
+      "cache_control": "max-age=315360000, public, immutable"
+    }
+  ]
+}

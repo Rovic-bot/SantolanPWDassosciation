@@ -8,7 +8,7 @@ This audit started from the actual deployed commit `d77159913f822487f916b332ab9d
 
 Confirmed corrections include a PDAO-to-membership phone-format failure, missing-date report crashes, PostgreSQL duplicate handling, image upload restrictions and a vulnerable Pillow release pin, certificate resource limits, profile-review errors, audit invalidation errors, unnecessary database queries, accessibility failures and scanner layout shifts. Obsolete test fixtures were repaired separately from application defects. No database migration or published-weight rule was changed.
 
-Current default-discovery result: **3121 PASS, 0 FAIL, 0 NOT RUN of 3121 unique cases**. This report is generated from case ledgers, not estimated coverage. Deployment status: **LOCAL VERIFICATION PASSED; production deployment pending**.
+Current default-discovery result: **3121 PASS, 0 FAIL, 0 NOT RUN of 3121 unique cases**. This report is generated from case ledgers, not estimated coverage. Deployment status: **PRODUCTION DEPLOYMENT VERIFIED**.
 
 ## 2. Project inventory
 
@@ -74,7 +74,7 @@ The default suite is counted once per final discovered ID. Focused retests repla
 | reports | 3 | 3 | 0 | 0 |
 | **Total** | **3121** | **3121** | **0** | **0** |
 
-The untouched source baseline selected 3077 nonbrowser cases and has recorded 2737 results: 2127 PASS and 610 FAIL. Baseline runtime used the available local Python environment, including patched Pillow 13.0.0, rather than the old production Pillow pin. The separate manifest scan detects that dependency difference. Several baseline fixtures predate mandatory EWAF, current route contracts and newer migration leaves. Those fixture failures do not by themselves prove production workflow failures.
+The untouched source baseline selected 3077 nonbrowser cases and has recorded 3077 results: 2374 PASS and 703 FAIL. Baseline runtime used the available local Python environment, including patched Pillow 13.0.0, rather than the old production Pillow pin. The separate manifest scan detects that dependency difference. The 20 browser cases in original baseline discovery were NOT RUN against untouched source; browser execution was performed on the corrected candidate. Several baseline fixtures predate mandatory EWAF, current route contracts and newer migration leaves. Those fixture failures do not by themselves prove production workflow failures.
 
 Additional, separately identified checks: 4 broad UI/layout Django audit cases; 16 synthetic OCR/camera-contract browser scenarios; 12 loopback S3/SMTP integration cases; static collection, syntax checks, schema drift, dependency manifests, provider metadata and recovery checks. Route/viewport assertions are subchecks, not additional default-suite tests. See [test-cases.json](test-cases.json), [test-summary.json](test-summary.json), [OCR](ocr.json) and [integration checks](local-integrations-final.json).
 
@@ -84,12 +84,13 @@ Reproduction: use `scripts/quality_postgres_launch.py --settings=config.intake_t
 |---|---|---|
 | Static analysis/build | 991 Python files parsed; 91 application JS files syntax checked; production static collection; diff whitespace checks | PASS |
 | Type checking | No configured project type checker; no fabricated type/coverage percentage | NOT RUN |
-| Unit/integration/API | Actual Django assertions, positive/negative inputs and permissions | PASS for defined automated criteria |
-| Database/migration/concurrency | Real PostgreSQL transactions, race tests, isolated historical graphs; no new model migration | PASS for defined automated criteria |
-| Functional/E2E/regression | Discovered browser workflows plus synthetic registration, review, ranking, selection, publication and receipts | PASS for defined automated criteria |
-| Responsive/accessibility | 23 routes per engine at eight widths; axe and defined keyboard checks | PASS for tested criteria |
-| Error/recovery | Transaction rollback, duplicate requests, interrupted SMTP, private object restore and DB restore | PASS for documented checks |
-| Installation/deployment | Local static build; Docker image build/OS scan unavailable locally | PARTIAL |
+| Unit/integration/API | Actual Django assertions, positive/negative inputs and permissions | PASS |
+| Database/migration/concurrency | Real PostgreSQL transactions, race tests, isolated historical graphs; no new model migration | PASS |
+| Functional/E2E/regression | Discovered browser workflows plus synthetic registration, review, ranking, selection, publication and receipts | PASS |
+| Responsive/accessibility | 23 routes per engine at eight widths; axe and defined keyboard checks | PASS |
+| Error/recovery | Transaction rollback, duplicate requests, interrupted SMTP, private object restore and DB restore | PASS |
+| Installation/deployment | Local static build and Render production image/startup and limited live smoke checks | PASS |
+| Container OS scan | Local Docker excluded by operator; no image vulnerability scanner available | BLOCKED |
 | Sustained load/real device/manual screen reader | No aggressive production load; physical mobile OS camera and assistive-technology sessions unavailable | NOT RUN |
 
 ## 5. ISO/IEC 25010 assessment
@@ -98,15 +99,15 @@ This is an engineering assessment using the nine product-quality characteristics
 
 | Characteristic | Acceptance criterion / evidence | Initial status | Remediation | Final status / gap |
 |---|---|---|---|---|
-| Functional suitability | Required synthetic workflows and exact scoring/decision assertions complete; no unintended approval | FAIL | PDAO transfer, reports, profile-review and contract corrections | PASS for defined automated criteria; no live PII submissions |
+| Functional suitability | Required synthetic workflows and exact scoring/decision assertions complete; no unintended approval | FAIL | PDAO transfer, reports, profile-review and contract corrections | PASS; no live PII submissions |
 | Performance efficiency | Retained selections <=2 queries for 12 programs; verified readiness <=45; targeted CLS <=0.1 | FAIL | Batched reads, related-object loading, prepaint scanner assets | PARTIAL: query/CLS criteria pass; field LCP/INP/capacity unmeasured |
 | Compatibility | Chromium, Firefox, WebKit routes and forms; private S3/SMTP adapter contracts | PARTIAL | PostgreSQL duplicate support; decoder allowlists; refreshed fixture contracts | PARTIAL: tested engines pass; physical phones and PG17 full regression unavailable |
 | Interaction capability | No tested axe A/AA violations or horizontal overflow; keyboard menu focus returns; reviewed OCR fields | FAIL | Contrast, title, scroll-region focus and scanner spacing fixes | PARTIAL: automated/defined keyboard checks pass; full manual WCAG review outstanding |
 | Reliability | Failed actions roll back; duplicate/retry protections; DB/file recovery matches hashes | PARTIAL | Bounded certificate conversion and safe diagnostics | PARTIAL: tested rollback/recovery passes; hosted availability/PITR/real-mail receipt not established |
 | Security | Guarded uploads/downloads; tested permissions; no known scanned package advisories; private bucket/runtime role | FAIL | Pillow 13.0.0, narrow image decoders, correct duplicate handling | PARTIAL: defined controls pass; OS image scan and independent penetration assessment unavailable |
-| Maintainability | Reproducible complete discovery, targeted regression IDs, source traceability, no schema drift | FAIL | Current fixtures, isolated migration helper, audit scripts and this evidence bundle | PASS for defined automated criteria; broad legacy complexity remains |
+| Maintainability | Reproducible complete discovery, targeted regression IDs, source traceability, no schema drift | FAIL | Current fixtures, isolated migration helper, audit scripts and this evidence bundle | PASS; broad legacy complexity remains |
 | Flexibility | Fresh PostgreSQL test cluster; environment-driven production build; optional adapter gated | PARTIAL | PostgreSQL-aware error recovery; portable test-tool paths and LF fixture rules | PARTIAL: native tests pass; Docker local build excluded by operator |
-| Safety | Human selection, claim/consent and published-weight locks preserved; no fabricated results or duplicate assistance | PARTIAL | Fail-closed validation, audited state transitions and preservation tests | PASS for defined automated criteria; administrative benefits system, not a medical device or safety-critical controller |
+| Safety | Human selection, claim/consent and published-weight locks preserved; no fabricated results or duplicate assistance | PARTIAL | Fail-closed validation, audited state transitions and preservation tests | PASS; administrative benefits system, not a medical device or safety-critical controller |
 
 ## 6. UI/UX and responsive design
 
@@ -146,11 +147,11 @@ A successful initial production navigation measured homepage LCP **8.292 s**, TT
 
 The synthetic 100-applicant integration produced all 100 scores and 400 traces correctly, with disjoint paginated results. Under concurrent local test load it took **37.671 s** to capture/calculate/persist and **14.692 s** to revalidate/render the first page. This exposes a capacity concern; the configured 2,000-applicant ceiling is **not a benchmarked capacity guarantee**. See [volume measurements](volume-measurements.json).
 
-Field LCP/INP/CLS at the 75th percentile, INP <=200 ms, production throughput, sustained concurrency capacity, Lighthouse score and authenticated production API timings are **unmeasured**. [Core Web Vitals thresholds](https://web.dev/articles/vitals) are targets, not inferred passes. Supabase reports one informational unindexed foreign key and 217 unused-index notices; no measured workload justified schema changes or removing those indexes.
+Field LCP/INP/CLS at the 75th percentile, INP <=200 ms, production throughput, sustained concurrency capacity, Lighthouse score and authenticated production API timings are **unmeasured**. [Core Web Vitals thresholds](https://web.dev/articles/vitals) are targets, not inferred passes. After deployment, Render sampled approximately **112.7 to 140.5 MiB of the 512 MiB memory limit** from 13:33 to 13:38 UTC during these low-volume checks. CPU ranged from 0.00041 to 0.02150 in provider CPU units; its HTTP p95 series was empty. These are [resource observations](render-runtime-metrics.json), not load-capacity certification. Supabase reports one informational unindexed foreign key and 217 unused-index notices; no measured workload justified schema changes or removing those indexes.
 
 ## 9. Security findings
 
-The flattened 20-pin production requirements scan found 42 Pillow 12.3.0 advisories. Pinning 13.0.0 clears the scan; [Pillow's official release notes](https://pillow.readthedocs.io/en/stable/releasenotes/13.0.0.html) document the fixes. This is a dependency exposure finding, not a claim that every advisory was exploitable through this application. The local Python environment scan and npm audit also report no known findings at scan time; they are not a security guarantee. See [dependency evidence](dependencies.json).
+The flattened 20-pin production requirements scan found 42 Pillow 12.3.0 advisories. Pinning 13.0.0 clears the scan; [Pillow's official release notes](https://pillow.readthedocs.io/en/stable/releasenotes/13.0.0.html) document the fixes. This is a dependency exposure finding, not a claim that every advisory was exploitable through this application. The 27 package versions actually installed in the Render image were separately extracted from the successful build log and audited with no known findings. The local Python environment scan and npm audit also report no known findings at scan time; they are not a security guarantee. See [dependency evidence](dependencies.json).
 
 The source check found no recognized credential patterns in 3,999 tracked UTF-8 files <=2 MB and no tracked live `.env` file. This limited pattern scan is not an entropy scan or proof that all historical content is safe. Production metadata confirms 142/142 application tables with RLS, a runtime role without superuser/bypass-RLS, and a nonpublic document bucket. Supabase security/health advisors returned no notices; see [provider metadata](provider-checks.json).
 
@@ -175,16 +176,16 @@ There are **no migration files changed** and `makemigrations --check --dry-run` 
 | Scheduled offsite backup/PITR and full production disaster recovery | PARTIAL | DB and object restore drills passed locally; operational scheduling, retention, RPO/RTO and hosted restoration still require validation |
 | PostgreSQL platform parity | PARTIAL | Local suite uses PG18; deployed PG17.11 metadata/recovery were checked, but full disposable PG17 testing was unavailable |
 
-The report records a controlled scope, not a declaration that the site is bug-free. Complete any remaining NOT RUN default cases before treating this candidate as release-ready.
+The report records a controlled scope, not a declaration that the site is bug-free. All current default cases are accounted for in the final ledger; the operational/device checks listed here remain conditions of acceptance.
 
 ## 12. Deployment status
 
-**LOCAL VERIFICATION PASSED; production deployment pending**. See [deployment.json](deployment.json) for provider-confirmed identifiers and postdeployment checks when available. Local tests/static collection are separate from a successful Render image build and from verified live behavior. Production environment variables and schema were not changed.
+**PRODUCTION DEPLOYMENT VERIFIED**. See [deployment.json](deployment.json) for provider-confirmed identifiers and postdeployment checks when available. Local tests/static collection are separate from a successful Render image build and from verified live behavior. The running application commit is `97b4d0dc638ae0667e4e9b7d396857617636dd84` (Render deploy `dep-dc5det6c6qcc738m3eug`, live at 2026-11-28 13:32:40 UTC). Final audit records are saved after deployment; any later documentation-only commit does not change the verified application. Production environment variables and schema were not changed. Render verified Linux PDF generation and the static build, then reported the release live. Eleven read-only HTTP/asset checks and five live PDAO-browser checks passed; the fingerprinted scanner CSS/JS and workspace JS match the tested source. See [HTTP checks](live-smoke.json), [browser checks](live-form-browser.json), [build/startup evidence](render-build-checks.json) and [live scanner](live-scanner-mobile.png). Startup retained Django security.W005/W021 for HSTS subdomain/preload opt-ins; HTTPS remains enforced, and these settings were left unchanged pending explicit domain-wide coverage decisions.
 
 Rollback: redeploy the previous Render deployment/commit `d77159913f822487f916b332ab9d04c26da744ea` through the service dashboard. Automatic deployment is disabled. This patch has no migrations, so code rollback does not require a database rollback. Preserve new production writes; do not restore the database merely to roll back code. Encrypted database and object backup drills are documented in [database recovery](recovery-verification.json) and [object recovery](object-recovery.json).
 
 ## 13. Final readiness recommendation
 
-**READY WITH CONDITIONS.** All current default-discovery cases have executed successfully after focused retests. Accept only within the tested scope and with the explicit operational/device/performance conditions above; provider-confirmed deployment and safe live smoke checks remain separate gates.
+**READY WITH CONDITIONS.** All current default-discovery cases have executed successfully after focused retests. Accept only within the tested scope and with the explicit operational/device/performance conditions above; the provider-confirmed deployment and limited live smoke checks have also passed. Physical-device acceptance, OS-image scanning, larger-batch capacity and the other listed conditions remain outstanding.
 
 This is an evidence-based engineering assessment, not ISO certification or a blanket accessibility/security guarantee.

@@ -51,11 +51,12 @@
     }
   },
   "baseline_selected": 3077,
-  "baseline_recorded": 2737,
+  "baseline_recorded": 3077,
   "baseline": {
-    "PASS": 2127,
-    "FAIL": 610
+    "PASS": 2374,
+    "FAIL": 703
   },
+  "baseline_browser_not_run": 20,
   "reconciliation": "Each final-discovery ID counted once. Latest reviewed retest supersedes earlier runs. Removed/renamed historical cases and import placeholders are retained in raw run ledgers, not silently counted as current passes.",
   "outside_default_discovery": [
     {

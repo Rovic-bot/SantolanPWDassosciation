@@ -11390,5 +11390,1432 @@
     "id": "ewaf.test_rolling_delivery.RollingDeliveryTests.test_receipts_survive_advancing_rolling_cutoffs_and_final_reranking",
     "status": "FAIL",
     "kind": "error"
+  },
+  {
+    "id": "ewaf.test_rolling_delivery.RollingDeliveryTests.test_same_day_other_program_receipt_is_not_own_fulfillment",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_rolling_delivery.RollingDeliveryTests.test_two_sequential_same_day_receipt_posts_keep_ranking_and_selection_history",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_criterion_comparisons_use_the_whole_pool_and_exact_values_even_when_display_matches",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_exact_ties_and_near_ties_are_not_resorted_using_rounded_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_four_criterion_example_explains_encoding_direction_and_joint_contributors",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_legacy_income_and_dependents_do_not_become_household_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_rational_traces_keep_saved_total_instead_of_summing_rounded_points",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownPresentationTests.test_zero_total_has_no_invented_leading_criterion_or_division_by_zero",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_empty_tab_never_generates_a_calculation",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_historical_and_stale_results_keep_saved_values",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_permissions_invalid_identifiers_and_cross_program_requests_fail_closed",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_read_only_tab_and_applicant_switch_show_retained_inputs_and_no_decisions",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_score_breakdown.ScoreBreakdownViewTests.test_tampered_calculation_cannot_be_presented_as_a_valid_explanation",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_cross_program_release_blocks_competing_capture",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_cross_program_void_blocks_competing_capture",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_new_assessment_rejects_capture_or_marks_it_outdated",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_new_validation_rejects_capture_or_marks_it_outdated",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_two_captures_get_sequential_complete_histories",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_scoring_concurrency.ScoringConcurrencyTests.test_two_proposals_same_context_only_one_commits",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_scoring_migrations.ScoringPreservationTests.test_additive_migration_preserves_rows_without_backfill",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_scoring_migrations.ScoringPreservationTests.test_entire_historical_g12_g14_business_rows_preserved",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_actual_projection_matches_independent_matrix_weights_and_cr",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_actual_word_file_equal_placeholder_fixture_is_disclosed_separately",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_exact_and_near_ties_use_full_scores_and_capacity_boundary",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_existing_precision_contract_is_reused_without_rescaling_overruns",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_historical_si_and_four_and_five_matrices_still_reproduce",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_invalid_weights_and_constant_columns_do_not_get_defaults",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_other_vectors_and_all_priority_orders_keep_codes_and_four_criteria",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_requested_fractional_teaching_fixture_separate_from_operational_projection",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesArithmeticTests.test_schema_graph_has_no_unreviewed_model_changes",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesFirstSetupTests.test_initial_http_setup_is_blank_and_cannot_approve_without_a_saved_ses_draft",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_capacity_ties_hold_or_require_the_approved_human_explanation",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_compatible_weights_policy_approval_and_intake_remain_separate",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_concurrent_weight_drafts_share_the_existing_stale_edit_fence",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_documents_and_four_ps_are_evidence_without_a_bonus_or_fifth_term",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_full_policy_acceptance_ranking_selection_publication_and_release_journey",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_material_income_conflict_requires_resolution_without_income_substitution",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_missing_invalid_evidence_and_input_domains_remain_blockers",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_old_signature_cannot_be_used_as_ses_weights_or_rebound_program",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_policy_http_draft_approval_and_ses_fields",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_private_breakdown_exports_and_filters_keep_all_four_pool_bounds",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_real_binding_and_input_forms_accept_exactly_four_findings",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_ses_acceptance_and_calculation_audit_rollback",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_ses_binding_and_all_three_approval_groups_require_authority",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_ses_flags_cutoff_and_unsupported_policy_guards",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_slider_fixture_b_from_stored_weights_accepted_findings_and_actual_ledger",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_stale_inputs_full_pool_recalculation_and_immutable_versions",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_storage_incompatible_projection_remains_an_unapproved_draft",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_unauthorized_audit_failure_and_stale_weight_approval_are_controlled",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_unresolved_application_is_not_silently_omitted_and_foreign_evidence_is_rejected",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_unresolved_inventory_changed_evidence_and_cutoff_coverage_block_current_use",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_ses_workflow.SesWorkflowTests.test_vault_setup_has_no_defaults_and_retains_saved_four_criterion_drafts",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_approval_and_partial_application_roll_back_on_binding_audit_failure",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_disabled_workflows_and_unavailable_schema_do_not_apply_or_write",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_explicit_fixed_cutoff_is_used_without_changing_program_dates",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_future_policy_waits_then_applies_centrally_without_get_writes",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_global_approval_requires_authority_and_stale_requests_do_not_write",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_intake_then_shared_approval_accepted_inputs_rank_and_human_decision",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_invalid_cutoff_preserves_intake_and_reports_blocker",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_missing_global_cutoff_and_unapproved_policy_cannot_bind",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_composite_program_reuses_approved_rules_after_main_weights_change",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_program_uses_shared_approval_without_ewaf_permission_or_manual_binding",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_new_weight_approval_updates_unstarted_matching_drafts_only",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_one_shared_approval_binds_all_ready_matching_programs_and_is_idempotent",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_policy_editor_and_review_show_global_rule_and_preserve_old_policy_contract",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_published_composite_intake_can_receive_shared_rules_with_new_approved_weights",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_application.SharedApplicationTests.test_shared_approval_does_not_replace_bound_policy_or_prior_run",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_applicant_errors_are_not_mislabeled_as_scoring_configuration",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_equal_values_receive_full_weight_and_ses_retains_4ps_adjustment",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.FullCreditArithmeticTests.test_varied_values_keep_exact_pool_minmax_and_existing_zero_endpoints",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_approval_permission_rule_pairing_and_audit_rollback",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_changed_member_review_is_specific_and_still_blocks_ranking",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_reviewed_inputs_keep_their_bindings_when_shared_math_changes",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_shared_calculation_rules.SharedCalculationRulesTests.test_shared_rule_changes_new_runs_preserves_old_history_and_shows_every_contribution",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_added_requirement_without_document_invalidates_inventory",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_admin_audit_detects_restored_actor_permission_state",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_changed_requirement_metadata_invalidates_pending_request",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_changed_then_restored_member_status_is_not_fresh",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_changed_then_restored_review_requires_new_assessments",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_cross_program_release_then_void_does_not_restore_context",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_direct_permission_topology_change_detected_even_for_superuser",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_document_type_metadata_change_detected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_duplicate_request_revalidates_instead_of_returning_stale_identity",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_expiry_after_request_blocks_and_preserves_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_group_permission_topology_change_detected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_inconsistent_snapshot_versions_and_trace_inputs_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_intake_snapshot_version_change_invalidates_context",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_legacy_pending_request_requires_new_context",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_legacy_run_replays_without_rewriting_or_claiming_new_freshness",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_linked_event_publication_observation_changes_without_program_version",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_missing_private_bytes_fail_closed",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_only_one_replacement_request_for_a_predecessor",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_partial_calculation_map_rolls_back_entire_graph",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_permission_revocation_ignores_cached_actor_permissions",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_permission_revoked_during_persistence_cannot_complete",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_stale_history_remains_replayable_without_current_claim",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_unlocked_source_writer_during_calculation_detected_on_separate_connection",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_unlocked_source_writer_during_persistence_rolls_back_complete_graph",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_unversioned_metadata_aba_is_explicitly_not_guaranteed",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_freshness.SourceFreshnessTests.test_versioned_observations_leave_legacy_source_digest_unchanged",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_assessment_business_context_stale_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_assessment_lock_prefix_precedes_existing_application_and_member_locks",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_configuration_validation_review_authority_and_scoring_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_evidence_policy_and_assessment_each_advance_once",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_ewaf_artifact_and_native_audit_rollback",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_old_durable_graph_and_bindings_remain_reproducible",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.EwafSourceTests.test_repeated_validation_is_conservative_audit_dependency",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_approval_capture_and_binding_each_invalidate_once",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_approval_control_lock_is_after_source_state",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_duplicate_native_audit_rolls_back",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_duplicate_terms_capture_fails_without_invalidation",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_failed_business_validation_preserves_generation",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_final_authority_failure_rolls_back_native_and_source_changes",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_fresh_permission_recheck_rejects_cached_superuser",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_invalidation_and_cas_and_final_validation_failure_roll_back",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_missing_and_extra_scope_denied",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_missing_native_audit_rolls_back",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_missing_state_denied",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_native_audit_exception_rolls_back",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_no_implicit_activation_outside_session",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_out_of_scope_native_audit_rejects_whole_mutation",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_outer_transaction_denied",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_program_creation_audit_failure_rolls_back_every_table",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_program_creation_initializes_once_with_native_audits",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_program_update_and_changed_then_restored",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_protected_unchanged_save_has_no_invalidation",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_publication_and_withdrawal",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_requirement_creation_and_update",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_stale_business_version_is_preserved",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_stale_creation_authority_denied",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_stale_generation_denies_even_when_business_version_is_current",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_token_cannot_activate_protocol",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.ProgramSourceTests.test_unprotected_same_values_retain_conservative_native_audit_dependency",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.SourceConcurrencyTests.test_authority_revocation_invalidates_source_submission",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_source_writers.SourceConcurrencyTests.test_failed_first_writer_leaves_waiting_writer_token_valid",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_source_writers.SourceConcurrencyTests.test_two_connections_same_expected_generation_have_one_winner",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.ExistingRegressionDiagnosisTests.test_approved_handoff_is_visible_in_detail_and_absent_from_pending_inbox",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.ExistingRegressionDiagnosisTests.test_historical_policy_needs_explicit_shared_cutoff_to_be_ready",
+    "status": "FAIL"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveArithmeticTests.test_all_five_slider_projections_independently_reproduce_exact_targets",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveArithmeticTests.test_each_constant_numeric_column_blocks_without_redistributing_weights",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_synthetic_twelve.SyntheticTwelveArithmeticTests.test_five_fixed_weight_oracles_against_real_composite_engine",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_actual_release_cannot_be_undone_by_selection_button",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_button_replaces_selected_review_and_undo_restores_selection_and_capacity",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_changed_scoring_inputs_do_not_trap_selection_but_reselection_is_revalidated",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_failed_audit_rolls_back_unselection",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_permissions_program_scope_and_selected_state_are_enforced",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_unselect_assistance.UnselectAssistanceTests.test_retries_are_idempotent_and_old_forms_cannot_reverse_a_new_selection",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.RegisteredInputTests.test_assistance_is_counted_only_after_confirmed_release_and_excludes_voids",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.RegisteredInputTests.test_changed_registered_value_invalidates_review_and_cannot_be_overridden",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.RegisteredInputTests.test_review_audit_failure_rolls_back_and_source_page_has_read_only_values",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.RegisteredInputTests.test_stale_review_evidence_wrong_owner_and_cutoff_are_rejected",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.RegisteredInputTests.test_verified_registered_values_calculate_without_changing_member_or_selecting",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "ewaf.test_vault.VaultConcurrencyTests.test_concurrent_vault_saves_have_one_successful_revision",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightCompatibilityTests.test_display_rounding_preserves_authorized_order_when_weights_tie",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightCompatibilityTests.test_existing_consistency_failure_cannot_produce_an_acceptance_token",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightCompatibilityTests.test_positive_total_hierarchy_and_scale_are_required",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightCompatibilityTests.test_preview_is_bound_to_program_configuration_and_exact_proposal",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightCompatibilityTests.test_projection_uses_existing_engine_for_every_priority_order",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightConfigurationTests.test_preview_changes_nothing_and_explicit_save_retains_history_and_provenance",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightConfigurationTests.test_unreviewed_tampered_stale_and_failed_audit_do_not_save",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weight_input.WeightConfigurationTests.test_view_only_permissions_and_invalid_preview",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_ambient_context_and_equivalent_numbers",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_bounded_synthetic_payload",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_category_mapping_explicit_and_unknown_blocked",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_cohort_proposal_never_selects_live_bounds",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_exact_independent_wsm_and_contributions",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_exact_order_and_identifier_set",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_forged_weights_and_engine_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_full_precision_g14_weights_retained",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_missing_and_inconsistent_ahp_have_no_score",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_missing_criterion_never_renormalized",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_source_and_unit_mismatches",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_weighted_scoring.WeightedScoringTests.test_weight_residual_and_endpoint_anomaly_not_clamped",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_workspace_read_cache.PolicyDefinitionReuseTests.test_reusing_definitions_preserves_every_policy_finding",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_workspace_read_cache.WorkspaceReadCacheTests.test_distinct_cutoffs_and_versions_do_not_share_and_results_are_isolated",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_workspace_read_cache.WorkspaceReadCacheTests.test_post_and_failed_requests_leave_no_reusable_inventory",
+    "status": "PASS"
+  },
+  {
+    "id": "main_testing.tests.TestingDatasetTests.test_synthetic_services_create_verified_pool_and_real_weight_revision",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "members.test_catalog_migration.CatalogMigrationTests.test_catalog_is_additive_and_idempotent",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "members.test_information_review.InformationReviewConcurrencyTests.test_duplicate_submission_and_stale_findings_serialize",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_member_documents.MemberDocumentSourceTests.test_late_source_failure_removes_new_upload_and_rolls_back_member",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_member_documents.MemberDocumentSourceTests.test_member_upload_and_private_access_keep_source_audits",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_public_updates.MemberUpdateConcurrencyTests.test_simultaneous_submissions_create_one_open_request",
+    "status": "PASS"
+  },
+  {
+    "id": "members.test_registration_edit.MemberRegistrationSourceTests.test_current_field_update_uses_existing_source_audit_and_invalidation",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_approval_email.MembershipEmailConcurrencyTests.test_concurrent_deliveries_claim_one_message",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_approval_email_migration.MembershipApprovalEmailMigrationTests.test_additive_tables_preserve_registration_and_sender",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_document_ocr.DocumentOCRTests.test_real_application_templates_include_scan_without_changing_form_contract",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_document_ocr.DocumentOCRTests.test_scanner_has_no_submittable_fields_or_required_inputs",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_all_four_paths_accept_complete_input_and_canonicalize_mobile_and_address",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_all_four_paths_require_personal_address_contact_and_disability",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_child_choices_survive_staff_review_without_rewriting_saved_information",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_child_employment_details_rejected_and_required_family_names_have_optional_middle_names",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_children_under_15_choose_elementary_or_lower_and_student_or_unemployed",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_city_region_province_and_barangay_mismatches_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_conditional_pdao_renewal_and_employment_fields",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_fifth_birthday_boundary_and_guardian_for_minors",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_filtered_bound_form_retains_full_choices_for_birthdate_correction",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_historical_review_forms_do_not_reset_application_date_or_enforce_new_intake",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_manila_and_repeated_city_names_resolve_to_correct_geography",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_married_requires_spouse_name_and_mobile_but_single_does_not",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_mobile_ten_digits_without_trunk_prefix_for_all_four_paths",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_pdao_today_cannot_be_overridden_even_when_omitted_or_invalid",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_intake_validation.IntakeValidationTests.test_widget_and_dataset_integrity",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_number_fields.OnlineNumberValidationTests.test_admin_can_preserve_original_text_but_cannot_add_new_lettered_numbers",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_number_fields.OnlineNumberValidationTests.test_current_mobile_is_required_and_historical_contact_remains_optional",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_number_fields.OnlineNumberValidationTests.test_formatted_ids_keep_hyphens_and_reject_malformed_groups",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_number_fields.OnlineNumberValidationTests.test_leading_zeroes_are_retained_in_submitted_payloads",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_number_fields.OnlineNumberValidationTests.test_letters_and_scientific_notation_are_rejected_in_every_number_field",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_office_verification.OfficeInvitationConcurrencyTests.test_concurrent_invitation_requests_send_once_and_remain_pending",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_onsite_profile.IncomeBoundaryTests.test_lower_inclusive_upper_exclusive_ranges",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_claim_email.PDAOClaimConcurrencyTests.test_overlapping_batches_create_one_notice_per_application",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_claim_migration.PDAOClaimMigrationTests.test_preserves_existing_applicants_notices_attempts_and_events",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_membership.PDAOToMembershipConcurrencyTests.test_two_staff_submissions_create_one_linked_intake",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_pdao_notifications.PDAOReviewNoticeConcurrencyTests.test_simultaneous_ready_requests_send_once",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_notifications_migration.PDAOReviewMigrationTests.test_preserves_originals_events_and_references",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_registration.PDAOConcurrencyTests.test_concurrent_duplicate_submissions_create_one_record",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_registration.PDAOMigrationTests.test_additive_migration_rehearsal_preserves_existing_records",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_review.PDAOReviewConcurrencyTests.test_concurrent_corrections_keep_one_current_revision",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_review.PDAOReviewMigrationTests.test_additive_migration_keeps_saved_submissions_and_history",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_source_print.PDAOSourcePrintTests.test_all_source_applicant_fields_have_a_print_mapping",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_source_print.PDAOSourcePrintTests.test_choices_dates_missing_fields_and_channel_do_not_mutate_history",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdao_source_print.PDAOSourcePrintTests.test_print_escapes_values_and_leaves_signature_unfilled",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_blank_downloads_are_exact_sources_and_private_paths_are_unavailable",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_pdao_csrf_validation_no_query_reflection_and_method_limits",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_pdao_https_referer_fallback_and_missing_token_protection",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_pdao_null_and_foreign_origins_still_fail_even_with_valid_csrf_token",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_pdao_prints_all_selected_values_without_saving_or_issuing_reference",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pdf_registration.PDAOPrintingTests.test_pdao_same_origin_browser_post_succeeds_with_csrf_checks_enabled",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pending_email.PendingEmailConcurrencyTests.test_concurrent_identical_send_requests_send_once",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_pending_email_migration.MembershipPendingEmailMigrationTests.test_additive_tables_preserve_registration_and_sender",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_profile_migrations.ProfileMigrationTests.test_old_fields_documents_classifications_and_calculations_survive_upgrade",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_quick_approval.QuickApprovalConcurrencyTests.test_simultaneous_clicks_create_one_member_and_one_pair_of_audits",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_quick_approval.QuickApprovalSourceTests.test_combined_approval_retains_native_source_batches",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_quick_approval.QuickApprovalSourceTests.test_late_combined_batch_failure_rolls_back_verification_and_decision",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_completion.RegistrationMigrationLifecycleTests.test_exact_forward_reverse_history_metadata_and_startup_guard",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_decisions.ConcurrentRegistrationDecisions.test_concurrent_formatted_pwd_duplicates_create_one_member",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_decisions.ConcurrentRegistrationDecisions.test_concurrent_identical_approvals_create_one_member",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_decisions.RegistrationDecisionSourceTests.test_direct_approval_and_retry_have_one_zero_program_source_batch",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_decisions.RegistrationDecisionSourceTests.test_fabricated_scope_and_missing_expected_tokens_fail_without_member",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_decisions.RegistrationDecisionSourceTests.test_late_source_audit_failure_rolls_back_member_and_registration_decision",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_finish.ConcurrentRegistrationFinishTests.test_concurrent_finish_commits_one_revocation_and_one_audit",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_finish.RegistrationStartupDiagnosisTests.test_existing_reviewed_deferrals_and_empty_plan_are_preserved",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_finish.RegistrationStartupDiagnosisTests.test_feature_disabled_does_not_defer_registration_schema",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_finish.RegistrationStartupDiagnosisTests.test_pending_registration_migration_stops_startup",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_handoff.RegistrationHandoffConcurrencyTests.test_concurrent_identical_handoffs_and_decisions_create_one_member",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_handoff.RegistrationHandoffEnlistedTests.test_existing_top_level_writer_keeps_zero_program_scope_and_native_audits",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_handoff.RegistrationHandoffEnlistedTests.test_outer_writer_failure_rolls_back_registration_link_and_files",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.test_registration_handoff_migration.RegistrationHandoffMigrationTests.test_forward_reverse_forward_preserves_pending_and_old_rows_and_refuses_linked_reverse",
+    "status": "FAIL"
+  },
+  {
+    "id": "membership.test_registration_intake.RegistrationConcurrencyTests.test_concurrent_identical_submissions_accept_exactly_one_record",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_intake.RegistrationConcurrencyTests.test_concurrent_review_keeps_one_current_version",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_intake.RegistrationConcurrencyTests.test_permission_revocation_during_review_rolls_back_before_audit",
+    "status": "PASS"
+  },
+  {
+    "id": "membership.test_registration_migration.RegistrationMigrationTests.test_exact_additive_migration_preserves_legacy_row_and_enforces_constraints",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "membership.tests.ConcurrentDecisionTests.test_two_reviewers_create_exactly_one_member",
+    "status": "PASS"
+  },
+  {
+    "id": "program_intake.test_concurrency.MembershipMatchConcurrencyTests.test_concurrent_matching_and_submissions_reuse_the_same_member_application",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "program_intake.test_migrations.IntakeMigrationTests.test_additive_intake_schema_round_trip_preserves_every_preexisting_row",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_changed_information_blocks_complete_pool_and_is_not_a_scoring_value",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_decision_and_release_preconditions_also_require_resolution",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_eligibility_confirmation_cannot_bypass_a_change_report",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_evidence_resolution_audit_failure_rolls_back_application",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_historical_context_and_configuration_source_are_preserved",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_private_staff_update_page_displays_report_and_member_editor",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_resolution_requires_current_owned_evidence_and_retains_member_values",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.ConfirmationEvidenceTests.test_unauthorized_resolution_and_terminal_reopening_are_denied",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_application_workflow.PrepublicationConfigurationTests.test_locked_terms_configuration_survives_publication_without_rewriting_it",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsConcurrencyTests.test_concurrent_approval_record_and_edit_cannot_approve_silently_changed_terms",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsConcurrencyTests.test_concurrent_bind_and_publish_cannot_publish_without_binding",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsConcurrencyTests.test_concurrent_bindings_only_one_stale_counter_wins",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsConcurrencyTests.test_concurrent_capture_and_edit_never_binds_stale_terms",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsConcurrencyTests.test_concurrent_submission_and_binding_replacement_preserve_original_history",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_approved_terms.ApprovedTermsMigrationTests.test_additive_schema_preserves_program_and_approval_without_automatic_binding",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_decision_email.DecisionEmailConcurrencyTests.test_concurrent_callbacks_claim_one_delivery_attempt",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_decision_email_migration.DecisionEmailMigrationTests.test_additive_tables_preserve_existing_applications_and_sender",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_direct_review.DirectReviewConcurrencyTests.test_simultaneous_decisions_save_only_once",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_draft_migration.DraftMigrationTests.test_nullable_dates_migration_preserves_existing_records",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_draft_migration.DraftMigrationTests.test_optional_description_migration_preserves_rows_and_other_publication_requirements",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_information_update.ReportedInformationConcurrencyTests.test_simultaneous_profile_reviews_save_one_update_and_one_resolution",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_non_ewaf_selection.NonEWAFRegisteredSourceTests.test_automatic_selection_passes_native_audit_and_source_generation_validation",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_concurrent_publish_requests_record_one_publication",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_duplicate_stale_submission_cannot_publish_or_authorize_twice",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_existing_empty_draft_previews_guidance_without_writes_then_publishes",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_existing_empty_ewaf_draft_binds_guidance_before_its_intake_configuration",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_external_approval_preserves_its_exact_terms_even_when_guidance_is_missing",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_filling_missing_guidance_preserves_custom_text",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_missing_capacity_leaves_draft_guidance_and_authorization_unchanged",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_missing_external_approval_is_not_created_by_publish",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_missing_vault_approval_rolls_back_authorization_and_audit",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_one_click_uses_approved_weights_while_scoring_rules_are_pending",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_optional_description_and_purpose_do_not_block_publication_or_later_editing",
+    "status": "FAIL",
+    "kind": "subtest"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_other_status_actions_still_require_their_recorded_reason",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_permissions_csrf_and_get_do_not_publish",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_previously_published_or_authorized_terms_are_never_backfilled",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_program_with_applications_cannot_gain_new_guidance_implicitly",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_publish_audit_failure_rolls_back_both_actions",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickPublicationTests.test_publish_form_has_one_button_no_reason_confirmation_or_authorize_step",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_one_click_publication.OneClickSharedPolicyTests.test_publish_authorizes_and_applies_central_policy_in_one_transaction",
+    "status": "FAIL"
+  },
+  {
+    "id": "programs.test_pdao_approval.PDAOApprovalConcurrencyTests.test_simultaneous_recording_retains_one_entry_and_rejects_stale_writer",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.test_pdao_approval.PDAOApprovalMigrationTests.test_additive_migration_preserves_legacy_programs_without_inferred_approval",
+    "status": "FAIL",
+    "kind": "error"
+  },
+  {
+    "id": "programs.test_pictures.ProgramPictureMigrationTests.test_additive_picture_table_preserves_programs",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.tests.ProgramConcurrencyTests.test_requirement_edit_and_submission_cannot_mix_snapshots",
+    "status": "PASS"
+  },
+  {
+    "id": "programs.tests.ProgramConcurrencyTests.test_simultaneous_submissions_create_one_application_and_audit",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_close_scores_never_rank_from_display_values",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_close_scores_through_full_pipeline_are_not_false_ties",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_competition_ties_and_capacity_boundary_never_choose_winner",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_complete_pool_inventory_is_not_an_optional_filter",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_directions_raw_categories_encodings_and_scales_remain_distinct",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_empty_single_and_each_constant_column_stop",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_every_exact_ahp_intermediate_from_unrounded_document_ratios",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_fixture_bounds_all_normalized_values_and_exact_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_frozen_inputs_and_new_pool_recompute_shared_bounds_without_mutating_history",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_genuine_inconsistent_pairwise_judgments_fail_strict_consistency",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_independent_slider_defaults_and_remaining_hm",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_invalid_slider_combination_and_no_invented_hm_minimum",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_manual_weights_have_no_matrix_or_ahp_claim_and_provenance_tampering_fails",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_matrix_shape_positive_diagonal_reciprocity_and_no_rounded_cell_repair",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_missing_disputed_stale_unaccepted_and_expired_inputs_block",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_missing_invalid_numeric_inputs_and_binary_floats_refused",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_no_classification_needed_for_ordering",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_no_raw_registration_or_fourps_substitution",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_nonperfect_matrix_uses_column_normalized_row_average",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_pipeline_exact_ties_stay_tied_under_row_reordering",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_raw_numeric_format_and_hostile_decimal_context_do_not_change_exact_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_slider_range_steps_totals_and_extra_hm_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_tampered_frozen_encoding_and_non_synthetic_pool_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_math.RevisedMathTests.test_unrounded_classification_and_exact_display_boundaries",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_complete_synthetic_data_does_not_make_policy_or_program_ready",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_constant_columns_remain_unresolved_without_imputed_scores",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_different_complete_pool_recomputes_bounds_and_preserves_previous_run",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_document_example_scores_and_evaluation_time_bounds",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_filtered_or_unresolved_pool_cannot_define_bounds",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_forged_authority_and_fixed_bounds_are_rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_incomplete_history_does_not_become_zero",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_missing_stale_disputed_and_unlisted_inputs_block_without_imputation",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_policy_review_does_not_require_pre_application_numerical_bounds",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_proposed_competition_ranking_holds_boundary_tie",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_real_data_is_not_certified_by_a_synthetic_adapter",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_replay_detects_tampered_policy_reference_or_manual_score",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_required_open_decisions_remain_explicit",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_revising_shared_draft_cannot_mutate_snapshot_or_retained_result",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_single_applicant_pool_is_not_given_a_fabricated_normalized_value",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_source_mapping_directions_and_bounds_are_documented_not_authorized",
+    "status": "PASS"
+  },
+  {
+    "id": "ewaf.test_revised_policy.RevisedPolicyTests.test_stale_revision_unknown_version_and_overwritten_file_are_rejected",
+    "status": "PASS"
   }
 ]

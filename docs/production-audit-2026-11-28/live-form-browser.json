@@ -1,0 +1,37 @@
+{
+  "scope": "One public PDAO form, read-only, no submission or camera capture",
+  "checks": [
+    {
+      "id": "LIVE-FORM-01",
+      "status": "PASS",
+      "objective": "PDAO upload controls and initialized scanner present"
+    },
+    {
+      "id": "LIVE-FORM-1366",
+      "status": "PASS",
+      "objective": "No horizontal document overflow",
+      "width": 1366
+    },
+    {
+      "id": "LIVE-FORM-390",
+      "status": "PASS",
+      "objective": "No horizontal document overflow",
+      "width": 390
+    },
+    {
+      "id": "LIVE-FORM-320",
+      "status": "PASS",
+      "objective": "No horizontal document overflow",
+      "width": 320
+    },
+    {
+      "id": "LIVE-FORM-AXE",
+      "status": "PASS",
+      "objective": "No selected axe violations, console errors or failed HTTP responses"
+    }
+  ],
+  "errors": [],
+  "blockedRequests": [],
+  "violations": [],
+  "status": "PASS"
+}
